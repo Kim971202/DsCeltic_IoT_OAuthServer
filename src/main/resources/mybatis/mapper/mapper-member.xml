@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oauth.mapper.MemberMapper">
+
+    <resultMap id="member" type="com.oauth.dto.member.MemberDTO"> </resultMap>
+
+    <select id="getUserByUserId" parameterType="String" resultMap="member">
+        SELECT *
+        FROM auth_user
+        WHERE userId = #{value}
+    </select>
+
+    <select id="getDeviceInfoByUserID" parameterType="String" resultMap="member">
+        SELECT *
+        FROM auth_login
+        WHERE userId = #{value}
+    </select>
+
+    <insert id="insertMember" parameterType="com.oauth.dto.member.MemberDTO">
+        INSERT INTO auth_user_sample (hp, userNickname, userId, userPassword)
+        VALUES (#{hp}, #{userNickname}, #{userId}, #{userPassword})
+    </insert>
+
+</mapper>
