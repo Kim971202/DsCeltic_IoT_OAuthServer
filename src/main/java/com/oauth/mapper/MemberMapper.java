@@ -15,4 +15,12 @@ public interface MemberMapper {
     public int insertMember(MemberDTO member);
     public int insertAccount(MemberDTO member);
     public List<MemberDTO> getUserByHp(String userHp);
+    public List<MemberDTO> getUserByDeviceId(String deviceId);
+    public MemberDTO getUserByUserIdAndHp(MemberDTO member);
+    public MemberDTO getUserByUserIdAndHpAndDeviceId(MemberDTO member);
+    public int updatePassword(MemberDTO member);
+    public MemberDTO passwordCheck(String pw);
+    public int updateUserNicknameAndHp(MemberDTO member);
+
+
 }

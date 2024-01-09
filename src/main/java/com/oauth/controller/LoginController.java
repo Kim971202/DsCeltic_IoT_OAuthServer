@@ -31,6 +31,8 @@ public class LoginController {
     @Autowired
     private PasswordEncoder encoder;
 
+    public static final List<String> oldModels = Arrays.asList("oldModel1", "oldModel2");
+
     /**
      * 인증 서버 활성화 체크
      */
@@ -174,7 +176,7 @@ public class LoginController {
         return null;
     }
 
-    /** ID 찾기 DR-901W 기기만 */
+    /** ID 찾기 */
     @PostMapping(value = "/idFind")
     @ResponseBody
     public ResponseEntity<?> doIdFind(HttpServletRequest request, @ModelAttribute MemberDTO params)
@@ -189,7 +191,16 @@ public class LoginController {
             String modelCode = params.getModelCode();
             String deviceId = params.getDeviceId();
 
-            List<MemberDTO> member = memberMapper.getUserByHp(userHp);
+            List<MemberDTO> member = null;
+
+
+            // 구형 모델의 경우
+            if(modelCode.equals(oldModels.get(0)) || modelCode.equals(oldModels.get(1))){
+                member = memberMapper.getUserByHp(userHp);
+            } else {
+                member = memberMapper.getUserByDeviceId(deviceId);
+
+            }
 
             if(member.isEmpty()) stringObject = "N";
             else stringObject = "Y";
@@ -197,7 +208,104 @@ public class LoginController {
             List<String> userId = Common.extractUserId(member.toString(), "userId");
             if(userId.isEmpty()) userId = null;
 
-            data.setUserId(userId);
+            data.setUserIdList(userId);
+            data.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200
+                    : ApiResponse.ResponseType.CUSTOM_2002);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 비밀번호 찾기 - 초기화 */
+    @PostMapping(value = "/resetPassword")
+    @ResponseBody
+    public ResponseEntity<?> doResetPassword(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws Exception{
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+
+        try{
+            String userId = params.getUserId();
+            String userHp = params.getHp();
+            String deviceType = params.getDeviceType();
+            String modelCode = params.getModelCode();
+            String deviceId = params.getDeviceId();
+
+            MemberDTO member = null;
+
+            // 구형 모델의 경우
+            if(modelCode.equals(oldModels.get(0)) || modelCode.equals(oldModels.get(1))){
+                System.out.println("getUserByUserIdAndHp Called");
+                member = memberMapper.getUserByUserIdAndHp(params);
+            } else {
+                System.out.println("getUserByUserIdAndHpAndDeviceId Called");
+                member = memberMapper.getUserByUserIdAndHpAndDeviceId(params);
+            }
+
+            if(member == null) stringObject = "N";
+            else stringObject = "Y";
+
+            System.out.println("stringObject: " + stringObject);
+            data.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200
+                    : ApiResponse.ResponseType.CUSTOM_2002);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 비밀번호 변경 - 생성 */
+    @PostMapping(value = "/changePassword")
+    @ResponseBody
+    public ResponseEntity<?> doChangePassword(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws Exception{
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+
+        try{
+            int result = memberMapper.updatePassword(params);
+
+            if(result > 0) stringObject = "Y";
+            else stringObject = "N";
+
+            data.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200
+                    : ApiResponse.ResponseType.CUSTOM_2002);
+
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 사용자정보 조회 */
+    @PostMapping(value = "/search")
+    @ResponseBody
+    public ResponseEntity<?> doSearch(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws Exception{
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+
+        try{
+            String userId = params.getUserId();
+            MemberDTO member = memberMapper.getUserByUserId(userId);
+
+            if (member != null) {
+                data.setUserId(member.getUserId());
+                data.setUserNickname(member.getUserNickname());
+                data.setHp(member.getHp());
+                stringObject = "Y";
+            } else stringObject = "N";
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
@@ -210,7 +318,54 @@ public class LoginController {
         return null;
     }
 
-    /** 기기 아이디 검증 DR-901W 외 기기*/
-//    @PostMapping(value = "/deviceIdCheck")
-//    @ResponseBody
+    /** 회원 별칭(이름) 및 전화번호 변경 */
+    @PostMapping(value = "/updateUserNicknameHp")
+    @ResponseBody
+    public ResponseEntity<?> doUpdateUserNicknameHp(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws Exception{
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+
+        try{
+            String userId = params.getUserId();
+            String userPassword = params.getUserPassword();
+            String oldHp = params.getOldHp();
+            String newHp = params.getNewHp();
+            String userNickname = params.getUserNickname();
+
+            System.out.println("userId: " + userId);
+            System.out.println("userPassword: " + userId);
+            System.out.println("oldHp: " + oldHp);
+            System.out.println("newHp: " + newHp);
+            System.out.println("userNickname: " + userNickname);
+
+            MemberDTO pwCheck = memberMapper.passwordCheck(userPassword);
+            System.out.println("pwCheck: " + pwCheck);
+            // TODO: 예외처리 하여 불일치 PW 알림
+            if(pwCheck == null) return null;
+
+            MemberDTO member = memberMapper.getUserByUserId(userId);
+
+            // TODO: 예외처리 하여 동일한 전화번호 변경 알림
+            if(oldHp.equals(newHp)) return null;
+
+            if(newHp.isEmpty()) newHp = member.getHp();
+            if(userNickname.isEmpty()) userNickname = member.getUserNickname();
+
+            int result = memberMapper.updateUserNicknameAndHp(params);
+            System.out.println("result: " + result);
+            if(result > 0) stringObject = "Y";
+            else stringObject = "N";
+
+            data.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200
+                    : ApiResponse.ResponseType.CUSTOM_2002);
+
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

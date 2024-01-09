@@ -61,9 +61,11 @@ public class ApiResponse {
         private String resultCode;
         private String resultMsg;
         private String accessToken;
+        private String userId;
         private String userNickname;
+        private String hp;
         private Object device;
-        private List<String> userId;
+        private List<String> userIdList;
         public void setResult(ResponseType responseType) {
             String code = responseType.getCode();
             setResultCode(code);

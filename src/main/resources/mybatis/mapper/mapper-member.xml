@@ -5,7 +5,7 @@
     <resultMap id="member" type="com.oauth.dto.member.MemberDTO"> </resultMap>
 
     <select id="getUserByUserId" parameterType="String" resultMap="member">
-        SELECT *
+        SELECT HP AS hp, USER_ID AS userId, USER_NICK AS userNickname
         FROM TBR_OPR_USER
         WHERE USER_ID = #{value}
     </select>
@@ -29,5 +29,40 @@
         FROM TBR_OPR_USER
         WHERE HP = #{value}
     </select>
+
+    <select id="getUserByDeviceId" parameterType="String" resultMap="member">
+        SELECT USER_ID AS userId
+        FROM TBR_OPR_USER_DEVICE
+        WHERE DEVC_ID = #{value}
+    </select>
+
+    <select id="getUserByUserIdAndHp" parameterType="com.oauth.dto.member.MemberDTO" resultMap="member">
+        SELECT *
+        FROM TBR_OPR_USER
+        WHERE HP = #{hp} AND USER_ID = #{userId};
+    </select>
+
+    <select id="getUserByUserIdAndHpAndDeviceId" parameterType="com.oauth.dto.member.MemberDTO" resultMap="member">
+        SELECT *
+        FROM TBT_OPR_DEVICE_REGIST
+        WHERE DEVC_ID = #{deviceId} AND HP = #{hp} AND USER_ID = #{userId};
+    </select>
+
+    <update id="updatePassword" parameterType="com.oauth.dto.member.MemberDTO">
+        UPDATE TBR_OPR_ACCOUNT SET PW = #{userPassword}
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <select id="passwordCheck" parameterType="String" resultMap="member">
+        SELECT USER_ID AS userId
+        FROM TBR_OPR_ACCOUNT
+        WHERE PW = #{pw};
+    </select>
+
+    <update id="updateUserNicknameAndHp" parameterType="com.oauth.dto.member.MemberDTO">
+        UPDATE TBR_OPR_USER SET HP = #{newHp}, USER_NICK = #{userNickname}
+        WHERE USER_ID = #{userId}
+    </update>
+
 
 </mapper>
