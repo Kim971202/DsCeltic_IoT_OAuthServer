@@ -6,19 +6,28 @@
 
     <select id="getUserByUserId" parameterType="String" resultMap="member">
         SELECT *
-        FROM auth_user
-        WHERE userId = #{value}
+        FROM TBR_OPR_USER
+        WHERE USER_ID = #{value}
     </select>
 
     <select id="getDeviceInfoByUserID" parameterType="String" resultMap="member">
-        SELECT *
-        FROM auth_login
-        WHERE userId = #{value}
+
     </select>
 
     <insert id="insertMember" parameterType="com.oauth.dto.member.MemberDTO">
-        INSERT INTO auth_user_sample (hp, userNickname, userId, userPassword)
-        VALUES (#{hp}, #{userNickname}, #{userId}, #{userPassword})
+        INSERT INTO TBR_OPR_USER (HP, USER_ID, USER_NICK)
+        VALUES (#{hp}, #{userId}, #{userNickname})
     </insert>
+
+    <insert id="insertAccount" parameterType="com.oauth.dto.member.MemberDTO">
+        INSERT INTO TBR_OPR_ACCOUNT (USER_ID, PW, REG_DATM)
+        VALUES (#{userId}, #{userPassword}, now())
+    </insert>
+
+    <select id="getUserByHp" parameterType="String" resultMap="member">
+        SELECT HP AS hp, USER_ID AS userId, USER_NICK AS userNick
+        FROM TBR_OPR_USER
+        WHERE HP = #{value}
+    </select>
 
 </mapper>

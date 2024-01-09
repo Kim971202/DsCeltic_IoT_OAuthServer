@@ -64,6 +64,7 @@ public class MemberDTO implements UserDetails, Serializable {
 
     private String authority;                    // 권한
     private String hp;                           // 사용자 전화번호
+
     private String userId;                       // 사용자 아이디
     private String userNickname;                 // 사용자 닉네임
     private String userPassword;                 // 사용자 비밀번호
@@ -75,6 +76,8 @@ public class MemberDTO implements UserDetails, Serializable {
     private String deviceId;                     // 기기 아이디
     private String deviceNickname;               // 기기 별칭
     private String regSort;                      // 기기 등록 순서
+    private String deviceType;                   // 기기 타입
+    private String modelCode;                    // 기기 모델 코드
 
     private Role role = Role.USER;
 

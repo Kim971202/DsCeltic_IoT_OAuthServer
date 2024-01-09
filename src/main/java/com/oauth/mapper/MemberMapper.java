@@ -13,5 +13,6 @@ public interface MemberMapper {
     public MemberDTO getUserByUserId(String userId);
     public List<MemberDTO> getDeviceInfoByUserID(String userId);
     public int insertMember(MemberDTO member);
-
+    public int insertAccount(MemberDTO member);
+    public List<MemberDTO> getUserByHp(String userHp);
 }
