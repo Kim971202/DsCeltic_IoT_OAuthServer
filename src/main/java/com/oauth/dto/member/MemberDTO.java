@@ -79,6 +79,8 @@ public class MemberDTO implements UserDetails, Serializable {
     private String modelCode;                    // 기기 모델 코드
     private String oldHp;                        // 이전 전화번호
     private String newHp;                        // 신규 전화번호
+    private String oldPassword;                  // 이전 비밀번호
+    private String newPassword;                  // 신규 비밀번호
 
     private Role role = Role.USER;
 

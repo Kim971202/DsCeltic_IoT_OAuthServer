@@ -34,7 +34,10 @@ public class Common {
         return device;
     }
 
-    public static List<String> extractUserId(String inputList, String inputKey) {
+    public static List<String> extractJson(String inputList, String inputKey) {
+
+        if(inputList.isEmpty()) return null;
+
         List<String> userIds = new ArrayList<>();
         String pInput = inputKey + "=([^,]+)";
         Pattern pattern = Pattern.compile(pInput);

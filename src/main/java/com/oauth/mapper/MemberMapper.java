@@ -21,6 +21,7 @@ public interface MemberMapper {
     public int updatePassword(MemberDTO member);
     public MemberDTO passwordCheck(String pw);
     public int updateUserNicknameAndHp(MemberDTO member);
+    public MemberDTO accessTokenCheck(MemberDTO member);
 
 
 }

@@ -67,10 +67,10 @@ public class LoginController {
 
             String userNickname = member.getUserNickname();
 
-            List<String> deviceId = Common.extractUserId(deviceInfoList.toString(), "deviceId");
-            List<String> controlAuthKey = Common.extractUserId(deviceInfoList.toString(), "controlAuthKey");
-            List<String> deviceNickname = Common.extractUserId(deviceInfoList.toString(), "deviceNickname");
-            List<String> regSort = Common.extractUserId(deviceInfoList.toString(), "regSort");
+            List<String> deviceId = Common.extractJson(deviceInfoList.toString(), "deviceId");
+            List<String> controlAuthKey = Common.extractJson(deviceInfoList.toString(), "controlAuthKey");
+            List<String> deviceNickname = Common.extractJson(deviceInfoList.toString(), "deviceNickname");
+            List<String> regSort = Common.extractJson(deviceInfoList.toString(), "regSort");
 
             // Mapper실행 후 사용자가 가지고 있는 Device 개수
             int numDevices = deviceInfoList.size();
@@ -205,7 +205,7 @@ public class LoginController {
             if(member.isEmpty()) stringObject = "N";
             else stringObject = "Y";
 
-            List<String> userId = Common.extractUserId(member.toString(), "userId");
+            List<String> userId = Common.extractJson(member.toString(), "userId");
             if(userId.isEmpty()) userId = null;
 
             data.setUserIdList(userId);
@@ -345,13 +345,8 @@ public class LoginController {
             // TODO: 예외처리 하여 불일치 PW 알림
             if(pwCheck == null) return null;
 
-            MemberDTO member = memberMapper.getUserByUserId(userId);
-
-            // TODO: 예외처리 하여 동일한 전화번호 변경 알림
-            if(oldHp.equals(newHp)) return null;
-
-            if(newHp.isEmpty()) newHp = member.getHp();
-            if(userNickname.isEmpty()) userNickname = member.getUserNickname();
+            if(newHp == null) params.setNewHp(oldHp);
+            else if(oldHp.equals(newHp)) return null; // TODO: 예외처리 하여 동일한 전화번호 변경 알림
 
             int result = memberMapper.updateUserNicknameAndHp(params);
             System.out.println("result: " + result);
@@ -367,5 +362,97 @@ public class LoginController {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /** 비밀번호 변경 - 로그인시 */
+    @PostMapping(value = "/updatePassword")
+    @ResponseBody
+    public ResponseEntity<?> doUpdatePassword(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws Exception{
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+
+        try{
+
+            String accessToken = params.getAccessToken();
+            String userId = params.getUserId();
+            String oldPassword = params.getOldPassword();
+            String newPassword = params.getNewPassword();
+
+            System.out.println("accessToken: " + accessToken);
+            System.out.println("userId: " + userId);
+            System.out.println("oldPassword: " + oldPassword);
+            System.out.println("newPassword: " + newPassword);
+
+            params.setUserPassword(newPassword);
+
+            MemberDTO pwCheck = memberMapper.passwordCheck(oldPassword);
+            // TODO: 예외처리 하여 불일치 PW 알림
+            if(pwCheck == null) return null;
+
+            // AccessToken 검증
+            boolean result = tokenVerify(params);
+            System.out.println("result: " + result);
+
+
+            if(!result) stringObject = "N";
+            else {
+                int pwChangeResult = memberMapper.updatePassword(params);
+                if(pwChangeResult > 0)  stringObject = "Y";
+                else stringObject = "N";
+            }
+
+            data.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200
+                    : ApiResponse.ResponseType.CUSTOM_2002);
+
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 사용자(세대원) 정보 조회 */
+    @PostMapping(value = "/viewHouseholdMemebers")
+    @ResponseBody
+    public ResponseEntity<?> doViewHouseholdMemebers(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws Exception{
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+
+        try {
+
+            String accessToken = params.getAccessToken();
+            String userId = params.getUserId();
+
+            // AccessToken 검증
+            boolean result = tokenVerify(params);
+            System.out.println("result: " + result);
+
+            if(!result) stringObject = "N";
+            else stringObject = "Y";
+
+            data.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200
+                    : ApiResponse.ResponseType.CUSTOM_2002);
+
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    private boolean tokenVerify(MemberDTO params) {
+        System.out.println(params);
+        MemberDTO member = memberMapper.accessTokenCheck(params);
+        if(member == null) return false;
+
+        List<String> userId = Common.extractJson(member.toString(), "userId");
+        List<String> accessToken = Common.extractJson(member.toString(), "accessToken");
+
+        return userId != null && accessToken != null;
     }
 }
