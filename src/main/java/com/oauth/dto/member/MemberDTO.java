@@ -81,6 +81,14 @@ public class MemberDTO implements UserDetails, Serializable {
     private String newHp;                        // 신규 전화번호
     private String oldPassword;                  // 이전 비밀번호
     private String newPassword;                  // 신규 비밀번호
+    private String householder;                  // 세대주 여부
+    private String inviteStartDate;              // 사용자 초대 시작 시간
+    private String inviteAcceptYn;               // 사용자 초대 수락 여부
+    private String requestUserId;                // 요청 회원 ID
+    private String responseUserId;               // 응답 회원 ID
+    private String responseHp;                   // 요청 회원 전화번호
+    private String authenticationDatetime;       // 기기 인증 일시
+    private String responseNickname;             // 응답 회원 별칭
 
     private Role role = Role.USER;
 
@@ -120,20 +128,20 @@ public class MemberDTO implements UserDetails, Serializable {
     }
 }
 
-@SuppressWarnings("rawtypes")
-class CustomAuthorityDeserializer extends JsonDeserializer {
-    @Override
-    public Object deserialize(JsonParser p, DeserializationContext context) throws IOException, JsonProcessingException {
-
-        ObjectMapper mapper = (ObjectMapper) p.getCodec();
-        JsonNode jsonNode = mapper.readTree(p);
-        LinkedList<GrantedAuthority> grantedAuthorities = new LinkedList<>();
-        Iterator<JsonNode> elements = jsonNode.elements();
-        while (elements.hasNext()) {
-            JsonNode next = elements.next();
-            JsonNode authority = next.get("authority");
-            grantedAuthorities.add(new SimpleGrantedAuthority(authority.asText()));
-        }
-        return grantedAuthorities;
-    }
-}
+//@SuppressWarnings("rawtypes")
+//class CustomAuthorityDeserializer extends JsonDeserializer {
+//    @Override
+//    public Object deserialize(JsonParser p, DeserializationContext context) throws IOException, JsonProcessingException {
+//
+//        ObjectMapper mapper = (ObjectMapper) p.getCodec();
+//        JsonNode jsonNode = mapper.readTree(p);
+//        LinkedList<GrantedAuthority> grantedAuthorities = new LinkedList<>();
+//        Iterator<JsonNode> elements = jsonNode.elements();
+//        while (elements.hasNext()) {
+//            JsonNode next = elements.next();
+//            JsonNode authority = next.get("authority");
+//            grantedAuthorities.add(new SimpleGrantedAuthority(authority.asText()));
+//        }
+//        return grantedAuthorities;
+//    }
+//}

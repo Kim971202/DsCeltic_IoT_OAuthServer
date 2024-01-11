@@ -5,6 +5,7 @@ import com.oauth.mapper.MemberMapper;
 import com.oauth.response.ApiResponse;
 import com.oauth.utils.Common;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.swing.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequestMapping("/users/v1")
 @RestController
@@ -27,9 +29,10 @@ public class LoginController {
 
     @Autowired
     private MemberMapper memberMapper;
-
     @Autowired
     private PasswordEncoder encoder;
+    @Autowired
+    private Common common;
 
     public static final List<String> oldModels = Arrays.asList("oldModel1", "oldModel2");
 
@@ -392,7 +395,7 @@ public class LoginController {
             if(pwCheck == null) return null;
 
             // AccessToken 검증
-            boolean result = tokenVerify(params);
+            boolean result = common.tokenVerify(params);
             System.out.println("result: " + result);
 
 
@@ -422,19 +425,56 @@ public class LoginController {
 
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
-
         try {
 
-            String accessToken = params.getAccessToken();
-            String userId = params.getUserId();
-
             // AccessToken 검증
-            boolean result = tokenVerify(params);
+            boolean result = common.tokenVerify(params);
             System.out.println("result: " + result);
 
             if(!result) stringObject = "N";
             else stringObject = "Y";
 
+
+            String accessToken = params.getAccessToken();
+            String userId = params.getUserId();
+
+            // Device Set 생성
+            Set<String> userIds = new HashSet<>();
+            List<ApiResponse.Data.User> user = new ArrayList<>();
+
+            List<MemberDTO> deviceIds = memberMapper.getDeviceIdByUserId(userId);
+            List<MemberDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
+
+            // List에서 요청자 userId 제거
+//            members.stream()
+//                    .filter(x -> x.getUserId()
+//                            .equals(userId))
+//                    .collect(Collectors.toList())
+//                    .forEach(members::remove);
+
+
+            List<MemberDTO> memberStream = Common.deduplication(members, MemberDTO::getUserId);
+
+            List<String> userIdList = Common.extractJson(memberStream.toString(), "userId");
+            List<String> userNicknameList = Common.extractJson(memberStream.toString(), "userNickname");
+            List<String> householderdList = Common.extractJson(memberStream.toString(), "householder");
+
+            // Mapper실행 후 사용자가 가지고 있는 Member 개수
+            int numMembers = memberStream.size();
+
+            if(userIdList != null && userNicknameList != null && householderdList != null){
+                // Member 추가
+                for (int i = 0; i < numMembers; i++) {
+                    ApiResponse.Data.User users = Common.createUsers(
+                            userIdList.get(i),
+                            userNicknameList.get(i),
+                            householderdList.get(i),
+                            userIds);
+                    user.add(users);
+                }
+            }
+
+            data.setUser(user);
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002);
@@ -445,14 +485,94 @@ public class LoginController {
         }
         return null;
     }
-    private boolean tokenVerify(MemberDTO params) {
-        System.out.println(params);
-        MemberDTO member = memberMapper.accessTokenCheck(params);
-        if(member == null) return false;
 
-        List<String> userId = Common.extractJson(member.toString(), "userId");
-        List<String> accessToken = Common.extractJson(member.toString(), "accessToken");
+    /** 사용자 추가 - 초대 */
+    @PostMapping(value = "/addUser")
+    @ResponseBody
+    public ResponseEntity<?> doAddUser(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws Exception{
 
-        return userId != null && accessToken != null;
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+
+        try {
+            String accessToken = params.getAccessToken();
+            String requestUserId = params.getRequestUserId();
+            String responseUserId = params.getResponseUserId();
+            String responseHp = params.getResponseHp();
+            String inviteStartDate = params.getInviteStartDate();
+
+            int result = memberMapper.inviteHouseMember(params);
+
+            if(result <= 0) stringObject = "N";
+            else stringObject = "Y";
+
+            data.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200
+                    : ApiResponse.ResponseType.CUSTOM_2002);
+
+            return new ResponseEntity<>(data, HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 사용자 초대 - 수락여부 */
+    @PostMapping(value = "/inviteStatus")
+    @ResponseBody
+    public ResponseEntity<?> doInviteStatus(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws Exception{
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+
+        try {
+
+            String accessToken = params.getAccessToken();
+            String requestUserId = params.getRequestUserId();
+            String responseHp = params.getResponseHp();
+            String responseUserId = params.getResponseUserId();
+            String inviteAcceptYn = params.getInviteAcceptYn();
+
+            int acceptInviteResult = memberMapper.acceptInvite(params);
+
+            if(acceptInviteResult >0) stringObject = "Y";
+            else stringObject = "N";
+
+            /**
+             * 수락시: responseUserId 사용자는 requestUserId 사용자가 가진 DeviceId에 자동으로 mapping된다.
+             * 거부시: TBR_OPR_USER_INVITE_STATUS 수락여부 항목 N UPDATE
+             * 수락시 쿼리 흐름:
+             * 1. TBR_OPR_USER_INVITE_STATUS
+             * 2. TBR_OPR_USER_DEVICE에서 requestUserId 검색
+             * 3. 2번 출력값으로 TBR_OPR_USER_DEVICE에 responseUserId INSERT
+             * */
+
+            List<MemberDTO> member = null;
+            int insertNewHouseMemberResult;
+            if(inviteAcceptYn.equals("Y")){
+
+                member = memberMapper.getDeviceIdByUserId(requestUserId);
+                Common.updateMemberDTOList(member, "responseUserId", responseUserId);
+
+                insertNewHouseMemberResult = memberMapper.insertNewHouseMember(member);
+            } else if(inviteAcceptYn.equals("N")){
+
+            } else {
+                // TODO: UNKNOWN ERROR 추가
+                return null;
+            }
+
+            data.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200
+                    : ApiResponse.ResponseType.CUSTOM_2002);
+
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }
