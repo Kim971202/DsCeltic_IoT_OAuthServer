@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.oauth.dto.member.MemberDTO;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface MemberMapper {
@@ -22,6 +23,9 @@ public interface MemberMapper {
     public MemberDTO passwordCheck(String pw);
     public int updateUserNicknameAndHp(MemberDTO member);
     public MemberDTO accessTokenCheck(MemberDTO member);
-
-
+    public List<MemberDTO> getHouseMembersByUserId(List<MemberDTO> members);
+    public List<MemberDTO> getDeviceIdByUserId(String userId);
+    public int inviteHouseMember(MemberDTO member);
+    public int acceptInvite(MemberDTO member);
+    public int insertNewHouseMember(List<MemberDTO> members);
 }

@@ -65,6 +65,7 @@ public class ApiResponse {
         private String userNickname;
         private String hp;
         private Object device;
+        private Object user;
         private List<String> userIdList;
         public void setResult(ResponseType responseType) {
             String code = responseType.getCode();
@@ -80,6 +81,14 @@ public class ApiResponse {
             private String controlAuthKey;
             private String deviceNickname;
             private String regSort;
+        }
+
+        @Getter
+        @Setter
+        public static class User{
+            private String userNickname;
+            private String userId;
+            private String householder;
         }
 
     }
