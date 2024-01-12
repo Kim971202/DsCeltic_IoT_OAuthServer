@@ -66,6 +66,7 @@ public class ApiResponse {
         private String hp;
         private Object device;
         private Object user;
+        private Object invitation;
         private List<String> userIdList;
         public void setResult(ResponseType responseType) {
             String code = responseType.getCode();
@@ -89,6 +90,20 @@ public class ApiResponse {
             private String userNickname;
             private String userId;
             private String householder;
+        }
+
+        @Getter
+        @Setter
+        public static class Invitation{
+            private String invitationIdx;
+            private String inviteAcceptYn;
+            private String requestUserId;
+            private String requestUserNick;
+            private String responseUserId;
+            private String responseUserNick;
+            private String responseHp;
+            private String inviteStartDate;
+            private String inviteEndDate;
         }
 
     }

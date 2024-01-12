@@ -83,10 +83,14 @@ public class MemberDTO implements UserDetails, Serializable {
     private String newPassword;                  // 신규 비밀번호
     private String householder;                  // 세대주 여부
     private String inviteStartDate;              // 사용자 초대 시작 시간
+    private String inviteEndDate;                // 사용자 초대 만료 시간
     private String inviteAcceptYn;               // 사용자 초대 수락 여부
+    private String invitationIdx;                // 초대장 Idx
     private String requestUserId;                // 요청 회원 ID
     private String responseUserId;               // 응답 회원 ID
-    private String responseHp;                   // 요청 회원 전화번호
+    private String requestUserNick;              // 요청 회원 별칭
+    private String responseUserNick;             // 응답 회원 별칭
+    private String responseHp;                   // 응답 회원 전화번호
     private String authenticationDatetime;       // 기기 인증 일시
     private String responseNickname;             // 응답 회원 별칭
 

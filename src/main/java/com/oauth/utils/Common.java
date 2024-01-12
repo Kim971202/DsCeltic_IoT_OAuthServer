@@ -66,6 +66,42 @@ public class Common {
         return user;
     }
 
+    public static ApiResponse.Data.Invitation createInvitations(
+            String invitationIdx,
+            String inviteAcceptYn,
+            String requestUserId,
+            String requestUserNick,
+            String responseUserId,
+            String responseUserNick,
+            String responseHp,
+            String inviteStartDate,
+            String inviteEndDate,
+            Set<String> invitationIds) {
+
+        // 중복 체크
+//        if (userIds.contains(deviceId)) {
+//            throw new IllegalArgumentException("Duplicate deviceId: " + deviceId);
+//        }
+
+        // 중복이 없다면 Set에 추가
+        invitationIds.add(invitationIdx);
+
+        // Device 생성
+        ApiResponse.Data.Invitation invitation = new ApiResponse.Data.Invitation();
+
+        invitation.setInvitationIdx(invitationIdx);
+        invitation.setInviteAcceptYn(inviteAcceptYn);
+        invitation.setRequestUserId(requestUserId);
+        invitation.setRequestUserNick(requestUserNick);
+        invitation.setResponseUserId(responseUserId);
+        invitation.setResponseUserNick(responseUserNick);
+        invitation.setResponseHp(responseHp);
+        invitation.setInviteStartDate(inviteStartDate);
+        invitation.setInviteEndDate(inviteEndDate);
+
+        return invitation;
+    }
+
     public static List<String> extractJson(String inputList, String inputKey) {
 
         if(inputList.isEmpty()) return null;
@@ -81,23 +117,6 @@ public class Common {
 
         return userIds;
     }
-
-    public static List<String> setMyValue(String inputList, String inputKey) {
-
-        if(inputList.isEmpty()) return null;
-
-        List<String> userIds = new ArrayList<>();
-        String pInput = inputKey + "=([^,]+)";
-        Pattern pattern = Pattern.compile(pInput);
-        Matcher matcher = pattern.matcher(inputList);
-
-        while (matcher.find()) {
-            userIds.add(matcher.group(1));
-        }
-
-        return userIds;
-    }
-
 
     public boolean tokenVerify(MemberDTO params) {
         System.out.println(params);

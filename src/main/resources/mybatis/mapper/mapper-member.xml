@@ -96,32 +96,29 @@
 
     <select id="getInvitationList" parameterType="String" resultMap="member">
         SELECT
-        INVITATION_IDX AS inviteIdx,
+        INVITATION_IDX AS invitationIdx,
         REQUEST_USER_ID AS requestUserId,
         RESPONSE_USER_ID AS responseUserId,
-        RESPONSE_USER_HP AS responseUserHp,
+        RESPONSE_USER_HP AS responseHp,
         INVITE_START_DATE AS inviteStartDate,
         INVITE_END_DATE AS inviteEndDate,
         INVITE_ACCEPT_YN AS inviteAcceptYn,
         REQUEST_USER_NICK AS requestUserNick,
         RESPONSE_USER_NICK AS responseUserNick
         FROM TBR_OPR_USER_INVITE_STATUS
-        WHERE RESPONSE_USER_ID = #{responseUserId};
+        WHERE REQUEST_USER_ID = #{responseUserId};
     </select>
     
     <update id="acceptInvite" parameterType="com.oauth.dto.member.MemberDTO">
         UPDATE TBR_OPR_USER_INVITE_STATUS
         SET INVITE_ACCEPT_YN = #{inviteAcceptYn}, INVITE_ACCEPT_DATE = now()
-        WHERE REQUEST_USER_ID = #{requestUserId}
-        AND RESPONSE_USER_ID = #{responseUserId}
-        AND RESPONSE_USER_HP = #{responseHp}
+        WHERE INVITATION_IDX = #{invitationIdx}
     </update>
 
     <insert id="insertNewHouseMember" parameterType="com.oauth.dto.member.MemberDTO">
         INSERT INTO TBR_OPR_USER_DEVICE
         (USER_ID, DEVC_ID, DEVC_CTRL_KEY, ATTC_DATM, HOUSE_HOLDER)
         VALUES
-<!--        <foreach collection="list" item="item" open="(" separator="," close=")">-->
         <foreach collection="list" item="item" index="idx" separator=",">
         (
             #{item.responseUserId},

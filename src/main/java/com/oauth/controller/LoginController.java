@@ -120,15 +120,8 @@ public class LoginController {
             String userId = params.getUserId();
             String userPassword = params.getUserPassword();
 
-            System.out.println("hp: " + userHp);
-            System.out.println("userNickname: " + userNickname);
-            System.out.println("userId: " + userId);
-            System.out.println("userPassword: " + userPassword);
-
             userPassword = encoder.encode(userPassword);
-            System.out.println("userPassword: " + userPassword);
             params.setUserPassword(userPassword);
-            System.out.println("userPassword: " + userPassword);
 
             int result1 = memberMapper.insertAccount(params);
             int result2 = memberMapper.insertMember(params);
@@ -536,11 +529,6 @@ public class LoginController {
             String responseUserId = params.getResponseUserId();
             String inviteAcceptYn = params.getInviteAcceptYn();
 
-            int acceptInviteResult = memberMapper.acceptInvite(params);
-
-            if(acceptInviteResult >0) stringObject = "Y";
-            else stringObject = "N";
-
             /**
              * 수락시: responseUserId 사용자는 requestUserId 사용자가 가진 DeviceId에 자동으로 mapping된다.
              * 거부시: TBR_OPR_USER_INVITE_STATUS 수락여부 항목 N UPDATE
@@ -552,13 +540,22 @@ public class LoginController {
 
             List<MemberDTO> member = null;
             int insertNewHouseMemberResult;
+            int acceptInviteResult;
             if(inviteAcceptYn.equals("Y")){
+
+                acceptInviteResult = memberMapper.acceptInvite(params);
+
+                if(acceptInviteResult >0) stringObject = "Y";
+                else stringObject = "N";
 
                 member = memberMapper.getDeviceIdByUserId(requestUserId);
                 Common.updateMemberDTOList(member, "responseUserId", responseUserId);
 
                 insertNewHouseMemberResult = memberMapper.insertNewHouseMember(member);
             } else if(inviteAcceptYn.equals("N")){
+                acceptInviteResult = memberMapper.acceptInvite(params);
+                if(acceptInviteResult >0) stringObject = "Y";
+                else stringObject = "N";
 
             } else {
                 // TODO: UNKNOWN ERROR 추가
@@ -575,4 +572,93 @@ public class LoginController {
         }
         return null;
     }
+
+    /** 사용자 초대 - 기록 조회 */
+    @PostMapping(value = "/inviteListView")
+    @ResponseBody
+    public ResponseEntity<?> doInviteListView(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws Exception{
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+
+        try {
+
+            String accessToken = params.getAccessToken();
+            String userId = params.getUserId();
+
+            List<MemberDTO> invitatioInfo = memberMapper.getInvitationList(userId);
+
+            if(invitatioInfo.isEmpty()) stringObject = "N";
+            else stringObject = "Y";
+
+            // Device Set 생성
+            Set<String> invitationIds = new HashSet<>();
+            List<ApiResponse.Data.Invitation> inv = new ArrayList<>();
+
+            List<String> invitationIdxList = Common.extractJson(invitatioInfo.toString(), "invitationIdx");
+            List<String> inviteAcceptYnList = Common.extractJson(invitatioInfo.toString(), "inviteAcceptYn");
+            List<String> requestUserIdList = Common.extractJson(invitatioInfo.toString(), "requestUserId");
+            List<String> requestUserNickList = Common.extractJson(invitatioInfo.toString(), "requestUserNick");
+            List<String> responseUserIdList = Common.extractJson(invitatioInfo.toString(), "responseUserId");
+            List<String> responseUserNickList = Common.extractJson(invitatioInfo.toString(), "responseUserNick");
+            List<String> responseHpList = Common.extractJson(invitatioInfo.toString(), "responseHp");
+            List<String> inviteStartDateList = Common.extractJson(invitatioInfo.toString(), "inviteStartDate");
+            List<String> inviteEndDateList = Common.extractJson(invitatioInfo.toString(), "inviteEndDate");
+
+            // Mapper실행 후 사용자가 가지고 있는 Invitation 개수
+            int numInvitations = invitatioInfo.size();
+
+            if(invitationIdxList != null
+                    && inviteAcceptYnList != null
+                    && requestUserIdList != null
+                    && requestUserNickList != null
+                    && responseUserIdList != null
+                    && responseUserNickList != null
+                    && responseHpList != null
+                    && inviteStartDateList != null
+                    && inviteEndDateList != null
+                    ){
+                // Member 추가
+                for (int i = 0; i < numInvitations; i++) {
+                    ApiResponse.Data.Invitation invitations = Common.createInvitations(
+                            invitationIdxList.get(i),
+                            inviteAcceptYnList.get(i),
+                            requestUserIdList.get(i),
+                            requestUserNickList.get(i),
+                            responseUserIdList.get(i),
+                            responseUserNickList.get(i),
+                            responseHpList.get(i),
+                            inviteStartDateList.get(i),
+                            inviteEndDateList.get(i),
+                            invitationIds);
+                    inv.add(invitations);
+                }
+            }
+
+            data.setResult("Y".equalsIgnoreCase(stringObject) ? ApiResponse.ResponseType.HTTP_200 : ApiResponse.ResponseType.CUSTOM_1003);
+            data.setInvitation(inv);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 사용자(세대원) - 강제탈퇴 */
+//    @PostMapping(value = "/delHouseholdMembers")
+//    @ResponseBody
+//    public ResponseEntity<?> doDelHouseholdMembers(HttpServletRequest request, @ModelAttribute MemberDTO params)
+//            throws Exception{
+//
+//        String stringObject = null;
+//        ApiResponse.Data data = new ApiResponse.Data();
+//
+//        try {
+//
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 }
