@@ -53,9 +53,8 @@ dependencies {
 	runtimeOnly 'mysql:mysql-connector-java:8.0.25'
 
 	// JWT 라이브러리
+	implementation 'com.nimbusds:nimbus-jose-jwt:9.23'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
-	implementation 'com.nimbusds:nimbus-jose-jwt:5.7'
-	implementation 'org.bitbucket.b_c:jose4j:0.5.8'
 
 	// WebClient 비동기 통신 모듈
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -65,6 +64,8 @@ dependencies {
 
 	// import a BOM
 	implementation platform('org.springframework.cloud:spring-cloud-dependencies:2021.0.3')
+
+	implementation 'org.yaml:snakeyaml:1.28' // snakeyaml 버전은 필요에 따라 조정
 
 	/**
 	 * Macbook M1 - netty netty_resolver_dns_native_macos_aarch_64 link 에러 처리

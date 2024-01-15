@@ -29,4 +29,6 @@ public interface MemberMapper {
     public int acceptInvite(MemberDTO member);
     public int insertNewHouseMember(List<MemberDTO> members);
     public List<MemberDTO> getInvitationList (String requestUserId);
+    public int delHouseMember(MemberDTO member);
+    public int changeHouseholdStatus(MemberDTO member);
 }

@@ -42,7 +42,6 @@ public class LoginController {
     @ResponseBody
     @RequestMapping(value="/auth/healthCheck", method={RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String check(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        System.out.println("Health Check Called");
         return "{\"resultCode\":\"OK\"}";
     }
 
@@ -57,7 +56,6 @@ public class LoginController {
         try {
             String userId = params.getUserId();
             String userPw = params.getUserPassword();
-
 
             MemberDTO member = memberMapper.getUserByUserId(userId);
             List<MemberDTO> deviceInfoList = memberMapper.getDeviceInfoByUserID(userId);
@@ -88,8 +86,6 @@ public class LoginController {
                         userDeviceIds);
                 data.add(device);
             }
-
-
 
             ApiResponse.Data result = new ApiResponse.Data();
             stringObject = "Y";
@@ -545,14 +541,19 @@ public class LoginController {
 
                 acceptInviteResult = memberMapper.acceptInvite(params);
 
-                if(acceptInviteResult >0) stringObject = "Y";
+                member = memberMapper.getDeviceIdByUserId(requestUserId);
+
+                Common.updateMemberDTOList(member, "responseUserId", responseUserId);
+                Common.updateMemberDTOList(member, "householder", "N");
+
+                System.out.println(member);
+                insertNewHouseMemberResult = memberMapper.insertNewHouseMember(member);
+
+                if(insertNewHouseMemberResult > 0 && acceptInviteResult > 0) stringObject = "Y";
                 else stringObject = "N";
 
-                member = memberMapper.getDeviceIdByUserId(requestUserId);
-                Common.updateMemberDTOList(member, "responseUserId", responseUserId);
-
-                insertNewHouseMemberResult = memberMapper.insertNewHouseMember(member);
             } else if(inviteAcceptYn.equals("N")){
+
                 acceptInviteResult = memberMapper.acceptInvite(params);
                 if(acceptInviteResult >0) stringObject = "Y";
                 else stringObject = "N";
@@ -587,27 +588,27 @@ public class LoginController {
             String accessToken = params.getAccessToken();
             String userId = params.getUserId();
 
-            List<MemberDTO> invitatioInfo = memberMapper.getInvitationList(userId);
+            List<MemberDTO> invitationInfo = memberMapper.getInvitationList(userId);
 
-            if(invitatioInfo.isEmpty()) stringObject = "N";
+            if(invitationInfo.isEmpty()) stringObject = "N";
             else stringObject = "Y";
 
             // Device Set 생성
             Set<String> invitationIds = new HashSet<>();
             List<ApiResponse.Data.Invitation> inv = new ArrayList<>();
 
-            List<String> invitationIdxList = Common.extractJson(invitatioInfo.toString(), "invitationIdx");
-            List<String> inviteAcceptYnList = Common.extractJson(invitatioInfo.toString(), "inviteAcceptYn");
-            List<String> requestUserIdList = Common.extractJson(invitatioInfo.toString(), "requestUserId");
-            List<String> requestUserNickList = Common.extractJson(invitatioInfo.toString(), "requestUserNick");
-            List<String> responseUserIdList = Common.extractJson(invitatioInfo.toString(), "responseUserId");
-            List<String> responseUserNickList = Common.extractJson(invitatioInfo.toString(), "responseUserNick");
-            List<String> responseHpList = Common.extractJson(invitatioInfo.toString(), "responseHp");
-            List<String> inviteStartDateList = Common.extractJson(invitatioInfo.toString(), "inviteStartDate");
-            List<String> inviteEndDateList = Common.extractJson(invitatioInfo.toString(), "inviteEndDate");
+            List<String> invitationIdxList = Common.extractJson(invitationInfo.toString(), "invitationIdx");
+            List<String> inviteAcceptYnList = Common.extractJson(invitationInfo.toString(), "inviteAcceptYn");
+            List<String> requestUserIdList = Common.extractJson(invitationInfo.toString(), "requestUserId");
+            List<String> requestUserNickList = Common.extractJson(invitationInfo.toString(), "requestUserNick");
+            List<String> responseUserIdList = Common.extractJson(invitationInfo.toString(), "responseUserId");
+            List<String> responseUserNickList = Common.extractJson(invitationInfo.toString(), "responseUserNick");
+            List<String> responseHpList = Common.extractJson(invitationInfo.toString(), "responseHp");
+            List<String> inviteStartDateList = Common.extractJson(invitationInfo.toString(), "inviteStartDate");
+            List<String> inviteEndDateList = Common.extractJson(invitationInfo.toString(), "inviteEndDate");
 
             // Mapper실행 후 사용자가 가지고 있는 Invitation 개수
-            int numInvitations = invitatioInfo.size();
+            int numInvitations = invitationInfo.size();
 
             if(invitationIdxList != null
                     && inviteAcceptYnList != null
@@ -646,19 +647,30 @@ public class LoginController {
     }
 
     /** 사용자(세대원) - 강제탈퇴 */
-//    @PostMapping(value = "/delHouseholdMembers")
-//    @ResponseBody
-//    public ResponseEntity<?> doDelHouseholdMembers(HttpServletRequest request, @ModelAttribute MemberDTO params)
-//            throws Exception{
-//
-//        String stringObject = null;
-//        ApiResponse.Data data = new ApiResponse.Data();
-//
-//        try {
-//
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+    @PostMapping(value = "/delHouseholdMembers")
+    @ResponseBody
+    public ResponseEntity<?> doDelHouseholdMembers(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws Exception{
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+
+        try {
+            String userHp = params.getHp();
+            String userNickname = params.getUserNickname();
+            String accessToken = params.getAccessToken();
+            String userId = params.getUserId();
+
+            int result = memberMapper.delHouseMember(params);
+
+            if(result > 0) stringObject = "Y";
+            else stringObject = "N";
+
+            data.setResult("Y".equalsIgnoreCase(stringObject) ? ApiResponse.ResponseType.HTTP_200 : ApiResponse.ResponseType.CUSTOM_1003);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

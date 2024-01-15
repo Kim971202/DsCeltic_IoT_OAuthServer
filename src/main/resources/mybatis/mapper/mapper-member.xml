@@ -83,8 +83,23 @@
     </select>
 
     <insert id="inviteHouseMember" parameterType="com.oauth.dto.member.MemberDTO">
-        INSERT INTO TBR_OPR_USER_INVITE_STATUS(REQUEST_USER_ID, RESPONSE_USER_ID, RESPONSE_USER_HP, INVITE_START_DATE, INVITE_END_DATE, RESPONSE_ACCEPTANCE_STATUS)
-        VALUES(#{requestUserId}, #{responseUserId}, #{responseHp}, DATE_FORMAT(now(), "%y-%m-%d"), DATE_ADD(DATE_FORMAT(now(), "%y-%m-%d"), INTERVAL 3 DAY), 'N');
+        INSERT INTO TBR_OPR_USER_INVITE_STATUS
+        (
+        REQUEST_USER_ID,
+        RESPONSE_USER_ID,
+        RESPONSE_USER_HP,
+        INVITE_START_DATE,
+        INVITE_END_DATE,
+        RESPONSE_ACCEPTANCE_STATUS
+        )
+        VALUES(
+        #{requestUserId},
+        #{responseUserId},
+        #{responseHp},
+        DATE_FORMAT(now(), "%y-%m-%d"),
+        DATE_ADD(DATE_FORMAT(now(), "%y-%m-%d"),
+        INTERVAL 3 DAY),
+        'N');
     </insert>
 
     <update id="updateInviteHouseMember" parameterType="com.oauth.dto.member.MemberDTO">
@@ -129,5 +144,18 @@
         )
         </foreach>
     </insert>
+
+    <delete id="delHouseMember" parameterType="String" >
+        DELETE FROM TBR_OPR_USER_DEVICE
+        WHERE USER_ID = #{}
+    </delete>
+
+    <update id="changeHouseholdStatus" parameterType="com.oauth.dto.member.MemberDTO">
+        UPDATE TBR_OPR_USER_DEVICE
+        SET HOUSE_HOLDER = #{householder}
+        WHERE USER_ID = #{userId}
+        AND DEVC_ID = #{deviceId}
+    </update>
+
 
 </mapper>
