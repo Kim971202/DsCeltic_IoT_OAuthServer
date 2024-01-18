@@ -5,7 +5,7 @@
     <resultMap id="member" type="com.oauth.dto.member.MemberDTO"> </resultMap>
 
     <select id="getUserByUserId" parameterType="String" resultMap="member">
-        SELECT HP AS hp, USER_ID AS userId, USER_NICK AS userNickname
+        SELECT HP AS hp, USER_ID AS userId, USER_NICK AS userNickname, API_ATTC_KEY AS accessToken
         FROM TBR_OPR_USER
         WHERE USER_ID = #{value}
     </select>
@@ -76,10 +76,22 @@
     </select>
 
     <select id="getDeviceIdByUserId" parameterType="String" resultMap="member">
-        SELECT USER_ID AS userId, DEVC_ID AS deviceId, HOUSE_HOLDER AS householder,
-               DEVC_CTRL_KEY AS controlAuthKey, ATTC_DATM AS authenticationDatetime
-        FROM TBR_OPR_USER_DEVICE
-        WHERE USER_ID = #{userId};
+        SELECT DISTINCT
+            a.USER_ID AS userId,
+            a.DEVC_ID AS deviceId,
+            a.HOUSE_HOLDER AS householder,
+            a.DEVC_CTRL_KEY AS controlAuthKey,
+            a.ATTC_DATM AS authenticationDatetime,
+            b.DEVC_NICK AS deviceNickname,
+            ROW_NUMBER() OVER () AS regSort
+        FROM
+            TBR_OPR_USER_DEVICE a
+        INNER JOIN
+            TBR_OPR_DEVICE_DETAIL b ON a.DEVC_ID = b.DEVC_ID
+        WHERE
+            a.DEVC_ID = b.DEVC_ID AND a.USER_ID = #{userId}
+        ORDER BY
+        REG_DATM ASC;
     </select>
 
     <insert id="inviteHouseMember" parameterType="com.oauth.dto.member.MemberDTO">
@@ -145,10 +157,10 @@
         </foreach>
     </insert>
 
-    <delete id="delHouseMember" parameterType="String" >
-        DELETE FROM TBR_OPR_USER_DEVICE
-        WHERE USER_ID = #{}
-    </delete>
+<!--    <delete id="delHouseMember" parameterType="String" >-->
+<!--        DELETE FROM TBR_OPR_USER_DEVICE-->
+<!--        WHERE USER_ID = #{}-->
+<!--    </delete>-->
 
     <update id="changeHouseholdStatus" parameterType="com.oauth.dto.member.MemberDTO">
         UPDATE TBR_OPR_USER_DEVICE

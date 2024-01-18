@@ -48,6 +48,7 @@ public class ApiResponse {
 
         private String code;
         private String msg;
+
         ResponseType(String code, String msg) {
             this.code = code;
             this.msg = msg;
@@ -68,10 +69,10 @@ public class ApiResponse {
         private Object user;
         private Object invitation;
         private List<String> userIdList;
-        public void setResult(ResponseType responseType) {
+        public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);
-            String msg = responseType.getMsg();
+//          String msg = responseType.getMsg();
             setResultMsg(msg);
         }
 
