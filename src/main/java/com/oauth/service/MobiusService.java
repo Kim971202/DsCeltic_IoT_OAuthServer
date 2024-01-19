@@ -3,7 +3,9 @@ package com.oauth.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.mobius.AeDTO;
+import com.oauth.dto.mobius.CinDTO;
 import com.oauth.dto.mobius.CntDTO;
+import com.oauth.dto.mobius.SubDTO;
 import com.oauth.utils.Common;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -79,7 +81,7 @@ public class MobiusService {
         return mobiusResponse;
     }
 
-    public void createAe(String modelCode) throws Exception {
+    public String createAe(String modelCode) throws Exception {
 
         AeDTO aeObject = new AeDTO();
         AeDTO.Ae ae = new AeDTO.Ae();
@@ -122,9 +124,11 @@ public class MobiusService {
         } finally {
             response.close();
         }
+        System.out.println(ae.getRn());
+        return ae.getRn();
     }
 
-    public void createCnt(String srNo, String aeName) throws Exception {
+    public String createCnt(String srNo, String aeName) throws Exception {
 
         CntDTO cntObject = new CntDTO();
         CntDTO.Cnt cnt = new CntDTO.Cnt();
@@ -146,7 +150,7 @@ public class MobiusService {
 
         HttpPost post = new HttpPost(uri);
         post.setHeader("Accept", "application/json");
-        post.setHeader("Content-Type", "application/vnd.onem2m-res+json;ty=2");
+        post.setHeader("Content-Type", "application/vnd.onem2m-res+json;ty=3");
         post.setHeader("X-M2M-Origin", "S");
         post.setHeader("locale", "ko");
         post.setHeader("X-M2M-RI", Integer.toString(requestIndex));
@@ -166,6 +170,93 @@ public class MobiusService {
         } finally {
             response.close();
         }
+        System.out.println(cnt.getRn());
+        return cnt.getRn();
+    }
 
+    public void createCin(String aeName, String cntName, String con) throws Exception{
+        CinDTO cinObject = new CinDTO();
+        CinDTO.Cin cin = new CinDTO.Cin();
+
+        cin.setCon(con);
+        cinObject.setDefaultValue(cin);
+
+        String requestBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(cinObject);
+
+        StringEntity entity = new StringEntity(requestBody);
+
+        URI uri = new URIBuilder()
+                .setScheme("http")
+                .setHost(inCSEAddress)
+                .setPath("/Mobius" + "/" + aeName + "/" + cntName)
+                .build();
+
+        HttpPost post = new HttpPost(uri);
+        post.setHeader("Accept", "application/json");
+        post.setHeader("Content-Type", "application/vnd.onem2m-res+json;ty=4");
+        post.setHeader("X-M2M-Origin", "S");
+        post.setHeader("locale", "ko");
+        post.setHeader("X-M2M-RI", Integer.toString(requestIndex));
+        post.setEntity(entity);
+        requestIndex++;
+
+        MobiusResponse mobiusResponse = null;
+        CloseableHttpResponse response = null;
+
+        try {
+            CloseableHttpClient httpClient = getHttpClient();
+            response = httpClient.execute(post);
+            mobiusResponse = pickupResponse(uri, requestBody, response);
+
+        } catch (Exception e) {
+            System.out.println("send to oneM2M Error : " + e);
+        } finally {
+            response.close();
+        }
+    }
+
+    public void createSub(String aeName, String cntName, String con) throws Exception{
+
+        SubDTO subOject = new SubDTO();
+        SubDTO.Sub sub = new SubDTO.Sub();
+
+        sub.setRn("AppServerToGWServer");
+        sub.setNu(List.of("http://127.0.0.1:8081/subMessage"));
+        sub.setExc(10);
+
+        subOject.setDefaultValue(sub);
+
+        String requestBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(subOject);
+
+        StringEntity entity = new StringEntity(requestBody);
+
+        URI uri = new URIBuilder()
+                .setScheme("http")
+                .setHost(inCSEAddress)
+                .setPath("/Mobius" + "/" + aeName + "/" + cntName)
+                .build();
+
+        HttpPost post = new HttpPost(uri);
+        post.setHeader("Accept", "application/json");
+        post.setHeader("Content-Type", "application/vnd.onem2m-res+json;ty=4");
+        post.setHeader("X-M2M-Origin", "S");
+        post.setHeader("locale", "ko");
+        post.setHeader("X-M2M-RI", Integer.toString(requestIndex));
+        post.setEntity(entity);
+        requestIndex++;
+
+        MobiusResponse mobiusResponse = null;
+        CloseableHttpResponse response = null;
+
+        try {
+            CloseableHttpClient httpClient = getHttpClient();
+            response = httpClient.execute(post);
+            mobiusResponse = pickupResponse(uri, requestBody, response);
+
+        } catch (Exception e) {
+            System.out.println("send to oneM2M Error : " + e);
+        } finally {
+            response.close();
+        }
     }
 }

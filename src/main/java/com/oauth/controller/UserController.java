@@ -282,7 +282,15 @@ public class UserController {
     public ResponseEntity<?> doDelHouseholdMembers(HttpServletRequest request, @ModelAttribute MemberDTO params)
             throws Exception{
 
+        String logStep = "[사용자(세대원) - 강제탈퇴]";
 
+        if(Validator.isNullOrEmpty(params.getHp()) ||
+                Validator.isNullOrEmpty(params.getUserNickname()) ||
+                Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doDelHouseholdMembers(params);
     }
 
 }
