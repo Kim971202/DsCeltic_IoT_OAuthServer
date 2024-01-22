@@ -69,6 +69,8 @@ public class ApiResponse {
         private Object user;
         private Object invitation;
         private List<String> userIdList;
+        private Object pushCodes;
+
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);
@@ -78,7 +80,7 @@ public class ApiResponse {
 
         @Getter
         @Setter
-        public static class Device{
+        public static class Device {
             private String deviceId;
             private String controlAuthKey;
             private String deviceNickname;
@@ -87,7 +89,7 @@ public class ApiResponse {
 
         @Getter
         @Setter
-        public static class User{
+        public static class User {
             private String userNickname;
             private String userId;
             private String householder;
@@ -95,7 +97,7 @@ public class ApiResponse {
 
         @Getter
         @Setter
-        public static class Invitation{
+        public static class Invitation {
             private String invitationIdx;
             private String inviteAcceptYn;
             private String requestUserId;
@@ -107,5 +109,11 @@ public class ApiResponse {
             private String inviteEndDate;
         }
 
+        @Getter
+        @Setter
+        public static class PushCodes {
+            private String pushCd;
+            private String pushYn;
+        }
     }
 }

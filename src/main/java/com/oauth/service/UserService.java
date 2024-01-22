@@ -129,7 +129,6 @@ public class UserService {
 
             int result1 = memberMapper.insertAccount(params);
             int result2 = memberMapper.insertMember(params);
-
             if(result1 > 0 && result2 > 0) stringObject = "Y";
             else stringObject = "N";
 
@@ -691,6 +690,100 @@ public class UserService {
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 홈 IoT 컨트롤러 알림 설정 */
+    public ResponseEntity<?> doPushSet(MemberDTO params,  HashMap<String, String> controlMap)
+            throws CustomException{
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+
+        String msg = null;
+
+        String userNickname = params.getUserNickname();
+        String hp = params.getHp();
+        String accessToken = params.getAccessToken();
+        String userId = params.getUserId();
+        String deviceId = params.getDeviceId();
+        String controlAuthKey = params.getControlAuthKey();
+        String deviceType = params.getDeviceType();
+        String modelCode = params.getModelCode();
+
+        List<HashMap<String, String>> memberList = new ArrayList<>();
+        HashMap<String, String> memberMap = new HashMap<String, String>();
+
+            try{
+                memberMap.put("fPushYn", controlMap.get("01"));
+                memberMap.put("sPshYn", controlMap.get("02"));
+                memberMap.put("tPushYn", controlMap.get("03"));
+                memberMap.put("userId", userId);
+                memberMap.put("deviceId", deviceId);
+
+                memberList.add(memberMap);
+                int result = memberMapper.updatePushCodeStatus(memberList);
+
+                if(result > 0) stringObject = "Y";
+                else stringObject = "N";
+
+                if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 알림 설정 성공";
+                else msg = "홈 IoT 컨트롤러 알림 설정 실패";
+
+                data.setResult("Y".equalsIgnoreCase(stringObject) ?
+                        ApiResponse.ResponseType.HTTP_200 :
+                        ApiResponse.ResponseType.CUSTOM_1003, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+
+        }catch (CustomException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 홈 IoT 컨트롤러 알림 정보 조회 */
+    public HashMap<String, Object> doSearchPushSet(MemberDTO params)
+            throws CustomException{
+
+        String stringObject = null;
+        ApiResponse.Data result = new ApiResponse.Data();
+        String msg = null;
+
+        HashMap<String, Object> resultMap = new LinkedHashMap<String, Object>();
+
+        // "push" 부분을 표현하는 List 생성
+        List<Map<String, String>> pushList = new ArrayList<>();
+        try{
+
+            resultMap.put("resultCode", "200");
+            resultMap.put("resultMsg", "로그인 성공");
+
+            MemberDTO pushCodeInfo = memberMapper.getPushCodeStatus(params);
+
+            // 각각의 "pushCd"와 "pushYn"을 가지는 Map을 생성하여 리스트에 추가
+            Map<String, String> push1 = new LinkedHashMap<>();
+            push1.put("pushCd", "01");
+            push1.put("pushYn", pushCodeInfo.getFPushYn());
+            pushList.add(push1);
+
+            Map<String, String> push2 = new LinkedHashMap<>();
+            push2.put("pushCd", "02");
+            push2.put("pushYn", pushCodeInfo.getSPushYn());
+            pushList.add(push2);
+
+            Map<String, String> push3 = new LinkedHashMap<>();
+            push3.put("pushCd", "03");
+            push3.put("pushYn", pushCodeInfo.getTPushYn());
+            pushList.add(push3);
+
+            resultMap.put("push", pushList);
+
+            return resultMap;
+        }catch (CustomException e){
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
         return null;

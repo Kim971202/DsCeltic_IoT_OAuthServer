@@ -129,7 +129,8 @@ public class Common {
 
         List<String> userId = Common.extractJson(member.toString(), "userId");
         List<String> accessToken = Common.extractJson(member.toString(), "accessToken");
-
+        System.out.println(userId);
+        System.out.println(accessToken);
         return userId != null && accessToken != null;
     }
 

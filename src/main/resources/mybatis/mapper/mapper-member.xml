@@ -61,7 +61,7 @@
     </update>
 
     <select id="accessTokenCheck" parameterType="String" resultMap="member">
-        SELECT USER_ID AS userId
+        SELECT USER_ID AS userId, API_ATTC_KEY AS accessToken
         FROM TBR_OPR_USER
         WHERE USER_ID = #{userId} AND API_ATTC_KEY = #{accessToken};
     </select>
@@ -157,10 +157,10 @@
         </foreach>
     </insert>
 
-<!--    <delete id="delHouseMember" parameterType="String" >-->
-<!--        DELETE FROM TBR_OPR_USER_DEVICE-->
-<!--        WHERE USER_ID = #{}-->
-<!--    </delete>-->
+    <delete id="delHouseMember" parameterType="String" >
+        DELETE FROM TBR_OPR_USER_DEVICE
+        WHERE USER_ID = #{userId}
+    </delete>
 
     <update id="changeHouseholdStatus" parameterType="com.oauth.dto.member.MemberDTO">
         UPDATE TBR_OPR_USER_DEVICE
@@ -169,5 +169,23 @@
         AND DEVC_ID = #{deviceId}
     </update>
 
+    <update id="updatePushCodeStatus" parameterType="hashmap">
+        <foreach collection="list" item="item">
+            UPDATE
+                TBR_OPR_USER_DEVICE_PUSH
+            SET
+                PUSH_YN_01 = #{item.fPushYn},
+                PUSH_YN_02 = #{item.sPshYn},
+                PUSH_YN_03 = #{item.tPushYn}
+            WHERE
+                USER_ID = #{item.userId} AND DEVC_ID = #{item.deviceId}
+        </foreach>
+    </update>
+
+    <select id="getPushCodeStatus" parameterType="com.oauth.dto.member.MemberDTO" resultMap="member">
+        SELECT PUSH_YN_01 AS fPushYn, PUSH_YN_02 AS sPushYn, PUSH_YN_03 AS tPushYn
+        FROM TBR_OPR_USER_DEVICE_PUSH
+        WHERE USER_ID = #{userId} AND DEVC_ID = #{deviceId};
+    </select>
 
 </mapper>

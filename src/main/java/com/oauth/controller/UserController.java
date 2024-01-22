@@ -2,16 +2,12 @@ package com.oauth.controller;
 
 import com.oauth.dto.member.MemberDTO;
 import com.oauth.mapper.MemberMapper;
-import com.oauth.response.ApiResponse;
 import com.oauth.service.UserService;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.Validator;
 import lombok.RequiredArgsConstructor;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,12 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.swing.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import static java.util.Collections.singletonList;
 
 @RequestMapping("/users/v1")
 @RestController
@@ -280,7 +271,7 @@ public class UserController {
     @PostMapping(value = "/delHouseholdMembers")
     @ResponseBody
     public ResponseEntity<?> doDelHouseholdMembers(HttpServletRequest request, @ModelAttribute MemberDTO params)
-            throws Exception{
+            throws CustomException{
 
         String logStep = "[사용자(세대원) - 강제탈퇴]";
 
@@ -293,4 +284,53 @@ public class UserController {
         return userService.doDelHouseholdMembers(params);
     }
 
+    /** 홈 IoT 컨트롤러 알림 설정 */
+    @PostMapping(value = "/pushSet")
+    @ResponseBody
+    public ResponseEntity<?> doPushSet(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws CustomException{
+
+        String logStep = "[홈 IoT 컨트롤러 알림 설정]";
+
+        if(Validator.isNullOrEmpty(params.getUserNickname()) ||
+                Validator.isNullOrEmpty(params.getHp()) ||
+                Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getDeviceType()) ||
+                Validator.isNullOrEmpty(params.getModelCode())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        HashMap<String, String> memberMap = new HashMap<String, String>();
+
+        for(int i = 0; i < params.getPushCd().size(); i++){
+            memberMap.put(params.getPushCd().get(i), params.getPushYn().get(i));
+        }
+
+        System.out.println(common.tokenVerify(params));
+        return userService.doPushSet(params, memberMap);
+    }
+
+    /**
+     * 홈 IoT 컨트롤러 알림 정보 조회
+     */
+    @PostMapping(value = "/searchPushSet")
+    @ResponseBody
+    public HashMap<String, Object> doSearchPushSet(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws CustomException{
+
+        String logStep = "[홈 IoT 컨트롤러 알림 정보 조회]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getHp()) ||
+                Validator.isNullOrEmpty(params.getDeviceType()) ||
+                Validator.isNullOrEmpty(params.getModelCode())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doSearchPushSet(params);
+    }
 }

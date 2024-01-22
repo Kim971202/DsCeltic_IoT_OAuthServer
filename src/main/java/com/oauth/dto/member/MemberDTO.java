@@ -16,10 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * 회원 관련 데이터 클래스
@@ -93,6 +90,11 @@ public class MemberDTO implements UserDetails, Serializable {
     private String responseHp;                   // 응답 회원 전화번호
     private String authenticationDatetime;       // 기기 인증 일시
     private String responseNickname;             // 응답 회원 별칭
+    private List<String> pushCd;
+    private List<String> pushYn;
+    private String fPushYn;                      // 상태변경 알림 수신
+    private String sPushYn;                      // 에러 알림 수신
+    private String tPushYn;                      // 맞춤 알림 수신
 
     private Role role = Role.USER;
 
