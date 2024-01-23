@@ -67,9 +67,17 @@
     </select>
 
     <select id="getHouseMembersByUserId" parameterType="com.oauth.dto.member.MemberDTO" resultMap="member">
-        SELECT USER_ID AS userId, DEVC_ID AS deviceId, HOUSE_HOLDER AS householder
-        FROM TBR_OPR_USER_DEVICE
-        WHERE DEVC_ID IN
+        SELECT
+            a.USER_ID AS userId,
+            a.DEVC_ID AS deviceId,
+            a.HOUSE_HOLDER AS householder,
+            b.USER_NICK AS userNickname
+        FROM
+            TBR_OPR_USER_DEVICE a
+        INNER JOIN
+            TBR_OPR_USER b
+        WHERE
+            a.USER_ID = b.USER_ID AND DEVC_ID IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.deviceId}
         </foreach>
@@ -157,11 +165,6 @@
         </foreach>
     </insert>
 
-    <delete id="delHouseMember" parameterType="String" >
-        DELETE FROM TBR_OPR_USER_DEVICE
-        WHERE USER_ID = #{userId}
-    </delete>
-
     <update id="changeHouseholdStatus" parameterType="com.oauth.dto.member.MemberDTO">
         UPDATE TBR_OPR_USER_DEVICE
         SET HOUSE_HOLDER = #{householder}
@@ -187,5 +190,23 @@
         FROM TBR_OPR_USER_DEVICE_PUSH
         WHERE USER_ID = #{userId} AND DEVC_ID = #{deviceId};
     </select>
+
+    <delete id="delHouseMember" parameterType="com.oauth.dto.member.MemberDTO" >
+        DELETE FROM TBR_OPR_USER_DEVICE
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <select id="getNextHouseholderUserId" parameterType="com.oauth.dto.member.MemberDTO" resultMap="member">
+        SELECT
+            DEVC_ID as deviceId,
+            USER_ID AS userId
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE
+            USER_ID != #{userId}
+        LIMIT 1;
+    </select>
+
+
 
 </mapper>

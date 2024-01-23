@@ -788,4 +788,42 @@ public class UserService {
         }
         return null;
     }
+
+    /** 사용자(세대주) 탈퇴 */
+    public ResponseEntity<?> doDelHouseholder(MemberDTO params)
+            throws CustomException{
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+        String msg = null;
+
+        MemberDTO member = null;
+        int result = 0;
+        System.out.println(params);
+            try {
+                member = memberMapper.getNextHouseholderUserId(params);
+                // 가족멤버중
+                if(member.getUserId().isEmpty()){
+                    stringObject = "N";
+                } else {
+                    stringObject = "Y";
+                    result = memberMapper.delHouseMember(member);
+
+                }
+                if(result <= 0) stringObject = "N";
+
+                if(stringObject.equals("Y")) msg = "사용자(세대주) 탈퇴  성공";
+                else msg = "사용자(세대주) 탈퇴  실패";
+
+                data.setResult("Y".equalsIgnoreCase(stringObject) ?
+                        ApiResponse.ResponseType.HTTP_200 :
+                        ApiResponse.ResponseType.CUSTOM_1003, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+
+            } catch (CustomException e){
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+            }
+        return null;
+    }
 }

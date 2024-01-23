@@ -333,4 +333,20 @@ public class UserController {
         }
         return userService.doSearchPushSet(params);
     }
+
+    /**
+     * 사용자(세대주) 탈퇴
+     */
+    @PostMapping(value = "/delHouseholder")
+    @ResponseBody
+    public ResponseEntity<?> doDelHouseholder(HttpServletRequest request, @ModelAttribute MemberDTO params)
+            throws CustomException{
+
+        String logStep = "[사용자(세대주) 탈퇴]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) || Validator.isNullOrEmpty(params.getUserId())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doDelHouseholder(params);
+    }
 }
