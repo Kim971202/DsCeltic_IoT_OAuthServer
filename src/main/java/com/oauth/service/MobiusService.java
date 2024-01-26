@@ -69,6 +69,10 @@ public class MobiusService {
         String responseString = EntityUtils.toString(responseEntity);
         mobiusResponse.setResponseContent(responseString);
 
+        System.out.println(response.getFirstHeader("Content-Location"));
+        System.out.println(response.getLastHeader("Content-Location"));
+
+
         System.out.println("====HTTP Request URI===============================================================================");
         System.out.println("HTTP Request URI : " + uri.toString());
         System.out.println("====HTTP Request Body=================================================================================");
@@ -207,7 +211,7 @@ public class MobiusService {
             CloseableHttpClient httpClient = getHttpClient();
             response = httpClient.execute(post);
             mobiusResponse = pickupResponse(uri, requestBody, response);
-
+            System.out.println(mobiusResponse);
         } catch (Exception e) {
             System.out.println("send to oneM2M Error : " + e);
         } finally {

@@ -2,6 +2,7 @@ package com.oauth.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.oauth.dto.member.MemberDTO;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.response.ApiResponse;
@@ -20,6 +21,16 @@ import java.util.stream.Collectors;
 
 @Component
 public class Common {
+
+    private static HashMap<String, String> mymap = new HashMap<>();
+
+    public static String getMyMap(String rKey){
+        return mymap.get(rKey);
+    }
+
+    public static void setMyMap(String rKey, String srNo){
+        mymap.put(rKey, srNo);
+    }
 
     @Autowired
     MemberMapper memberMapper;
@@ -224,29 +235,56 @@ public class Common {
         return conNode.toString();
     }
 
-    public String getConValues(String jsonString, String input) throws Exception{
+    public String readCon(String jsonString,String value) throws Exception{
         String result;
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(jsonString);
-        System.out.println(jsonNode);
 
-        JsonNode conNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin").path("con");
-        JsonNode rsCfNode = conNode.path("rsCf");
-        JsonNode dayNode = rsCfNode.path("12h");
-        JsonNode fwhNoe = rsCfNode.path("fwh");
+        JsonNode conNode;
+        JsonNode functionNode;
+        JsonNode uuIdNode;
+        JsonNode baseNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin");
 
+        if(value.equals("con")){
+            return baseNode.path("con").asText();
 
-        // 배열 순회하며 값 출력
-        for (JsonNode entry : fwhNoe) {
-            String hrValue = entry.path("hr").asText();
-            String mnValue = entry.path("mn").asText();
-            JsonNode wsNode = entry.path("ws");
-            System.out.println("hr value: " + hrValue);
-            System.out.println("mn value: " + mnValue);
-            System.out.println("ws values: " + wsNode);
+        } else if(value.equals("functionId")){
+            return baseNode.path("con").path("functionId").asText();
+
+        } else if(value.equals("uuId")){
+            return baseNode.path("con").path("functionId").asText();
         }
-        if(input.equals("rscf:24")) return result = conNode.path(input).asText();
-        return result = conNode.path(input).asText();
+
+        return "Choco";
     }
+
+    public String addCon(String body, List<String> key, List<String> value) throws Exception{
+
+        String modifiedJson = null;
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(body);
+
+            ObjectNode conNode = (ObjectNode) jsonNode
+                    .path("m2m:sgn")
+                    .path("nev")
+                    .path("rep")
+                    .path("m2m:cin")
+                    .path("con");
+
+            for(int i = 0; i < key.size(); ++i){
+                conNode.put(key.get(i), value.get(i));
+            }
+
+            modifiedJson = objectMapper.writeValueAsString(jsonNode);
+
+            System.out.println(modifiedJson);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return modifiedJson;
+    }
+
 
 }

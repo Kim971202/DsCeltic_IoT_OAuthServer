@@ -7,6 +7,7 @@ import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.Validator;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -340,13 +341,14 @@ public class UserController {
     @PostMapping(value = "/delHouseholder")
     @ResponseBody
     public ResponseEntity<?> doDelHouseholder(HttpServletRequest request, @ModelAttribute MemberDTO params)
-            throws CustomException{
+            throws CustomException, ParseException {
 
         String logStep = "[사용자(세대주) 탈퇴]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) || Validator.isNullOrEmpty(params.getUserId())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
-        }
-        return userService.doDelHouseholder(params);
+//        if(Validator.isNullOrEmpty(params.getAccessToken()) || Validator.isNullOrEmpty(params.getUserId())){
+//            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+//        }
+        return null;
+//        return userService.doDelHouseholder(params);
     }
 }
