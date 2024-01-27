@@ -30,11 +30,12 @@ public interface MemberMapper {
     public int acceptInvite(MemberDTO member);
     public int insertNewHouseMember(List<MemberDTO> members);
     public List<MemberDTO> getInvitationList (String requestUserId);
-    public int delHouseMember(MemberDTO member);
+    public int delHouseMember(String userId);
     public int changeHouseholdStatus(MemberDTO member);
     public int updatePushCodeStatus(List<HashMap<String, String>> member);
     public int insertInitPushCode(MemberDTO member); // Device 등록 시 사용
     public MemberDTO getPushCodeStatus(MemberDTO member);
     public MemberDTO getNextHouseholderUserId(MemberDTO member);
-
+    public int updateHouseholdTbrOprUser(String userId);
+    public int updateHouseholdTbrOprUserDevice(String userId);
 }

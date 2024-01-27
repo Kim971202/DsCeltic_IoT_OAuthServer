@@ -207,6 +207,17 @@
         LIMIT 1;
     </select>
 
+    <update id="updateHouseholdTbrOprUser" parameterType="com.oauth.dto.member.MemberDTO">
+        UPDATE TBR_OPR_USER
+        SET HOUSE_HOLDER = "Y"
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <update id="updateHouseholdTbrOprUserDevice" parameterType="com.oauth.dto.member.MemberDTO">
+        UPDATE TBR_OPR_USER_DEVICE
+        SET HOUSE_HOLDER = "Y"
+        WHERE USER_ID = #{userId}
+    </update>
 
 
 </mapper>

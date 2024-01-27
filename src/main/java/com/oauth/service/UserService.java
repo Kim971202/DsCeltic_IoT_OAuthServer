@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -438,14 +439,6 @@ public class UserService {
             List<MemberDTO> deviceIds = memberMapper.getDeviceIdByUserId(userId);
             List<MemberDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
 
-            // List에서 요청자 userId 제거
-//            members.stream()
-//                    .filter(x -> x.getUserId()
-//                            .equals(userId))
-//                    .collect(Collectors.toList())
-//                    .forEach(members::remove);
-
-
             List<MemberDTO> memberStream = Common.deduplication(members, MemberDTO::getUserId);
 
             List<String> userIdList = Common.extractJson(memberStream.toString(), "userId");
@@ -677,7 +670,7 @@ public class UserService {
         String userId = params.getUserId();
 
         try {
-            int result = memberMapper.delHouseMember(params);
+            int result = memberMapper.delHouseMember(userId);
 
             if(result > 0) stringObject = "Y";
             else stringObject = "N";
@@ -796,22 +789,38 @@ public class UserService {
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
         String msg = null;
-
         MemberDTO member = null;
+        String nextHouseholdId = null;
         int result = 0;
-        System.out.println(params);
+        int result1 = 0;
+        int result2 = 0;
             try {
-                member = memberMapper.getNextHouseholderUserId(params);
-                // 가족멤버중
-                if(member.getUserId().isEmpty()){
-                    stringObject = "N";
-                } else {
+
+                List<MemberDTO> deviceIds = memberMapper.getDeviceIdByUserId(params.getUserId());
+                List<MemberDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
+
+                if(deviceIds != null && members != null){
                     stringObject = "Y";
-                    result = memberMapper.delHouseMember(member);
 
-                }
-                if(result <= 0) stringObject = "N";
+                    // List에서 요청자 userId 제거
+                    members.stream()
+                            .filter(x -> x.getUserId()
+                                    .equals(params.getUserId()))
+                            .collect(Collectors.toList())
+                            .forEach(members::remove);
 
+                    List<String> userIdList = Common.extractJson(members.toString(), "userId");
+
+                    if(userIdList != null) nextHouseholdId = userIdList.get(0);
+
+                    result = memberMapper.delHouseMember(params.getUserId());
+                    if(result <= 0) stringObject = "N";
+
+                    result1 = memberMapper.updateHouseholdTbrOprUser(nextHouseholdId);
+                    result2 = memberMapper.updateHouseholdTbrOprUserDevice(nextHouseholdId);
+
+                } else stringObject = "N";
+                
                 if(stringObject.equals("Y")) msg = "사용자(세대주) 탈퇴  성공";
                 else msg = "사용자(세대주) 탈퇴  실패";
 

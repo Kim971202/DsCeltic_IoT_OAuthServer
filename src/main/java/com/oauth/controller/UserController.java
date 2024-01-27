@@ -345,10 +345,9 @@ public class UserController {
 
         String logStep = "[사용자(세대주) 탈퇴]";
 
-//        if(Validator.isNullOrEmpty(params.getAccessToken()) || Validator.isNullOrEmpty(params.getUserId())){
-//            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
-//        }
-        return null;
-//        return userService.doDelHouseholder(params);
+        if(Validator.isNullOrEmpty(params.getAccessToken()) || Validator.isNullOrEmpty(params.getUserId())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doDelHouseholder(params);
     }
 }
