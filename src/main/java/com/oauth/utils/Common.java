@@ -3,7 +3,7 @@ package com.oauth.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.oauth.dto.member.MemberDTO;
+import com.oauth.dto.authServerDTO;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.response.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,9 +133,9 @@ public class Common {
         return userIds;
     }
 
-    public boolean tokenVerify(MemberDTO params) {
+    public boolean tokenVerify(authServerDTO params) {
         System.out.println(params);
-        MemberDTO member = memberMapper.accessTokenCheck(params);
+        authServerDTO member = memberMapper.accessTokenCheck(params);
         if(member == null) return false;
 
         List<String> userId = Common.extractJson(member.toString(), "userId");
@@ -162,13 +162,13 @@ public class Common {
         return predicate -> set.add(key.apply(predicate));
     }
 
-    public static void updateMemberDTOList(List<MemberDTO> memberDTOList, String targetKey, Object newValue) {
-        for (MemberDTO memberDTO : memberDTOList) {
+    public static void updateMemberDTOList(List<authServerDTO> authServerDTOList, String targetKey, Object newValue) {
+        for (authServerDTO authServerDTO : authServerDTOList) {
             try {
                 // MemberDTO 클래스의 필드에 따라 해당 필드에 접근해서 원하는 Key인지 확인
-                var field = MemberDTO.class.getDeclaredField(targetKey);
+                var field = authServerDTO.class.getDeclaredField(targetKey);
                 field.setAccessible(true);
-                field.set(memberDTO, newValue);
+                field.set(authServerDTO, newValue);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 // 원하는 Key가 없을 경우 예외 처리 또는 다른 작업 수행
                 System.out.println("Unsupported key: " + targetKey);
@@ -240,19 +240,20 @@ public class Common {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(jsonString);
 
-        JsonNode conNode;
-        JsonNode functionNode;
-        JsonNode uuIdNode;
         JsonNode baseNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin");
+        JsonNode conNode = baseNode.path("con");
+        JsonNode functionIdNode = conNode.path("functionId");
+        JsonNode uuIdNode = conNode.path("uuId");
+
 
         if(value.equals("con")){
-            return baseNode.path("con").asText();
+            return objectMapper.writeValueAsString(conNode);
 
         } else if(value.equals("functionId")){
-            return baseNode.path("con").path("functionId").asText();
+            return objectMapper.writeValueAsString(functionIdNode);
 
         } else if(value.equals("uuId")){
-            return baseNode.path("con").path("functionId").asText();
+            return objectMapper.writeValueAsString(uuIdNode);
         }
 
         return "Choco";

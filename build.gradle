@@ -74,6 +74,9 @@ dependencies {
 	implementation 'org.springframework:spring-webflux:5.3.21'
 	implementation group: 'io.netty', name: 'netty-all', version: '4.1.90.Final'
 
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 	/**
 	 * Macbook M1 - netty netty_resolver_dns_native_macos_aarch_64 link 에러 처리
 	 * https://stackoverflow.com/questions/65954571/spring-boot-2-4-2-dns-resolution-problem-at-start-on-apple-m1/71348963#71348963

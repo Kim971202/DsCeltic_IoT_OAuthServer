@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.oauth.mapper.MemberMapper">
 
-    <resultMap id="member" type="com.oauth.dto.member.MemberDTO"> </resultMap>
+    <resultMap id="member" type="com.oauth.dto.authServerDTO"> </resultMap>
 
     <select id="getUserByUserId" parameterType="String" resultMap="member">
         SELECT HP AS hp, USER_ID AS userId, USER_NICK AS userNickname, API_ATTC_KEY AS accessToken
@@ -10,12 +10,12 @@
         WHERE USER_ID = #{value}
     </select>
 
-    <insert id="insertMember" parameterType="com.oauth.dto.member.MemberDTO">
+    <insert id="insertMember" parameterType="com.oauth.dto.authServerDTO">
         INSERT INTO TBR_OPR_USER (HP, USER_ID, USER_NICK)
         VALUES (#{hp}, #{userId}, #{userNickname})
     </insert>
 
-    <insert id="insertAccount" parameterType="com.oauth.dto.member.MemberDTO">
+    <insert id="insertAccount" parameterType="com.oauth.dto.authServerDTO">
         INSERT INTO TBR_OPR_ACCOUNT (USER_ID, PW, REG_DATM)
         VALUES (#{userId}, #{userPassword}, now())
     </insert>
@@ -32,19 +32,19 @@
         WHERE DEVC_ID = #{value}
     </select>
 
-    <select id="getUserByUserIdAndHp" parameterType="com.oauth.dto.member.MemberDTO" resultMap="member">
+    <select id="getUserByUserIdAndHp" parameterType="com.oauth.dto.authServerDTO" resultMap="member">
         SELECT *
         FROM TBR_OPR_USER
         WHERE HP = #{hp} AND USER_ID = #{userId};
     </select>
 
-    <select id="getUserByUserIdAndHpAndDeviceId" parameterType="com.oauth.dto.member.MemberDTO" resultMap="member">
+    <select id="getUserByUserIdAndHpAndDeviceId" parameterType="com.oauth.dto.authServerDTO" resultMap="member">
         SELECT *
         FROM TBT_OPR_DEVICE_REGIST
         WHERE DEVC_ID = #{deviceId} AND HP = #{hp} AND USER_ID = #{userId};
     </select>
 
-    <update id="updatePassword" parameterType="com.oauth.dto.member.MemberDTO">
+    <update id="updatePassword" parameterType="com.oauth.dto.authServerDTO">
         UPDATE TBR_OPR_ACCOUNT SET PW = #{userPassword}
         WHERE USER_ID = #{userId}
     </update>
@@ -55,7 +55,7 @@
         WHERE PW = #{pw};
     </select>
 
-    <update id="updateUserNicknameAndHp" parameterType="com.oauth.dto.member.MemberDTO">
+    <update id="updateUserNicknameAndHp" parameterType="com.oauth.dto.authServerDTO">
         UPDATE TBR_OPR_USER SET HP = #{newHp}, USER_NICK = #{userNickname}
         WHERE USER_ID = #{userId}
     </update>
@@ -66,7 +66,7 @@
         WHERE USER_ID = #{userId} AND API_ATTC_KEY = #{accessToken};
     </select>
 
-    <select id="getHouseMembersByUserId" parameterType="com.oauth.dto.member.MemberDTO" resultMap="member">
+    <select id="getHouseMembersByUserId" parameterType="com.oauth.dto.authServerDTO" resultMap="member">
         SELECT
             a.USER_ID AS userId,
             a.DEVC_ID AS deviceId,
@@ -102,7 +102,7 @@
         REG_DATM ASC;
     </select>
 
-    <insert id="inviteHouseMember" parameterType="com.oauth.dto.member.MemberDTO">
+    <insert id="inviteHouseMember" parameterType="com.oauth.dto.authServerDTO">
         INSERT INTO TBR_OPR_USER_INVITE_STATUS
         (
         REQUEST_USER_ID,
@@ -122,7 +122,7 @@
         'N');
     </insert>
 
-    <update id="updateInviteHouseMember" parameterType="com.oauth.dto.member.MemberDTO">
+    <update id="updateInviteHouseMember" parameterType="com.oauth.dto.authServerDTO">
         UPDATE TBR_OPR_USER_INVITE_STATUS SET
         INVITE_ACCEPT_YN = #{inviteAcceptYn},
         INVITE_ACCEPT_DATE = #{inviteAcceptDate}
@@ -144,13 +144,13 @@
         WHERE REQUEST_USER_ID = #{responseUserId};
     </select>
     
-    <update id="acceptInvite" parameterType="com.oauth.dto.member.MemberDTO">
+    <update id="acceptInvite" parameterType="com.oauth.dto.authServerDTO">
         UPDATE TBR_OPR_USER_INVITE_STATUS
         SET INVITE_ACCEPT_YN = #{inviteAcceptYn}, INVITE_ACCEPT_DATE = now()
         WHERE INVITATION_IDX = #{invitationIdx}
     </update>
 
-    <insert id="insertNewHouseMember" parameterType="com.oauth.dto.member.MemberDTO">
+    <insert id="insertNewHouseMember" parameterType="com.oauth.dto.authServerDTO">
         INSERT INTO TBR_OPR_USER_DEVICE
         (USER_ID, DEVC_ID, DEVC_CTRL_KEY, ATTC_DATM, HOUSE_HOLDER)
         VALUES
@@ -165,7 +165,7 @@
         </foreach>
     </insert>
 
-    <update id="changeHouseholdStatus" parameterType="com.oauth.dto.member.MemberDTO">
+    <update id="changeHouseholdStatus" parameterType="com.oauth.dto.authServerDTO">
         UPDATE TBR_OPR_USER_DEVICE
         SET HOUSE_HOLDER = #{householder}
         WHERE USER_ID = #{userId}
@@ -185,18 +185,18 @@
         </foreach>
     </update>
 
-    <select id="getPushCodeStatus" parameterType="com.oauth.dto.member.MemberDTO" resultMap="member">
+    <select id="getPushCodeStatus" parameterType="com.oauth.dto.authServerDTO" resultMap="member">
         SELECT PUSH_YN_01 AS fPushYn, PUSH_YN_02 AS sPushYn, PUSH_YN_03 AS tPushYn
         FROM TBR_OPR_USER_DEVICE_PUSH
         WHERE USER_ID = #{userId} AND DEVC_ID = #{deviceId};
     </select>
 
-    <delete id="delHouseMember" parameterType="com.oauth.dto.member.MemberDTO" >
+    <delete id="delHouseMember" parameterType="com.oauth.dto.authServerDTO" >
         DELETE FROM TBR_OPR_USER_DEVICE
         WHERE USER_ID = #{userId}
     </delete>
 
-    <select id="getNextHouseholderUserId" parameterType="com.oauth.dto.member.MemberDTO" resultMap="member">
+    <select id="getNextHouseholderUserId" parameterType="com.oauth.dto.authServerDTO" resultMap="member">
         SELECT
             DEVC_ID as deviceId,
             USER_ID AS userId
@@ -207,17 +207,20 @@
         LIMIT 1;
     </select>
 
-    <update id="updateHouseholdTbrOprUser" parameterType="com.oauth.dto.member.MemberDTO">
+    <update id="updateHouseholdTbrOprUser" parameterType="com.oauth.dto.authServerDTO">
         UPDATE TBR_OPR_USER
         SET HOUSE_HOLDER = "Y"
         WHERE USER_ID = #{userId}
     </update>
 
-    <update id="updateHouseholdTbrOprUserDevice" parameterType="com.oauth.dto.member.MemberDTO">
+    <update id="updateHouseholdTbrOprUserDevice" parameterType="com.oauth.dto.authServerDTO">
         UPDATE TBR_OPR_USER_DEVICE
         SET HOUSE_HOLDER = "Y"
         WHERE USER_ID = #{userId}
     </update>
 
+    <update id="deleteMemberFromService" parameterType="String">
+        CALL deleteUserFromService (#{userId})
+    </update>
 
 </mapper>

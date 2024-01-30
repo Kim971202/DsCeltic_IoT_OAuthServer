@@ -1,6 +1,6 @@
 package com.oauth.controller;
 
-import com.oauth.dto.member.MemberDTO;
+import com.oauth.dto.authServerDTO;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.service.UserService;
 import com.oauth.utils.Common;
@@ -48,7 +48,7 @@ public class UserController {
     /** 회원 로그인 */
     @PostMapping(value = "/login")
     @ResponseBody
-    public ResponseEntity<?> doLogin(HttpSession session, HttpServletRequest request, @ModelAttribute MemberDTO params, HttpServletResponse response)
+    public ResponseEntity<?> doLogin(HttpSession session, HttpServletRequest request, @ModelAttribute authServerDTO params, HttpServletResponse response)
         throws CustomException {
 
         String logStep = "[회원 로그인]";
@@ -63,7 +63,7 @@ public class UserController {
     /** 회원가입 */
     @PostMapping(value = "/regist")
     @ResponseBody
-    public ResponseEntity<?> doRegist(HttpSession session, HttpServletRequest request, @ModelAttribute MemberDTO params, HttpServletResponse response)
+    public ResponseEntity<?> doRegist(HttpSession session, HttpServletRequest request, @ModelAttribute authServerDTO params, HttpServletResponse response)
         throws CustomException {
 
         String logStep = "[회원 가입]";
@@ -80,7 +80,7 @@ public class UserController {
     /** 회원중복 체크 */
     @PostMapping(value = "/duplicationCheck")
     @ResponseBody
-    public ResponseEntity<?> doDuplicationCheck(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doDuplicationCheck(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[ID 중복 확인]";
@@ -95,7 +95,7 @@ public class UserController {
     /** ID 찾기 */
     @PostMapping(value = "/idFind")
     @ResponseBody
-    public ResponseEntity<?> doIdFind(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doIdFind(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[ID 찾기]";
@@ -114,7 +114,7 @@ public class UserController {
     /** 비밀번호 찾기 - 초기화 */
     @PostMapping(value = "/resetPassword")
     @ResponseBody
-    public ResponseEntity<?> doResetPassword(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doResetPassword(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[비밀번호 찾기 - 초기화]";
@@ -132,7 +132,7 @@ public class UserController {
     /** 비밀번호 변경 - 생성 */
     @PostMapping(value = "/changePassword")
     @ResponseBody
-    public ResponseEntity<?> doChangePassword(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doChangePassword(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[비밀번호 변경 - 생성]";
@@ -146,7 +146,7 @@ public class UserController {
     /** 사용자정보 조회 */
     @PostMapping(value = "/search")
     @ResponseBody
-    public ResponseEntity<?> doSearch(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doSearch(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[비밀번호 변경 - 생성]";
@@ -164,7 +164,7 @@ public class UserController {
     /** 회원 별칭(이름) 및 전화번호 변경 */
     @PostMapping(value = "/updateUserNicknameHp")
     @ResponseBody
-    public ResponseEntity<?> doUpdateUserNicknameHp(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doUpdateUserNicknameHp(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[회원 별칭(이름) 및 전화번호 변경]";
@@ -182,7 +182,7 @@ public class UserController {
     /** 비밀번호 변경 - 로그인시 */
     @PostMapping(value = "/updatePassword")
     @ResponseBody
-    public ResponseEntity<?> doUpdatePassword(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doUpdatePassword(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[회원 별칭(이름) 및 전화번호 변경]";
@@ -201,7 +201,7 @@ public class UserController {
     /** 사용자(세대원) 정보 조회 */
     @PostMapping(value = "/viewHouseholdMemebers")
     @ResponseBody
-    public ResponseEntity<?> doViewHouseholdMemebers(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doViewHouseholdMemebers(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[사용자(세대원) 정보 조회]";
@@ -216,7 +216,7 @@ public class UserController {
     /** 사용자 추가 - 초대 */
     @PostMapping(value = "/addUser")
     @ResponseBody
-    public ResponseEntity<?> doAddUser(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doAddUser(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[사용자 추가 - 초대]";
@@ -235,7 +235,7 @@ public class UserController {
     /** 사용자 초대 - 수락여부 */
     @PostMapping(value = "/inviteStatus")
     @ResponseBody
-    public ResponseEntity<?> doInviteStatus(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doInviteStatus(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[사용자 초대 - 수락여부]";
@@ -256,7 +256,7 @@ public class UserController {
     /** 사용자 초대 - 목록 조회 */
     @PostMapping(value = "/inviteListView")
     @ResponseBody
-    public ResponseEntity<?> doInviteListView(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doInviteListView(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[회원 별칭(이름) 및 전화번호 변경]";
@@ -271,7 +271,7 @@ public class UserController {
     /** 사용자(세대원) - 강제탈퇴 */
     @PostMapping(value = "/delHouseholdMembers")
     @ResponseBody
-    public ResponseEntity<?> doDelHouseholdMembers(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doDelHouseholdMembers(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[사용자(세대원) - 강제탈퇴]";
@@ -288,7 +288,7 @@ public class UserController {
     /** 홈 IoT 컨트롤러 알림 설정 */
     @PostMapping(value = "/pushSet")
     @ResponseBody
-    public ResponseEntity<?> doPushSet(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doPushSet(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[홈 IoT 컨트롤러 알림 설정]";
@@ -318,7 +318,7 @@ public class UserController {
      */
     @PostMapping(value = "/searchPushSet")
     @ResponseBody
-    public HashMap<String, Object> doSearchPushSet(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public HashMap<String, Object> doSearchPushSet(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException{
 
         String logStep = "[홈 IoT 컨트롤러 알림 정보 조회]";
@@ -340,7 +340,7 @@ public class UserController {
      */
     @PostMapping(value = "/delHouseholder")
     @ResponseBody
-    public ResponseEntity<?> doDelHouseholder(HttpServletRequest request, @ModelAttribute MemberDTO params)
+    public ResponseEntity<?> doDelHouseholder(HttpServletRequest request, @ModelAttribute authServerDTO params)
             throws CustomException, ParseException {
 
         String logStep = "[사용자(세대주) 탈퇴]";
@@ -349,5 +349,23 @@ public class UserController {
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
         return userService.doDelHouseholder(params);
+    }
+
+    /**
+     * 홈IoT 서비스 회원 탈퇴
+     */
+    @PostMapping(value = "/wirhdrawal")
+    @ResponseBody
+    public ResponseEntity<?> doWirhdrawal(HttpServletRequest request, @ModelAttribute authServerDTO params)
+            throws CustomException, ParseException {
+
+        String logStep = "[홈IoT 서비스 회원 탈퇴]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getUserPassword())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doWirhdrawal(params);
     }
 }

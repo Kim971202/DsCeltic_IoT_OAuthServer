@@ -1,11 +1,5 @@
-package com.oauth.dto.member;
+package com.oauth.dto;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
@@ -27,7 +20,7 @@ import java.util.*;
 @Data
 @Getter
 @Setter
-public class MemberDTO implements UserDetails, Serializable {
+public class authServerDTO implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 54436712726576487L;
 
@@ -96,6 +89,9 @@ public class MemberDTO implements UserDetails, Serializable {
     private String sPushYn;                      // 에러 알림 수신
     private String tPushYn;                      // 맞춤 알림 수신
 
+    private String powerStatus;                  // 전원On/Off (on/of)
+    private String serialNumber;                 // 기기 시리얼 번호
+    
     private Role role = Role.USER;
 
     private boolean accountNonExpired = true;

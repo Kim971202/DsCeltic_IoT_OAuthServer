@@ -1,6 +1,6 @@
 package com.oauth.service;
 
-import com.oauth.dto.member.MemberDTO;
+import com.oauth.dto.authServerDTO;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.response.ApiResponse;
 import com.oauth.utils.Common;
@@ -11,9 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,7 +49,7 @@ public class UserService {
         String msg = null;
 
         try {
-            MemberDTO member = memberMapper.getUserByUserId(userId);
+            authServerDTO member = memberMapper.getUserByUserId(userId);
             if(member == null) {
                 stringObject = "N";
             } else {
@@ -59,7 +57,7 @@ public class UserService {
                 accessToken = member.getAccessToken();
             }
 
-            List<MemberDTO> deviceInfoList = memberMapper.getDeviceIdByUserId(userId);
+            List<authServerDTO> deviceInfoList = memberMapper.getDeviceIdByUserId(userId);
             if(deviceInfoList == null) {
                 stringObject = "N";
             } else {
@@ -111,7 +109,7 @@ public class UserService {
         return null;
     }
     /** 회원가입 */
-    public ResponseEntity<?> doRegist(MemberDTO params) throws CustomException {
+    public ResponseEntity<?> doRegist(authServerDTO params) throws CustomException {
 
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
@@ -149,7 +147,7 @@ public class UserService {
     }
 
     /** 회원중복 체크 */
-    public ResponseEntity<?> doDuplicationCheck(MemberDTO params) throws CustomException {
+    public ResponseEntity<?> doDuplicationCheck(authServerDTO params) throws CustomException {
 
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
@@ -157,7 +155,7 @@ public class UserService {
         String msg = null;
 
         try{
-            MemberDTO member = memberMapper.getUserByUserId(userId);
+            authServerDTO member = memberMapper.getUserByUserId(userId);
 
             if(member == null) stringObject = "N";
             else stringObject = "Y";
@@ -178,7 +176,7 @@ public class UserService {
     }
 
     /** ID 찾기 */
-    public ResponseEntity<?> doIdFind(MemberDTO params) throws CustomException {
+    public ResponseEntity<?> doIdFind(authServerDTO params) throws CustomException {
 
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
@@ -190,7 +188,7 @@ public class UserService {
 
         String msg = null;
 
-        List<MemberDTO> member = null;
+        List<authServerDTO> member = null;
 
         try {
 
@@ -222,7 +220,7 @@ public class UserService {
     }
 
     /** 비밀번호 찾기 - 초기화 */
-    public ResponseEntity<?> doResetPassword(MemberDTO params) throws CustomException {
+    public ResponseEntity<?> doResetPassword(authServerDTO params) throws CustomException {
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
 
@@ -232,7 +230,7 @@ public class UserService {
         String modelCode = params.getModelCode();
         String deviceId = params.getDeviceId();
 
-        MemberDTO member = null;
+        authServerDTO member = null;
 
         String msg = null;
 
@@ -265,7 +263,7 @@ public class UserService {
     }
 
     /** 비밀번호 변경 - 생성 */
-    public ResponseEntity<?> doChangePassword(MemberDTO params) throws CustomException {
+    public ResponseEntity<?> doChangePassword(authServerDTO params) throws CustomException {
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
 
@@ -293,14 +291,14 @@ public class UserService {
     }
 
     /** 사용자정보 조회 */
-    public ResponseEntity<?> doSearch(MemberDTO params) throws CustomException {
+    public ResponseEntity<?> doSearch(authServerDTO params) throws CustomException {
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
         String msg = null;
         String userId = params.getUserId();
 
         try{
-            MemberDTO member = memberMapper.getUserByUserId(userId);
+            authServerDTO member = memberMapper.getUserByUserId(userId);
 
             if (member != null) {
                 data.setUserId(member.getUserId());
@@ -325,7 +323,7 @@ public class UserService {
     }
 
     /** 회원 별칭(이름) 및 전화번호 변경 */
-    public ResponseEntity<?> doUpdateUserNicknameHp(MemberDTO params) throws CustomException{
+    public ResponseEntity<?> doUpdateUserNicknameHp(authServerDTO params) throws CustomException{
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
         String msg = null;
@@ -338,7 +336,7 @@ public class UserService {
 
         try{
 
-            MemberDTO pwCheck = memberMapper.passwordCheck(userPassword);
+            authServerDTO pwCheck = memberMapper.passwordCheck(userPassword);
             System.out.println("pwCheck: " + pwCheck);
             // TODO: 예외처리 하여 불일치 PW 알림
             if(pwCheck == null) return null;
@@ -367,7 +365,7 @@ public class UserService {
     }
 
     /** 비밀번호 변경 - 로그인시 */
-    public ResponseEntity<?> doUpdatePassword(MemberDTO params) throws CustomException{
+    public ResponseEntity<?> doUpdatePassword(authServerDTO params) throws CustomException{
 
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
@@ -382,7 +380,7 @@ public class UserService {
         try{
             params.setUserPassword(newPassword);
 
-            MemberDTO pwCheck = memberMapper.passwordCheck(oldPassword);
+            authServerDTO pwCheck = memberMapper.passwordCheck(oldPassword);
 
             // TODO: 예외처리 하여 불일치 PW 알림
             if(pwCheck == null) return null;
@@ -415,7 +413,7 @@ public class UserService {
     }
 
     /** 사용자(세대원) 정보 조회 */
-    public ResponseEntity<?> doViewHouseholdMemebers(MemberDTO params) throws CustomException{
+    public ResponseEntity<?> doViewHouseholdMemebers(authServerDTO params) throws CustomException{
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
         String msg = null;
@@ -436,10 +434,10 @@ public class UserService {
             Set<String> userIds = new HashSet<>();
             List<ApiResponse.Data.User> user = new ArrayList<>();
 
-            List<MemberDTO> deviceIds = memberMapper.getDeviceIdByUserId(userId);
-            List<MemberDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
+            List<authServerDTO> deviceIds = memberMapper.getDeviceIdByUserId(userId);
+            List<authServerDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
 
-            List<MemberDTO> memberStream = Common.deduplication(members, MemberDTO::getUserId);
+            List<authServerDTO> memberStream = Common.deduplication(members, authServerDTO::getUserId);
 
             List<String> userIdList = Common.extractJson(memberStream.toString(), "userId");
             List<String> userNicknameList = Common.extractJson(memberStream.toString(), "userNickname");
@@ -477,7 +475,7 @@ public class UserService {
     }
 
     /** 사용자 추가 - 초대 */
-    public ResponseEntity<?> doAddUser(MemberDTO params)
+    public ResponseEntity<?> doAddUser(authServerDTO params)
             throws CustomException{
 
         String stringObject = null;
@@ -511,7 +509,7 @@ public class UserService {
     }
 
     /** 사용자 초대 - 수락여부 */
-    public ResponseEntity<?> doInviteStatus(MemberDTO params)
+    public ResponseEntity<?> doInviteStatus(authServerDTO params)
             throws CustomException{
 
         String stringObject = null;
@@ -535,7 +533,7 @@ public class UserService {
              * 3. 2번 출력값으로 TBR_OPR_USER_DEVICE에 responseUserId INSERT
              * */
 
-            List<MemberDTO> member = null;
+            List<authServerDTO> member = null;
             int insertNewHouseMemberResult;
             int acceptInviteResult;
             if(inviteAcceptYn.equals("Y")){
@@ -580,7 +578,7 @@ public class UserService {
     }
 
     /** 사용자 초대 - 목록 조회 */
-    public ResponseEntity<?> doInviteListView(MemberDTO params)
+    public ResponseEntity<?> doInviteListView(authServerDTO params)
             throws CustomException{
 
         String stringObject = null;
@@ -591,7 +589,7 @@ public class UserService {
             String accessToken = params.getAccessToken();
             String userId = params.getUserId();
 
-            List<MemberDTO> invitationInfo = memberMapper.getInvitationList(userId);
+            List<authServerDTO> invitationInfo = memberMapper.getInvitationList(userId);
 
             if(invitationInfo.isEmpty()) stringObject = "N";
             else stringObject = "Y";
@@ -656,7 +654,7 @@ public class UserService {
     }
 
     /** 사용자(세대원) - 강제탈퇴 */
-    public ResponseEntity<?> doDelHouseholdMembers(MemberDTO params)
+    public ResponseEntity<?> doDelHouseholdMembers(authServerDTO params)
             throws CustomException{
 
         String stringObject = null;
@@ -689,7 +687,7 @@ public class UserService {
     }
 
     /** 홈 IoT 컨트롤러 알림 설정 */
-    public ResponseEntity<?> doPushSet(MemberDTO params,  HashMap<String, String> controlMap)
+    public ResponseEntity<?> doPushSet(authServerDTO params, HashMap<String, String> controlMap)
             throws CustomException{
 
         String stringObject = null;
@@ -738,7 +736,7 @@ public class UserService {
     }
 
     /** 홈 IoT 컨트롤러 알림 정보 조회 */
-    public HashMap<String, Object> doSearchPushSet(MemberDTO params)
+    public HashMap<String, Object> doSearchPushSet(authServerDTO params)
             throws CustomException{
 
         String stringObject = null;
@@ -754,7 +752,7 @@ public class UserService {
             resultMap.put("resultCode", "200");
             resultMap.put("resultMsg", "로그인 성공");
 
-            MemberDTO pushCodeInfo = memberMapper.getPushCodeStatus(params);
+            authServerDTO pushCodeInfo = memberMapper.getPushCodeStatus(params);
 
             // 각각의 "pushCd"와 "pushYn"을 가지는 Map을 생성하여 리스트에 추가
             Map<String, String> push1 = new LinkedHashMap<>();
@@ -783,21 +781,21 @@ public class UserService {
     }
 
     /** 사용자(세대주) 탈퇴 */
-    public ResponseEntity<?> doDelHouseholder(MemberDTO params)
+    public ResponseEntity<?> doDelHouseholder(authServerDTO params)
             throws CustomException{
 
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
         String msg = null;
-        MemberDTO member = null;
+        authServerDTO member = null;
         String nextHouseholdId = null;
         int result = 0;
         int result1 = 0;
         int result2 = 0;
             try {
 
-                List<MemberDTO> deviceIds = memberMapper.getDeviceIdByUserId(params.getUserId());
-                List<MemberDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
+                List<authServerDTO> deviceIds = memberMapper.getDeviceIdByUserId(params.getUserId());
+                List<authServerDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
 
                 if(deviceIds != null && members != null){
                     stringObject = "Y";
@@ -835,4 +833,48 @@ public class UserService {
             }
         return null;
     }
+
+    /** 홈IoT 서비스 회원 탈퇴 */
+    public ResponseEntity<?> doWirhdrawal(authServerDTO params)
+            throws CustomException{
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+        String msg = null;
+
+        try {
+
+            /**
+             * 홈IoT 서비스 탈퇴 시 삭제 Table
+             * 1. TBR_OPR_ACCOUNT
+             * 2. TBR_OPR_USER
+             * 3. TBR_OPR_USER_DEVICE
+             * 4. TBT_OPR_DEVICE_REGIST
+             * 프로시져 사용 (deleteUserFromService)
+             * */
+
+            // TODO: 프로시져 실행이 성공이여도 Return 값 없음
+            //int result = memberMapper.deleteMemberFromService(params.getUserId());
+            //System.out.println("result: " + result);
+
+            if(stringObject.equals("Y")) msg = "홈IoT 서비스 회원 탈퇴 성공";
+            else msg = "홈IoT 서비스 회원 탈퇴 실패";
+
+            data.setResult("Y".equalsIgnoreCase(stringObject) ?
+                    ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+
+        }catch (CustomException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
+
+
+
 }
