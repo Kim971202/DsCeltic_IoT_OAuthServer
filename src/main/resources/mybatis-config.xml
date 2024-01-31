@@ -3,7 +3,7 @@
 <configuration>
 
 	<typeAliases>
-		<package name="com.oauth.dto.member" />
+		<package name="com.oauth.dto" />
 	</typeAliases>
 	
 	<environments default="">
@@ -26,5 +26,6 @@
 	
 	<mappers>	
 		<mapper resource="mybatis/mapper/mapper-member.xml"/>
+		<mapper resource="mybatis/mapper/mapper-device.xml"/>
 	</mappers>
 </configuration>

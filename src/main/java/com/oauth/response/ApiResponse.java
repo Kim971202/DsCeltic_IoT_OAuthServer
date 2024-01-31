@@ -3,8 +3,11 @@ package com.oauth.response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.oauth.dto.gw.DeviceStatusInfoDR910W;
+import com.oauth.utils.JSON;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 
@@ -70,11 +73,11 @@ public class ApiResponse {
         private Object invitation;
         private List<String> userIdList;
         private Object pushCodes;
+        private DeviceStatusInfoDR910W deviceStatusInfoDR910W;
 
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);
-//          String msg = responseType.getMsg();
             setResultMsg(msg);
         }
 

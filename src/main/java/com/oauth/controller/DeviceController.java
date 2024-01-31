@@ -46,4 +46,42 @@ public class DeviceController {
         return deviceService.doPowerOnOff(params);
     }
 
+    /** 홈 IoT 컨트롤러 정보 등록/수정 */
+    @PostMapping(value = "/deviceInfoUpsert")
+    @ResponseBody
+    public ResponseEntity<?> doDeviceInfoUpsert(HttpSession session, HttpServletRequest request, @ModelAttribute authServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        String logStep = "[홈 IoT 컨트롤러 정보 등록/수정]";
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getDeviceType()) ||
+                Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getPowerStatus())) {
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+
+        return deviceService.doPowerOnOff(params);
+    }
+
+    /** 홈 IoT 컨트롤러 상태 정보 조회 */
+    @PostMapping(value = "/deviceStatusInfo")
+    @ResponseBody
+    public ResponseEntity<?> doDeviceStatusInfo(HttpSession session, HttpServletRequest request, @ModelAttribute authServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        String logStep = "[홈 IoT 컨트롤러 상태 정보 조회]";
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getModelCode())) {
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+
+        return deviceService.doDeviceStatusInfo(params);
+    }
+
 }

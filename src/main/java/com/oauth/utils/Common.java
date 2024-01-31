@@ -1,14 +1,19 @@
 package com.oauth.utils;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.oauth.dto.authServerDTO;
+import com.oauth.dto.gw.DeviceStatusInfoDR910W;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.response.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -191,6 +196,7 @@ public class Common {
     public String getTransactionId() {
         return getTransactionIdBaseUUID();
     }
+
     /**
      * UUID 리턴
      * @return a432e21a-54df-4e43-8ef9-99cd274dced8
@@ -236,27 +242,16 @@ public class Common {
     }
 
     public String readCon(String jsonString,String value) throws Exception{
-        String result;
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(jsonString);
 
         JsonNode baseNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin");
-        JsonNode conNode = baseNode.path("con");
-        JsonNode functionIdNode = conNode.path("functionId");
-        JsonNode uuIdNode = conNode.path("uuId");
+        JsonNode conNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin").path("con");
+        JsonNode returnNode = conNode.path(value);
+        String returnValue = objectMapper.writeValueAsString(returnNode);
 
-
-        if(value.equals("con")){
-            return objectMapper.writeValueAsString(conNode);
-
-        } else if(value.equals("functionId")){
-            return objectMapper.writeValueAsString(functionIdNode);
-
-        } else if(value.equals("uuId")){
-            return objectMapper.writeValueAsString(uuIdNode);
-        }
-
-        return "Choco";
+        if(value.equals("rsCf")) return returnValue;
+        else return returnValue.replace("\"", "");
     }
 
     public String addCon(String body, List<String> key, List<String> value) throws Exception{
@@ -287,5 +282,24 @@ public class Common {
         return modifiedJson;
     }
 
+    public Map<String, Object> changeStringToJson (String json) throws JsonProcessingException {
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String changeStringToJson(DeviceStatusInfoDR910W obj) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return "Error converting to JSON";
+        }
+    }
 }
