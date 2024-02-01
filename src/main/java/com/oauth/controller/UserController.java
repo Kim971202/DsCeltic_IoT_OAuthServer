@@ -377,15 +377,15 @@ public class UserController {
 
         String logStep = "[홈 IoT 컨트롤러 인증]";
 
-//        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-//                Validator.isNullOrEmpty(params.getUserId()) ||
-//                Validator.isNullOrEmpty(params.getDeviceId()) ||
-//                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-//                Validator.isNullOrEmpty(params.getDeviceType()) ||
-//                Validator.isNullOrEmpty(params.getDeviceId()) ||
-//                Validator.isNullOrEmpty(params.getDeviceId())){
-//            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
-//        }
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getDeviceType()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
 
         return userService.doDeviceAuthCheck(params);
     }

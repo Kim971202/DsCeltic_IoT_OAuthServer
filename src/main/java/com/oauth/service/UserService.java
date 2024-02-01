@@ -926,25 +926,31 @@ public class UserService {
             throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = null;
+        String stringObject = "Y";
         String msg = null;
 
         String inputPassword = params.getUserPassword();
         String userId = params.getUserId();
-
+        String newAccessToken = common.getTransactionId();
+        System.out.println("newAccessToken: " + newAccessToken);
         try{
 
             AuthServerDTO dbPassword = memberMapper.passwordCheck(inputPassword);
 
-            if(inputPassword.equals(dbPassword.getUserPassword()) ||
-                    encoder.matches(inputPassword, dbPassword.getUserPassword())) {
+            if(inputPassword.equals(dbPassword.getUserPassword()) && encoder.matches(inputPassword, dbPassword.getUserPassword())){
+                stringObject = "Y";
+                redisCommand.setValues(userId, newAccessToken, Duration.ofMinutes(30));
+            } else stringObject = "N";
 
+            if(stringObject.equals("Y")) msg = "API인증키 갱신 성공";
+            else msg = "API인증키 갱신 실패";
 
+            result.setAccessToken(newAccessToken);
+            result.setResult("Y".equalsIgnoreCase(stringObject) ?
+                    ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
 
-            }
-            //authServerDTO pwCheck = memberMapper.passwordCheck(params.getUserPassword());
-
-            redisCommand.setValues("TimeKey", "TimeValue", Duration.ofMinutes(30));
+            return new ResponseEntity<>(result, HttpStatus.OK);
 
         }catch (CustomException e){
             System.out.println(e.getMessage());
