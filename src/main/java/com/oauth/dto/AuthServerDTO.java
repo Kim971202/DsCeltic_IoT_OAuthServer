@@ -20,7 +20,7 @@ import java.util.*;
 @Data
 @Getter
 @Setter
-public class authServerDTO implements UserDetails, Serializable {
+public class AuthServerDTO implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 54436712726576487L;
 
@@ -88,10 +88,13 @@ public class authServerDTO implements UserDetails, Serializable {
     private String fPushYn;                      // 상태변경 알림 수신
     private String sPushYn;                      // 에러 알림 수신
     private String tPushYn;                      // 맞춤 알림 수신
-
     private String powerStatus;                  // 전원On/Off (on/of)
     private String serialNumber;                 // 기기 시리얼 번호
-    
+    private List<String> deviceIdList;
+    private List<String> controlAuthKeyList;
+    private List<String> deviceTypeList;
+    private List<String> modelCodeList;
+
     private Role role = Role.USER;
 
     private boolean accountNonExpired = true;

@@ -1,11 +1,16 @@
 package com.oauth.mapper;
 
-import com.oauth.dto.authServerDTO;
+import com.oauth.dto.AuthServerDTO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.HashMap;
+import java.util.List;
 
 @Mapper
 public interface DeviceMapper {
 
-    public authServerDTO getSerialNumberBydeviceId(String deviceId);
+    public AuthServerDTO getSerialNumberBydeviceId(String deviceId);
+    public List<AuthServerDTO> deviceAuthCheck(List<AuthServerDTO> device);
+    public List<AuthServerDTO> getDeviceAuthCheckValuesByUserId(String device);
 
 }

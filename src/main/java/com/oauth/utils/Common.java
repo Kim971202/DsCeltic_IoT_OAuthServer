@@ -1,12 +1,11 @@
 package com.oauth.utils;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.oauth.dto.authServerDTO;
+import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.DeviceStatusInfoDR910W;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.response.ApiResponse;
@@ -138,9 +137,9 @@ public class Common {
         return userIds;
     }
 
-    public boolean tokenVerify(authServerDTO params) {
+    public boolean tokenVerify(AuthServerDTO params) {
         System.out.println(params);
-        authServerDTO member = memberMapper.accessTokenCheck(params);
+        AuthServerDTO member = memberMapper.accessTokenCheck(params);
         if(member == null) return false;
 
         List<String> userId = Common.extractJson(member.toString(), "userId");
@@ -167,11 +166,11 @@ public class Common {
         return predicate -> set.add(key.apply(predicate));
     }
 
-    public static void updateMemberDTOList(List<authServerDTO> authServerDTOList, String targetKey, Object newValue) {
-        for (authServerDTO authServerDTO : authServerDTOList) {
+    public static void updateMemberDTOList(List<AuthServerDTO> authServerDTOList, String targetKey, Object newValue) {
+        for (AuthServerDTO authServerDTO : authServerDTOList) {
             try {
                 // MemberDTO 클래스의 필드에 따라 해당 필드에 접근해서 원하는 Key인지 확인
-                var field = authServerDTO.class.getDeclaredField(targetKey);
+                var field = AuthServerDTO.class.getDeclaredField(targetKey);
                 field.setAccessible(true);
                 field.set(authServerDTO, newValue);
             } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -250,6 +249,7 @@ public class Common {
         JsonNode returnNode = conNode.path(value);
         String returnValue = objectMapper.writeValueAsString(returnNode);
 
+        // TODO: 추후 True/False 로 분기 할것
         if(value.equals("rsCf")) return returnValue;
         else return returnValue.replace("\"", "");
     }

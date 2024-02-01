@@ -2,7 +2,7 @@ package com.oauth.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.oauth.dto.authServerDTO;
+import com.oauth.dto.AuthServerDTO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,31 +10,31 @@ import java.util.List;
 @Mapper
 public interface MemberMapper {
 
-    public List<authServerDTO> getUserList();
-    public authServerDTO getUserByUserId(String userId);
-    public List<authServerDTO> getDeviceInfoByUserID(String userId);
-    public int insertMember(authServerDTO member);
-    public int insertAccount(authServerDTO member);
-    public List<authServerDTO> getUserByHp(String userHp);
-    public List<authServerDTO> getUserByDeviceId(String deviceId);
-    public authServerDTO getUserByUserIdAndHp(authServerDTO member);
-    public authServerDTO getUserByUserIdAndHpAndDeviceId(authServerDTO member);
-    public int updatePassword(authServerDTO member);
-    public authServerDTO passwordCheck(String pw);
-    public int updateUserNicknameAndHp(authServerDTO member);
-    public authServerDTO accessTokenCheck(authServerDTO member);
-    public List<authServerDTO> getHouseMembersByUserId(List<authServerDTO> members);
-    public List<authServerDTO> getDeviceIdByUserId(String userId);
-    public int inviteHouseMember(authServerDTO member);
-    public int acceptInvite(authServerDTO member);
-    public int insertNewHouseMember(List<authServerDTO> members);
-    public List<authServerDTO> getInvitationList (String requestUserId);
+    public List<AuthServerDTO> getUserList();
+    public AuthServerDTO getUserByUserId(String userId);
+    public List<AuthServerDTO> getDeviceInfoByUserID(String userId);
+    public int insertMember(AuthServerDTO member);
+    public int insertAccount(AuthServerDTO member);
+    public List<AuthServerDTO> getUserByHp(String userHp);
+    public List<AuthServerDTO> getUserByDeviceId(String deviceId);
+    public AuthServerDTO getUserByUserIdAndHp(AuthServerDTO member);
+    public AuthServerDTO getUserByUserIdAndHpAndDeviceId(AuthServerDTO member);
+    public int updatePassword(AuthServerDTO member);
+    public AuthServerDTO passwordCheck(String pw);
+    public int updateUserNicknameAndHp(AuthServerDTO member);
+    public AuthServerDTO accessTokenCheck(AuthServerDTO member);
+    public List<AuthServerDTO> getHouseMembersByUserId(List<AuthServerDTO> members);
+    public List<AuthServerDTO> getDeviceIdByUserId(String userId);
+    public int inviteHouseMember(AuthServerDTO member);
+    public int acceptInvite(AuthServerDTO member);
+    public int insertNewHouseMember(List<AuthServerDTO> members);
+    public List<AuthServerDTO> getInvitationList (String requestUserId);
     public int delHouseMember(String userId);
-    public int changeHouseholdStatus(authServerDTO member);
+    public int changeHouseholdStatus(AuthServerDTO member);
     public int updatePushCodeStatus(List<HashMap<String, String>> member);
-    public int insertInitPushCode(authServerDTO member); // Device 등록 시 사용
-    public authServerDTO getPushCodeStatus(authServerDTO member);
-    public authServerDTO getNextHouseholderUserId(authServerDTO member);
+    public int insertInitPushCode(AuthServerDTO member); // Device 등록 시 사용
+    public AuthServerDTO getPushCodeStatus(AuthServerDTO member);
+    public AuthServerDTO getNextHouseholderUserId(AuthServerDTO member);
     public int updateHouseholdTbrOprUser(String userId);
     public int updateHouseholdTbrOprUserDevice(String userId);
     public int deleteMemberFromService(String userId);

@@ -1,6 +1,6 @@
 package com.oauth.service;
 
-import com.oauth.dto.authServerDTO;
+import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.DeviceStatusInfoDR910W;
 import com.oauth.dto.gw.PowerOnOff;
 import com.oauth.mapper.DeviceMapper;
@@ -9,12 +9,10 @@ import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.json.simple.parser.JSONParser;
 
 @Service
 public class DeviceService {
@@ -25,12 +23,11 @@ public class DeviceService {
     MobiusService mobiusService;
     @Autowired
     DeviceMapper deviceMapper;
-
     @Autowired
     RedisCommand redisCommand;
 
     /** 전원 On/Off */
-    public ResponseEntity<?> doPowerOnOff(authServerDTO params) throws CustomException{
+    public ResponseEntity<?> doPowerOnOff(AuthServerDTO params) throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = null;
@@ -52,7 +49,7 @@ public class DeviceService {
 
             redisCommand.setValues(powerOnOff.getUuId(), userId);
 
-            authServerDTO device = deviceMapper.getSerialNumberBydeviceId(deviceId);
+            AuthServerDTO device = deviceMapper.getSerialNumberBydeviceId(deviceId);
             serialNumber = device.getSerialNumber();
 
             if(!serialNumber.isEmpty()) {
@@ -78,7 +75,7 @@ public class DeviceService {
     }
 
     /** 홈 IoT 컨트롤러 상태 정보 조회  */
-    public ResponseEntity<?> doDeviceStatusInfo(authServerDTO params) throws CustomException{
+    public ResponseEntity<?> doDeviceStatusInfo(AuthServerDTO params) throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();
         DeviceStatusInfoDR910W dr910W = DeviceStatusInfoDR910W.getInstance();
@@ -94,7 +91,6 @@ public class DeviceService {
                 dr910W.setModelCategoryCode("01");
                 dr910W.setDeviceStatus("1");
                 result.setDeviceStatusInfoDR910W(dr910W);
-                System.out.println(dr910W);
             } else stringObject = "N";
 
             if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 상태 정보 조회 성공";

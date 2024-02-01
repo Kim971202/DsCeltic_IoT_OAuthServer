@@ -178,7 +178,7 @@ public class MobiusService {
         return cnt.getRn();
     }
 
-    public void createCin(String aeName, String cntName, String con) throws Exception{
+    public MobiusResponse createCin(String aeName, String cntName, String con) throws Exception{
         CinDTO cinObject = new CinDTO();
         CinDTO.Cin cin = new CinDTO.Cin();
 
@@ -217,6 +217,7 @@ public class MobiusService {
         } finally {
             response.close();
         }
+        return mobiusResponse;
     }
 
     public void createSub(String aeName, String cntName, String con) throws Exception{

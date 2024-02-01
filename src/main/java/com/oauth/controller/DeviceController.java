@@ -1,6 +1,6 @@
 package com.oauth.controller;
 
-import com.oauth.dto.authServerDTO;
+import com.oauth.dto.AuthServerDTO;
 import com.oauth.service.DeviceService;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
@@ -29,7 +29,7 @@ public class DeviceController {
     /** 전원 On/Off */
     @PostMapping(value = "/powerOnOff")
     @ResponseBody
-    public ResponseEntity<?> doPowerOnOff(HttpSession session, HttpServletRequest request, @ModelAttribute authServerDTO params, HttpServletResponse response)
+    public ResponseEntity<?> doPowerOnOff(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws CustomException {
 
         String logStep = "[전원 On/Off]";
@@ -49,7 +49,7 @@ public class DeviceController {
     /** 홈 IoT 컨트롤러 정보 등록/수정 */
     @PostMapping(value = "/deviceInfoUpsert")
     @ResponseBody
-    public ResponseEntity<?> doDeviceInfoUpsert(HttpSession session, HttpServletRequest request, @ModelAttribute authServerDTO params, HttpServletResponse response)
+    public ResponseEntity<?> doDeviceInfoUpsert(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws CustomException {
 
         String logStep = "[홈 IoT 컨트롤러 정보 등록/수정]";
@@ -69,7 +69,7 @@ public class DeviceController {
     /** 홈 IoT 컨트롤러 상태 정보 조회 */
     @PostMapping(value = "/deviceStatusInfo")
     @ResponseBody
-    public ResponseEntity<?> doDeviceStatusInfo(HttpSession session, HttpServletRequest request, @ModelAttribute authServerDTO params, HttpServletResponse response)
+    public ResponseEntity<?> doDeviceStatusInfo(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws CustomException {
 
         String logStep = "[홈 IoT 컨트롤러 상태 정보 조회]";
