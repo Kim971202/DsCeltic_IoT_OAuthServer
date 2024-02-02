@@ -921,6 +921,51 @@ public class UserService {
         return null;
     }
 
+    /** 홈 IoT 최초 등록 인증 */
+    public ResponseEntity<?> doFirstDeviceAuthCheck(AuthServerDTO params)
+            throws CustomException{
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        String stringObject = "Y";
+        String msg = null;
+
+        String userId = params.getUserId();
+
+        List<AuthServerDTO> deviceIdAndAuthKey = null;
+        List<AuthServerDTO> deviceAuthCheck = null;
+        AuthServerDTO deviceTempAuthCheck = null;
+
+        try{
+            deviceIdAndAuthKey = deviceMapper.getDeviceAuthCheckValuesByUserId(userId);
+            if(deviceIdAndAuthKey.isEmpty()){
+                stringObject = "N";
+            }else {
+                deviceAuthCheck = deviceMapper.deviceAuthCheck(deviceIdAndAuthKey);
+                if(deviceAuthCheck.isEmpty()) {
+                    stringObject = "N";
+                } else {
+                    deviceTempAuthCheck = deviceMapper.deviceTempAuthCheck(deviceIdAndAuthKey);
+                    if(deviceTempAuthCheck == null){
+                        stringObject = "N";
+                    } else stringObject = "Y";
+                }
+            }
+
+            if(stringObject.equals("Y")) msg = "홈 IoT 최초 등록 인증 성공";
+            else msg = "홈 IoT 최초 등록 인증 실패";
+
+            result.setResult("Y".equalsIgnoreCase(stringObject) ?
+                    ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }catch (CustomException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /** API인증키 갱신 */
     public ResponseEntity<?> doAccessTokenRenewal(AuthServerDTO params)
             throws CustomException{
@@ -958,7 +1003,5 @@ public class UserService {
         }
         return null;
     }
-
-
 
 }

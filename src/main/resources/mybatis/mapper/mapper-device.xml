@@ -32,4 +32,20 @@
                 DEVC_ID = #{item.deviceId} AND DEVC_CTRL_KEY = #{item.controlAuthKey}
             </foreach>
     </select>
+
+    <select id="deviceTempAuthCheck" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        SELECT
+            *
+        FROM
+            TBR_OPR_DEVICE_DETAIL
+        WHERE
+            TEMP_DEVC_REG_KEY = #{tmpRegistKey}
+        AND
+            DEVC_ID = #{deviceId}
+        AND
+            HP = #{hp}
+        AND
+            USER_ID = #{userId}
+    </select>
+
 </mapper>

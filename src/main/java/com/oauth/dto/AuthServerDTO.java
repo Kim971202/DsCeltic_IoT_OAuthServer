@@ -94,6 +94,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private List<String> controlAuthKeyList;
     private List<String> deviceTypeList;
     private List<String> modelCodeList;
+    private String tmpRegistKey;
 
     private Role role = Role.USER;
 

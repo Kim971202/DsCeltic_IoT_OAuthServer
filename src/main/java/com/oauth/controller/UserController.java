@@ -379,11 +379,10 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getAccessToken()) ||
                 Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getDeviceType()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getDeviceId())){
+                Validator.isNullOrEmpty(params.getDeviceIdList()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKeyList()) ||
+                Validator.isNullOrEmpty(params.getDeviceTypeList()) ||
+                Validator.isNullOrEmpty(params.getModelCodeList())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
 
@@ -406,5 +405,27 @@ public class UserController {
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
         return userService.doAccessTokenRenewal(params);
+    }
+
+    /**
+     * 홈 IoT 최초 등록 인증
+     */
+    @PostMapping(value = "/firstDeviceAuthCheck")
+    @ResponseBody
+    public ResponseEntity<?> doFirstDeviceAuthCheck(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException, ParseException {
+
+        String logStep = "[홈 IoT 최초 등록 인증]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getSerialNumber()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getTmpRegistKey()) ||
+                Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getDeviceId())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doFirstDeviceAuthCheck(params);
     }
 }
