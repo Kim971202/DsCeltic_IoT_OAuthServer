@@ -37,5 +37,6 @@ public interface MemberMapper {
     public AuthServerDTO getNextHouseholderUserId(AuthServerDTO member);
     public int updateHouseholdTbrOprUser(String userId);
     public int updateHouseholdTbrOprUserDevice(String userId);
-    public int deleteMemberFromService(String userId);
+    public String deleteMemberFromService(String userId);
+    public String deleteControllerMapping(AuthServerDTO member);
 }

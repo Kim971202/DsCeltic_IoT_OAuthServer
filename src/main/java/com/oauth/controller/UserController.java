@@ -428,4 +428,25 @@ public class UserController {
         }
         return userService.doFirstDeviceAuthCheck(params);
     }
+
+    /**
+     * 홈 IoT 컨트롤러 삭제(회원 매핑 삭제)
+     */
+    @PostMapping(value = "/userDeviceDelete")
+    @ResponseBody
+    public ResponseEntity<?> doUserDeviceDelete(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException, ParseException {
+
+        String logStep = "[홈 IoT 컨트롤러 삭제(회원 매핑 삭제)]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getDeviceType()) ||
+                Validator.isNullOrEmpty(params.getModelCode())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doUserDeviceDelete(params);
+    }
 }

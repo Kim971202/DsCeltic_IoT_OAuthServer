@@ -2,7 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.oauth.mapper.MemberMapper">
 
-    <resultMap id="member" type="com.oauth.dto.AuthServerDTO"> </resultMap>
+    <resultMap id="member" type="com.oauth.dto.AuthServerDTO">
+
+    </resultMap>
 
     <select id="getUserByUserId" parameterType="String" resultMap="member">
         SELECT HP AS hp, USER_ID AS userId, USER_NICK AS userNickname, API_ATTC_KEY AS accessToken
@@ -219,8 +221,12 @@
         WHERE USER_ID = #{userId}
     </update>
 
-    <update id="deleteMemberFromService" parameterType="String">
-        CALL deleteUserFromService (#{userId})
-    </update>
+    <select id="deleteMemberFromService" parameterType="String" resultType="String">
+        CALL deleteUserFromService(#{userId})
+    </select>
+
+    <select id="deleteControllerMapping" parameterType="com.oauth.dto.AuthServerDTO" resultType="String">
+        CALL deleteUserFromService(#{deviceId}, #{userId}, #{controlAuthKey})
+    </select>
 
 </mapper>

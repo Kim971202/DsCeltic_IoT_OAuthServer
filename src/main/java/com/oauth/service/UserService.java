@@ -848,7 +848,8 @@ public class UserService {
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
         String msg = null;
-
+        String userId = params.getUserId();
+        String member = null;
         try {
 
             /**
@@ -859,10 +860,10 @@ public class UserService {
              * 4. TBT_OPR_DEVICE_REGIST
              * 프로시져 사용 (deleteUserFromService)
              * */
+            member = memberMapper.deleteMemberFromService(userId);
+            if(member.isEmpty()) stringObject = "N";
+            else stringObject = "Y";
 
-            // TODO: 프로시져 실행이 성공이여도 Return 값 없음
-            //int result = memberMapper.deleteMemberFromService(params.getUserId());
-            //System.out.println("result: " + result);
 
             if(stringObject.equals("Y")) msg = "홈IoT 서비스 회원 탈퇴 성공";
             else msg = "홈IoT 서비스 회원 탈퇴 실패";
@@ -1004,4 +1005,38 @@ public class UserService {
         return null;
     }
 
+    /** 홈 IoT 컨트롤러 삭제(회원 매핑 삭제) */
+    public ResponseEntity<?> doUserDeviceDelete(AuthServerDTO params)
+            throws CustomException {
+
+        String stringObject = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+        String msg = null;
+        String member = null;
+
+        try{
+            /**
+             * TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
+             * TBR_OPR_USER_DEVICE - 사용자 단말 정보
+             * TBR_OPR_DEVICE_DETAIL - 단말정보상세
+             * 프로시져
+             * */
+            member = memberMapper.deleteControllerMapping(params);
+            if(member.isEmpty()) stringObject = "N";
+            else stringObject = "Y";
+
+            if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 성공";
+            else msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 실패";
+
+            data.setResult("Y".equalsIgnoreCase(stringObject) ?
+                    ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        }catch (CustomException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
