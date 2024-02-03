@@ -74,7 +74,7 @@ public class ApiResponse {
         private List<String> userIdList;
         private Object pushCodes;
         private DeviceStatusInfoDR910W deviceStatusInfoDR910W;
-
+        private PushInfo pushInfo;
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);
@@ -118,5 +118,16 @@ public class ApiResponse {
             private String pushCd;
             private String pushYn;
         }
+
+        @Getter
+        @Setter
+        public static class PushInfo {
+            private String pushIdx;                      // PUSH IDX
+            private String pushTitle;                    // PUSH 제목
+            private String pushContent;                  // PUSH 내용
+            private String pushType;                     // PUSH 타입
+            private String pushDatetime;                 // PUSH 전송 시간
+        }
+
     }
 }

@@ -97,12 +97,6 @@ public class Common {
             String inviteEndDate,
             Set<String> invitationIds) {
 
-        // 중복 체크
-//        if (userIds.contains(deviceId)) {
-//            throw new IllegalArgumentException("Duplicate deviceId: " + deviceId);
-//        }
-
-        // 중복이 없다면 Set에 추가
         invitationIds.add(invitationIdx);
 
         // Device 생성

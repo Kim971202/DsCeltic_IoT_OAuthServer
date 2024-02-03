@@ -1039,4 +1039,72 @@ public class UserService {
         }
         return null;
     }
+
+    /** 스마트알림 - PUSH 이력 조회 */
+    public ResponseEntity<?> doViewPushHistory(AuthServerDTO params)
+            throws CustomException{
+
+        ApiResponse.Data data = new ApiResponse.Data();
+        ApiResponse.Data.PushInfo pushInfo = new ApiResponse.Data.PushInfo();
+
+        String stringObject = null;
+        String msg = null;
+        String userId = params.getUserId();
+
+        AuthServerDTO member = null;
+        try{
+
+            member = memberMapper.getPushInfoList(userId);
+
+            if(member == null) stringObject = "N";
+            else {
+                stringObject = "Y";
+
+                // Set 생성
+                Set<String> pushSet = new HashSet<>();
+                List<ApiResponse.Data.PushInfo> pushInfoArray = new ArrayList<>();
+
+                List<String> pushIdxList = Common.extractJson(pushSet.toString(), "pushIdx");
+                List<String> pushTitleList = Common.extractJson(pushSet.toString(), "pushTitle");
+                List<String> pushContentList = Common.extractJson(pushSet.toString(), "pushContent");
+                List<String> pushTypeList = Common.extractJson(pushSet.toString(), "pushType");
+                List<String> pushDatetimeList = Common.extractJson(pushSet.toString(), "pushDatetime");
+
+                int numInvitations = pushSet.size();
+
+                if(pushIdxList != null
+                        && pushTitleList != null
+                        && pushContentList != null
+                        && pushTypeList != null
+                        && pushDatetimeList != null
+                ){
+                    // Member 추가
+                    for (int i = 0; i < numInvitations; i++) {
+                        ApiResponse.Data.PushInfo pushes = Common.createInvitations(
+                                pushIdxList.get(i),
+                                pushTitleList.get(i),
+                                pushContentList.get(i),
+                                pushTypeList.get(i),
+                                pushDatetimeList.get(i),
+                                pushSet);
+                        pushInfoArray.add(pushes);
+                    }
+                }
+
+                data.setPushInfo(pushInfo);
+            }
+
+            if(stringObject.equals("Y")) msg = "스마트알림 - PUSH 이력 조회 성공";
+            else msg = "스마트알림 - PUSH 이력 조회 실패";
+
+            data.setResult("Y".equalsIgnoreCase(stringObject) ?
+                    ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        }catch (CustomException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

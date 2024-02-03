@@ -449,4 +449,23 @@ public class UserController {
         }
         return userService.doUserDeviceDelete(params);
     }
+
+    /**
+     * 스마트알림 - PUSH 이력 조회
+     * */
+    @PostMapping(value = "/viewPushHistory")
+    @ResponseBody
+    public ResponseEntity<?> doViewPushHistory(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException, ParseException{
+
+        String logStep = "[스마트알림 - PUSH 이력 조회]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceType())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doViewPushHistory(params);
+
+    }
 }

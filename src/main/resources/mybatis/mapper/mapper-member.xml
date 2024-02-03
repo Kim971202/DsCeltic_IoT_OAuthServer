@@ -229,4 +229,23 @@
         CALL deleteUserFromService(#{deviceId}, #{userId}, #{controlAuthKey})
     </select>
 
+    <select id="getPushInfoList" parameterType="String" resultMap="member">
+        SELECT
+            PUSH_IDX AS pushIdx,
+            PUSH_TITLE AS pushTitle,
+            PUSH_CONTENT AS pushContent,
+            (
+            CASE WHEN PUSH_TYPE = '01' THEN '보일러'
+                 WHEN PUSH_TYPE = '02' THEN '환기'
+                 WHEN PUSH_TYPE = '03' THEN '각방'
+                 ELSE '-'
+            END
+            ) AS pushType,
+            DATE_FORMAT(PUSH_DATETIME, '%Y-%m-%d %h:%i:%s') AS pushDateTime
+        FROM
+            tbr_opr_user_device_push_info
+        WHERE
+            USER_ID = #{userId};
+    </select>
+
 </mapper>

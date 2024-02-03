@@ -94,7 +94,12 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private List<String> controlAuthKeyList;
     private List<String> deviceTypeList;
     private List<String> modelCodeList;
-    private String tmpRegistKey;
+    private String tmpRegistKey;                 // 임시 저장키
+    private String pushIdx;                      // PUSH IDX
+    private String pushTitle;                    // PUSH 제목
+    private String pushContent;                  // PUSH 내용
+    private String pushType;                     // PUSH 타입
+    private String pushDatetime;                 // PUSH 전송 시간
 
     private Role role = Role.USER;
 
