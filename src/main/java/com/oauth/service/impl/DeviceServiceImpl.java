@@ -1,10 +1,11 @@
-package com.oauth.service;
+package com.oauth.service.impl;
 
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.DeviceStatusInfoDR910W;
 import com.oauth.dto.gw.PowerOnOff;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.response.ApiResponse;
+import com.oauth.service.mapper.DeviceService;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.JSON;
@@ -15,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DeviceService {
+public class DeviceServiceImpl implements DeviceService {
 
     @Autowired
     Common common;
@@ -25,6 +26,7 @@ public class DeviceService {
     DeviceMapper deviceMapper;
     @Autowired
     RedisCommand redisCommand;
+
 
     /** 전원 On/Off */
     public ResponseEntity<?> doPowerOnOff(AuthServerDTO params) throws CustomException{

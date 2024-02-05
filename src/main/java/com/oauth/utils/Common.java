@@ -299,7 +299,6 @@ public class Common {
     }
 
     public Map<String, Object> changeStringToJson (String json) throws JsonProcessingException {
-
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {});

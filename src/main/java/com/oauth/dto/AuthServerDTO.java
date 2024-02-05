@@ -64,6 +64,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String controlAuthKey;               // 기기 제어 키
     private String deviceId;                     // 기기 아이디
     private String deviceNickname;               // 기기 별칭
+    private String newDeviceNickname;            // 신규 기기 별칭
     private String regSort;                      // 기기 등록 순서
     private String deviceType;                   // 기기 타입
     private String modelCode;                    // 기기 모델 코드
@@ -100,6 +101,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String pushContent;                  // PUSH 내용
     private String pushType;                     // PUSH 타입
     private String pushDatetime;                 // PUSH 전송 시간
+    private String brightnessLevel;              // 밝기 단계 (0~5, 5 제일 높음)
 
     private Role role = Role.USER;
 

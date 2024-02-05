@@ -2,7 +2,7 @@ package com.oauth.controller;
 
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.mapper.MemberMapper;
-import com.oauth.service.UserService;
+import com.oauth.service.impl.UserServiceImpl;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.Validator;
@@ -32,7 +32,7 @@ public class UserController {
     @Autowired
     private Common common;
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
     public static final List<String> oldModels = Arrays.asList("oldModel1", "oldModel2");
 
@@ -467,5 +467,49 @@ public class UserController {
         }
         return userService.doViewPushHistory(params);
 
+    }
+
+    /**
+     * 기기 별칭 수정
+     * */
+    @PostMapping(value = "/deviceNicknameChange")
+    @ResponseBody
+    public ResponseEntity<?> doDeviceNicknameChange(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException, ParseException{
+
+        String logStep = "[기기 별칭 수정]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getDeviceType()) ||
+                Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getNewDeviceNickname())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doDeviceNicknameChange(params);
+    }
+
+    /**
+     * 기기 밝기 조절
+     * */
+    @PostMapping(value = "/brightnessControl")
+    @ResponseBody
+    public ResponseEntity<?> doBrightnessControl(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException, ParseException{
+
+        String logStep = "[기기 밝기 조절]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getDeviceType()) ||
+                Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getBrightnessLevel())
+                ){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doBrightnessControl(params);
     }
 }

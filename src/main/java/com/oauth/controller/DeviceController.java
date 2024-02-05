@@ -1,7 +1,7 @@
 package com.oauth.controller;
 
 import com.oauth.dto.AuthServerDTO;
-import com.oauth.service.DeviceService;
+import com.oauth.service.impl.DeviceServiceImpl;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.Validator;
@@ -24,7 +24,7 @@ public class DeviceController {
     private Common common;
 
     @Autowired
-    private DeviceService deviceService;
+    private DeviceServiceImpl deviceService;
 
     /** 전원 On/Off */
     @PostMapping(value = "/powerOnOff")

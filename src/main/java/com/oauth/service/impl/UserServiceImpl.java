@@ -1,12 +1,15 @@
-package com.oauth.service;
+package com.oauth.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.response.ApiResponse;
+import com.oauth.service.mapper.UserService;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
+import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,7 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserServiceImpl implements UserService {
     @Autowired
     MobiusService mobiusService;
     @Autowired
@@ -37,6 +40,7 @@ public class UserService {
     public static final List<String> oldModels = Arrays.asList("oldModel1", "oldModel2");
 
     /** 회원 로그인 */
+    @Override
     public ResponseEntity<?> doLogin(String userId, String userPassword) throws CustomException {
 
         String stringObject = null;
@@ -116,7 +120,9 @@ public class UserService {
         }
         return null;
     }
+
     /** 회원가입 */
+    @Override
     public ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException {
 
         String stringObject = null;
@@ -155,6 +161,7 @@ public class UserService {
     }
 
     /** 회원중복 체크 */
+    @Override
     public ResponseEntity<?> doDuplicationCheck(AuthServerDTO params) throws CustomException {
 
         String stringObject = null;
@@ -184,6 +191,7 @@ public class UserService {
     }
 
     /** ID 찾기 */
+    @Override
     public ResponseEntity<?> doIdFind(AuthServerDTO params) throws CustomException {
 
         String stringObject = null;
@@ -228,6 +236,7 @@ public class UserService {
     }
 
     /** 비밀번호 찾기 - 초기화 */
+    @Override
     public ResponseEntity<?> doResetPassword(AuthServerDTO params) throws CustomException {
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
@@ -271,6 +280,7 @@ public class UserService {
     }
 
     /** 비밀번호 변경 - 생성 */
+    @Override
     public ResponseEntity<?> doChangePassword(AuthServerDTO params) throws CustomException {
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
@@ -299,6 +309,7 @@ public class UserService {
     }
 
     /** 사용자정보 조회 */
+    @Override
     public ResponseEntity<?> doSearch(AuthServerDTO params) throws CustomException {
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
@@ -331,6 +342,7 @@ public class UserService {
     }
 
     /** 회원 별칭(이름) 및 전화번호 변경 */
+    @Override
     public ResponseEntity<?> doUpdateUserNicknameHp(AuthServerDTO params) throws CustomException{
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
@@ -373,6 +385,7 @@ public class UserService {
     }
 
     /** 비밀번호 변경 - 로그인시 */
+    @Override
     public ResponseEntity<?> doUpdatePassword(AuthServerDTO params) throws CustomException{
 
         String stringObject = null;
@@ -421,6 +434,7 @@ public class UserService {
     }
 
     /** 사용자(세대원) 정보 조회 */
+    @Override
     public ResponseEntity<?> doViewHouseholdMemebers(AuthServerDTO params) throws CustomException{
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
@@ -482,6 +496,7 @@ public class UserService {
     }
 
     /** 사용자 추가 - 초대 */
+    @Override
     public ResponseEntity<?> doAddUser(AuthServerDTO params)
             throws CustomException{
 
@@ -516,6 +531,7 @@ public class UserService {
     }
 
     /** 사용자 초대 - 수락여부 */
+    @Override
     public ResponseEntity<?> doInviteStatus(AuthServerDTO params)
             throws CustomException{
 
@@ -585,6 +601,7 @@ public class UserService {
     }
 
     /** 사용자 초대 - 목록 조회 */
+    @Override
     public ResponseEntity<?> doInviteListView(AuthServerDTO params)
             throws CustomException{
 
@@ -661,6 +678,7 @@ public class UserService {
     }
 
     /** 사용자(세대원) - 강제탈퇴 */
+    @Override
     public ResponseEntity<?> doDelHouseholdMembers(AuthServerDTO params)
             throws CustomException{
 
@@ -694,6 +712,7 @@ public class UserService {
     }
 
     /** 홈 IoT 컨트롤러 알림 설정 */
+    @Override
     public ResponseEntity<?> doPushSet(AuthServerDTO params, HashMap<String, String> controlMap)
             throws CustomException{
 
@@ -743,6 +762,7 @@ public class UserService {
     }
 
     /** 홈 IoT 컨트롤러 알림 정보 조회 */
+    @Override
     public HashMap<String, Object> doSearchPushSet(AuthServerDTO params)
             throws CustomException{
 
@@ -788,6 +808,7 @@ public class UserService {
     }
 
     /** 사용자(세대주) 탈퇴 */
+    @Override
     public ResponseEntity<?> doDelHouseholder(AuthServerDTO params)
             throws CustomException{
 
@@ -842,6 +863,7 @@ public class UserService {
     }
 
     /** 홈IoT 서비스 회원 탈퇴 */
+    @Override
     public ResponseEntity<?> doWirhdrawal(AuthServerDTO params)
             throws CustomException{
 
@@ -882,6 +904,7 @@ public class UserService {
     }
 
     /** 홈 IoT 컨트롤러 인증 */
+    @Override
     public ResponseEntity<?> doDeviceAuthCheck(AuthServerDTO params)
             throws CustomException{
 
@@ -923,6 +946,7 @@ public class UserService {
     }
 
     /** 홈 IoT 최초 등록 인증 */
+    @Override
     public ResponseEntity<?> doFirstDeviceAuthCheck(AuthServerDTO params)
             throws CustomException{
 
@@ -968,6 +992,7 @@ public class UserService {
     }
 
     /** API인증키 갱신 */
+    @Override
     public ResponseEntity<?> doAccessTokenRenewal(AuthServerDTO params)
             throws CustomException{
 
@@ -1006,6 +1031,7 @@ public class UserService {
     }
 
     /** 홈 IoT 컨트롤러 삭제(회원 매핑 삭제) */
+    @Override
     public ResponseEntity<?> doUserDeviceDelete(AuthServerDTO params)
             throws CustomException {
 
@@ -1041,6 +1067,7 @@ public class UserService {
     }
 
     /** 스마트알림 - PUSH 이력 조회 */
+    @Override
     public ResponseEntity<?> doViewPushHistory(AuthServerDTO params)
             throws CustomException{
 
@@ -1103,6 +1130,80 @@ public class UserService {
         }catch (CustomException e){
             System.out.println(e.getMessage());
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 기기 별칭 수정 */
+    @Override
+    public ResponseEntity<?> doDeviceNicknameChange(AuthServerDTO params)
+            throws CustomException{
+
+        ApiResponse.Data data = new ApiResponse.Data();
+        String stringObject = null;
+        String msg = null;
+        int result = 0;
+        try {
+
+            result = deviceMapper.changeDeviceNickname(params);
+
+            if(result <= 0) stringObject = "N";
+            else stringObject = "Y";
+
+            if(stringObject.equals("Y")) msg = "기기 별칭 수정 성공";
+            else msg = "기기 별칭 수정 실패";
+
+            data.setResult("Y".equalsIgnoreCase(stringObject) ?
+                    ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+
+        }catch (CustomException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 기기 밝기 조절 */
+    @Override
+    public ResponseEntity<?> doBrightnessControl(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data data = new ApiResponse.Data();
+        String stringObject = null;
+        String msg = null;
+        AuthServerDTO serialNumber = null;
+        Map<String, Object> conMap = new HashMap<>();
+        MobiusResponse mobiusResponse = null;
+        try{
+            serialNumber = deviceMapper.getSerialNumberBydeviceId(params.getDeviceId());
+
+            conMap.put("controlAuthKey", params.getControlAuthKey());
+            conMap.put("deviceId", params.getDeviceId());
+            conMap.put("deviceType", params.getDeviceType());
+            conMap.put("modelCode", params.getModelCode());
+            conMap.put("brightnessLevel", params.getBrightnessLevel());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonString = objectMapper.writeValueAsString(conMap);
+
+            mobiusResponse = mobiusService.createCin(serialNumber.getSerialNumber(), params.getUserId(), jsonString);
+            if (mobiusResponse.getResponseCode() == 201) stringObject = "Y";
+            else stringObject = "N";
+
+            if(stringObject.equals("Y")) msg = "기기 별칭 수정 성공";
+            else msg = "기기 별칭 수정 실패";
+
+            data.setMobiusResponseCode(mobiusResponse.getResponseCode());
+            data.setResult("Y".equalsIgnoreCase(stringObject) ?
+                    ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        }catch (CustomException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return null;
     }

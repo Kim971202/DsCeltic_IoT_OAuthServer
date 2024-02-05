@@ -1,4 +1,4 @@
-package com.oauth.service;
+package com.oauth.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
@@ -71,7 +71,6 @@ public class MobiusService {
 
         System.out.println(response.getFirstHeader("Content-Location"));
         System.out.println(response.getLastHeader("Content-Location"));
-
 
         System.out.println("====HTTP Request URI===============================================================================");
         System.out.println("HTTP Request URI : " + uri.toString());
@@ -186,7 +185,7 @@ public class MobiusService {
         cinObject.setDefaultValue(cin);
 
         String requestBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(cinObject);
-
+        System.out.println(requestBody);
         StringEntity entity = new StringEntity(requestBody);
 
         URI uri = new URIBuilder()
