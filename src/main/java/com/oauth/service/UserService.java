@@ -1050,8 +1050,7 @@ public class UserService {
         String stringObject = null;
         String msg = null;
         String userId = params.getUserId();
-
-        AuthServerDTO member = null;
+        List<AuthServerDTO> member = null;
         try{
 
             member = memberMapper.getPushInfoList(userId);
@@ -1064,13 +1063,13 @@ public class UserService {
                 Set<String> pushSet = new HashSet<>();
                 List<ApiResponse.Data.PushInfo> pushInfoArray = new ArrayList<>();
 
-                List<String> pushIdxList = Common.extractJson(pushSet.toString(), "pushIdx");
-                List<String> pushTitleList = Common.extractJson(pushSet.toString(), "pushTitle");
-                List<String> pushContentList = Common.extractJson(pushSet.toString(), "pushContent");
-                List<String> pushTypeList = Common.extractJson(pushSet.toString(), "pushType");
-                List<String> pushDatetimeList = Common.extractJson(pushSet.toString(), "pushDatetime");
+                List<String> pushIdxList = Common.extractJson(member.toString(), "pushIdx");
+                List<String> pushTitleList = Common.extractJson(member.toString(), "pushTitle");
+                List<String> pushContentList = Common.extractJson(member.toString(), "pushContent");
+                List<String> pushTypeList = Common.extractJson(member.toString(), "pushType");
+                List<String> pushDatetimeList = Common.extractJson(member.toString(), "pushDatetime");
 
-                int numInvitations = pushSet.size();
+                int numPush = member.size();
 
                 if(pushIdxList != null
                         && pushTitleList != null
@@ -1079,8 +1078,8 @@ public class UserService {
                         && pushDatetimeList != null
                 ){
                     // Member 추가
-                    for (int i = 0; i < numInvitations; i++) {
-                        ApiResponse.Data.PushInfo pushes = Common.createInvitations(
+                    for (int i = 0; i < numPush; i++) {
+                        ApiResponse.Data.PushInfo pushes = Common.createPush(
                                 pushIdxList.get(i),
                                 pushTitleList.get(i),
                                 pushContentList.get(i),
@@ -1091,7 +1090,7 @@ public class UserService {
                     }
                 }
 
-                data.setPushInfo(pushInfo);
+                data.setPushInfo(pushInfoArray);
             }
 
             if(stringObject.equals("Y")) msg = "스마트알림 - PUSH 이력 조회 성공";

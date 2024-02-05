@@ -74,7 +74,7 @@ public class ApiResponse {
         private List<String> userIdList;
         private Object pushCodes;
         private DeviceStatusInfoDR910W deviceStatusInfoDR910W;
-        private PushInfo pushInfo;
+        private Object pushInfo;
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);

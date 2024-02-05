@@ -115,6 +115,28 @@ public class Common {
         return invitation;
     }
 
+    public static ApiResponse.Data.PushInfo createPush(
+            String pushIdx,
+            String pushTitle,
+            String pushContent,
+            String pushType,
+            String pushDatetime,
+            Set<String> pushIds) {
+
+        pushIds.add(pushIdx);
+
+        // Device 생성
+        ApiResponse.Data.PushInfo push = new ApiResponse.Data.PushInfo();
+
+        push.setPushIdx(pushIdx);
+        push.setPushTitle(pushTitle);
+        push.setPushContent(pushContent);
+        push.setPushType(pushType);
+        push.setPushDatetime(pushDatetime);
+
+        return push;
+    }
+
     public static List<String> extractJson(String inputList, String inputKey) {
 
         if(inputList.isEmpty()) return null;
