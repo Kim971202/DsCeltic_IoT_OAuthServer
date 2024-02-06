@@ -220,6 +220,18 @@ public class Common {
         }
     }
 
+    public static void updateMemberDTOList(AuthServerDTO authServerDTO, String targetKey, Object newValue) {
+            try {
+                // MemberDTO 클래스의 필드에 따라 해당 필드에 접근해서 원하는 Key인지 확인
+                var field = AuthServerDTO.class.getDeclaredField(targetKey);
+                field.setAccessible(true);
+                field.set(authServerDTO, newValue);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                // 원하는 Key가 없을 경우 예외 처리 또는 다른 작업 수행
+                System.out.println("Unsupported key: " + targetKey);
+            }
+    }
+
     public LocalDateTime getTimeAsiaSeoulNow() {
         return getTimeNow("Asia/Seoul");
     }
@@ -332,13 +344,4 @@ public class Common {
         return null;
     }
 
-    public String changeStringToJson(DeviceStatusInfoDR910W obj) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return "Error converting to JSON";
-        }
-    }
 }

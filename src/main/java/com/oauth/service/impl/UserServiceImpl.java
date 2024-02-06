@@ -288,6 +288,9 @@ public class UserServiceImpl implements UserService {
         String msg = null;
 
         try{
+
+            Common.updateMemberDTOList(params, "userPassword", encoder.encode(params.getUserPassword()));
+
             int result = memberMapper.updatePassword(params);
 
             if(result > 0) stringObject = "Y";
