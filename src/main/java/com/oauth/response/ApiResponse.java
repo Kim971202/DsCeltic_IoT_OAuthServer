@@ -75,7 +75,8 @@ public class ApiResponse {
         private Object pushCodes;
         private DeviceStatusInfoDR910W deviceStatusInfoDR910W;
         private Object pushInfo;
-        private int mobiusResponseCode;
+        private Object noticeInfo;
+        private String mobiusResponseCode;
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);
@@ -128,6 +129,17 @@ public class ApiResponse {
             private String pushContent;                  // PUSH 내용
             private String pushType;                     // PUSH 타입
             private String pushDatetime;                 // PUSH 전송 시간
+        }
+
+        @Getter
+        @Setter
+        public static class NoticeInfo {
+            private String noticeIdx;
+            private String noticeTitle;
+            private String noticeContent;
+            private String noticeType;
+            private String noticeStartDate;
+            private String noticeEndDate;
         }
 
     }

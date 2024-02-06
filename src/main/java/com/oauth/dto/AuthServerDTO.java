@@ -102,6 +102,12 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String pushType;                     // PUSH 타입
     private String pushDatetime;                 // PUSH 전송 시간
     private String brightnessLevel;              // 밝기 단계 (0~5, 5 제일 높음)
+    private String noticeIdx;                    // 공지 번호
+    private String noticeTitle;                  // 공지 제목
+    private String noticeType;                   // 공지 타입 (00: ALL 01: 보일러 05: 각방 07: 환기)
+    private String noticeContent;                // 공지 내용
+    private String noticeStartDate;              // 공지 시작일
+    private String noticeEndDate;                // 공지 종료일
 
     private Role role = Role.USER;
 

@@ -40,5 +40,6 @@ public interface MemberMapper {
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
     public List<AuthServerDTO> getPushInfoList(String userId);
+    public List<AuthServerDTO> getNoticeList();
 
 }

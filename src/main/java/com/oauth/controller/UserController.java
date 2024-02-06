@@ -512,4 +512,23 @@ public class UserController {
         }
         return userService.doBrightnessControl(params);
     }
+
+    /**
+     * 공지사항 조회
+     * */
+    @PostMapping(value = "/notice")
+    @ResponseBody
+    public ResponseEntity<?> doNotice(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException, ParseException{
+
+        String logStep = "[공지사항 조회]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceType())
+        ){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doNotice(params);
+    }
 }

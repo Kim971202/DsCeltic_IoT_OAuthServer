@@ -63,7 +63,7 @@ public class MobiusService {
         MobiusResponse mobiusResponse = new MobiusResponse();
 
         int responseCode = response.getStatusLine().getStatusCode();
-        mobiusResponse.setResponseCode(responseCode);
+        mobiusResponse.setResponseCode(String.valueOf(responseCode));
 
         HttpEntity responseEntity = response.getEntity();
         String responseString = EntityUtils.toString(responseEntity);

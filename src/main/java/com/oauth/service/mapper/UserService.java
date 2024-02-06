@@ -82,4 +82,7 @@ public interface UserService {
 
     /** 기기 밝기 조절 */
     ResponseEntity<?> doBrightnessControl(AuthServerDTO params) throws CustomException;
+
+    /** 공지사항 조회 */
+    ResponseEntity<?> doNotice(AuthServerDTO params) throws CustomException;
 }

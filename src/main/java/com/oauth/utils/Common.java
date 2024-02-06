@@ -137,6 +137,30 @@ public class Common {
         return push;
     }
 
+    public static ApiResponse.Data.NoticeInfo createNotice(
+            String noticeIdx,
+            String noticeTitle,
+            String noticeContent,
+            String noticeType,
+            String noticeStartDate,
+            String noticeEndDate,
+            Set<String> noticeIds) {
+
+        noticeIds.add(noticeIdx);
+
+        // Device 생성
+        ApiResponse.Data.NoticeInfo notice = new ApiResponse.Data.NoticeInfo();
+
+        notice.setNoticeIdx(noticeIdx);
+        notice.setNoticeTitle(noticeTitle);
+        notice.setNoticeContent(noticeContent);
+        notice.setNoticeType(noticeType);
+        notice.setNoticeStartDate(noticeStartDate);
+        notice.setNoticeEndDate(noticeEndDate);
+
+        return notice;
+    }
+
     public static List<String> extractJson(String inputList, String inputKey) {
 
         if(inputList.isEmpty()) return null;

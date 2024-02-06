@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class MobiusResponse {
 
-    private int responseCode;
+    private String responseCode;
     private String responseContent;
     private String controlAuthKey;
     private String commandCode;

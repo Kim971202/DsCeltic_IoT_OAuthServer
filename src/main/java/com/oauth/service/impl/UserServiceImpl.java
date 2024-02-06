@@ -1188,13 +1188,13 @@ public class UserServiceImpl implements UserService {
             String jsonString = objectMapper.writeValueAsString(conMap);
 
             mobiusResponse = mobiusService.createCin(serialNumber.getSerialNumber(), params.getUserId(), jsonString);
-            if (mobiusResponse.getResponseCode() == 201) stringObject = "Y";
+            if (Objects.equals(mobiusResponse.getResponseCode(), "201")) stringObject = "Y";
             else stringObject = "N";
 
             if(stringObject.equals("Y")) msg = "기기 별칭 수정 성공";
             else msg = "기기 별칭 수정 실패";
 
-            data.setMobiusResponseCode(mobiusResponse.getResponseCode());
+            data.setMobiusResponseCode((mobiusResponse.getResponseCode()));
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
@@ -1204,6 +1204,72 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    /** 공지사항 조회 */
+    @Override
+    public ResponseEntity<?> doNotice(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data data = new ApiResponse.Data();
+        ApiResponse.Data.NoticeInfo noticeInfo = new ApiResponse.Data.NoticeInfo();
+
+        String stringObject = null;
+        String msg = null;
+        List<AuthServerDTO> noticeList = null;
+        try {
+
+            noticeList = memberMapper.getNoticeList();
+            if(noticeList.isEmpty()) stringObject = "N";
+            else {
+                stringObject = "Y";
+
+                Set<String> noticeSet = new HashSet<>();
+                List<ApiResponse.Data.NoticeInfo> noticeInfoArray = new ArrayList<>();
+
+                List<String> noticeIdxList = Common.extractJson(noticeList.toString(), "noticeIdx");
+                List<String> noticeTitle = Common.extractJson(noticeList.toString(), "noticeTitle");
+                List<String> noticeContent = Common.extractJson(noticeList.toString(), "noticeContent");
+                List<String> noticeType = Common.extractJson(noticeList.toString(), "noticeType");
+                List<String> noticeStartDate = Common.extractJson(noticeList.toString(), "noticeStartDate");
+                List<String> noticeEndDate = Common.extractJson(noticeList.toString(), "noticeEndDate");
+
+                int numNotice = noticeList.size();
+                if(noticeIdxList != null
+                        && noticeTitle != null
+                        && noticeContent != null
+                        && noticeStartDate != null
+                        && noticeEndDate != null
+                        && noticeType != null
+                ){
+                    // Member 추가
+                    for (int i = 0; i < numNotice; i++) {
+                        ApiResponse.Data.NoticeInfo notices = Common.createNotice(
+                                noticeIdxList.get(i),
+                                noticeTitle.get(i),
+                                noticeContent.get(i),
+                                noticeType.get(i),
+                                noticeStartDate.get(i),
+                                noticeEndDate.get(i),
+                                noticeSet);
+                        noticeInfoArray.add(notices);
+                    }
+                }
+                data.setNoticeInfo(noticeInfoArray);
+            }
+
+            if(stringObject.equals("Y")) msg = "공지사항 조회 성공";
+            else msg = "공지사항 조회 실패";
+
+            data.setResult("Y".equalsIgnoreCase(stringObject) ?
+                    ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+
+        }catch (CustomException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }
