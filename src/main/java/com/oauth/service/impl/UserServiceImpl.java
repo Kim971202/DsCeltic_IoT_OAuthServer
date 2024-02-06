@@ -459,28 +459,33 @@ public class UserServiceImpl implements UserService {
             List<ApiResponse.Data.User> user = new ArrayList<>();
 
             List<AuthServerDTO> deviceIds = memberMapper.getDeviceIdByUserId(userId);
-            List<AuthServerDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
+            if(!deviceIds.isEmpty()){
+                stringObject = "Y";
+                List<AuthServerDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
 
-            List<AuthServerDTO> memberStream = Common.deduplication(members, AuthServerDTO::getUserId);
+                List<AuthServerDTO> memberStream = Common.deduplication(members, AuthServerDTO::getUserId);
 
-            List<String> userIdList = Common.extractJson(memberStream.toString(), "userId");
-            List<String> userNicknameList = Common.extractJson(memberStream.toString(), "userNickname");
-            List<String> householderdList = Common.extractJson(memberStream.toString(), "householder");
+                List<String> userIdList = Common.extractJson(memberStream.toString(), "userId");
+                List<String> userNicknameList = Common.extractJson(memberStream.toString(), "userNickname");
+                List<String> householderdList = Common.extractJson(memberStream.toString(), "householder");
 
-            // Mapper실행 후 사용자가 가지고 있는 Member 개수
-            int numMembers = memberStream.size();
+                // Mapper실행 후 사용자가 가지고 있는 Member 개수
+                int numMembers = memberStream.size();
 
-            if(userIdList != null && userNicknameList != null && householderdList != null){
-                // Member 추가
-                for (int i = 0; i < numMembers; i++) {
-                    ApiResponse.Data.User users = Common.createUsers(
-                            userIdList.get(i),
-                            userNicknameList.get(i),
-                            householderdList.get(i),
-                            userIds);
-                    user.add(users);
+                if(userIdList != null && userNicknameList != null && householderdList != null){
+                    // Member 추가
+                    for (int i = 0; i < numMembers; i++) {
+                        ApiResponse.Data.User users = Common.createUsers(
+                                userIdList.get(i),
+                                userNicknameList.get(i),
+                                householderdList.get(i),
+                                userIds);
+                        user.add(users);
+                    }
                 }
-            }
+            } else stringObject = "N";
+
+
 
             if(stringObject.equals("Y")) msg = "사용자(세대원) 정보 조회 성공";
             else msg = "사용자(세대원) 정보 조회 실패";
