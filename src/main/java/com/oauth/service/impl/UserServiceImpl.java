@@ -360,19 +360,20 @@ public class UserServiceImpl implements UserService {
         try{
 
             AuthServerDTO pwCheck = memberMapper.passwordCheck(userPassword);
-            System.out.println("pwCheck: " + pwCheck);
-            // TODO: 예외처리 하여 불일치 PW 알림
-            if(pwCheck == null) return null;
 
-            if(newHp == null) params.setNewHp(oldHp);
-            else if(oldHp.equals(newHp)) return null; // TODO: 예외처리 하여 동일한 전화번호 변경 알림
-
-            int result = memberMapper.updateUserNicknameAndHp(params);
-            System.out.println("result: " + result);
-            if(result > 0) stringObject = "Y";
-            else stringObject = "N";
+            if(pwCheck == null) stringObject = "N";
+            else {
+                if(oldHp.equals(newHp)) stringObject = "M";
+                else if(newHp == null) {
+                    params.setNewHp(oldHp);
+                    int result = memberMapper.updateUserNicknameAndHp(params);
+                    if(result > 0) stringObject = "Y";
+                    else stringObject = "N";
+                }
+            }
 
             if(stringObject.equals("Y")) msg = "회원 별칭(이름) 및 전화번호 변경 성공";
+            else if(stringObject.equals("M")) msg = "동일한 전화번호 변경 오류";
             else msg = "회원 별칭(이름) 및 전화번호 변경 실패";
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
@@ -1191,6 +1192,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("deviceType", params.getDeviceType());
             conMap.put("modelCode", params.getModelCode());
             conMap.put("brightnessLevel", params.getBrightnessLevel());
+            conMap.put("functionId", "powr");
 
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonString = objectMapper.writeValueAsString(conMap);
