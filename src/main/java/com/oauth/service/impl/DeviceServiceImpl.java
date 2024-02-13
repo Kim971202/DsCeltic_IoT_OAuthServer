@@ -85,12 +85,11 @@ public class DeviceServiceImpl implements DeviceService {
         String msg = null;
         DeviceInfoUpsert deviceInfoUpsert = new DeviceInfoUpsert();
 
-        String serialNumber = null;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String controlAuthKey = params.getControlAuthKey();
         String registYn = params.getRegistYn();
-        String jsonBody = null;
+        String serialNumber = params.getSerialNumber();
 
         int insertDeviceModelCodeResult = 0;
         int insertDeviceResult = 0;
@@ -101,22 +100,49 @@ public class DeviceServiceImpl implements DeviceService {
         int updateDeviceDetailLocationResult = 0;
         try {
 
+            deviceInfoUpsert.setAccessToken(params.getAccessToken());
+            deviceInfoUpsert.setUserId(params.getUserId());
+            deviceInfoUpsert.setHp(params.getHp());
+            deviceInfoUpsert.setRegisYn(registYn);
+            deviceInfoUpsert.setDeviceId(deviceId);
+            deviceInfoUpsert.setControlAuthKey(controlAuthKey);
+            deviceInfoUpsert.setTmpRegistryKey(params.getTmpRegistKey());
+            deviceInfoUpsert.setDeviceType(params.getDeviceType());
+            deviceInfoUpsert.setModelCode(params.getModelCode());
+            deviceInfoUpsert.setSerialNumber(params.getSerialNumber());
+            deviceInfoUpsert.setZipCode(params.getZipCode());
+            deviceInfoUpsert.setOldAddr(params.getOldAddr());
+            deviceInfoUpsert.setNewAddr(params.getNewAddr());
+            deviceInfoUpsert.setAddrDetail(params.getAddrDetail());
+            deviceInfoUpsert.setLatitude(params.getLatitude());
+            deviceInfoUpsert.setLongitude(params.getLongitude());
+            deviceInfoUpsert.setDeviceNickname(params.getDeviceNickname());
+            deviceInfoUpsert.setAddrNickname(params.getAddrNickname());
+
+            deviceInfoUpsert.setFunctionId("mfAr");
+            deviceInfoUpsert.setUuId(common.getTransactionId());
+
             // deviceId, controlAuthKey 가 모두 존재할 경우에만 수정으로 판단
             if(deviceId != null && controlAuthKey != null && registYn.equals("N")){
-                /**
-                 *IoT 디바이스 UPDATE 순서
+
+                /* *
+                 * IoT 디바이스 UPDATE 순서
                  * 1. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
                  * 2. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * */
                 updateDeviceRegistLocationResult = deviceMapper.updateDeviceRegistLocation(params);
                 updateDeviceDetailLocationResult = deviceMapper.updateDeviceDetailLocation(params);
 
-                if(updateDeviceRegistLocationResult <= 0 || updateDeviceDetailLocationResult <= 0)
+                if(updateDeviceRegistLocationResult <= 0 || updateDeviceDetailLocationResult <= 0){
                     stringObject = "N";
+                    redisCommand.setValues(deviceInfoUpsert.getUuId(), userId);
+                    mobiusService.createCin(serialNumber, userId, JSON.toJson(deviceInfoUpsert));
+                }
                 else stringObject = "Y";
 
             } else {
-                /**
+
+                /* *
                  * IoT 디바이스 등록 INSERT 순서
                  * 1. TBD_IOT_DEVICE_MODL_CD - 디바이스 모델 코드
                  * 2. TBR_IOT_DEVICE - 디바이스
@@ -143,7 +169,12 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             }
 
-            if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 정보 등록/수정 성공";
+            if(stringObject.equals("Y")) {
+                msg = "홈 IoT 컨트롤러 정보 등록/수정 성공";
+                result.setLatitude(params.getLatitude());
+                result.setLongitude(params.getLongitude());
+                result.setTmpRegistKey(params.getTmpRegistKey());
+            }
             else msg = "홈 IoT 컨트롤러 정보 등록/수정 실패";
 
             result.setResult("Y".equalsIgnoreCase(stringObject)
@@ -154,6 +185,8 @@ public class DeviceServiceImpl implements DeviceService {
         } catch (CustomException e){
             System.out.println(e.getMessage());
             e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return null;
     }

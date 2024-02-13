@@ -11,6 +11,7 @@ public class DeviceInfoUpsert {
 
     private String accessToken;
     private String userId;
+    private String hp;
     private String regisYn;
     private String deviceId;
     private String controlAuthKey;
@@ -24,6 +25,8 @@ public class DeviceInfoUpsert {
     private String addrDetail;
     private String deviceNickname;
     private String addrNickname;
+    private String latitude;
+    private String longitude;
 
     private String functionId;
     private String uuId;

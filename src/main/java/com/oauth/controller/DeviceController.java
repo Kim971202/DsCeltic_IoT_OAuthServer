@@ -34,12 +34,13 @@ public class DeviceController {
 
         String logStep = "[전원 On/Off]";
 
-        if(Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getPowerStatus())) {
+                Validator.isNullOrEmpty(params.getPowerStatus()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
 
@@ -57,16 +58,26 @@ public class DeviceController {
 
         String logStep = "[홈 IoT 컨트롤러 정보 등록/수정]";
 
-        if(Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getHp()) ||
+                Validator.isNullOrEmpty(params.getRegistYn()) ||
+                Validator.isNullOrEmpty(params.getTmpRegistKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getPowerStatus())) {
+                Validator.isNullOrEmpty(params.getSerialNumber()) ||
+                Validator.isNullOrEmpty(params.getZipCode()) ||
+                Validator.isNullOrEmpty(params.getOldAddr()) ||
+                Validator.isNullOrEmpty(params.getNewAddr()) ||
+                Validator.isNullOrEmpty(params.getAddrDetail()) ||
+                Validator.isNullOrEmpty(params.getLatitude()) ||
+                Validator.isNullOrEmpty(params.getLongitude()) ||
+                Validator.isNullOrEmpty(params.getDeviceNickname()) ||
+                Validator.isNullOrEmpty(params.getAddrNickname())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
 
-        return deviceService.doPowerOnOff(params);
+        return deviceService.doDeviceInfoUpsert(params);
     }
 
     /** 홈 IoT 컨트롤러 상태 정보 조회 */
