@@ -43,7 +43,7 @@ public class DeviceController {
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
 
-        return deviceService.doPowerOnOff(params);
+        return deviceService.doDeviceInfoUpsert(params);
     }
 
     /** 홈 IoT 컨트롤러 정보 등록/수정 */
@@ -51,6 +51,9 @@ public class DeviceController {
     @ResponseBody
     public ResponseEntity<?> doDeviceInfoUpsert(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws CustomException {
+
+        String a = Common.getClientIp(request);
+        System.out.println(a);
 
         String logStep = "[홈 IoT 컨트롤러 정보 등록/수정]";
 

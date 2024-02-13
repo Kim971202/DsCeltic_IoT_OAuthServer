@@ -14,5 +14,10 @@ public interface DeviceMapper {
     public AuthServerDTO deviceTempAuthCheck(List<AuthServerDTO> device);
     public List<AuthServerDTO> getDeviceAuthCheckValuesByUserId(String device);
     public int changeDeviceNickname(AuthServerDTO device);
-
+    public int insertDeviceModelCode(AuthServerDTO device);
+    public int insertDevice(AuthServerDTO device);
+    public int insertDeviceRegist(AuthServerDTO device);
+    public int insertDeviceDetail(AuthServerDTO device);
+    public int updateDeviceRegistLocation(AuthServerDTO device);
+    public int updateDeviceDetailLocation(AuthServerDTO device);
 }

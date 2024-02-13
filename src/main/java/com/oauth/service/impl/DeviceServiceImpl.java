@@ -1,6 +1,7 @@
 package com.oauth.service.impl;
 
 import com.oauth.dto.AuthServerDTO;
+import com.oauth.dto.gw.DeviceInfoUpsert;
 import com.oauth.dto.gw.DeviceStatusInfoDR910W;
 import com.oauth.dto.gw.PowerOnOff;
 import com.oauth.mapper.DeviceMapper;
@@ -29,6 +30,7 @@ public class DeviceServiceImpl implements DeviceService {
 
 
     /** 전원 On/Off */
+    @Override
     public ResponseEntity<?> doPowerOnOff(AuthServerDTO params) throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();
@@ -46,7 +48,7 @@ public class DeviceServiceImpl implements DeviceService {
             powerOnOff.setDeviceType(params.getDeviceType());
             powerOnOff.setModelCode(params.getModelCode());
             powerOnOff.setPowerStatus(params.getPowerStatus());
-            powerOnOff.setFunctionId("powerOnOff");
+            powerOnOff.setFunctionId("powr");
             powerOnOff.setUuId(common.getTransactionId());
 
             redisCommand.setValues(powerOnOff.getUuId(), userId);
@@ -58,8 +60,6 @@ public class DeviceServiceImpl implements DeviceService {
                 stringObject = "Y";
                 mobiusService.createCin(serialNumber, userId, JSON.toJson(powerOnOff));
             } else stringObject = "N";
-
-            System.out.println("serialNumber: " + serialNumber);
 
             if(stringObject.equals("Y")) msg = "전원 On/Off 성공";
             else msg = "전원 On/Off 실패";
@@ -76,7 +76,90 @@ public class DeviceServiceImpl implements DeviceService {
         return null;
     }
 
+    /** 홈 IoT 컨트롤러 정보 등록/수정 */
+    @Override
+    public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        String stringObject = null;
+        String msg = null;
+        DeviceInfoUpsert deviceInfoUpsert = new DeviceInfoUpsert();
+
+        String serialNumber = null;
+        String userId = params.getUserId();
+        String deviceId = params.getDeviceId();
+        String controlAuthKey = params.getControlAuthKey();
+        String registYn = params.getRegistYn();
+        String jsonBody = null;
+
+        int insertDeviceModelCodeResult = 0;
+        int insertDeviceResult = 0;
+        int insertDeviceRegistResult = 0;
+        int insertDeviceDetailResult = 0;
+
+        int updateDeviceRegistLocationResult = 0;
+        int updateDeviceDetailLocationResult = 0;
+        try {
+
+            // deviceId, controlAuthKey 가 모두 존재할 경우에만 수정으로 판단
+            if(deviceId != null && controlAuthKey != null && registYn.equals("N")){
+                /**
+                 *IoT 디바이스 UPDATE 순서
+                 * 1. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
+                 * 2. TBR_OPR_DEVICE_DETAIL - 단말정보상세
+                 * */
+                updateDeviceRegistLocationResult = deviceMapper.updateDeviceRegistLocation(params);
+                updateDeviceDetailLocationResult = deviceMapper.updateDeviceDetailLocation(params);
+
+                if(updateDeviceRegistLocationResult <= 0 || updateDeviceDetailLocationResult <= 0)
+                    stringObject = "N";
+                else stringObject = "Y";
+
+            } else {
+                /**
+                 * IoT 디바이스 등록 INSERT 순서
+                 * 1. TBD_IOT_DEVICE_MODL_CD - 디바이스 모델 코드
+                 * 2. TBR_IOT_DEVICE - 디바이스
+                 * 3. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
+                 * 4. TBR_OPR_DEVICE_DETAIL - 단말정보상세
+                 * */
+                insertDeviceModelCodeResult = deviceMapper.insertDeviceModelCode(params);
+                if(insertDeviceModelCodeResult <= 0) stringObject = "N";
+                else {
+                    insertDeviceResult = deviceMapper.insertDevice(params);
+
+                    if(insertDeviceResult <= 0) stringObject = "N";
+                    else {
+                        insertDeviceRegistResult = deviceMapper.insertDeviceRegist(params);
+
+                        if(insertDeviceRegistResult <= 0) stringObject = "N";
+                        else {
+                            insertDeviceDetailResult = deviceMapper.insertDeviceDetail(params);
+
+                            if(insertDeviceDetailResult <= 0) stringObject = "N";
+                            else stringObject = "Y";
+                        }
+                    }
+                }
+            }
+
+            if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 정보 등록/수정 성공";
+            else msg = "홈 IoT 컨트롤러 정보 등록/수정 실패";
+
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (CustomException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /** 홈 IoT 컨트롤러 상태 정보 조회  */
+    @Override
     public ResponseEntity<?> doDeviceStatusInfo(AuthServerDTO params) throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();

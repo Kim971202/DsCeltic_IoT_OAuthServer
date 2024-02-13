@@ -11,7 +11,9 @@ import com.oauth.mapper.MemberMapper;
 import com.oauth.response.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -342,6 +344,37 @@ public class Common {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String getClientIp(HttpServletRequest request) {
+        String clientIp = null;
+        boolean isIpInHeader = false;
+
+        List<String> headerList = new ArrayList<>();
+        headerList.add("X-Forwarded-For");
+        headerList.add("HTTP_CLIENT_IP");
+        headerList.add("HTTP_X_FORWARDED_FOR");
+        headerList.add("HTTP_X_FORWARDED");
+        headerList.add("HTTP_FORWARDED_FOR");
+        headerList.add("HTTP_FORWARDED");
+        headerList.add("Proxy-Client-IP");
+        headerList.add("WL-Proxy-Client-IP");
+        headerList.add("HTTP_VIA");
+        headerList.add("IPV6_ADR");
+
+        for (String header : headerList) {
+            clientIp = request.getHeader(header);
+            if (StringUtils.hasText(clientIp) && !clientIp.equals("unknown")) {
+                isIpInHeader = true;
+                break;
+            }
+        }
+
+        if (!isIpInHeader) {
+            clientIp = request.getRemoteAddr();
+        }
+
+        return clientIp;
     }
 
 }

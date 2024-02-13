@@ -1192,7 +1192,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("deviceType", params.getDeviceType());
             conMap.put("modelCode", params.getModelCode());
             conMap.put("brightnessLevel", params.getBrightnessLevel());
-            conMap.put("functionId", "powr");
+            conMap.put("functionId", "blCf");
 
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonString = objectMapper.writeValueAsString(conMap);

@@ -77,6 +77,9 @@ public class ApiResponse {
         private Object pushInfo;
         private Object noticeInfo;
         private String mobiusResponseCode;
+        private String latitude;
+        private String longitude;
+        private String tmpRegistKey;
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);

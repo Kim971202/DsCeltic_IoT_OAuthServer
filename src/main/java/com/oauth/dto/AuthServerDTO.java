@@ -90,12 +90,10 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String sPushYn;                      // 에러 알림 수신
     private String tPushYn;                      // 맞춤 알림 수신
     private String powerStatus;                  // 전원On/Off (on/of)
-    private String serialNumber;                 // 기기 시리얼 번호
     private List<String> deviceIdList;
     private List<String> controlAuthKeyList;
     private List<String> deviceTypeList;
     private List<String> modelCodeList;
-    private String tmpRegistKey;                 // 임시 저장키
     private String pushIdx;                      // PUSH IDX
     private String pushTitle;                    // PUSH 제목
     private String pushContent;                  // PUSH 내용
@@ -108,6 +106,17 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String noticeContent;                // 공지 내용
     private String noticeStartDate;              // 공지 시작일
     private String noticeEndDate;                // 공지 종료일
+    private String registYn;                     // Y: 등록 N: 수정
+    private String tmpRegistKey;                 // 임시 저장키
+    private String serialNumber;                 // 기기 시리얼 번호
+    private String zipCode;                      // 우편번호 (신 우편번호 5자리)
+    private String oldAddr;                      // 지번 주소
+    private String newAddr;                      // 도로명 주소
+    private String addrDetail;                   // 상세 주소
+    private String addrNickname;                 // 설치 장소명
+    private String latitude;                     // 위도
+    private String longitude;                    // 경도
+    private String deviceStatusJson;             // RC주기보고 JSON 전문
 
     private Role role = Role.USER;
 
