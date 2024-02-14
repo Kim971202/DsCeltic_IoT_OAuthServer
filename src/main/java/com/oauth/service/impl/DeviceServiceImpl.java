@@ -11,10 +11,14 @@ import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.sql.SQLException;
 
 @Service
 public class DeviceServiceImpl implements DeviceService {
@@ -27,7 +31,8 @@ public class DeviceServiceImpl implements DeviceService {
     DeviceMapper deviceMapper;
     @Autowired
     RedisCommand redisCommand;
-
+    @Autowired
+    SqlSessionFactory sqlSessionFactory;
 
     /** 전원 On/Off */
     @Override
@@ -78,13 +83,17 @@ public class DeviceServiceImpl implements DeviceService {
 
     /** 홈 IoT 컨트롤러 정보 등록/수정 */
     @Override
-    public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws CustomException {
+    public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws CustomException, SQLException {
+
+        // Transaction용 클래스 선언
+        SqlSession session = sqlSessionFactory.openSession();
+        // 자동 Commit 기능 OFF
+        session.getConnection().setAutoCommit(false);
 
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = null;
         String msg = null;
         DeviceInfoUpsert deviceInfoUpsert = new DeviceInfoUpsert();
-
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String controlAuthKey = params.getControlAuthKey();
@@ -130,8 +139,17 @@ public class DeviceServiceImpl implements DeviceService {
                  * 1. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
                  * 2. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * */
-                updateDeviceRegistLocationResult = deviceMapper.updateDeviceRegistLocation(params);
-                updateDeviceDetailLocationResult = deviceMapper.updateDeviceDetailLocation(params);
+
+                try{
+                    DeviceMapper dMapper = session.getMapper(DeviceMapper.class);
+
+                    updateDeviceRegistLocationResult = dMapper.updateDeviceRegistLocation(params);
+                    updateDeviceDetailLocationResult = dMapper.updateDeviceDetailLocation(params);
+
+                    session.commit();
+                }catch (Exception e){
+                    session.rollback();
+                }
 
                 if(updateDeviceRegistLocationResult <= 0 || updateDeviceDetailLocationResult <= 0){
                     stringObject = "N";
@@ -149,24 +167,40 @@ public class DeviceServiceImpl implements DeviceService {
                  * 3. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
                  * 4. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * */
-                insertDeviceModelCodeResult = deviceMapper.insertDeviceModelCode(params);
-                if(insertDeviceModelCodeResult <= 0) stringObject = "N";
-                else {
-                    insertDeviceResult = deviceMapper.insertDevice(params);
+                try {
+                    DeviceMapper dMapper = session.getMapper(DeviceMapper.class);
 
-                    if(insertDeviceResult <= 0) stringObject = "N";
-                    else {
-                        insertDeviceRegistResult = deviceMapper.insertDeviceRegist(params);
+                    insertDeviceModelCodeResult = dMapper.insertDeviceModelCode(params);
+                    insertDeviceResult = dMapper.insertDevice(params);
+                    insertDeviceRegistResult = dMapper.insertDeviceRegist(params);
+                    insertDeviceDetailResult = dMapper.insertDeviceDetail(params);
 
-                        if(insertDeviceRegistResult <= 0) stringObject = "N";
-                        else {
-                            insertDeviceDetailResult = deviceMapper.insertDeviceDetail(params);
-
-                            if(insertDeviceDetailResult <= 0) stringObject = "N";
-                            else stringObject = "Y";
-                        }
-                    }
+                    // 여기까지 왔다면 모든 작업이 성공했으므로 커밋
+                    session.commit();
+                } catch (Exception e) {
+                    session.rollback();
+                } finally {
+                    session.close(); // 세션을 닫아줘야 합니다.
                 }
+                // TODO: stringObject 관련 처리 구문 추가 필요
+//                insertDeviceModelCodeResult = deviceMapper.insertDeviceModelCode(params);
+//                if(insertDeviceModelCodeResult <= 0) stringObject = "N";
+//                else {
+//                    insertDeviceResult = deviceMapper.insertDevice(params);
+//
+//                    if(insertDeviceResult <= 0) stringObject = "N";
+//                    else {
+//                        insertDeviceRegistResult = deviceMapper.insertDeviceRegist(params);
+//
+//                        if(insertDeviceRegistResult <= 0) stringObject = "N";
+//                        else {
+//                            insertDeviceDetailResult = deviceMapper.insertDeviceDetail(params);
+//
+//                            if(insertDeviceDetailResult <= 0) stringObject = "N";
+//                            else stringObject = "Y";
+//                        }
+//                    }
+//                }
             }
 
             if(stringObject.equals("Y")) {

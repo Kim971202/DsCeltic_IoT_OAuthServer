@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.sql.SQLException;
 
 @RequestMapping("/devices/v1")
 @RestController
@@ -26,11 +27,32 @@ public class DeviceController {
     @Autowired
     private DeviceServiceImpl deviceService;
 
+
+    /** 홈 IoT 컨트롤러 상태 정보 조회 */
+    @PostMapping(value = "/deviceStatusInfo")
+    @ResponseBody
+    public ResponseEntity<?> doDeviceStatusInfo(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        String logStep = "[홈 IoT 컨트롤러 상태 정보 조회]";
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getModelCode())) {
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+
+        return deviceService.doDeviceStatusInfo(params);
+    }
+
+
+    // 아래 실제 기기 제어 호출 부분
     /** 전원 On/Off */
     @PostMapping(value = "/powerOnOff")
     @ResponseBody
     public ResponseEntity<?> doPowerOnOff(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
-            throws CustomException {
+            throws CustomException, SQLException {
 
         String logStep = "[전원 On/Off]";
 
@@ -44,14 +66,14 @@ public class DeviceController {
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
 
-        return deviceService.doDeviceInfoUpsert(params);
+        return deviceService.doPowerOnOff(params);
     }
 
     /** 홈 IoT 컨트롤러 정보 등록/수정 */
     @PostMapping(value = "/deviceInfoUpsert")
     @ResponseBody
     public ResponseEntity<?> doDeviceInfoUpsert(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
-            throws CustomException {
+            throws CustomException, SQLException {
 
         String a = Common.getClientIp(request);
         System.out.println(a);
@@ -76,26 +98,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getAddrNickname())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
-
         return deviceService.doDeviceInfoUpsert(params);
-    }
-
-    /** 홈 IoT 컨트롤러 상태 정보 조회 */
-    @PostMapping(value = "/deviceStatusInfo")
-    @ResponseBody
-    public ResponseEntity<?> doDeviceStatusInfo(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
-            throws CustomException {
-
-        String logStep = "[홈 IoT 컨트롤러 상태 정보 조회]";
-
-        if(Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getModelCode())) {
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
-        }
-
-        return deviceService.doDeviceStatusInfo(params);
     }
 
 }
