@@ -346,4 +346,124 @@ public class DeviceServiceImpl implements DeviceService {
         return null;
     }
 
+    /** 난방수온도 설정  */
+    @Override
+    public ResponseEntity<?> doBoiledWaterTempertureSet(AuthServerDTO params) throws CustomException{
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        BoiledWaterTempertureSet boiledWaterTempertureSet = new BoiledWaterTempertureSet();
+        String stringObject = null;
+        String msg = null;
+
+        String userId = params.getUserId();
+
+        try {
+
+            boiledWaterTempertureSet.setAccessToken(params.getAccessToken());
+            boiledWaterTempertureSet.setUserId(userId);
+            boiledWaterTempertureSet.setDeviceId(params.getDeviceId());
+            boiledWaterTempertureSet.setControlAuthKey(params.getControlAuthKey());
+            boiledWaterTempertureSet.setTemperature(params.getTemperture());
+            boiledWaterTempertureSet.setFunctionId("wtTp");
+            boiledWaterTempertureSet.setUuId(common.getTransactionId());
+
+            redisCommand.setValues(boiledWaterTempertureSet.getUuId(), userId);
+            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(boiledWaterTempertureSet));
+
+            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
+            else stringObject = "N";
+
+            System.out.println("mobiusResponse.getResponseCode(): " + mobiusResponse.getResponseCode());
+            if(stringObject.equals("Y")) msg = "난방수온도 설정 성공";
+            else msg = "난방수온도 설정 실패";
+
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 온수온도 설정 */
+    @Override
+    public ResponseEntity<?> doWaterTempertureSet(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        WaterTempertureSet waterTempertureSet = new WaterTempertureSet();
+        String stringObject = null;
+        String msg = null;
+        String userId = params.getUserId();
+
+        try {
+
+            waterTempertureSet.setAccessToken(params.getAccessToken());
+            waterTempertureSet.setUserId(userId);
+            waterTempertureSet.setDeviceId(params.getDeviceId());
+            waterTempertureSet.setControlAuthKey(params.getControlAuthKey());
+            waterTempertureSet.setTemperature(params.getTemperture());
+            waterTempertureSet.setFunctionId("hwTp");
+            waterTempertureSet.setUuId(common.getTransactionId());
+
+            redisCommand.setValues(waterTempertureSet.getUuId(), userId);
+            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(waterTempertureSet));
+
+            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
+            else stringObject = "N";
+
+            if(stringObject.equals("Y")) msg = "온수온도 설정 성공";
+            else msg = "온수온도 설정 실패";
+
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 빠른온수 설정 */
+    @Override
+    public ResponseEntity<?> doFastHotWaterSet(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        FastHotWaterSet fastHotWaterSet = new FastHotWaterSet();
+        String stringObject = null;
+        String msg = null;
+        String userId = params.getUserId();
+
+        try {
+
+            fastHotWaterSet.setAccessToken(params.getAccessToken());
+            fastHotWaterSet.setUserId(userId);
+            fastHotWaterSet.setDeviceId(params.getDeviceId());
+            fastHotWaterSet.setControlAuthKey(params.getControlAuthKey());
+            fastHotWaterSet.setModeCode(params.getModeCode());
+            fastHotWaterSet.setFunctionId("ftMd");
+            fastHotWaterSet.setUuId(common.getTransactionId());
+
+            redisCommand.setValues(fastHotWaterSet.getUuId(), userId);
+            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(fastHotWaterSet));
+
+            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
+            else stringObject = "N";
+
+            if(stringObject.equals("Y")) msg = "빠른온수 설정 성공";
+            else msg = "빠른온수 설정 실패";
+
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

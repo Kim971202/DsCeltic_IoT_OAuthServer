@@ -46,7 +46,6 @@ public class DeviceController {
         return deviceService.doDeviceStatusInfo(params);
     }
 
-
     // 아래 실제 기기 제어 호출 부분
     /** 전원 On/Off */
     @PostMapping(value = "/powerOnOff")
@@ -139,4 +138,57 @@ public class DeviceController {
         return deviceService.doTemperatureSet(params);
     }
 
+    /** 난방수온도 설정  */
+    @PostMapping(value = "/boiledWaterTempertureSet")
+    @ResponseBody
+    public ResponseEntity<?> doBoiledWaterTempertureSet(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        String logStep = "[난방수온도 설정]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getTemperture())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return deviceService.doBoiledWaterTempertureSet(params);
+    }
+
+    /** 온수온도 설정 */
+    @PostMapping(value = "/waterTempertureSet")
+    @ResponseBody
+    public ResponseEntity<?> doWaterTempertureSet(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException{
+
+        String logStep = "[온수온도 설정]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getTemperture())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return deviceService.doWaterTempertureSet(params);
+    }
+
+    /** 빠른온수 설정 */
+    @PostMapping(value = "/fastHotWaterSet")
+    @ResponseBody
+    public ResponseEntity<?> doFastHotWaterSet(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException{
+
+        String logStep = "[빠른온수 설정]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getModeCode())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return deviceService.doFastHotWaterSet(params);
+    }
 }
