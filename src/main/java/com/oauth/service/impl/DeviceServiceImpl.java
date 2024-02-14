@@ -1,8 +1,10 @@
 package com.oauth.service.impl;
 
+import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.DeviceInfoUpsert;
 import com.oauth.dto.gw.DeviceStatusInfoDR910W;
+import com.oauth.dto.gw.ModeChange;
 import com.oauth.dto.gw.PowerOnOff;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.response.ApiResponse;
@@ -33,6 +35,8 @@ public class DeviceServiceImpl implements DeviceService {
     RedisCommand redisCommand;
     @Autowired
     SqlSessionFactory sqlSessionFactory;
+    @Autowired
+    MobiusResponse mobiusResponse;
 
     /** 전원 On/Off */
     @Override
@@ -120,19 +124,18 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfoUpsert.setModelCode(params.getModelCode());
             deviceInfoUpsert.setSerialNumber(params.getSerialNumber());
             deviceInfoUpsert.setZipCode(params.getZipCode());
-            deviceInfoUpsert.setOldAddr(params.getOldAddr());
-            deviceInfoUpsert.setNewAddr(params.getNewAddr());
-            deviceInfoUpsert.setAddrDetail(params.getAddrDetail());
+//            deviceInfoUpsert.setOldAddr(params.getOldAddr());
+//            deviceInfoUpsert.setNewAddr(params.getNewAddr());
+//            deviceInfoUpsert.setAddrDetail(params.getAddrDetail());
             deviceInfoUpsert.setLatitude(params.getLatitude());
             deviceInfoUpsert.setLongitude(params.getLongitude());
             deviceInfoUpsert.setDeviceNickname(params.getDeviceNickname());
-            deviceInfoUpsert.setAddrNickname(params.getAddrNickname());
+//            deviceInfoUpsert.setAddrNickname(params.getAddrNickname());s
 
             deviceInfoUpsert.setFunctionId("mfAr");
             deviceInfoUpsert.setUuId(common.getTransactionId());
 
-            // deviceId, controlAuthKey 가 모두 존재할 경우에만 수정으로 판단
-            if(deviceId != null && controlAuthKey != null && registYn.equals("N")){
+            if(registYn.equals("N")){
 
                 /* *
                  * IoT 디바이스 UPDATE 순서
@@ -152,12 +155,11 @@ public class DeviceServiceImpl implements DeviceService {
                 }
 
                 if(updateDeviceRegistLocationResult <= 0 || updateDeviceDetailLocationResult <= 0){
-                    stringObject = "N";
+                    stringObject = "Y";
                     redisCommand.setValues(deviceInfoUpsert.getUuId(), userId);
-                    mobiusService.createCin(serialNumber, userId, JSON.toJson(deviceInfoUpsert));
+                    mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(deviceInfoUpsert));
                 }
-                else stringObject = "Y";
-
+                else stringObject = "N";
             } else {
 
                 /* *
@@ -259,4 +261,55 @@ public class DeviceServiceImpl implements DeviceService {
         }
         return null;
     }
+
+    /** 모드변경  */
+    @Override
+    public ResponseEntity<?> doModeChange(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        ModeChange modeChange = new ModeChange();
+        String stringObject = null;
+        String msg = null;
+
+        String modeCode = params.getModeCode();
+        String sleepCode = params.getSleepCode();
+        String userId = params.getUserId();
+        try  {
+
+            modeChange.setAccessToken(params.getAccessToken());
+            modeChange.setUserId(params.getUserId());
+            modeChange.setDeviceId(params.getDeviceId());
+            modeChange.setControlAuthKey(params.getControlAuthKey());
+            modeChange.setModelCode(params.getModelCode());
+            modeChange.setModeCode(modeCode);
+            modeChange.setSleepCode(sleepCode);
+            modeChange.setFunctionId("opMd");
+            modeChange.setUuid(common.getTransactionId());
+
+            redisCommand.setValues(modeChange.getUuid(), userId);
+            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(modeChange));
+
+            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
+            else stringObject = "N";
+
+            System.out.println("mobiusResponse.getResponseCode(): " + mobiusResponse.getResponseCode());
+            if(stringObject.equals("Y")) msg = "모드변경 성공";
+            else msg = "모드변경 실패";
+
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
+
+
 }

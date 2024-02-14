@@ -101,4 +101,23 @@ public class DeviceController {
         return deviceService.doDeviceInfoUpsert(params);
     }
 
+    /** 모드변경 */
+    @PostMapping(value = "/modeChange")
+    @ResponseBody
+    public ResponseEntity<?> doModeChange(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        String logStep = "[모드변경]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getModeCode()) ||
+                Validator.isNullOrEmpty(params.getSleepCode())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return deviceService.doModeChange(params);
+    }
 }

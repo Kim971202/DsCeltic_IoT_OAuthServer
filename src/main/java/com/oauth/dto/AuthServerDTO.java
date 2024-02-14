@@ -118,6 +118,25 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String longitude;                    // 경도
     private String deviceStatusJson;             // RC주기보고 JSON 전문
 
+    /**
+     * 01: 난방-실내온도
+     * 02: 난방-난방수온도
+     * 03: 외출
+     * 04: 자동
+     * 05: 절약난방
+     * 06: 취침
+     * 07: 온수전용
+     * 08: 온수-빠른온수
+     * 09: 귀가
+     * 10: 24시간예약
+     * 11: 12시간예약/전원(꺼짐/켜짐) 예약
+     * 12: 주간예약
+     * */
+    private String modeCode;
+
+    private String sleepCode;                    // 01: Comfort 02: Normal 03: Warm
+
+
     private Role role = Role.USER;
 
     private boolean accountNonExpired = true;
