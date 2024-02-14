@@ -31,4 +31,8 @@ public interface DeviceService {
 
     /** 빠른온수 설정 */
     public ResponseEntity<?> doFastHotWaterSet(AuthServerDTO params) throws CustomException;
+
+    /** 잠금 모드 설정  */
+    public ResponseEntity<?> doLockSet(AuthServerDTO params) throws CustomException;
+
 }

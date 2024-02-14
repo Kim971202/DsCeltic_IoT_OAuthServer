@@ -191,4 +191,22 @@ public class DeviceController {
         }
         return deviceService.doFastHotWaterSet(params);
     }
+
+    /** 잠금 모드 설정  */
+    @PostMapping(value = "/lockSet")
+    @ResponseBody
+    public ResponseEntity<?>doLockSet(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException{
+
+        String logStep = "[잠금 모드 설정]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getLockSet())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return deviceService.doLockSet(params);
+    }
 }

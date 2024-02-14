@@ -133,7 +133,8 @@ public class AuthServerDTO implements UserDetails, Serializable {
      * */
     private String modeCode;
     private String sleepCode;                    // 01: Comfort 02: Normal 03: Warm
-    private String temperture;                  // 온도 [10.0 ~ 40.0 (°C)], 소수점 1자리
+    private String temperture;                   // 온도 [10.0 ~ 40.0 (°C)], 소수점 1자리
+    private String lockSet;                      // 잠금 모드: on/of
 
     private Role role = Role.USER;
 

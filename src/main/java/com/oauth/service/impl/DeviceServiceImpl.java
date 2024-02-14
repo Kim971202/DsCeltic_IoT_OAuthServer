@@ -466,4 +466,43 @@ public class DeviceServiceImpl implements DeviceService {
         }
         return null;
     }
+
+    /** 잠금 모드 설정  */
+    @Override
+    public ResponseEntity<?> doLockSet(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        LockSet lockSet = new LockSet();
+        String stringObject = null;
+        String msg = null;
+        String userId = params.getUserId();
+
+        try {
+
+            lockSet.setAccessToken(params.getAccessToken());
+            lockSet.setUserId(userId);
+            lockSet.setDeviceId(params.getDeviceId());
+            lockSet.setControlAuthKey(params.getControlAuthKey());
+            lockSet.setLockSet(params.getLockSet());
+            lockSet.setFunctionId("fcLc");
+            lockSet.setUuId(common.getTransactionId());
+
+            redisCommand.setValues(lockSet.getUuId(), userId);
+            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(lockSet));
+
+            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
+            else stringObject = "N";
+
+            if(stringObject.equals("Y")) msg = "잠금 모드 설정 성공";
+            else msg = "잠금 모드 설정 실패";
+
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
