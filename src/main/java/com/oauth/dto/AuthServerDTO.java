@@ -117,7 +117,6 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String latitude;                     // 위도
     private String longitude;                    // 경도
     private String deviceStatusJson;             // RC주기보고 JSON 전문
-
     /**
      * 01: 난방-실내온도
      * 02: 난방-난방수온도
@@ -133,9 +132,8 @@ public class AuthServerDTO implements UserDetails, Serializable {
      * 12: 주간예약
      * */
     private String modeCode;
-
     private String sleepCode;                    // 01: Comfort 02: Normal 03: Warm
-
+    private String temperture;                  // 온도 [10.0 ~ 40.0 (°C)], 소수점 1자리
 
     private Role role = Role.USER;
 

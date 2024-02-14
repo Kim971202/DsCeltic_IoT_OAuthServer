@@ -213,6 +213,7 @@ public class MobiusService {
             System.out.println(mobiusResponse);
         } catch (Exception e) {
             System.out.println("send to oneM2M Error : " + e);
+            return mobiusResponse;
         } finally {
             response.close();
         }

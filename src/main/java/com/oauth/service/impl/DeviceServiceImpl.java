@@ -2,10 +2,7 @@ package com.oauth.service.impl;
 
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
-import com.oauth.dto.gw.DeviceInfoUpsert;
-import com.oauth.dto.gw.DeviceStatusInfoDR910W;
-import com.oauth.dto.gw.ModeChange;
-import com.oauth.dto.gw.PowerOnOff;
+import com.oauth.dto.gw.*;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.DeviceService;
@@ -308,8 +305,45 @@ public class DeviceServiceImpl implements DeviceService {
         return null;
     }
 
+    /** 실내온도 설정  */
+    @Override
+    public ResponseEntity<?> doTemperatureSet(AuthServerDTO params) throws CustomException{
 
+        ApiResponse.Data result = new ApiResponse.Data();
+        TemperatureSet temperatureSet = new TemperatureSet();
+        String stringObject = null;
+        String msg = null;
 
+        String userId = params.getUserId();
 
+        try {
+
+            temperatureSet.setAccessToken(params.getAccessToken());
+            temperatureSet.setUserId(userId);
+            temperatureSet.setDeviceId(params.getDeviceId());
+            temperatureSet.setControlAuthKey(params.getControlAuthKey());
+            temperatureSet.setTemperature(params.getTemperture());
+            temperatureSet.setFunctionId("htTp");
+            temperatureSet.setUuId(common.getTransactionId());
+
+            redisCommand.setValues(temperatureSet.getUuId(), userId);
+            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(temperatureSet));
+
+            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
+            else stringObject = "N";
+
+            System.out.println("mobiusResponse.getResponseCode(): " + mobiusResponse.getResponseCode());
+            if(stringObject.equals("Y")) msg = "실내온도 설정 성공";
+            else msg = "실내온도 설정 실패";
+
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

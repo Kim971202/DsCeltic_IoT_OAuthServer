@@ -20,4 +20,7 @@ public interface DeviceService {
     /** 모드변경  */
     ResponseEntity<?> doModeChange(AuthServerDTO params) throws CustomException;
 
+    /** 실내온도 설정  */
+    public ResponseEntity<?> doTemperatureSet(AuthServerDTO params) throws CustomException;
+
 }

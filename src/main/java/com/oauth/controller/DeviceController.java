@@ -120,4 +120,23 @@ public class DeviceController {
         }
         return deviceService.doModeChange(params);
     }
+
+    /** 실내온도 설정 */
+    @PostMapping(value = "/tempertureSet")
+    @ResponseBody
+    public ResponseEntity<?> doTemperatureSet(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        String logStep = "[실내온도 설정]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getTemperture())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return deviceService.doTemperatureSet(params);
+    }
+
 }
