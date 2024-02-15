@@ -74,14 +74,32 @@ public class ReservationController {
 
         String logStep = "[빠른 온수 예약]";
 
-//        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-//                Validator.isNullOrEmpty(params.getUserId()) ||
-//                Validator.isNullOrEmpty(params.getDeviceId()) ||
-//                Validator.isNullOrEmpty(params.getControlAuthKey())){
-//            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
-//        }
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
 
         return reservationService.doAwakeAlarmSet(params);
     }
 
+    /** 주간 예약  */
+        @PostMapping(value = "/setWeek")
+    @ResponseBody
+    public ResponseEntity<?> doSetWeek(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        String logStep = "[주간 예약]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getOnOffFlag())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+
+        return reservationService.doSetWeek(params);
+    }
 }

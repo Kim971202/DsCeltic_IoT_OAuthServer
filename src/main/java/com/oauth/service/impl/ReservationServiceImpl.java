@@ -2,10 +2,7 @@ package com.oauth.service.impl;
 
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
-import com.oauth.dto.gw.AwakeAlarmSet;
-import com.oauth.dto.gw.DeviceStatusInfoDR910W;
-import com.oauth.dto.gw.Set12;
-import com.oauth.dto.gw.Set24;
+import com.oauth.dto.gw.*;
 import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.ReservationService;
 import com.oauth.utils.*;
@@ -170,6 +167,56 @@ public class ReservationServiceImpl implements ReservationService{
 
             if(stringObject.equals("Y")) msg = "빠른 온수 예약 성공";
             else msg = "빠른 온수 예약 실패";
+
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /** 주간 예약  */
+    @Override
+    public ResponseEntity<?> doSetWeek(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        String stringObject = null;
+        String msg = null;
+        String userId = params.getUserId();
+
+        SetWeek setWeek = new SetWeek();
+        List<HashMap<String, Object>> weekList = new ArrayList<HashMap<String, Object>>();
+        HashMap<String, Object> map = new HashMap<>();
+        try {
+
+            setWeek.setAccessToken(params.getAccessToken());
+            setWeek.setUuId(params.getUserId());
+            setWeek.setDeviceId(params.getDeviceId());
+            setWeek.setControlAuthKey(params.getControlAuthKey());
+            setWeek.setFunctionId("7wk");
+            setWeek.setUuId(common.getTransactionId());
+            setWeek.setOnOffFlag(params.getOnOffFlag());
+
+            for(int i = 0 ; i < params.getTimeWeek().length; ++i){
+                map.put("dayWeek", params.getDayWeek()[i]);
+                map.put("timeWeek", Collections.singletonList(params.getTimeWeek()[i]));
+                weekList.add(map);
+                map = new HashMap<>();
+            }
+
+            setWeek.setWeekList(weekList);
+            redisCommand.setValues(setWeek.getUuId(), userId);
+            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(setWeek));
+
+            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
+            else stringObject = "N";
+
+            if(stringObject.equals("Y")) msg = "주간 예약 성공";
+            else msg = "주간 예약 실패";
 
             result.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200 :

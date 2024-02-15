@@ -15,4 +15,7 @@ public interface ReservationService {
     /** 빠른 온수 예약  */
     ResponseEntity<?> doAwakeAlarmSet(AuthServerDTO params) throws CustomException;
 
+    /** 주간 예약  */
+    ResponseEntity<?> doSetWeek(AuthServerDTO params) throws CustomException;
+
 }
