@@ -66,4 +66,22 @@ public class ReservationController {
         return reservationService.doSet12(params);
     }
 
+    /** 빠른 온수 예약  */
+    @PostMapping(value = "/awakeAlarmSet")
+    @ResponseBody
+    public ResponseEntity<?> doAwakeAlarmSet(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        String logStep = "[빠른 온수 예약]";
+
+//        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+//                Validator.isNullOrEmpty(params.getUserId()) ||
+//                Validator.isNullOrEmpty(params.getDeviceId()) ||
+//                Validator.isNullOrEmpty(params.getControlAuthKey())){
+//            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+//        }
+
+        return reservationService.doAwakeAlarmSet(params);
+    }
+
 }

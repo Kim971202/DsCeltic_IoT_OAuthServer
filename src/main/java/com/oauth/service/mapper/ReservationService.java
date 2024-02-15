@@ -11,4 +11,8 @@ public interface ReservationService {
 
     /** 반복(12시간) 예약  */
     ResponseEntity<?> doSet12(AuthServerDTO params) throws CustomException;
+
+    /** 빠른 온수 예약  */
+    ResponseEntity<?> doAwakeAlarmSet(AuthServerDTO params) throws CustomException;
+
 }
