@@ -1,13 +1,19 @@
 package com.oauth.dto.gw;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 import java.util.Map;
 
 @Getter
 @Setter
+@JsonNaming()
 public class DeviceStatusInfoDR910W {
+
    private DeviceStatusInfoDR910W() {}
 
    private static DeviceStatusInfoDR910W dr910W = new DeviceStatusInfoDR910W();
@@ -18,7 +24,7 @@ public class DeviceStatusInfoDR910W {
 
    private String modelCategoryCode;
    private String deviceStatus;
-   private String rKey;
+   private List<String> rKey;
    private String powr;
    private String opMd;
    private String htTp;

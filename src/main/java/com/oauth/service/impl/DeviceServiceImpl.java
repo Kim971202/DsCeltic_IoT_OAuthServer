@@ -241,7 +241,7 @@ public class DeviceServiceImpl implements DeviceService {
                 stringObject = "Y";
                 dr910W.setModelCategoryCode("01");
                 dr910W.setDeviceStatus("1");
-                result.setDeviceStatusInfoDR910W(dr910W);
+                result.setDeviceStatusInfo(dr910W);
             } else stringObject = "N";
 
             if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 상태 정보 조회 성공";
@@ -505,4 +505,7 @@ public class DeviceServiceImpl implements DeviceService {
         }
         return null;
     }
+
+
+
 }

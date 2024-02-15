@@ -24,9 +24,12 @@ public class MobiusController {
     @PostMapping(value = "/GatewayToAppServer")
     @ResponseBody
     public void receiveCin(HttpSession session, HttpServletRequest request,@RequestBody String reqBody, HttpServletResponse response) throws Exception{
+
+        System.out.println("reqBody: " + reqBody);
+
         DeviceStatusInfoDR910W dr910W = DeviceStatusInfoDR910W.getInstance();
 
-        dr910W.setRKey(common.readCon(reqBody, "rKey"));
+//        dr910W.setRKey(common.readCon(reqBody, "rKey"));
         dr910W.setPowr(common.readCon(reqBody, "powr"));
         dr910W.setOpMd(common.readCon(reqBody, "opMd"));
         dr910W.setHtTp(common.readCon(reqBody, "htTp"));

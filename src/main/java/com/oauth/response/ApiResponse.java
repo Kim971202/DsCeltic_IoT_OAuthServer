@@ -73,7 +73,7 @@ public class ApiResponse {
         private Object invitation;
         private List<String> userIdList;
         private Object pushCodes;
-        private DeviceStatusInfoDR910W deviceStatusInfoDR910W;
+        private DeviceStatusInfoDR910W deviceStatusInfo;
         private Object pushInfo;
         private Object noticeInfo;
         private String mobiusResponseCode;
