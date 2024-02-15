@@ -45,4 +45,25 @@ public class ReservationController {
         return reservationService.doSet24(params);
     }
 
+    /** 반복(12시간) 예약  */
+    @PostMapping(value = "/set12")
+    @ResponseBody
+    public ResponseEntity<?> doSet12(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        String logStep = "[반복(12시간) 예약]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getWorkPeriod()) ||
+                Validator.isNullOrEmpty(params.getWorkTime()) ||
+                Validator.isNullOrEmpty(params.getOnOffFlag())) {
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+
+        return reservationService.doSet12(params);
+    }
+
 }
