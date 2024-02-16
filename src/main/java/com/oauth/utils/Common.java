@@ -48,9 +48,9 @@ public class Common {
             String regSort,
             Set<String> usedDeviceIds) {
         // 중복 체크
-//        if (usedDeviceIds.contains(deviceId)) {
-//            throw new IllegalArgumentException("Duplicate deviceId: " + deviceId);
-//        }
+        if (usedDeviceIds.contains(deviceId)) {
+            throw new IllegalArgumentException("Duplicate deviceId: " + deviceId);
+        }
 
         // 중복이 없다면 Set에 추가
         usedDeviceIds.add(deviceId);

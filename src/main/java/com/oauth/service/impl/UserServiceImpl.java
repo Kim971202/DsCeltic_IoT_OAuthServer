@@ -11,13 +11,18 @@ import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Member;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,6 +41,8 @@ public class UserServiceImpl implements UserService {
     private Common common;
     @Autowired
     private RedisCommand redisCommand;
+    @Autowired
+    SqlSessionFactory sqlSessionFactory;
 
     public static final List<String> oldModels = Arrays.asList("oldModel1", "oldModel2");
 
@@ -43,31 +50,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> doLogin(String userId, String userPassword) throws CustomException {
 
-        String stringObject = null;
         String userNickname = null;
-        String accessToken = null;
 
+        String stringObject;
+        String password;
         ApiResponse.Data result = new ApiResponse.Data();
 
         // Device Set 생성
         Set<String> userDeviceIds = new HashSet<>();
         List<ApiResponse.Data.Device> data = new ArrayList<>();
 
-        List<String> deviceId = null;
-        List<String> controlAuthKey = null;
-        List<String> deviceNickname = null;
-        List<String> regSort = null;
-
-        String msg = null;
+        List<String> deviceId;
+        List<String> controlAuthKey;
+        List<String> deviceNickname;
+        List<String> regSort;
+        String msg;
 
         try {
+            System.out.println(encoder.encode(userPassword));
+            AuthServerDTO account = memberMapper.getAccountByUserId(userId);
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
-            if(member == null) {
-                stringObject = "N";
-            } else {
-                userNickname = member.getUserNickname();
-                accessToken = member.getAccessToken();
+
+            password = account.getUserPassword();
+
+            if(!encoder.matches(userPassword, password)){
+                msg = "PW 에러";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             }
+
+            if(member != null) userNickname = member.getUserNickname();
 
             List<AuthServerDTO> deviceInfoList = memberMapper.getDeviceIdByUserId(userId);
             if(deviceInfoList == null) {
@@ -79,31 +91,31 @@ public class UserServiceImpl implements UserService {
                 controlAuthKey = Common.extractJson(deviceInfoList.toString(), "controlAuthKey");
                 deviceNickname = Common.extractJson(deviceInfoList.toString(), "deviceNickname");
                 regSort = Common.extractJson(deviceInfoList.toString(), "regSort");
+
                 // Mapper실행 후 사용자가 가지고 있는 Device 개수
                 int numDevices = deviceInfoList.size();
 
-                // 하나의 리스트에 값들을 합쳐서 저장
-                List<String> combinedList = new ArrayList<>();
-                for (int i = 0; i < deviceId.size(); i++) {
-                    String combinedValue = deviceId.get(i) + " " + controlAuthKey.get(i) + " " +
-                            deviceNickname.get(i) + " " + regSort.get(i);
-                    combinedList.add(combinedValue);
-                }
+                if(deviceId != null &&
+                        controlAuthKey != null &&
+                        deviceNickname != null &&
+                        regSort != null){
 
-                // Device 추가
-                for (int i = 0; i < numDevices; i++) {
-                    ApiResponse.Data.Device device = Common.createDevice(
-                            deviceId.get(i),
-                            controlAuthKey.get(i),
-                            deviceNickname.get(i),
-                            regSort.get(i),
-                            userDeviceIds);
-                    data.add(device);
+                    // Device 추가
+                    for (int i = 0; i < numDevices; i++) {
+                        ApiResponse.Data.Device device = Common.createDevice(
+                                deviceId.get(i),
+                                controlAuthKey.get(i),
+                                deviceNickname.get(i),
+                                regSort.get(i),
+                                userDeviceIds);
+                        data.add(device);
+                    }
                 }
             }
 
-            result.setAccessToken(accessToken);
+            result.setAccessToken(common.getTransactionId());
             result.setUserNickname(userNickname);
+            result.setDevice(data);
 
             if(stringObject.equals("Y")) msg = "로그인 성공";
             else msg = "로그인 실패";
@@ -111,8 +123,6 @@ public class UserServiceImpl implements UserService {
             result.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
-
-            result.setDevice(data);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (CustomException e){
             System.out.println(e.getMessage());
@@ -122,52 +132,71 @@ public class UserServiceImpl implements UserService {
     }
 
     /** 회원가입 */
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException {
+    public ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException, SQLException {
+        ResponseEntity<?> result = null;
 
-        String stringObject = null;
+        // Transaction용 클래스 선언
+        SqlSession session = sqlSessionFactory.openSession();
+        // 자동 Commit 기능 OFF
+        //session.getConnection().setAutoCommit(false);
+
         ApiResponse.Data data = new ApiResponse.Data();
+        String stringObject;
 
-        String hp = params.getHp();
-        String userNickname = params.getUserNickname();
-        String userId = params.getUserId();
         String userPassword = params.getUserPassword();
-
-        String msg = null;
-
-        try{
+        String msg;
+        int result1 = 0;
+        int result2 = 0;
+        try {
 
             userPassword = encoder.encode(userPassword);
             params.setUserPassword(userPassword);
 
-            int result1 = memberMapper.insertAccount(params);
-            int result2 = memberMapper.insertMember(params);
-            if(result1 > 0 && result2 > 0) stringObject = "Y";
+            MemberMapper mMapper = session.getMapper(MemberMapper.class);
+            result1 = mMapper.insertAccount(params);
+            result2 = mMapper.insertMember(params);
+            System.out.println("result1: " + result1);
+            System.out.println("result2: " + result2);
+
+//            try {
+//                MemberMapper mMapper = session.getMapper(MemberMapper.class);
+//                result1 = mMapper.insertAccount(params);
+//                result2 = mMapper.insertMember(params);
+//
+//                session.commit();
+//            } catch (Exception e) {
+//                session.rollback();
+//                throw e; // 예외를 다시 던져서 상위에서 처리하도록 함
+//            }
+
+            if (result1 > 0 && result2 > 0) stringObject = "Y";
             else stringObject = "N";
 
-            if(stringObject.equals("Y")) msg = "회원가입 성공";
+            if (stringObject.equals("Y")) msg = "회원가입 성공";
             else msg = "회원가입 실패";
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (CustomException e){
+            result = new ResponseEntity<>(data, HttpStatus.OK);
+        } catch (CustomException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
-        return null;
+        return result;
     }
 
     /** 회원중복 체크 */
     @Override
     public ResponseEntity<?> doDuplicationCheck(AuthServerDTO params) throws CustomException {
 
-        String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
+        String stringObject;
         String userId = params.getUserId();
-        String msg = null;
+        String msg;
 
         try{
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
@@ -175,7 +204,7 @@ public class UserServiceImpl implements UserService {
             if(member == null) stringObject = "N";
             else stringObject = "Y";
 
-            if(stringObject.equals("Y")) msg = "중복 ID";
+            if(stringObject.equals("Y")) msg = "중복 되는 ID";
             else msg = "중복 되지 않는 ID ";
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
@@ -194,22 +223,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> doIdFind(AuthServerDTO params) throws CustomException {
 
-        String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
-
+        String stringObject;
         String userHp = params.getHp();
-        String deviceType = params.getDeviceType();
         String modelCode = params.getModelCode();
         String deviceId = params.getDeviceId();
-
-        String msg = null;
-
-        List<AuthServerDTO> member = null;
+        String msg;
+        List<AuthServerDTO> member;
 
         try {
 
             // 구형 모델의 경우
-            if(modelCode.equals(oldModels.get(0)) || modelCode.equals(oldModels.get(1))) member = memberMapper.getUserByHp(userHp);
+            if(modelCode.equals(oldModels.get(0)) ||
+                    modelCode.equals(oldModels.get(1))) member = memberMapper.getUserByHp(userHp);
             else member = memberMapper.getUserByDeviceId(deviceId);
 
             if(member.isEmpty()) stringObject = "N";
@@ -220,7 +246,6 @@ public class UserServiceImpl implements UserService {
 
             if(stringObject.equals("Y")) msg = "ID 찾기 성공";
             else msg = "입력한 아이디와 일치하는 회원정보가 없습니다.";
-
 
             data.setUserIdList(userId);
             data.setResult("Y".equalsIgnoreCase(stringObject)
@@ -238,18 +263,12 @@ public class UserServiceImpl implements UserService {
     /** 비밀번호 찾기 - 초기화 */
     @Override
     public ResponseEntity<?> doResetPassword(AuthServerDTO params) throws CustomException {
-        String stringObject = null;
+
         ApiResponse.Data data = new ApiResponse.Data();
-
-        String userId = params.getUserId();
-        String userHp = params.getHp();
-        String deviceType = params.getDeviceType();
+        String stringObject;
         String modelCode = params.getModelCode();
-        String deviceId = params.getDeviceId();
-
-        AuthServerDTO member = null;
-
-        String msg = null;
+        AuthServerDTO member;
+        String msg;
 
         try {
 
@@ -282,16 +301,16 @@ public class UserServiceImpl implements UserService {
     /** 비밀번호 변경 - 생성 */
     @Override
     public ResponseEntity<?> doChangePassword(AuthServerDTO params) throws CustomException {
-        String stringObject = null;
-        ApiResponse.Data data = new ApiResponse.Data();
 
-        String msg = null;
+        ApiResponse.Data data = new ApiResponse.Data();
+        String stringObject;
+        String msg;
+        int result;
 
         try{
 
             Common.updateMemberDTOList(params, "userPassword", encoder.encode(params.getUserPassword()));
-
-            int result = memberMapper.updatePassword(params);
+            result = memberMapper.updatePassword(params);
 
             if(result > 0) stringObject = "Y";
             else stringObject = "N";
@@ -314,9 +333,9 @@ public class UserServiceImpl implements UserService {
     /** 사용자정보 조회 */
     @Override
     public ResponseEntity<?> doSearch(AuthServerDTO params) throws CustomException {
-        String stringObject = null;
+        String stringObject;
         ApiResponse.Data data = new ApiResponse.Data();
-        String msg = null;
+        String msg;
         String userId = params.getUserId();
 
         try{
@@ -347,15 +366,13 @@ public class UserServiceImpl implements UserService {
     /** 회원 별칭(이름) 및 전화번호 변경 */
     @Override
     public ResponseEntity<?> doUpdateUserNicknameHp(AuthServerDTO params) throws CustomException{
-        String stringObject = null;
-        ApiResponse.Data data = new ApiResponse.Data();
-        String msg = null;
 
-        String userId = params.getUserId();
+        ApiResponse.Data data = new ApiResponse.Data();
+        String stringObject = null;
+        String msg;
         String userPassword = params.getUserPassword();
         String oldHp = params.getOldHp();
         String newHp = params.getNewHp();
-        String userNickname = params.getUserNickname();
 
         try{
 
@@ -392,35 +409,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> doUpdatePassword(AuthServerDTO params) throws CustomException{
 
-        String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
-
-        String accessToken = params.getAccessToken();
-        String userId = params.getUserId();
+        String stringObject;
         String oldPassword = params.getOldPassword();
-        String newPassword = params.getNewPassword();
+        String userId = params.getUserId();
 
-        String msg = null;
+        String msg;
+        int pwChangeResult = 0;
 
         try{
-            params.setUserPassword(newPassword);
+            AuthServerDTO account = memberMapper.getAccountByUserId(userId);
+            params.setNewPassword(encoder.encode(params.getNewPassword()));
 
-            AuthServerDTO pwCheck = memberMapper.passwordCheck(oldPassword);
-
-            // TODO: 예외처리 하여 불일치 PW 알림
-            if(pwCheck == null) return null;
-
-            // AccessToken 검증
-            boolean result = common.tokenVerify(params);
-            System.out.println("result: " + result);
-
-
-            if(!result) stringObject = "N";
-            else {
-                int pwChangeResult = memberMapper.updatePassword(params);
-                if(pwChangeResult > 0)  stringObject = "Y";
-                else stringObject = "N";
+            if(!encoder.matches(oldPassword, account.getUserPassword())){
+                msg = "PW 에러";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_2002, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
+
+            pwChangeResult = memberMapper.updatePassword(params);
+            if(pwChangeResult > 0)  stringObject = "Y";
+            else stringObject = "N";
+
 
             if(stringObject.equals("Y")) msg = "비밀번호 변경 - 로그인시 성공";
             else msg = "비밀번호 변경 - 로그인시 실패";
@@ -440,6 +450,7 @@ public class UserServiceImpl implements UserService {
     /** 사용자(세대원) 정보 조회 */
     @Override
     public ResponseEntity<?> doViewHouseholdMemebers(AuthServerDTO params) throws CustomException{
+
         String stringObject = null;
         ApiResponse.Data data = new ApiResponse.Data();
         String msg = null;
@@ -463,7 +474,7 @@ public class UserServiceImpl implements UserService {
             if(!deviceIds.isEmpty()){
                 stringObject = "Y";
                 List<AuthServerDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
-
+                System.out.println("members: " + members.size());
                 List<AuthServerDTO> memberStream = Common.deduplication(members, AuthServerDTO::getUserId);
 
                 List<String> userIdList = Common.extractJson(memberStream.toString(), "userId");
@@ -485,8 +496,6 @@ public class UserServiceImpl implements UserService {
                     }
                 }
             } else stringObject = "N";
-
-
 
             if(stringObject.equals("Y")) msg = "사용자(세대원) 정보 조회 성공";
             else msg = "사용자(세대원) 정보 조회 실패";

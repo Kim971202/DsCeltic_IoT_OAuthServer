@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.sql.SQLException;
 import java.util.*;
 
 @RequestMapping("/users/v1")
@@ -64,7 +65,7 @@ public class UserController {
     @PostMapping(value = "/regist")
     @ResponseBody
     public ResponseEntity<?> doRegist(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
-        throws CustomException {
+            throws CustomException, SQLException {
 
         String logStep = "[회원 가입]";
 

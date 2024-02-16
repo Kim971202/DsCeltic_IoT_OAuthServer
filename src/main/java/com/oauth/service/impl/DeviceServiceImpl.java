@@ -35,6 +35,8 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     MobiusResponse mobiusResponse;
 
+
+
     /** 전원 On/Off */
     @Override
     public ResponseEntity<?> doPowerOnOff(AuthServerDTO params) throws CustomException{
@@ -99,7 +101,6 @@ public class DeviceServiceImpl implements DeviceService {
         String deviceId = params.getDeviceId();
         String controlAuthKey = params.getControlAuthKey();
         String registYn = params.getRegistYn();
-        String serialNumber = params.getSerialNumber();
 
         int insertDeviceModelCodeResult = 0;
         int insertDeviceResult = 0;
@@ -121,13 +122,9 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfoUpsert.setModelCode(params.getModelCode());
             deviceInfoUpsert.setSerialNumber(params.getSerialNumber());
             deviceInfoUpsert.setZipCode(params.getZipCode());
-//            deviceInfoUpsert.setOldAddr(params.getOldAddr());
-//            deviceInfoUpsert.setNewAddr(params.getNewAddr());
-//            deviceInfoUpsert.setAddrDetail(params.getAddrDetail());
             deviceInfoUpsert.setLatitude(params.getLatitude());
             deviceInfoUpsert.setLongitude(params.getLongitude());
             deviceInfoUpsert.setDeviceNickname(params.getDeviceNickname());
-//            deviceInfoUpsert.setAddrNickname(params.getAddrNickname());s
 
             deviceInfoUpsert.setFunctionId("mfAr");
             deviceInfoUpsert.setUuId(common.getTransactionId());

@@ -12,6 +12,12 @@
         WHERE USER_ID = #{value}
     </select>
 
+    <select id="getAccountByUserId" parameterType="String" resultMap="member">
+        SELECT USER_ID AS userId, PW as userPassword
+        FROM TBR_OPR_ACCOUNT
+        WHERE USER_ID = #{value}
+    </select>
+
     <insert id="insertMember" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO TBR_OPR_USER (HP, USER_ID, USER_NICK)
         VALUES (#{hp}, #{userId}, #{userNickname})

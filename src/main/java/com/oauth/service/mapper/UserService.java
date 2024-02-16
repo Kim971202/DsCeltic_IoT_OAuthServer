@@ -4,6 +4,7 @@ import com.oauth.dto.AuthServerDTO;
 import com.oauth.utils.CustomException;
 import org.springframework.http.ResponseEntity;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 
 public interface UserService {
@@ -12,7 +13,7 @@ public interface UserService {
     ResponseEntity<?> doLogin(String userId, String userPassword) throws CustomException;
 
     /** 회원가입 */
-    ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException;
+    ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException, SQLException;
 
     /** 회원중복 체크 */
     ResponseEntity<?> doDuplicationCheck(AuthServerDTO params) throws CustomException;

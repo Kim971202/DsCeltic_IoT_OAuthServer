@@ -151,7 +151,7 @@ public class ReservationServiceImpl implements ReservationService{
             awakeAlarmSet.setUuId(common.getTransactionId());
 
             for(int i = 0 ; i < params.getWs().length; ++i){
-                map.put("ws", Collections.singletonList(params.getWs()[i]));
+                map.put("ws", Arrays.asList(params.getWs()[i]));
                 map.put("mn", params.getMn()[i]);
                 map.put("hr", params.getHr()[i]);
                 awakeList.add(map);
@@ -203,7 +203,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             for(int i = 0 ; i < params.getTimeWeek().length; ++i){
                 map.put("dayWeek", params.getDayWeek()[i]);
-                map.put("timeWeek", Collections.singletonList(params.getTimeWeek()[i]));
+                map.put("timeWeek", Arrays.asList(params.getTimeWeek()[i]));
                 weekList.add(map);
                 map = new HashMap<>();
             }

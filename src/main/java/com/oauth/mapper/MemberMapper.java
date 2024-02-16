@@ -12,6 +12,8 @@ public interface MemberMapper {
 
     public List<AuthServerDTO> getUserList();
     public AuthServerDTO getUserByUserId(String userId);
+    public AuthServerDTO getAccountByUserId(String userId);
+
     public List<AuthServerDTO> getDeviceInfoByUserID(String userId);
     public int insertMember(AuthServerDTO member);
     public int insertAccount(AuthServerDTO member);
