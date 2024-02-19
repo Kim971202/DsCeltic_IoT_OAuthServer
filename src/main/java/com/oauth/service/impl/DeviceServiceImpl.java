@@ -16,8 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class DeviceServiceImpl implements DeviceService {
@@ -85,30 +90,29 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     /** 홈 IoT 컨트롤러 정보 등록/수정 */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws CustomException, SQLException {
 
         // Transaction용 클래스 선언
         SqlSession session = sqlSessionFactory.openSession();
-        // 자동 Commit 기능 OFF
-        session.getConnection().setAutoCommit(false);
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = null;
-        String msg = null;
+        String stringObject;
+        String msg;
         DeviceInfoUpsert deviceInfoUpsert = new DeviceInfoUpsert();
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String controlAuthKey = params.getControlAuthKey();
         String registYn = params.getRegistYn();
 
-        int insertDeviceModelCodeResult = 0;
-        int insertDeviceResult = 0;
-        int insertDeviceRegistResult = 0;
-        int insertDeviceDetailResult = 0;
+        int insertDeviceModelCodeResult;
+        int insertDeviceResult;
+        int insertDeviceRegistResult;
+        int insertDeviceDetailResult;
 
-        int updateDeviceRegistLocationResult = 0;
-        int updateDeviceDetailLocationResult = 0;
+        int updateDeviceRegistLocationResult;
+        int updateDeviceDetailLocationResult;
         try {
 
             deviceInfoUpsert.setAccessToken(params.getAccessToken());
@@ -137,18 +141,12 @@ public class DeviceServiceImpl implements DeviceService {
                  * 2. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * */
 
-                try{
-                    DeviceMapper dMapper = session.getMapper(DeviceMapper.class);
+                DeviceMapper dMapper = session.getMapper(DeviceMapper.class);
 
-                    updateDeviceRegistLocationResult = dMapper.updateDeviceRegistLocation(params);
-                    updateDeviceDetailLocationResult = dMapper.updateDeviceDetailLocation(params);
+                updateDeviceRegistLocationResult = dMapper.updateDeviceRegistLocation(params);
+                updateDeviceDetailLocationResult = dMapper.updateDeviceDetailLocation(params);
 
-                    session.commit();
-                }catch (Exception e){
-                    session.rollback();
-                }
-
-                if(updateDeviceRegistLocationResult <= 0 || updateDeviceDetailLocationResult <= 0){
+                if(updateDeviceRegistLocationResult > 0 && updateDeviceDetailLocationResult > 0){
                     stringObject = "Y";
                     redisCommand.setValues(deviceInfoUpsert.getUuId(), userId);
                     mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(deviceInfoUpsert));
@@ -163,42 +161,22 @@ public class DeviceServiceImpl implements DeviceService {
                  * 3. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
                  * 4. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * */
-                try {
-                    DeviceMapper dMapper = session.getMapper(DeviceMapper.class);
 
-                    insertDeviceModelCodeResult = dMapper.insertDeviceModelCode(params);
-                    insertDeviceResult = dMapper.insertDevice(params);
-                    insertDeviceRegistResult = dMapper.insertDeviceRegist(params);
-                    insertDeviceDetailResult = dMapper.insertDeviceDetail(params);
+                DeviceMapper dMapper = session.getMapper(DeviceMapper.class);
 
-                    // 여기까지 왔다면 모든 작업이 성공했으므로 커밋
-                    session.commit();
-                } catch (Exception e) {
-                    session.rollback();
-                } finally {
-                    session.close(); // 세션을 닫아줘야 합니다.
-                }
-                // TODO: stringObject 관련 처리 구문 추가 필요
-//                insertDeviceModelCodeResult = deviceMapper.insertDeviceModelCode(params);
-//                if(insertDeviceModelCodeResult <= 0) stringObject = "N";
-//                else {
-//                    insertDeviceResult = deviceMapper.insertDevice(params);
-//
-//                    if(insertDeviceResult <= 0) stringObject = "N";
-//                    else {
-//                        insertDeviceRegistResult = deviceMapper.insertDeviceRegist(params);
-//
-//                        if(insertDeviceRegistResult <= 0) stringObject = "N";
-//                        else {
-//                            insertDeviceDetailResult = deviceMapper.insertDeviceDetail(params);
-//
-//                            if(insertDeviceDetailResult <= 0) stringObject = "N";
-//                            else stringObject = "Y";
-//                        }
-//                    }
-//                }
+                insertDeviceModelCodeResult = dMapper.insertDeviceModelCode(params);
+                insertDeviceResult = dMapper.insertDevice(params);
+                insertDeviceRegistResult = dMapper.insertDeviceRegist(params);
+                insertDeviceDetailResult = dMapper.insertDeviceDetail(params);
+
+                if(insertDeviceModelCodeResult > 0 &&
+                        insertDeviceResult > 0 &&
+                        insertDeviceRegistResult > 0 &&
+                        insertDeviceDetailResult > 0)
+                    stringObject = "Y";
+                else stringObject = "N";
+
             }
-
             if(stringObject.equals("Y")) {
                 msg = "홈 IoT 컨트롤러 정보 등록/수정 성공";
                 result.setLatitude(params.getLatitude());
@@ -234,12 +212,12 @@ public class DeviceServiceImpl implements DeviceService {
         String deviceId = params.getDeviceId();
         String jsonBody = null;
         try {
-            if(dr910W.getRKey() != null){
-                stringObject = "Y";
-                dr910W.setModelCategoryCode("01");
-                dr910W.setDeviceStatus("1");
-                result.setDeviceStatusInfo(dr910W);
-            } else stringObject = "N";
+//            if(dr910W.getRKey() != null){
+//                stringObject = "Y";
+//                dr910W.setModelCategoryCode("01");
+//                dr910W.setDeviceStatus("1");
+//                result.setDeviceStatusInfo(dr910W);
+//            } else stringObject = "N";
 
             if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 상태 정보 조회 성공";
             else msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
@@ -503,6 +481,39 @@ public class DeviceServiceImpl implements DeviceService {
         return null;
     }
 
+    /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
+    @Override
+    public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+//        ApiResponse.Data.DeviceStatusInfo info = new ApiResponse.Data.DeviceStatusInfo();
+
+        String stringObject;
+        String msg;
+
+        DeviceStatusInfoDR910W dr910W = DeviceStatusInfoDR910W.getInstance();
+//        List<DeviceStatusInfoDR910W.Device> devicesList = dr910W.getDevices();
+
+        try {
 
 
+//            for (DeviceStatusInfoDR910W.Device device : devicesList) {
+//                mfcd = device.getMfcd();
+//            }
+
+
+
+            stringObject = "Y";
+            if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 성공";
+            else msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 실패";
+            result.setDeviceStatusInfo(dr910W.getDevices());
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200 :
+                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

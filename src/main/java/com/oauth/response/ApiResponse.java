@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ApiResponse {
@@ -73,7 +74,7 @@ public class ApiResponse {
         private Object invitation;
         private List<String> userIdList;
         private Object pushCodes;
-        private DeviceStatusInfoDR910W deviceStatusInfo;
+        private Object deviceStatusInfo;
         private Object pushInfo;
         private Object noticeInfo;
         private String mobiusResponseCode;
@@ -144,6 +145,26 @@ public class ApiResponse {
             private String noticeStartDate;
             private String noticeEndDate;
         }
+
+//        @Getter
+//        @Setter
+//        public static class DeviceStatusInfo {
+//            private String mfcd;
+//            private String rKey;
+//            private String powr;
+//            private String opMd;
+//            private String htTp;
+//            private String wtTp;
+//            private String hwTp;
+//            private String rsCf;
+//            private String ftMd;
+//            private String bCdt;
+//            private String chTp;
+//            private String cwTp;
+//            private String hwSt;
+//            private String slCd;
+//            private String mfDt;
+//        }
 
     }
 }

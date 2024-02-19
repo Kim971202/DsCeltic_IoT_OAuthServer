@@ -209,4 +209,20 @@ public class DeviceController {
         }
         return deviceService.doLockSet(params);
     }
+
+    /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
+    @PostMapping(value = "/basicDeviceStatusInfo")
+    @ResponseBody
+    public ResponseEntity<?>doBasicDeviceStatusInfo(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException{
+
+        String logStep = "[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]";
+
+        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return deviceService.doBasicDeviceStatusInfo(params);
+    }
 }

@@ -377,4 +377,23 @@ public class Common {
         return clientIp;
     }
 
+    public List<String> getUserIdAndFunctionId (String redisValue){
+        String[] splitStrings = redisValue.split(",");
+        List<String> nameList =  new ArrayList<String>();
+
+        // 결과 확인
+        if (splitStrings.length >= 2) {
+            nameList.add(splitStrings[0].trim());  // trim() 메서드로 앞뒤 공백 제거
+            nameList.add(splitStrings[1].trim());
+
+            System.out.println("첫번째 문자열: " + nameList.add(splitStrings[0].trim()));
+            System.out.println("두번째 문자열: " + nameList.add(splitStrings[1].trim()));
+        } else {
+            System.out.println("적절한 형식의 문자열이 아닙니다.");
+        }
+
+        return nameList;
+
+    }
+
 }

@@ -139,8 +139,6 @@ public class UserServiceImpl implements UserService {
 
         // Transaction용 클래스 선언
         SqlSession session = sqlSessionFactory.openSession();
-        // 자동 Commit 기능 OFF
-        //session.getConnection().setAutoCommit(false);
 
         ApiResponse.Data data = new ApiResponse.Data();
         String stringObject;
@@ -157,19 +155,6 @@ public class UserServiceImpl implements UserService {
             MemberMapper mMapper = session.getMapper(MemberMapper.class);
             result1 = mMapper.insertAccount(params);
             result2 = mMapper.insertMember(params);
-            System.out.println("result1: " + result1);
-            System.out.println("result2: " + result2);
-
-//            try {
-//                MemberMapper mMapper = session.getMapper(MemberMapper.class);
-//                result1 = mMapper.insertAccount(params);
-//                result2 = mMapper.insertMember(params);
-//
-//                session.commit();
-//            } catch (Exception e) {
-//                session.rollback();
-//                throw e; // 예외를 다시 던져서 상위에서 처리하도록 함
-//            }
 
             if (result1 > 0 && result2 > 0) stringObject = "Y";
             else stringObject = "N";
