@@ -1191,7 +1191,7 @@ public class UserServiceImpl implements UserService {
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonString = objectMapper.writeValueAsString(conMap);
 
-            mobiusResponse = mobiusService.createCin(serialNumber.getSerialNumber(), params.getUserId(), jsonString);
+            //mobiusResponse = mobiusService.createCin(serialNumber.getSerialNumber(), params.getUserId(), jsonString);
             if (Objects.equals(mobiusResponse.getResponseCode(), "201")) stringObject = "Y";
             else stringObject = "N";
 

@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.sql.SQLException;
 
-public interface DeviceService {
+public interface DeviceResponseService {
 
     /** 전원 On/Off */
     ResponseEntity<?> doPowerOnOff(AuthServerDTO params) throws CustomException;
@@ -36,6 +36,6 @@ public interface DeviceService {
     public ResponseEntity<?> doLockSet(AuthServerDTO params) throws CustomException;
 
     /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
-    public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException;
+    public void doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException;
 
 }

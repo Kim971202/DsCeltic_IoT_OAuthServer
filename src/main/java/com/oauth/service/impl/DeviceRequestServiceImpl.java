@@ -1,11 +1,13 @@
 package com.oauth.service.impl;
 
 import com.oauth.constants.MobiusResponse;
+import com.oauth.controller.MobiusController;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.*;
 import com.oauth.mapper.DeviceMapper;
+import com.oauth.message.GwMessagingSystem;
 import com.oauth.response.ApiResponse;
-import com.oauth.service.mapper.DeviceService;
+import com.oauth.service.mapper.DeviceRequestService;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.JSON;
@@ -17,15 +19,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Service
-public class DeviceServiceImpl implements DeviceService {
+public class DeviceRequestServiceImpl implements DeviceRequestService {
 
     @Autowired
     Common common;
@@ -39,21 +44,24 @@ public class DeviceServiceImpl implements DeviceService {
     SqlSessionFactory sqlSessionFactory;
     @Autowired
     MobiusResponse mobiusResponse;
-
-
+    @Autowired
+    MobiusController mobiusController;
+    @Autowired
+    GwMessagingSystem gwMessagingSystem;
 
     /** 전원 On/Off */
     @Override
     public ResponseEntity<?> doPowerOnOff(AuthServerDTO params) throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = null;
-        String msg = null;
+        String stringObject;
+        String msg;
         PowerOnOff powerOnOff = new PowerOnOff();
-        String serialNumber = null;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
-        String jsonBody = null;
+        String redisValue;
+        String serialNumber;
+        String responseMessage = null;
         try {
             powerOnOff.setUserId(params.getUserId());
             powerOnOff.setDeviceId(params.getDeviceId());
@@ -64,22 +72,50 @@ public class DeviceServiceImpl implements DeviceService {
             powerOnOff.setFunctionId("powr");
             powerOnOff.setUuId(common.getTransactionId());
 
-            redisCommand.setValues(powerOnOff.getUuId(), userId);
+            redisValue = userId + "," + powerOnOff.getFunctionId();
+
+            redisCommand.setValues(powerOnOff.getUuId(), redisValue);
 
             AuthServerDTO device = deviceMapper.getSerialNumberBydeviceId(deviceId);
             serialNumber = device.getSerialNumber();
 
-            if(!serialNumber.isEmpty()) {
+            if (!serialNumber.isEmpty()) {
                 stringObject = "Y";
                 mobiusService.createCin(serialNumber, userId, JSON.toJson(powerOnOff));
-            } else stringObject = "N";
 
-            if(stringObject.equals("Y")) msg = "전원 On/Off 성공";
-            else msg = "전원 On/Off 실패";
+                try {
+                    // 메시징 시스템을 통해 응답 메시지 대기
+                    responseMessage = gwMessagingSystem.waitForResponse("powr" + powerOnOff.getUuId(), 50, TimeUnit.SECONDS);
 
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+                    if (responseMessage != null) {
+                        // 응답 처리
+                        System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    } else {
+                        // 타임아웃이나 응답 없음 처리
+                        stringObject = "T";
+                        System.out.println("응답이 없거나 시간 초과");
+                    }
+                } catch (InterruptedException e) {
+                    // 대기 중 인터럽트 처리
+                    e.printStackTrace();
+                }
+            } else {
+                stringObject = "N";
+            }
+
+            if(stringObject.equals("Y")) {
+                msg = "전원 On/Off 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                result.setTestVariable(responseMessage);
+            }
+            else if(stringObject.equals("N")) {
+                msg = "전원 On/Off 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+            else {
+                msg = "응답이 없거나 시간 초과";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
@@ -259,10 +295,11 @@ public class DeviceServiceImpl implements DeviceService {
             modeChange.setUuid(common.getTransactionId());
 
             redisCommand.setValues(modeChange.getUuid(), userId);
-            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(modeChange));
+            mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(modeChange));
 
-            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
-            else stringObject = "N";
+
+//            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
+//            else stringObject = "N";
 
             System.out.println("mobiusResponse.getResponseCode(): " + mobiusResponse.getResponseCode());
             if(stringObject.equals("Y")) msg = "모드변경 성공";
@@ -302,12 +339,9 @@ public class DeviceServiceImpl implements DeviceService {
             temperatureSet.setUuId(common.getTransactionId());
 
             redisCommand.setValues(temperatureSet.getUuId(), userId);
-            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(temperatureSet));
+            mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(temperatureSet));
 
-            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
-            else stringObject = "N";
 
-            System.out.println("mobiusResponse.getResponseCode(): " + mobiusResponse.getResponseCode());
             if(stringObject.equals("Y")) msg = "실내온도 설정 성공";
             else msg = "실내온도 설정 실패";
 
@@ -327,7 +361,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         ApiResponse.Data result = new ApiResponse.Data();
         BoiledWaterTempertureSet boiledWaterTempertureSet = new BoiledWaterTempertureSet();
-        String stringObject = null;
+        final String[] stringObject = {null};
         String msg = null;
 
         String userId = params.getUserId();
@@ -343,16 +377,13 @@ public class DeviceServiceImpl implements DeviceService {
             boiledWaterTempertureSet.setUuId(common.getTransactionId());
 
             redisCommand.setValues(boiledWaterTempertureSet.getUuId(), userId);
-            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(boiledWaterTempertureSet));
+            mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(boiledWaterTempertureSet));
 
-            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
-            else stringObject = "N";
+//            System.out.println("mobiusResponse.getResponseCode(): " + mobiusResponse.getResponseCode());
+//            if(stringObject.equals("Y")) msg = "난방수온도 설정 성공";
+//            else msg = "난방수온도 설정 실패";
 
-            System.out.println("mobiusResponse.getResponseCode(): " + mobiusResponse.getResponseCode());
-            if(stringObject.equals("Y")) msg = "난방수온도 설정 성공";
-            else msg = "난방수온도 설정 실패";
-
-            result.setResult("Y".equalsIgnoreCase(stringObject)
+            result.setResult("Y".equalsIgnoreCase(Arrays.toString(stringObject))
                     ? ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -384,7 +415,7 @@ public class DeviceServiceImpl implements DeviceService {
             waterTempertureSet.setUuId(common.getTransactionId());
 
             redisCommand.setValues(waterTempertureSet.getUuId(), userId);
-            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(waterTempertureSet));
+            //mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(waterTempertureSet));
 
             if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
             else stringObject = "N";
@@ -423,7 +454,7 @@ public class DeviceServiceImpl implements DeviceService {
             fastHotWaterSet.setUuId(common.getTransactionId());
 
             redisCommand.setValues(fastHotWaterSet.getUuId(), userId);
-            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(fastHotWaterSet));
+            //mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(fastHotWaterSet));
 
             if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
             else stringObject = "N";
@@ -463,7 +494,7 @@ public class DeviceServiceImpl implements DeviceService {
             lockSet.setUuId(common.getTransactionId());
 
             redisCommand.setValues(lockSet.getUuId(), userId);
-            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(lockSet));
+            //mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(lockSet));
 
             if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
             else stringObject = "N";
@@ -483,19 +514,22 @@ public class DeviceServiceImpl implements DeviceService {
 
     /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
     @Override
-    public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
+    public void doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
 
         ApiResponse.Data result = new ApiResponse.Data();
 //        ApiResponse.Data.DeviceStatusInfo info = new ApiResponse.Data.DeviceStatusInfo();
 
         String stringObject;
         String msg;
-
+        String redisValue;
         DeviceStatusInfoDR910W dr910W = DeviceStatusInfoDR910W.getInstance();
-//        List<DeviceStatusInfoDR910W.Device> devicesList = dr910W.getDevices();
-
+        List<DeviceStatusInfoDR910W.Device> devicesList = dr910W.getDevices();
         try {
+            dr910W.setFunctionId("basicDeviceStatusInfo");
+            dr910W.setUuId(common.getTransactionId());
 
+            redisValue = params.getUserId() + "," + dr910W.getFunctionId();
+            redisCommand.setValues(dr910W.getUuId(), redisValue);
 
 //            for (DeviceStatusInfoDR910W.Device device : devicesList) {
 //                mfcd = device.getMfcd();
@@ -503,17 +537,9 @@ public class DeviceServiceImpl implements DeviceService {
 
 
 
-            stringObject = "Y";
-            if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 성공";
-            else msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 실패";
-            result.setDeviceStatusInfo(dr910W.getDevices());
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 }

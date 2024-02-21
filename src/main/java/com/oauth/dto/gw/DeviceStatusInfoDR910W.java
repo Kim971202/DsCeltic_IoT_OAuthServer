@@ -26,6 +26,8 @@ public class DeviceStatusInfoDR910W {
 
    private String modelCategoryCode;
    private String deviceStatus;
+   private String uuId;
+   private String functionId;
 
    public void addDr910W(Device device) {devices.add(device);}
    public void setDevices(List<Device> devices) {

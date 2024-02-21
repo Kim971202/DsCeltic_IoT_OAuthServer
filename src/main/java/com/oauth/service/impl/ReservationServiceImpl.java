@@ -56,7 +56,7 @@ public class ReservationServiceImpl implements ReservationService{
             set24.setUuId(common.getTransactionId());
 
             redisCommand.setValues(set24.getUuId(), userId);
-            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(set24));
+            //mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(set24));
 
             if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
             else stringObject = "N";
@@ -100,7 +100,7 @@ public class ReservationServiceImpl implements ReservationService{
             set12.setUuId(common.getTransactionId());
 
             redisCommand.setValues(set12.getUuId(), userId);
-            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(set12));
+            //mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(set12));
 
             if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
             else stringObject = "N";
@@ -160,7 +160,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             awakeAlarmSet.setAwakeList(awakeList);
             redisCommand.setValues(awakeAlarmSet.getUuId(), userId);
-            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(awakeAlarmSet));
+            //mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(awakeAlarmSet));
 
             if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
             else stringObject = "N";
@@ -210,7 +210,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             setWeek.setWeekList(weekList);
             redisCommand.setValues(setWeek.getUuId(), userId);
-            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(setWeek));
+            //mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(setWeek));
 
             if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
             else stringObject = "N";
