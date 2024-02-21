@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -29,6 +30,8 @@ import java.util.stream.Collectors;
 @Component
 public class Common {
 
+    @Autowired
+    MemberMapper memberMapper;
     private static HashMap<String, String> mymap = new HashMap<>();
 
     public static String getMyMap(String rKey){
@@ -38,9 +41,6 @@ public class Common {
     public static void setMyMap(String rKey, String srNo){
         mymap.put(rKey, srNo);
     }
-
-    @Autowired
-    MemberMapper memberMapper;
 
     public static ApiResponse.Data.Device createDevice(
             String deviceId,
@@ -395,5 +395,14 @@ public class Common {
 
         return nameList;
 
+    }
+
+    public String getCurrentDateTime() {
+        Date today = new Date();
+        Locale currentLocale = new Locale("KOREAN", "KOREA");
+        String pattern = "yyyyMMddHHmmss"; //hhmmss로 시간,분,초만 뽑기도 가능
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern,
+                currentLocale);
+        return formatter.format(today);
     }
 }

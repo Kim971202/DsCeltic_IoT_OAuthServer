@@ -1,7 +1,7 @@
 package com.oauth.controller;
 
 import com.oauth.dto.AuthServerDTO;
-import com.oauth.service.impl.DeviceRequestServiceImpl;
+import com.oauth.service.impl.DeviceServiceImpl;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.Validator;
@@ -25,7 +25,7 @@ public class DeviceController {
     private Common common;
 
     @Autowired
-    private DeviceRequestServiceImpl deviceService;
+    private DeviceServiceImpl deviceService;
 
 
     /** 홈 IoT 컨트롤러 상태 정보 조회 */
@@ -212,7 +212,7 @@ public class DeviceController {
     /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
     @PostMapping(value = "/basicDeviceStatusInfo")
     @ResponseBody
-    public void doBasicDeviceStatusInfo(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+    public ResponseEntity<?> doBasicDeviceStatusInfo(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws Exception {
 
         String logStep = "[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]";
@@ -222,7 +222,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getControlAuthKey())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
-        deviceService.doBasicDeviceStatusInfo(params);
+        return deviceService.doBasicDeviceStatusInfo(params);
     }
 
 }

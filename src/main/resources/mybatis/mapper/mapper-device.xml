@@ -186,7 +186,7 @@
             NEW_ADDR = #{newAddr},
             DTAIL_ADDR = #{addrDetail}
         WHERE
-            DEVC_ID = #{DEVC_ID}
+            DEVC_ID = #{deviceId}
     </update>
 
 </mapper>

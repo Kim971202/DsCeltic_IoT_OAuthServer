@@ -72,6 +72,8 @@ public class MobiusController {
 
         // 홈 IoT 컨트롤러 정보 등록/수정 (주소 변경 시)
         if(functionId.equals("mfAr")){
+            resultCode = common.readCon(jsonBody, "uuId");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(jsonBody));
 
         }
 

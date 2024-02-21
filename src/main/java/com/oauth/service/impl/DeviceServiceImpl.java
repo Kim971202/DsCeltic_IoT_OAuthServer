@@ -7,7 +7,7 @@ import com.oauth.dto.gw.*;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.message.GwMessagingSystem;
 import com.oauth.response.ApiResponse;
-import com.oauth.service.mapper.DeviceRequestService;
+import com.oauth.service.mapper.DeviceService;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.JSON;
@@ -15,22 +15,19 @@ import com.oauth.utils.RedisCommand;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 @Service
-public class DeviceRequestServiceImpl implements DeviceRequestService {
+public class DeviceServiceImpl implements DeviceService {
 
     @Autowired
     Common common;
@@ -48,6 +45,9 @@ public class DeviceRequestServiceImpl implements DeviceRequestService {
     MobiusController mobiusController;
     @Autowired
     GwMessagingSystem gwMessagingSystem;
+    @Value("${server.timeout}")
+    private long TIME_OUT;
+    private final String DEVICE_ID_PREFIX = "0.2.481.1.1.";
 
     /** 전원 On/Off */
     @Override
@@ -85,7 +85,7 @@ public class DeviceRequestServiceImpl implements DeviceRequestService {
 
                 try {
                     // 메시징 시스템을 통해 응답 메시지 대기
-                    responseMessage = gwMessagingSystem.waitForResponse("powr" + powerOnOff.getUuId(), 50, TimeUnit.SECONDS);
+                    responseMessage = gwMessagingSystem.waitForResponse("powr" + powerOnOff.getUuId(), TIME_OUT, TimeUnit.SECONDS);
 
                     if (responseMessage != null) {
                         // 응답 처리
@@ -130,6 +130,8 @@ public class DeviceRequestServiceImpl implements DeviceRequestService {
     @Override
     public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws CustomException, SQLException {
 
+        System.out.println("TIME_OUT: " + TIME_OUT);
+
         // Transaction용 클래스 선언
         SqlSession session = sqlSessionFactory.openSession();
 
@@ -141,6 +143,8 @@ public class DeviceRequestServiceImpl implements DeviceRequestService {
         String deviceId = params.getDeviceId();
         String controlAuthKey = params.getControlAuthKey();
         String registYn = params.getRegistYn();
+        String responseMessage = null;
+        String redisValue;
 
         int insertDeviceModelCodeResult;
         int insertDeviceResult;
@@ -169,6 +173,7 @@ public class DeviceRequestServiceImpl implements DeviceRequestService {
             deviceInfoUpsert.setFunctionId("mfAr");
             deviceInfoUpsert.setUuId(common.getTransactionId());
 
+            DeviceMapper dMapper = session.getMapper(DeviceMapper.class);
             if(registYn.equals("N")){
 
                 /* *
@@ -177,15 +182,29 @@ public class DeviceRequestServiceImpl implements DeviceRequestService {
                  * 2. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * */
 
-                DeviceMapper dMapper = session.getMapper(DeviceMapper.class);
-
                 updateDeviceRegistLocationResult = dMapper.updateDeviceRegistLocation(params);
                 updateDeviceDetailLocationResult = dMapper.updateDeviceDetailLocation(params);
 
                 if(updateDeviceRegistLocationResult > 0 && updateDeviceDetailLocationResult > 0){
                     stringObject = "Y";
-                    redisCommand.setValues(deviceInfoUpsert.getUuId(), userId);
+
+                    redisValue = userId + "," + deviceInfoUpsert.getFunctionId();
+                    redisCommand.setValues(deviceInfoUpsert.getUuId(), redisValue);
                     mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(deviceInfoUpsert));
+                    try {
+                        responseMessage = gwMessagingSystem.waitForResponse("mfAr" + deviceInfoUpsert.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                        if (responseMessage != null) {
+                            // 응답 처리
+                            System.out.println("receiveCin에서의 응답: " + responseMessage);
+                        } else {
+                            // 타임아웃이나 응답 없음 처리
+                            stringObject = "T";
+                            System.out.println("응답이 없거나 시간 초과");
+                        }
+                    } catch (InterruptedException e) {
+                        // 대기 중 인터럽트 처리
+                        e.printStackTrace();
+                    }
                 }
                 else stringObject = "N";
             } else {
@@ -197,8 +216,8 @@ public class DeviceRequestServiceImpl implements DeviceRequestService {
                  * 3. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
                  * 4. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * */
-
-                DeviceMapper dMapper = session.getMapper(DeviceMapper.class);
+                params.setDeviceId(DEVICE_ID_PREFIX + "." + params.getModelCode() + "." + params.getSerialNumber());
+                params.setTmpRegistKey(params.getUserId() + "_" +common.getCurrentDateTime());
 
                 insertDeviceModelCodeResult = dMapper.insertDeviceModelCode(params);
                 insertDeviceResult = dMapper.insertDevice(params);
@@ -213,17 +232,32 @@ public class DeviceRequestServiceImpl implements DeviceRequestService {
                 else stringObject = "N";
 
             }
-            if(stringObject.equals("Y")) {
-                msg = "홈 IoT 컨트롤러 정보 등록/수정 성공";
+
+
+            System.out.println("stringObject: " + stringObject);
+            if (stringObject.equals("Y") && registYn.equals("Y")) {
+                msg = "홈 IoT 컨트롤러 정보 등록 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 result.setLatitude(params.getLatitude());
                 result.setLongitude(params.getLongitude());
                 result.setTmpRegistKey(params.getTmpRegistKey());
-            }
-            else msg = "홈 IoT 컨트롤러 정보 등록/수정 실패";
 
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            } else if(stringObject.equals("Y") && registYn.equals("N")){
+                msg = "홈 IoT 컨트롤러 정보 수정 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                result.setLatitude(params.getLatitude());
+                result.setLongitude(params.getLongitude());
+                result.setTmpRegistKey("NULL");
+                result.setTestVariable(responseMessage);
+
+            } else if(stringObject.equals("N")) {
+                msg = "홈 IoT 컨트롤러 정보 등록/수정 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+            else {
+                msg = "응답이 없거나 시간 초과";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CustomException e){
@@ -514,7 +548,7 @@ public class DeviceRequestServiceImpl implements DeviceRequestService {
 
     /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
     @Override
-    public void doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
+    public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
 
         ApiResponse.Data result = new ApiResponse.Data();
 //        ApiResponse.Data.DeviceStatusInfo info = new ApiResponse.Data.DeviceStatusInfo();
@@ -541,5 +575,6 @@ public class DeviceRequestServiceImpl implements DeviceRequestService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 }
