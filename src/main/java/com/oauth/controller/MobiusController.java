@@ -73,39 +73,44 @@ public class MobiusController {
 
         // 밝기 조절
         if(functionId.equals("blCf")){
-
+            resultCode = common.readCon(jsonBody, "rtCd");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
         }
 
         // 홈 IoT 컨트롤러 정보 등록/수정 (주소 변경 시)
         if(functionId.equals("mfAr")){
-            resultCode = common.readCon(jsonBody, "uuId");
-            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(jsonBody));
-
+            resultCode = common.readCon(jsonBody, "rtCd");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
         }
 
         // 모드 변경
         if(functionId.equals("opMd")){
-
+            resultCode = common.readCon(jsonBody, "rtCd");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
         }
 
         // 실내온도 설정
         if(functionId.equals("htTp")){
-
+            resultCode = common.readCon(jsonBody, "rtCd");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
         }
 
         // 난방수온도 설정
         if(functionId.equals("wtTp")){
-
+            resultCode = common.readCon(jsonBody, "rtCd");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
         }
 
         // 온수온도 설정
         if(functionId.equals("hwTp")){
-
+            resultCode = common.readCon(jsonBody, "rtCd");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
         }
 
         // 빠른온수 설정
         if(functionId.equals("ftMd")){
-
+            resultCode = common.readCon(jsonBody, "rtCd");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
         }
 
         // 잠금모드 설정

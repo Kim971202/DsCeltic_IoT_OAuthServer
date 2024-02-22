@@ -1,10 +1,12 @@
 package com.oauth.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
+import com.oauth.message.GwMessagingSystem;
 import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.UserService;
 import com.oauth.utils.Common;
@@ -15,6 +17,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +28,7 @@ import java.lang.reflect.Member;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +47,10 @@ public class UserServiceImpl implements UserService {
     private RedisCommand redisCommand;
     @Autowired
     SqlSessionFactory sqlSessionFactory;
-
+    @Autowired
+    GwMessagingSystem gwMessagingSystem;
+    @Value("${server.timeout}")
+    private long TIME_OUT;
     public static final List<String> oldModels = Arrays.asList("oldModel1", "oldModel2");
 
     /** 회원 로그인 */
@@ -1172,12 +1179,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> doBrightnessControl(AuthServerDTO params) throws CustomException {
 
-        ApiResponse.Data data = new ApiResponse.Data();
+        ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = null;
         String msg = null;
         AuthServerDTO serialNumber = null;
+        String userId = params.getUserId();
+        String uuId = common.getTransactionId();
+        String redisValue;
         Map<String, Object> conMap = new HashMap<>();
         MobiusResponse mobiusResponse = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        String responseMessage = null;
+        JsonNode rootNode = null;
         try{
             serialNumber = deviceMapper.getSerialNumberBydeviceId(params.getDeviceId());
 
@@ -1188,21 +1201,46 @@ public class UserServiceImpl implements UserService {
             conMap.put("brightnessLevel", params.getBrightnessLevel());
             conMap.put("functionId", "blCf");
 
-            ObjectMapper objectMapper = new ObjectMapper();
+            redisValue = userId + "," + "blCf";
+            redisCommand.setValues(uuId, redisValue);
             String jsonString = objectMapper.writeValueAsString(conMap);
-
-            //mobiusResponse = mobiusService.createCin(serialNumber.getSerialNumber(), params.getUserId(), jsonString);
+            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", jsonString);
             if (Objects.equals(mobiusResponse.getResponseCode(), "201")) stringObject = "Y";
-            else stringObject = "N";
+            else {
 
-            if(stringObject.equals("Y")) msg = "기기 별칭 수정 성공";
-            else msg = "기기 별칭 수정 실패";
+            }
 
-            data.setMobiusResponseCode((mobiusResponse.getResponseCode()));
-            data.setResult("Y".equalsIgnoreCase(stringObject) ?
-                    ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
-            return new ResponseEntity<>(data, HttpStatus.OK);
+
+            try {
+                // 메시징 시스템을 통해 응답 메시지 대기
+                responseMessage = gwMessagingSystem.waitForResponse("blCf" + uuId, TIME_OUT, TimeUnit.SECONDS);
+                if(responseMessage == null) stringObject = "T";
+                else {
+                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    else stringObject = "N";
+                    // 응답 처리
+                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                }
+
+            } catch (InterruptedException e) {
+                // 대기 중 인터럽트 처리
+                e.printStackTrace();
+            }
+
+            if(stringObject.equals("Y")) {
+                msg = "기기 밝기 수정 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+            else if(stringObject.equals("N")) {
+                msg = "기기 밝기 수정 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+            else {
+                msg = "응답이 없거나 시간 초과";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (CustomException e){
             System.out.println(e.getMessage());
             e.printStackTrace();
