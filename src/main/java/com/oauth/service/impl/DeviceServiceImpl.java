@@ -1,5 +1,7 @@
 package com.oauth.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.controller.MobiusController;
 import com.oauth.dto.AuthServerDTO;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -274,27 +277,61 @@ public class DeviceServiceImpl implements DeviceService {
     public ResponseEntity<?> doDeviceStatusInfo(AuthServerDTO params) throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();
-        DeviceStatusInfoDR910W dr910W = DeviceStatusInfoDR910W.getInstance();
         String stringObject = null;
-        String msg = null;
-        String serialNumber = null;
+        String msg;
         String userId = params.getUserId();
-        String deviceId = params.getDeviceId();
-        String jsonBody = null;
+        String uuId = common.getTransactionId();
+        HashMap<String, String> request = new HashMap<>();
+        String responseMessage = null;
+        MobiusResponse response;
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = null;
         try {
-//            if(dr910W.getRKey() != null){
-//                stringObject = "Y";
-//                dr910W.setModelCategoryCode("01");
-//                dr910W.setDeviceStatus("1");
-//                result.setDeviceStatusInfo(dr910W);
-//            } else stringObject = "N";
 
-            if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 상태 정보 조회 성공";
-            else msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
+            request.put("accessToken", params.getAccessToken());
+            request.put("userId", params.getUserId());
+            request.put("controlAuthKey", params.getControlAuthKey());
+            request.put("deviceId", params.getDeviceId());
+            request.put("modelCode", params.getModelCode());
+            request.put("functionId", "fcnt");
+            request.put("uuId", uuId);
 
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            redisCommand.setValues(uuId, userId + "," + "fcnt");
+            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(request));
+            if(response.getResponseCode().equals("201")){
+                try {
+                    // 메시징 시스템을 통해 응답 메시지 대기
+                    responseMessage = gwMessagingSystem.waitForResponse("fcnt" + uuId, TIME_OUT, TimeUnit.SECONDS);
+                    // JSON 문자열 파싱
+                    rootNode = objectMapper.readTree(responseMessage);
+                    if (responseMessage != null) {
+                        stringObject = "Y";
+                        // 응답 처리
+                        System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    } else {
+                        // 타임아웃이나 응답 없음 처리
+                        stringObject = "T";
+                        System.out.println("응답이 없거나 시간 초과");
+                    }
+                } catch (InterruptedException e) {
+                    // 대기 중 인터럽트 처리
+                    e.printStackTrace();
+                }
+            } else stringObject = "N";
+
+            if(stringObject.equals("Y")) {
+                msg = "홈 IoT 컨트롤러 상태 정보 조회 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                result.setDevice(rootNode);
+            }
+            else if(stringObject.equals("N")) {
+                msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+            else {
+                msg = "응답이 없거나 시간 초과";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){

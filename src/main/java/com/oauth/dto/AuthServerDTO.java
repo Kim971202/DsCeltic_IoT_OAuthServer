@@ -147,6 +147,9 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String[][] timeWeek;                 // 요일: 0,1,2,3,4,5,6 (일,월,화,수,목,금,토)
     private String[] dayWeek;                    // 주간예약 요일별 가동시간
 
+
+
+
     private Role role = Role.USER;
 
     private boolean accountNonExpired = true;

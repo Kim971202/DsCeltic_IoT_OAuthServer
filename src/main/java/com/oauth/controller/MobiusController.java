@@ -39,6 +39,11 @@ public class MobiusController {
     @ResponseBody
     public String receiveCin(@RequestBody String jsonBody) throws Exception {
 
+        DeviceStatusInfoDR910W dr910W = new DeviceStatusInfoDR910W();
+        DeviceStatusInfoDR910W.Device dr910WDevice = new DeviceStatusInfoDR910W.Device();
+
+
+
         /**
          * 1. Redis에서 받은 uuId로 Redis에 저장된 Value값을 검색한다.
          * 2. 해당 Value는 userId,functionId 형태로 저장됨
@@ -54,9 +59,10 @@ public class MobiusController {
         String userId = redisValue.get(0);
         String functionId = redisValue.get(1);
         String resultCode;
-
         System.out.println("userId: " + userId);
         System.out.println("functionId: " + functionId);
+
+
 
         // 전원 On/Off
         if(functionId.equals("powr")){
@@ -115,6 +121,24 @@ public class MobiusController {
         // 홈 IoT 컨트롤러 상태 정보 조회 - 상세조회
         if(functionId.equals("fcnt")){
 
+            dr910WDevice.setPowr(common.readCon(jsonBody, "powr"));
+            dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd"));
+            dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp"));
+            dr910WDevice.setWtTp(common.readCon(jsonBody, "wtTp"));
+            dr910WDevice.setHwTp(common.readCon(jsonBody, "hwTp"));
+            dr910WDevice.setRsCf(common.changeStringToJson(common.readCon(jsonBody, "rsCf")));
+            dr910WDevice.setFtMd(common.readCon(jsonBody, "ftMd"));
+            dr910WDevice.setBCdt(common.readCon(jsonBody, "bCdt"));
+            dr910WDevice.setChTp(common.readCon(jsonBody, "chTp"));
+            dr910WDevice.setCwTp(common.readCon(jsonBody, "cwTp"));
+            dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt"));
+            dr910WDevice.setSlCd(common.readCon(jsonBody, "slCd"));
+            dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt"));
+            dr910W.setModelCategoryCode("01");
+            dr910W.setDeviceStatus("01");
+            dr910W.setDevice(dr910WDevice);
+            System.out.println(JSON.toJson(dr910W));
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(dr910W));
         }
 
         // 24시간 예약
