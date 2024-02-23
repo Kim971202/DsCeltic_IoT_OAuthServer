@@ -30,4 +30,18 @@ public class GwMessagingSystem implements MessagingSystem {
         // 메시지 큐에서 응답 메시지를 대기
         return messageQueue.poll(timeout, unit);
     }
+
+    // 현재 큐 목록을 출력하는 함수
+    public void printMessageQueues() {
+        System.out.println("Current Message Queues:");
+        for (Map.Entry<String, BlockingQueue<String>> entry : messageQueues.entrySet()) {
+            System.out.println("Destination: " + entry.getKey() + ", Queue Size: " + entry.getValue().size());
+        }
+    }
+
+    // 넣으거를 지우는 함수
+    public void removeMessageQueue(String destination) {
+        messageQueues.remove(destination);
+    }
+
 }

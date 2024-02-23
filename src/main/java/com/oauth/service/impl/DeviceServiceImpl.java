@@ -85,7 +85,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             if (!serialNumber.isEmpty()) {
                 stringObject = "Y";
-                response = mobiusService.createCin("serialNumber", userId, JSON.toJson(powerOnOff));
+                response = mobiusService.createCin(serialNumber, userId, JSON.toJson(powerOnOff));
                 if(!response.getResponseCode().equals("201")){
                     msg = "중계서버 오류";
                     result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
@@ -708,7 +708,10 @@ public class DeviceServiceImpl implements DeviceService {
         String stringObject = null;
         String msg;
         String userId = params.getUserId();
-        MobiusResponse response = null;
+
+        String redisValue;
+        MobiusResponse response;
+        String responseMessage;
         try {
 
             lockSet.setAccessToken(params.getAccessToken());
@@ -719,7 +722,9 @@ public class DeviceServiceImpl implements DeviceService {
             lockSet.setFunctionId("fcLc");
             lockSet.setUuId(common.getTransactionId());
 
-            redisCommand.setValues(lockSet.getUuId(), userId);
+
+            redisValue = userId + "," + lockSet.getFunctionId();
+            redisCommand.setValues(lockSet.getUuId(), redisValue);
             response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(lockSet));
 
             if(!response.getResponseCode().equals("201")){
@@ -728,12 +733,34 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            if(stringObject.equals("Y")) msg = "잠금 모드 설정 성공";
-            else msg = "잠금 모드 설정 실패";
+            try {
+                // 메시징 시스템을 통해 응답 메시지 대기
+                responseMessage = gwMessagingSystem.waitForResponse("fcLc" + lockSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                gwMessagingSystem.removeMessageQueue("fcLc" + lockSet.getUuId());
+                if(responseMessage == null) stringObject = "T";
+                else {
+                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    else stringObject = "N";
+                    // 응답 처리
+                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                }
+            } catch (InterruptedException e) {
+                // 대기 중 인터럽트 처리
+                e.printStackTrace();
+            }
 
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            if(stringObject.equals("Y")) {
+                msg = "잠금 모드 설정 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+            else if(stringObject.equals("N")) {
+                msg = "잠금 모드 설정 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+            else {
+                msg = "응답이 없거나 시간 초과";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
@@ -744,32 +771,6 @@ public class DeviceServiceImpl implements DeviceService {
     /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
     @Override
     public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
-
-        ApiResponse.Data result = new ApiResponse.Data();
-//        ApiResponse.Data.DeviceStatusInfo info = new ApiResponse.Data.DeviceStatusInfo();
-
-        String stringObject;
-        String msg;
-        String redisValue;
-        DeviceStatusInfoDR910W dr910W = DeviceStatusInfoDR910W.getInstance();
-        List<DeviceStatusInfoDR910W.Device> devicesList = dr910W.getDevices();
-        try {
-            dr910W.setFunctionId("basicDeviceStatusInfo");
-            dr910W.setUuId(common.getTransactionId());
-
-            redisValue = params.getUserId() + "," + dr910W.getFunctionId();
-            redisCommand.setValues(dr910W.getUuId(), redisValue);
-
-//            for (DeviceStatusInfoDR910W.Device device : devicesList) {
-//                mfcd = device.getMfcd();
-//            }
-
-
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return null;
     }
 }

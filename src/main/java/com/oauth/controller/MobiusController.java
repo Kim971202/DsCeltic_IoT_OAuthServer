@@ -1,7 +1,6 @@
 package com.oauth.controller;
 
-import com.oauth.dto.gw.DeviceStatusInfoDR910W;
-import com.oauth.dto.gw.GWResponseObject;
+import com.oauth.dto.gw.DeviceStatusInfo;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.message.GwMessagingSystem;
 import com.oauth.service.impl.MobiusService;
@@ -12,11 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -39,8 +33,8 @@ public class MobiusController {
     @ResponseBody
     public String receiveCin(@RequestBody String jsonBody) throws Exception {
 
-        DeviceStatusInfoDR910W dr910W = new DeviceStatusInfoDR910W();
-        DeviceStatusInfoDR910W.Device dr910WDevice = new DeviceStatusInfoDR910W.Device();
+        DeviceStatusInfo dr910W = new DeviceStatusInfo();
+        DeviceStatusInfo.Device dr910WDevice = new DeviceStatusInfo.Device();
 
 
 
@@ -115,7 +109,8 @@ public class MobiusController {
 
         // 잠금모드 설정
         if(functionId.equals("fcLc")){
-
+            resultCode = common.readCon(jsonBody, "rtCd");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
         }
 
         // 홈 IoT 컨트롤러 상태 정보 조회 - 홈화면
@@ -139,6 +134,15 @@ public class MobiusController {
             dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt"));
             dr910WDevice.setSlCd(common.readCon(jsonBody, "slCd"));
             dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt"));
+
+            if(!common.readCon(jsonBody, "ecOp").isEmpty() &&
+                    !common.readCon(jsonBody, "fcLc").isEmpty() &&
+                    !common.readCon(jsonBody, "blCf").isEmpty()){
+                dr910WDevice.setEcOp(common.readCon(jsonBody, "ecOp"));
+                dr910WDevice.setFcLc(common.readCon(jsonBody, "fcLc"));
+                dr910WDevice.setBlCf(common.readCon(jsonBody, "blCf"));
+            }
+
             dr910W.setModelCategoryCode("01");
             dr910W.setDeviceStatus("01");
             dr910W.setDevice(dr910WDevice);
