@@ -1,15 +1,9 @@
 package com.oauth.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.oauth.dto.gw.DeviceStatusInfoDR910W;
-import com.oauth.utils.JSON;
 import lombok.Getter;
 import lombok.Setter;
-import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ApiResponse {

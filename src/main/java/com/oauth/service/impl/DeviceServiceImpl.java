@@ -771,6 +771,16 @@ public class DeviceServiceImpl implements DeviceService {
     /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
     @Override
     public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
+
+
+
+        try {
+
+
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         return null;
     }
 }

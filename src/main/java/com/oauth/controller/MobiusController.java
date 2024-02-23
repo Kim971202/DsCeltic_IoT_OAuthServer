@@ -46,22 +46,23 @@ public class MobiusController {
          * */
 
         String uuId = common.readCon(jsonBody, "uuId");
-
-        System.out.println("redisCommand.getValues(uuId): " + redisCommand.getValues(uuId));
-        System.out.println(redisCommand.getValues(uuId).getClass());
+        String userId = null;
+        String resultCode = null;
+        String functionId = null;
         List<String> redisValue = common.getUserIdAndFunctionId(redisCommand.getValues(uuId));
-        String userId = redisValue.get(0);
-        String functionId = redisValue.get(1);
-        String resultCode;
-        System.out.println("userId: " + userId);
-        System.out.println("functionId: " + functionId);
+        if(redisValue != null){
+            userId = redisValue.get(0);
+            functionId = redisValue.get(1);
+            System.out.println("userId: " + userId);
+            System.out.println("functionId: " + functionId);
+        }
 
 
 
         // 전원 On/Off
         if(functionId.equals("powr")){
             resultCode = common.readCon(jsonBody, "uuId");
-            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(jsonBody));
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
 
         }
 
@@ -102,7 +103,7 @@ public class MobiusController {
         }
 
         // 빠른온수 설정
-        if(functionId.equals("ftMd")){
+        if(functionId.equals("fwh")){
             resultCode = common.readCon(jsonBody, "rtCd");
             gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
         }
@@ -113,6 +114,26 @@ public class MobiusController {
             gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
         }
 
+        // 24시간 예약
+        if(functionId.equals("24h")){
+            resultCode = common.readCon(jsonBody, "rtCd");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
+        }
+        // 반복(12시간) 예약
+        if(functionId.equals("12h")){
+            resultCode = common.readCon(jsonBody, "rtCd");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
+        }
+        // 빠른 온수 예약
+        if(functionId.equals("ftMd")){
+            resultCode = common.readCon(jsonBody, "rtCd");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
+        }
+        // 주간 예약
+        if(functionId.equals("7wk")){
+            resultCode = common.readCon(jsonBody, "rtCd");
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
+        }
         // 홈 IoT 컨트롤러 상태 정보 조회 - 홈화면
         if(functionId.equals("fcnt-homeView")){
 
@@ -148,24 +169,6 @@ public class MobiusController {
             dr910W.setDevice(dr910WDevice);
             System.out.println(JSON.toJson(dr910W));
             gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(dr910W));
-        }
-
-        // 24시간 예약
-        if(functionId.equals("24h")){
-
-        }
-
-        // 반복(12시간) 예약
-        if(functionId.equals("12h")){
-
-        }
-        // 빠른 온수 예약
-        if(functionId.equals("ftMd")){
-
-        }
-        // 주간 예약
-        if(functionId.equals("7wk")){
-
         }
         return uuId;
     }

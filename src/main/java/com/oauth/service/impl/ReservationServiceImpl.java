@@ -3,10 +3,12 @@ package com.oauth.service.impl;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.*;
+import com.oauth.message.GwMessagingSystem;
 import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.ReservationService;
 import com.oauth.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ReservationServiceImpl implements ReservationService{
@@ -30,6 +33,10 @@ public class ReservationServiceImpl implements ReservationService{
     RedisCommand redisCommand;
     @Autowired
     MobiusResponse mobiusResponse;
+    @Autowired
+    GwMessagingSystem gwMessagingSystem;
+    @Value("${server.timeout}")
+    private long TIME_OUT;
 
     /** 24시간 예약 */
     @Override
@@ -38,10 +45,13 @@ public class ReservationServiceImpl implements ReservationService{
         ApiResponse.Data result = new ApiResponse.Data();
         Set24 set24 = new Set24();
         String stringObject = null;
-        String msg = null;
+        String msg;
 
         String userId = params.getUserId();
 
+        String redisValue;
+        MobiusResponse response = null;
+        String responseMessage;
         try {
 
             set24.setAccessToken(params.getAccessToken());
@@ -55,18 +65,43 @@ public class ReservationServiceImpl implements ReservationService{
             set24.setFunctionId("24h");
             set24.setUuId(common.getTransactionId());
 
-            redisCommand.setValues(set24.getUuId(), userId);
-            //mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(set24));
+            redisValue = userId + "," + set24.getFunctionId();
+            redisCommand.setValues(set24.getUuId(), redisValue);
+            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(set24));
 
-            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
-            else stringObject = "N";
+            if(!response.getResponseCode().equals("201")){
+                msg = "중계서버 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
 
-            if(stringObject.equals("Y")) msg = "24시간 예약 성공";
-            else msg = "24시간 예약 실패";
+            try {
+                // 메시징 시스템을 통해 응답 메시지 대기
+                responseMessage = gwMessagingSystem.waitForResponse(set24.getFunctionId() + set24.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                if(responseMessage == null) stringObject = "T";
+                else {
+                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    else stringObject = "N";
+                    // 응답 처리
+                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                }
+            } catch (InterruptedException e) {
+                // 대기 중 인터럽트 처리
+                e.printStackTrace();
+            }
 
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            if(stringObject.equals("Y")) {
+                msg = "24시간 예약 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+            else if(stringObject.equals("N")) {
+                msg = "24시간 예약 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+            else {
+                msg = "응답이 없거나 시간 초과";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -85,7 +120,9 @@ public class ReservationServiceImpl implements ReservationService{
         String msg = null;
 
         String userId = params.getUserId();
-
+        String responseMessage = null;
+        String redisValue;
+        MobiusResponse response;
         try {
 
             set12.setAccessToken(params.getAccessToken());
@@ -99,18 +136,43 @@ public class ReservationServiceImpl implements ReservationService{
             set12.setFunctionId("12h");
             set12.setUuId(common.getTransactionId());
 
-            redisCommand.setValues(set12.getUuId(), userId);
-            //mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(set12));
+            redisValue = userId + "," + set12.getFunctionId();
+            redisCommand.setValues(set12.getUuId(), redisValue);
+            response = mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(set12));
 
-            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
-            else stringObject = "N";
+            if(!response.getResponseCode().equals("201")){
+                msg = "중계서버 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
 
-            if(stringObject.equals("Y")) msg = "12시간 예약 성공";
-            else msg = "12시간 예약 실패";
+            try {
+                // 메시징 시스템을 통해 응답 메시지 대기
+                responseMessage = gwMessagingSystem.waitForResponse(set12.getFunctionId() + set12.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                if(responseMessage == null) stringObject = "T";
+                else {
+                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    else stringObject = "N";
+                    // 응답 처리
+                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                }
+            } catch (InterruptedException e) {
+                // 대기 중 인터럽트 처리
+                e.printStackTrace();
+            }
 
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            if(stringObject.equals("Y")) {
+                msg = "12시간 예약 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+            else if(stringObject.equals("N")) {
+                msg = "12시간 예약 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+            else {
+                msg = "응답이 없거나 시간 초과";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -125,12 +187,17 @@ public class ReservationServiceImpl implements ReservationService{
 
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = null;
-        String msg = null;
+        String msg;
         String userId = params.getUserId();
 
         AwakeAlarmSet awakeAlarmSet = new AwakeAlarmSet();
         List<HashMap<String, Object>> awakeList = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map = new HashMap<>();
+
+        String redisValue;
+        MobiusResponse response;
+        String responseMessage;
+
         try {
             /**
              * “awakeList” :
@@ -147,7 +214,7 @@ public class ReservationServiceImpl implements ReservationService{
             awakeAlarmSet.setUuId(params.getUserId());
             awakeAlarmSet.setDeviceId(params.getDeviceId());
             awakeAlarmSet.setControlAuthKey(params.getControlAuthKey());
-            awakeAlarmSet.setFunctionId("fwh");
+            awakeAlarmSet.setFunctionId("ftMd");
             awakeAlarmSet.setUuId(common.getTransactionId());
 
             for(int i = 0 ; i < params.getWs().length; ++i){
@@ -159,18 +226,44 @@ public class ReservationServiceImpl implements ReservationService{
             }
 
             awakeAlarmSet.setAwakeList(awakeList);
-            redisCommand.setValues(awakeAlarmSet.getUuId(), userId);
-            //mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(awakeAlarmSet));
 
-            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
-            else stringObject = "N";
+            redisValue = userId + "," + awakeAlarmSet.getFunctionId();
+            redisCommand.setValues(awakeAlarmSet.getUuId(), redisValue);
+            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(awakeAlarmSet));
 
-            if(stringObject.equals("Y")) msg = "빠른 온수 예약 성공";
-            else msg = "빠른 온수 예약 실패";
+            if(!response.getResponseCode().equals("201")){
+                msg = "중계서버 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
 
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            try {
+                // 메시징 시스템을 통해 응답 메시지 대기
+                responseMessage = gwMessagingSystem.waitForResponse(awakeAlarmSet.getFunctionId() + awakeAlarmSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                if(responseMessage == null) stringObject = "T";
+                else {
+                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    else stringObject = "N";
+                    // 응답 처리
+                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                }
+            } catch (InterruptedException e) {
+                // 대기 중 인터럽트 처리
+                e.printStackTrace();
+            }
+
+            if(stringObject.equals("Y")) {
+                msg = "빠른 온수 예약 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+            else if(stringObject.equals("N")) {
+                msg = "빠른 온수 예약 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+            else {
+                msg = "응답이 없거나 시간 초과";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -185,12 +278,16 @@ public class ReservationServiceImpl implements ReservationService{
 
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = null;
-        String msg = null;
+        String msg;
         String userId = params.getUserId();
 
         SetWeek setWeek = new SetWeek();
         List<HashMap<String, Object>> weekList = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map = new HashMap<>();
+
+        String responseMessage;
+        String redisValue;
+        MobiusResponse response;
         try {
 
             setWeek.setAccessToken(params.getAccessToken());
@@ -209,18 +306,44 @@ public class ReservationServiceImpl implements ReservationService{
             }
 
             setWeek.setWeekList(weekList);
-            redisCommand.setValues(setWeek.getUuId(), userId);
-            //mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(setWeek));
 
-            if(mobiusResponse.getResponseCode().equals("201")) stringObject = "Y";
-            else stringObject = "N";
+            redisValue = userId + "," + setWeek.getFunctionId();
+            redisCommand.setValues(setWeek.getUuId(), redisValue);
+            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(setWeek));
 
-            if(stringObject.equals("Y")) msg = "주간 예약 성공";
-            else msg = "주간 예약 실패";
+            if(!response.getResponseCode().equals("201")){
+                msg = "중계서버 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
 
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            try {
+                // 메시징 시스템을 통해 응답 메시지 대기
+                responseMessage = gwMessagingSystem.waitForResponse(setWeek.getFunctionId() + setWeek.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                if(responseMessage == null) stringObject = "T";
+                else {
+                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    else stringObject = "N";
+                    // 응답 처리
+                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                }
+            } catch (InterruptedException e) {
+                // 대기 중 인터럽트 처리
+                e.printStackTrace();
+            }
+
+            if(stringObject.equals("Y")) {
+                msg = "주간 예약 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+            else if(stringObject.equals("N")) {
+                msg = "주간 예약 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+            else {
+                msg = "응답이 없거나 시간 초과";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){

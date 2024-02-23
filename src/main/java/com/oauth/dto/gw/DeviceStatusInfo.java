@@ -16,7 +16,7 @@ public class DeviceStatusInfo {
    private ArrayList<Device> devices;
 
    private static DeviceStatusInfo dr910W;
-   public DeviceStatusInfoDR910W() {devices = new ArrayList<>();}
+   public DeviceStatusInfo() {devices = new ArrayList<>();}
 
    public static DeviceStatusInfo getInstance() {
       if (dr910W == null) {
