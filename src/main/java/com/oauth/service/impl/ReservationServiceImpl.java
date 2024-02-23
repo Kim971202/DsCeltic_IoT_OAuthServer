@@ -90,6 +90,7 @@ public class ReservationServiceImpl implements ReservationService{
                 e.printStackTrace();
             }
 
+
             if(stringObject.equals("Y")) {
                 msg = "24시간 예약 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -103,6 +104,7 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            redisCommand.deleteValues(set24.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
@@ -174,6 +176,7 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            redisCommand.deleteValues(set12.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
@@ -265,6 +268,7 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            redisCommand.deleteValues(awakeAlarmSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
@@ -345,6 +349,7 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            redisCommand.deleteValues(setWeek.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();

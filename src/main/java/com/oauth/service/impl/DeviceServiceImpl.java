@@ -125,6 +125,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            redisCommand.deleteValues(powerOnOff.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -272,6 +273,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            redisCommand.deleteValues(deviceInfoUpsert.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CustomException e){
             System.out.println(e.getMessage());
@@ -347,6 +349,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            redisCommand.deleteValues(uuId);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -420,6 +423,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            redisCommand.deleteValues(modeChange.getUuid());
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -487,6 +491,8 @@ public class DeviceServiceImpl implements DeviceService {
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
+
+            redisCommand.deleteValues(temperatureSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
@@ -553,8 +559,9 @@ public class DeviceServiceImpl implements DeviceService {
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
-            return new ResponseEntity<>(result, HttpStatus.OK);
 
+            redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -621,9 +628,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            redisCommand.deleteValues(waterTempertureSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
@@ -691,6 +696,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            redisCommand.deleteValues(fastHotWaterSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
 
         } catch (Exception e){
@@ -761,6 +767,8 @@ public class DeviceServiceImpl implements DeviceService {
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
+
+            redisCommand.deleteValues(lockSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
