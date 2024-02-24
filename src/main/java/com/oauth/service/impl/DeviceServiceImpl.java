@@ -137,7 +137,7 @@ public class DeviceServiceImpl implements DeviceService {
     /** 홈 IoT 컨트롤러 정보 등록/수정 */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws CustomException, SQLException {
+    public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws CustomException {
 
         // Transaction용 클래스 선언
         SqlSession session = sqlSessionFactory.openSession();
