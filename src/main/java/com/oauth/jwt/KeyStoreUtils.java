@@ -19,7 +19,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Base64;
 
-//@Component
+@Component
 public class KeyStoreUtils {
 
     public String resourceFileToString(String path) throws Exception {

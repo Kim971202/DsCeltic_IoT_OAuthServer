@@ -97,13 +97,13 @@ public class TokenConfig {
             this.jweEncrypter = new DirectEncrypter(aesKey);
             this.jweDecrypter = new DirectDecrypter(aesKey);
 
-            setJwsVerifierByPlatform();
-            setJwsVerifierByAdmin();
-            setJwsVerifierByDaesung();
-            setJwsVerifierByDggwIot();
-            setJwsVerifierByDggw();
-            setJwsVerifierByGoogle();
-            setJwsVerifierByPush();
+//            setJwsVerifierByPlatform();
+//            setJwsVerifierByAdmin();
+//            setJwsVerifierByDaesung();
+//            setJwsVerifierByDggwIot();
+//            setJwsVerifierByDggw();
+//            setJwsVerifierByGoogle();
+//            setJwsVerifierByPush();
         } catch(Exception e) {
             System.out.println(e.getMessage());
         }

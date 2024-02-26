@@ -1,17 +1,16 @@
 package com.oauth.jwt;
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWEObject;
-import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.*;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
-import java.util.logging.Logger;
-
 import java.util.UUID;
 
 @Slf4j
@@ -44,8 +43,13 @@ public class ApiTokenUtils {
             }
             if (isTokenSkip){
                 return getTokenMaterial(SignedJWT.parse(token));
-            } else if (ve)
+            } else if (verifyJWT(token)){
+                return getTokenMaterial(SignedJWT.parse(token));
+            }
+        } catch (Exception e){
+            log.error("", e);
         }
+        return null;
     }
 
     /* *
@@ -128,5 +132,33 @@ public class ApiTokenUtils {
         }
         log.info("verifyExpiredJWT false.");
         return false;
+    }
+
+    public String createJWT(TokenMaterial tokenMaterial){
+        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.RS256)
+                .customParam(TokenHeaderCustomParam.SID.getKey(), tokenMaterial.getHeader().getUserId())
+                .contentType(tokenMaterial.getHeader().getContentType())
+                .build();
+
+        LocalDateTime timeStamp = serverUtils.getTimeAsiaSeoulNow();
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .issueTime(new Date())
+                .expirationTime(Date.from(timeStamp.plusMinutes(tokenConfig.getExpirationTime()).atZone(ZoneId.systemDefault()).toInstant()))
+                .claim(TokenPayload.FID.getKey(), tokenMaterial.getPayload().getFunctionId()) //function ID
+                .build();
+
+        return createJWT(header, claimsSet);
+    }
+
+    public String createJWT(JWSHeader header, JWTClaimsSet claimsSet){
+        try {
+            SignedJWT signedJWT = new SignedJWT(header, claimsSet);
+            signedJWT.sign(tokenConfig.getRsaSigner());
+
+            return signedJWT.serialize();
+        } catch (Exception e){
+            log.error("", e);
+        }
+        return null;
     }
 }
