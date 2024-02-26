@@ -51,12 +51,11 @@ public class DeviceController {
     @PostMapping(value = "/powerOnOff")
     @ResponseBody
     public ResponseEntity<?> doPowerOnOff(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
-            throws CustomException, SQLException {
+            throws CustomException {
 
         String logStep = "[전원 On/Off]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
@@ -71,15 +70,11 @@ public class DeviceController {
     @PostMapping(value = "/deviceInfoUpsert")
     @ResponseBody
     public ResponseEntity<?> doDeviceInfoUpsert(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
-            throws CustomException, SQLException {
-
-        String a = Common.getClientIp(request);
-        System.out.println(a);
+            throws CustomException {
 
         String logStep = "[홈 IoT 컨트롤러 정보 등록/수정]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getRegistYn()) ||
                 Validator.isNullOrEmpty(params.getTmpRegistKey()) ||
@@ -107,8 +102,7 @@ public class DeviceController {
 
         String logStep = "[모드변경]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
@@ -127,8 +121,7 @@ public class DeviceController {
 
         String logStep = "[실내온도 설정]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getTemperture())){
@@ -145,8 +138,7 @@ public class DeviceController {
 
         String logStep = "[난방수온도 설정]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getTemperture())){
@@ -163,8 +155,7 @@ public class DeviceController {
 
         String logStep = "[온수온도 설정]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getTemperture())){
@@ -181,8 +172,7 @@ public class DeviceController {
 
         String logStep = "[빠른온수 설정]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getModeCode())){
@@ -199,8 +189,7 @@ public class DeviceController {
 
         String logStep = "[잠금 모드 설정]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getLockSet())){
@@ -213,13 +202,11 @@ public class DeviceController {
     @PostMapping(value = "/basicDeviceStatusInfo")
     @ResponseBody
     public ResponseEntity<?> doBasicDeviceStatusInfo(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
-            throws Exception {
+            throws CustomException {
 
         String logStep = "[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey())){
+        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getControlAuthKey())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
         return deviceService.doBasicDeviceStatusInfo(params);

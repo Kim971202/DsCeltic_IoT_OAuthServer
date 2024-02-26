@@ -273,5 +273,16 @@
             TBR_OPR_USER_NOTICE
     </select>
 
+    <update id="updateDeviceLocationNicknameDeviceDetail" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE TBR_OPR_DEVICE_DETAIL
+        SET ADDR_NICK = #{newDeviceLocNickname}
+        WHERE DEVC_ID = #{deviceId}
+    </update>
+
+    <update id="updateDeviceLocationNicknameDeviceRegist" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE TBT_OPR_DEVICE_REGIST
+        SET ADDR_NICK = #{newDeviceLocNickname}
+        WHERE DEVC_ID = #{deviceId}
+    </update>
 
 </mapper>

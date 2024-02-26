@@ -13,6 +13,7 @@ import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -1288,4 +1290,42 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    /** 기기 설치 위치 별칭 수정 */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ResponseEntity<?> doUpdateDeviceLocationNickname(AuthServerDTO params) throws CustomException {
+
+        // Transaction용 클래스 선언
+        SqlSession session = sqlSessionFactory.openSession();
+        MemberMapper mMapper = session.getMapper(MemberMapper.class);
+        ApiResponse.Data result = new ApiResponse.Data();
+        String stringObject = null;
+        String msg = null;
+        String userId = params.getUserId();
+        int updateResult1 = 0;
+        int updateResult2 = 0;
+        try {
+
+            updateResult1 = mMapper.updateDeviceLocationNicknameDeviceDetail(params);
+            updateResult2 = mMapper.updateDeviceLocationNicknameDeviceRegist(params);
+
+            if(updateResult1 > 0 && updateResult2 > 0) stringObject = "Y";
+            else stringObject = "N";
+
+            if(stringObject.equals("Y")) msg = "기기 설치 위치 별칭 수정 성공";
+            else msg = "기기 설치 위치 별칭 수정 실패";
+
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200
+                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("", e);
+        }
+        return null;
+    }
+
+
 }

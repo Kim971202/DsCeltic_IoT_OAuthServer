@@ -35,8 +35,6 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
 
-    public static final List<String> oldModels = Arrays.asList("oldModel1", "oldModel2");
-
     /**
      * 인증 서버 활성화 체크
      */
@@ -65,7 +63,7 @@ public class UserController {
     @PostMapping(value = "/regist")
     @ResponseBody
     public ResponseEntity<?> doRegist(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
-            throws CustomException, SQLException {
+            throws CustomException {
 
         String logStep = "[회원 가입]";
 
@@ -188,8 +186,7 @@ public class UserController {
 
         String logStep = "[회원 별칭(이름) 및 전화번호 변경]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getOldPassword()) ||
                 Validator.isNullOrEmpty(params.getNewPassword())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -207,7 +204,7 @@ public class UserController {
 
         String logStep = "[사용자(세대원) 정보 조회]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) || Validator.isNullOrEmpty(params.getUserId())){
+        if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
 
@@ -222,8 +219,7 @@ public class UserController {
 
         String logStep = "[사용자 추가 - 초대]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getRequestUserId()) ||
+        if(Validator.isNullOrEmpty(params.getRequestUserId()) ||
                 Validator.isNullOrEmpty(params.getResponseHp()) ||
                 Validator.isNullOrEmpty(params.getResponseUserId()) ||
                 Validator.isNullOrEmpty(params.getInviteStartDate())){
@@ -241,8 +237,7 @@ public class UserController {
 
         String logStep = "[사용자 초대 - 수락여부]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getRequestUserId()) ||
+        if(Validator.isNullOrEmpty(params.getRequestUserId()) ||
                 Validator.isNullOrEmpty(params.getResponseHp()) ||
                 Validator.isNullOrEmpty(params.getResponseUserId()) ||
                 Validator.isNullOrEmpty(params.getResponseUserNick()) ||
@@ -262,7 +257,7 @@ public class UserController {
 
         String logStep = "[회원 별칭(이름) 및 전화번호 변경]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) || Validator.isNullOrEmpty(params.getUserId())){
+        if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
 
@@ -279,7 +274,6 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getUserNickname()) ||
-                Validator.isNullOrEmpty(params.getAccessToken()) ||
                 Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
@@ -296,7 +290,6 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserNickname()) ||
                 Validator.isNullOrEmpty(params.getHp()) ||
-                Validator.isNullOrEmpty(params.getAccessToken()) ||
                 Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
@@ -322,8 +315,7 @@ public class UserController {
 
         String logStep = "[홈 IoT 컨트롤러 알림 정보 조회]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getHp()) ||
@@ -340,11 +332,11 @@ public class UserController {
     @PostMapping(value = "/delHouseholder")
     @ResponseBody
     public ResponseEntity<?> doDelHouseholder(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
-            throws CustomException, ParseException {
+            throws CustomException {
 
         String logStep = "[사용자(세대주) 탈퇴]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) || Validator.isNullOrEmpty(params.getUserId())){
+        if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
         return userService.doDelHouseholder(params);
@@ -356,13 +348,11 @@ public class UserController {
     @PostMapping(value = "/wirhdrawal")
     @ResponseBody
     public ResponseEntity<?> doWirhdrawal(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
-            throws CustomException, ParseException {
+            throws CustomException {
 
         String logStep = "[홈IoT 서비스 회원 탈퇴]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getUserPassword())){
+        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getUserPassword())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
         return userService.doWirhdrawal(params);
@@ -374,12 +364,11 @@ public class UserController {
     @PostMapping(value = "/deviceAuthCheck")
     @ResponseBody
     public ResponseEntity<?> doDeviceAuthCheck(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
-            throws CustomException, ParseException {
+            throws CustomException {
 
         String logStep = "[홈 IoT 컨트롤러 인증]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceIdList()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKeyList()) ||
                 Validator.isNullOrEmpty(params.getDeviceTypeList()) ||
@@ -396,13 +385,11 @@ public class UserController {
     @PostMapping(value = "/accessTokenRenewal")
     @ResponseBody
     public ResponseEntity<?> doAccessTokenRenewal(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
-            throws CustomException, ParseException {
+            throws CustomException {
 
         String logStep = "[API인증키 갱신]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getUserPassword())){
+        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getUserPassword())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
         return userService.doAccessTokenRenewal(params);
@@ -414,12 +401,11 @@ public class UserController {
     @PostMapping(value = "/firstDeviceAuthCheck")
     @ResponseBody
     public ResponseEntity<?> doFirstDeviceAuthCheck(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
-            throws CustomException, ParseException {
+            throws CustomException {
 
         String logStep = "[홈 IoT 최초 등록 인증]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getSerialNumber()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getTmpRegistKey()) ||
@@ -436,12 +422,11 @@ public class UserController {
     @PostMapping(value = "/userDeviceDelete")
     @ResponseBody
     public ResponseEntity<?> doUserDeviceDelete(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
-            throws CustomException, ParseException {
+            throws CustomException {
 
         String logStep = "[홈 IoT 컨트롤러 삭제(회원 매핑 삭제)]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
@@ -457,13 +442,11 @@ public class UserController {
     @PostMapping(value = "/viewPushHistory")
     @ResponseBody
     public ResponseEntity<?> doViewPushHistory(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
-            throws CustomException, ParseException{
+            throws CustomException {
 
         String logStep = "[스마트알림 - PUSH 이력 조회]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceType())){
+        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getDeviceType())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
         return userService.doViewPushHistory(params);
@@ -476,12 +459,11 @@ public class UserController {
     @PostMapping(value = "/deviceNicknameChange")
     @ResponseBody
     public ResponseEntity<?> doDeviceNicknameChange(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
-            throws CustomException, ParseException{
+            throws CustomException {
 
         String logStep = "[기기 별칭 수정]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
@@ -497,12 +479,11 @@ public class UserController {
     @PostMapping(value = "/brightnessControl")
     @ResponseBody
     public ResponseEntity<?> doBrightnessControl(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
-            throws CustomException, ParseException{
+            throws CustomException {
 
         String logStep = "[기기 밝기 조절]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
@@ -520,13 +501,28 @@ public class UserController {
     @PostMapping(value = "/notice")
     @ResponseBody
     public ResponseEntity<?> doNotice(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
-            throws CustomException, ParseException{
+            throws CustomException {
 
         String logStep = "[공지사항 조회]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceType())
+        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getDeviceType())
+        ){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doNotice(params);
+    }
+
+    /**
+     * 기기 설치 위치 별칭 수정
+     * */
+    @PostMapping(value = "/updateDeviceLocationNickname")
+    @ResponseBody
+    public ResponseEntity<?> doUpdateDeviceLocationNickname(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException {
+
+        String logStep = "[기기 설치 위치 별칭 수정]";
+
+        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getDeviceType())
         ){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }

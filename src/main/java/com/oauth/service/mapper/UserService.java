@@ -86,4 +86,7 @@ public interface UserService {
 
     /** 공지사항 조회 */
     ResponseEntity<?> doNotice(AuthServerDTO params) throws CustomException;
+
+    /** 기기 설치 위치 별칭 수정 */
+    ResponseEntity<?> doUpdateDeviceLocationNickname(AuthServerDTO params) throws CustomException;
 }

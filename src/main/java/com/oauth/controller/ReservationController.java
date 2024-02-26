@@ -33,8 +33,7 @@ public class ReservationController {
 
         String logStep = "[24시간 예약]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getType24h()) ||
@@ -53,8 +52,7 @@ public class ReservationController {
 
         String logStep = "[반복(12시간) 예약]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getWorkPeriod()) ||
@@ -74,8 +72,7 @@ public class ReservationController {
 
         String logStep = "[빠른 온수 예약]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -92,8 +89,7 @@ public class ReservationController {
 
         String logStep = "[주간 예약]";
 
-        if(Validator.isNullOrEmpty(params.getAccessToken()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getOnOffFlag())){
