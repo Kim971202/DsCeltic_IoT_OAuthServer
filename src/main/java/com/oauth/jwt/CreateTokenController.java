@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CreateTokenController {
 
-    private String serverId = "serverId";
-
     private final ApiTokenUtils apiTokenUtils;
     private final ServerUtils serverUtils;
 

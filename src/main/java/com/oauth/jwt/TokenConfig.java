@@ -21,7 +21,7 @@ import javax.crypto.SecretKey;
 @Setter
 @RequiredArgsConstructor
 @Configuration
-@ConfigurationProperties(prefix = "server.token")
+@ConfigurationProperties(prefix = "app.token")
 public class TokenConfig {
     //현재 서버의 privateKey
     private String pathPrivateKey = "apikeys/private-key";
@@ -44,7 +44,7 @@ public class TokenConfig {
     private JWEEncrypter jweEncrypter;
     private JWEDecrypter jweDecrypter;
 
-    //각 서버의 publicKey
+    //서버의 publicKey
     /**
      * 플랫폼 퍼블릭 키는 플랫폼과 통신이 필요한 모든 서버가 가지고 있어야 하는 값이다.
      * 해당 값에 대한 정의는 .yml 파일안에 다음과 같은 형식으로 존재해야 한다.
@@ -53,38 +53,18 @@ public class TokenConfig {
      *   token:
      *     path_platform_public_key: apikeys/platform-public-key
      */
-    private String pathPlatformPublicKey = "apikeys/platform-public-key";
+    private String pathAppPublicKey = "apikeys/app-public-key";
 
-    private String pathAdminPublicKey;
-    private String pathDaesungPublicKey;
-    private String pathDggwIotPublicKey;
-    private String pathDggwPublicKey;
-    private String pathGooglePublicKey;
-    private String pathPushPublicKey;
+    //서버의 privateKey
+    private String pathAppPrivateKey = "apikeys/app-private-key";
 
-    //각 서버의 privateKey
-    private String pathAdminPrivateKey;
-    private String pathDaesungPrivateKey;
-    private String pathDggwIotPrivateKey;
-    private String pathDggwPrivateKey;
-    private String pathGooglePrivateKey;
-    private String pathPushPrivateKey;
-
-    //각 서버의 토큰검증객체
-    private JWSVerifier jwsVerifierByPlatform;
-    private JWSVerifier jwsVerifierByAdmin;
-    private JWSVerifier jwsVerifierByDaesung;
-    private JWSVerifier jwsVerifierByDggwIot;
-    private JWSVerifier jwsVerifierByDggw;
-    private JWSVerifier jwsVerifierByGoogle;
-    private JWSVerifier jwsVerifierByPush;
+    //서버의 토큰검증객체
+    private JWSVerifier jwsVerifierApp;
 
     private final KeyStoreUtils keyStoreUtils;
 
     @PostConstruct
     public void init() {
-
-        System.out.println("TokenConfig -> init()");
 
         try {
 
@@ -97,105 +77,20 @@ public class TokenConfig {
             this.jweEncrypter = new DirectEncrypter(aesKey);
             this.jweDecrypter = new DirectDecrypter(aesKey);
 
-//            setJwsVerifierByPlatform();
-//            setJwsVerifierByAdmin();
-//            setJwsVerifierByDaesung();
-//            setJwsVerifierByDggwIot();
-//            setJwsVerifierByDggw();
-//            setJwsVerifierByGoogle();
-//            setJwsVerifierByPush();
+            setJwsVerifierApp();
         } catch(Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void setJwsVerifierByPlatform() {
+    private void setJwsVerifierApp() {
+        System.out.println("setJwsVerifierApp CALLED");
 
-        System.out.println("TokenConfig -> setJwsVerifierByPlatform()");
-
-        if( StringUtils.hasText(this.pathPlatformPublicKey) ) {
+        if (StringUtils.hasText(this.pathAppPublicKey)){
             try {
-                this.jwsVerifierByPlatform = new RSASSAVerifier(keyStoreUtils.readPublicKey(this.pathPlatformPublicKey));
+                this.jwsVerifierApp = new RSASSAVerifier(keyStoreUtils.readPublicKey(this.pathAppPublicKey));
             } catch (Exception e) {
-                System.out.println("setJwsVerifierByPlatform not found.");
-            }
-        }
-    }
-
-    private void setJwsVerifierByAdmin() {
-
-        System.out.println("TokenConfig -> setJwsVerifierByAdmin()");
-
-        if( StringUtils.hasText(this.pathAdminPublicKey) ) {
-            try {
-                this.jwsVerifierByAdmin = new RSASSAVerifier(keyStoreUtils.readPublicKey(this.pathAdminPublicKey));
-            } catch (Exception e) {
-                System.out.println("setJwsVerifierByAdmin not found.");
-            }
-        }
-    }
-
-    private void setJwsVerifierByDaesung() {
-
-        System.out.println("TokenConfig -> setJwsVerifierByDaesung()");
-
-        if( StringUtils.hasText(this.pathDaesungPublicKey) ) {
-            try {
-                this.jwsVerifierByDaesung = new RSASSAVerifier(keyStoreUtils.readPublicKey(this.pathDaesungPublicKey));
-            } catch (Exception e) {
-                System.out.println("setJwsVerifierByDaesung not found.");
-            }
-        }
-    }
-
-    private void setJwsVerifierByDggwIot() {
-
-        System.out.println("TokenConfig -> setJwsVerifierByDggwIot()");
-
-        if( StringUtils.hasText(this.pathDggwIotPublicKey) ) {
-            try {
-                this.jwsVerifierByDggwIot = new RSASSAVerifier(keyStoreUtils.readPublicKey(this.pathDggwIotPublicKey));
-            } catch (Exception e) {
-                System.out.println("setJwsVerifierByDggwIot not found.");
-            }
-        }
-    }
-
-    private void setJwsVerifierByDggw() {
-
-        System.out.println("TokenConfig -> setJwsVerifierByDggw()");
-
-        if( StringUtils.hasText(this.pathDggwPublicKey) ) {
-            try {
-                this.jwsVerifierByDggw = new RSASSAVerifier(keyStoreUtils.readPublicKey(this.pathDggwPublicKey));
-            } catch (Exception e) {
-                System.out.println("setJwsVerifierByDggw not found.");
-            }
-        }
-    }
-
-    private void setJwsVerifierByGoogle() {
-
-        System.out.println("TokenConfig -> setJwsVerifierByGoogle()");
-
-        if( StringUtils.hasText(this.pathGooglePublicKey) ) {
-            try {
-                this.jwsVerifierByGoogle = new RSASSAVerifier(keyStoreUtils.readPublicKey(this.pathGooglePublicKey));
-            } catch (Exception e) {
-                System.out.println("setJwsVerifierByGoogle not found.");
-            }
-        }
-    }
-
-    private void setJwsVerifierByPush() {
-
-        System.out.println("TokenConfig -> setJwsVerifierByPush()");
-
-        if( StringUtils.hasText(this.pathPushPublicKey) ) {
-            try {
-                this.jwsVerifierByPush = new RSASSAVerifier(keyStoreUtils.readPublicKey(this.pathPushPublicKey));
-            } catch (Exception e) {
-                System.out.println("setJwsVerifierByPush not found.");
+                throw new RuntimeException(e);
             }
         }
     }
