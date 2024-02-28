@@ -14,8 +14,11 @@ import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -24,11 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class DeviceServiceImpl implements DeviceService {
 
@@ -384,7 +386,7 @@ public class DeviceServiceImpl implements DeviceService {
             modeChange.setSleepCode(sleepCode);
             modeChange.setFunctionId("opMd");
             modeChange.setUuid(common.getTransactionId());
-
+            System.out.println("modeChange.getUuid(): " + modeChange.getUuid());
             redisValue = userId + "," + modeChange.getFunctionId();
             redisCommand.setValues(modeChange.getUuid(), redisValue);
             response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(modeChange));
@@ -778,16 +780,86 @@ public class DeviceServiceImpl implements DeviceService {
 
     /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
     @Override
-    public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
+    public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws Exception {
 
+        /*
+        * 구현전 생각해야 할 것
+        * 1. 몇개의 응답을 올지 모름 (사용자가 몇개의 기기를 등록했는지 알아야함)
+        * 2. 받으 응답을 어떻게 Passing 할 것인가
+        * */
 
+        ApiResponse.Data result = new ApiResponse.Data();
+        String stringObject = null;
+        String msg;
 
+        String userId = params.getUserId();
+        String controlAuthKey = params.getControlAuthKey();
+        String uuId = common.getTransactionId();
+        String functionId = "fcnt";
+
+        String redisValue;
+        MobiusResponse response;
+        String responseMessage;
+
+        List<String> rKeyList;
+        List<String> responseList = new ArrayList<>();
+        HashMap<String, String> request = new HashMap<>();
+        List<Map<String, String>> appResponse = new ArrayList<>();
         try {
 
+            rKeyList = Common.extractJson(deviceMapper.getControlAuthKeyByUserId(userId).toString(), "controlAuthKey");
 
+            if(rKeyList == null){
+                msg = "등록된 R/C가 없습니다";
+                result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
 
+            request.put("userId", userId);
+            request.put("controlAuthKey", controlAuthKey);
+            request.put("functionId", functionId);
+            request.put("uuId", uuId);
+            System.out.println("request1: " + request);
+            redisValue = userId + "," + functionId + "-homeView";
+            redisCommand.setValues(uuId, redisValue);
+            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(request));
+
+            if(response.getResponseCode().equals("201")){
+                try {
+                    for(int i = 0; i < rKeyList.size(); ++i){
+                        // 메시징 시스템을 통해 응답 메시지 대기
+                        responseMessage = gwMessagingSystem.waitForResponse(functionId + "-homeView" + uuId, TIME_OUT, TimeUnit.SECONDS);
+
+                        // JSON 문자열 파싱
+                        if (responseMessage != null) {
+                            stringObject = "Y";
+                            // 응답 처리
+                            System.out.println("receiveCin에서의 응답 responseMessage: " + responseMessage);
+                        } else {
+                            // 타임아웃이나 응답 없음 처리
+                            stringObject = "T";
+                            System.out.println("응답이 없거나 시간 초과");
+                        }
+                        responseList.add(responseMessage);
+                        Map<String, String> data = new HashMap<>();
+                        if(rKeyList.get(i).equals(common.getHomeViewDataList(responseList, "rKey").get(i)))
+                        data.put("powr", common.getHomeViewDataList(responseList, "powr").get(i));
+                        appResponse.add(data);
+                    }
+
+                    System.out.println("appResonse: " + JSON.toJson(appResponse, true));
+
+                } catch (InterruptedException e) {
+                    // 대기 중 인터럽트 처리
+                    log.error("", e);
+                }
+            }else {
+                msg = "중계 서버 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
         } catch (Exception e){
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }

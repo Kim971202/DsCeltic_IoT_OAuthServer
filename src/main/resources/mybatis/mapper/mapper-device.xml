@@ -189,4 +189,12 @@
             DEVC_ID = #{deviceId}
     </update>
 
+    <select id="getControlAuthKeyByUserId" parameterType="String" resultMap="device">
+        SELECT
+            DEVC_CTRL_KEY AS controlAuthKey
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE USER_ID = #{userId}
+    </select>
+
 </mapper>

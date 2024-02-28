@@ -6,20 +6,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.oauth.dto.AuthServerDTO;
-import com.oauth.dto.gw.AwakeAlarmSet;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.response.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -259,42 +255,6 @@ public class Common {
         return UUID.randomUUID().toString();
     }
 
-    // DR-910W 주기 보고 메세지 처리
-    public String dr910WDeviceRegist(String jsonString) throws Exception{
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(jsonString);
-
-        JsonNode conNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin").path("con");
-        JsonNode rsCfNode = conNode.path("rsCf");
-
-        String rKey = conNode.path("rKey").asText();
-        String powr = conNode.path("powr").asText();
-        String opMd = conNode.path("opMd").asText();
-        String htTp = conNode.path("htTp").asText();
-        String wtTp = conNode.path("wtTp").asText();
-        String hwTp = conNode.path("hwTp").asText();
-        String ftMd = conNode.path("ftMd").asText();
-        String bCdt = conNode.path("bCdt").asText();
-        String chTp = conNode.path("chTp").asText();
-        String cwTp = conNode.path("cwTp").asText();
-        String hwSt = conNode.path("hwSt").asText();
-        String slCd = conNode.path("slCd").asText();
-        String mfDt = conNode.path("mfDt").asText();
-
-        String hr12 = rsCfNode.path("12h").path("hr").asText();
-        String mn12 = rsCfNode.path("12h").path("mn").asText();
-
-        System.out.println(rsCfNode.path("24h").path("hs").asText());
-
-        for (JsonNode entry : rsCfNode.path("7wk")){
-            String wkValue = entry.path("wk").asText();
-            JsonNode hsCode = entry.path("hs");
-            System.out.println("wk value: " + wkValue);
-            System.out.println("mn value: " + hsCode);
-        }
-        return conNode.toString();
-    }
-
     public String readCon(String jsonString,String value) throws Exception{
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(jsonString);
@@ -302,10 +262,14 @@ public class Common {
         JsonNode baseNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin");
         JsonNode conNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin").path("con");
         JsonNode returnNode = conNode.path(value);
+        JsonNode returnConNode = baseNode.path(value);
         String returnValue = objectMapper.writeValueAsString(returnNode);
+        String returnConValue = objectMapper.writeValueAsString(returnConNode);
+
 
         // TODO: 추후 True/False 로 분기 할것
         if(value.equals("rsCf")) return returnValue;
+        else if(value.equals("con")) return returnConValue;
         else return returnValue.replace("\"", "");
     }
 
@@ -347,37 +311,6 @@ public class Common {
         return null;
     }
 
-    public static String getClientIp(HttpServletRequest request) {
-        String clientIp = null;
-        boolean isIpInHeader = false;
-
-        List<String> headerList = new ArrayList<>();
-        headerList.add("X-Forwarded-For");
-        headerList.add("HTTP_CLIENT_IP");
-        headerList.add("HTTP_X_FORWARDED_FOR");
-        headerList.add("HTTP_X_FORWARDED");
-        headerList.add("HTTP_FORWARDED_FOR");
-        headerList.add("HTTP_FORWARDED");
-        headerList.add("Proxy-Client-IP");
-        headerList.add("WL-Proxy-Client-IP");
-        headerList.add("HTTP_VIA");
-        headerList.add("IPV6_ADR");
-
-        for (String header : headerList) {
-            clientIp = request.getHeader(header);
-            if (StringUtils.hasText(clientIp) && !clientIp.equals("unknown")) {
-                isIpInHeader = true;
-                break;
-            }
-        }
-
-        if (!isIpInHeader) {
-            clientIp = request.getRemoteAddr();
-        }
-
-        return clientIp;
-    }
-
     public List<String> getUserIdAndFunctionId (String redisValue){
         String[] splitStrings = redisValue.split(",");
         List<String> nameList =  new ArrayList<String>();
@@ -405,4 +338,21 @@ public class Common {
                 currentLocale);
         return formatter.format(today);
     }
+
+    public List<String> getHomeViewDataList(List<String> responseList, String inputValue) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<String> desiredValues = new ArrayList<>();
+
+        // Iterate through the array of JSON strings
+        for (String jsonString : responseList) {
+            JsonNode jsonNode = objectMapper.readTree(jsonString);
+            JsonNode deviceNode = jsonNode.path("device");
+
+            // Extract the desired value from the "device" node
+            String desiredValue = deviceNode.path(inputValue).asText();
+            desiredValues.add(desiredValue);
+        }
+        return desiredValues;
+    }
+
 }

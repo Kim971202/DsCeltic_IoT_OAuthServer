@@ -82,7 +82,7 @@ public class ReservationController {
     }
 
     /** 주간 예약  */
-        @PostMapping(value = "/setWeek")
+    @PostMapping(value = "/setWeek")
     @ResponseBody
     public ResponseEntity<?> doSetWeek(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws CustomException {

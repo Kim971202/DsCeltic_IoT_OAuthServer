@@ -202,7 +202,7 @@ public class DeviceController {
     @PostMapping(value = "/basicDeviceStatusInfo")
     @ResponseBody
     public ResponseEntity<?> doBasicDeviceStatusInfo(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
-            throws CustomException {
+            throws Exception {
 
         String logStep = "[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]";
 

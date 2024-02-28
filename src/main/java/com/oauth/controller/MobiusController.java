@@ -8,8 +8,10 @@ import com.oauth.utils.Common;
 import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.json.JSONArray;
 
 import java.util.List;
 
@@ -36,7 +38,7 @@ public class MobiusController {
         DeviceStatusInfo dr910W = new DeviceStatusInfo();
         DeviceStatusInfo.Device dr910WDevice = new DeviceStatusInfo.Device();
 
-        /**
+        /* *
          * 1. Redis에서 받은 uuId로 Redis에 저장된 Value값을 검색한다.
          * 2. 해당 Value는 userId,functionId 형태로 저장됨
          * 3. common에 함수를 사용하여 userId와 functionId를 추출
@@ -46,7 +48,7 @@ public class MobiusController {
         String uuId = common.readCon(jsonBody, "uuId");
         String userId;
         String resultCode;
-        String functionId = null;
+        String functionId;
         String redisValue = redisCommand.getValues(uuId);
         System.out.println("redisValue: " + redisValue);
         List<String> redisValueList;
@@ -62,8 +64,25 @@ public class MobiusController {
 
         // 홈 IoT 컨트롤러 상태 정보 조회 - 홈화면
         if(functionId.equals("fcnt-homeView")){
+            // TODO: GW서버에서 넘겨주는 format을 알아야 함 배열로 주는 건지 여러번 한개씩 주는건지
+
+            dr910WDevice.setPowr(common.readCon(jsonBody, "powr"));
+            dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd"));
+            dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp"));
+            dr910WDevice.setWtTp(common.readCon(jsonBody, "wtTp"));
+            dr910WDevice.setHwTp(common.readCon(jsonBody, "hwTp"));
+            dr910WDevice.setFtMd(common.readCon(jsonBody, "ftMd"));
+            dr910WDevice.setChTp(common.readCon(jsonBody, "chTp"));
+            dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt"));
+            dr910WDevice.setSlCd(common.readCon(jsonBody, "slCd"));
+            dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt"));
+            dr910WDevice.setCwTp(common.readCon(jsonBody, "fcLc"));
+            dr910W.setDevice(dr910WDevice);
+            System.out.println(JSON.toJson(dr910W));
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(dr910W));
 
         }else if(functionId.equals("fcnt")){
+
             // 홈 IoT 컨트롤러 상태 정보 조회 - 상세조회
             dr910WDevice.setPowr(common.readCon(jsonBody, "powr"));
             dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd"));

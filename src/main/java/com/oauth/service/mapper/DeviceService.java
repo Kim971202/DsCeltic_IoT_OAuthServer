@@ -36,6 +36,6 @@ public interface DeviceService {
     public ResponseEntity<?> doLockSet(AuthServerDTO params) throws CustomException;
 
     /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
-    public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException;
+    public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws Exception;
 
 }
