@@ -23,7 +23,6 @@ public class DeviceController {
 
     @Autowired
     private Common common;
-
     @Autowired
     private DeviceServiceImpl deviceService;
 

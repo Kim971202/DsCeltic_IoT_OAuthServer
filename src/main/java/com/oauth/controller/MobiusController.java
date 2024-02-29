@@ -8,10 +8,8 @@ import com.oauth.utils.Common;
 import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.json.JSONArray;
 
 import java.util.List;
 

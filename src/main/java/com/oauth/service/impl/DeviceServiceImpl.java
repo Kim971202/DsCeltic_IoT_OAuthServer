@@ -802,12 +802,18 @@ public class DeviceServiceImpl implements DeviceService {
         String responseMessage;
 
         List<String> rKeyList;
+        List<String> deviceIdList;
+        List<String> deviceNicknameList;
+        List<String> addrNicknameList;
         List<String> responseList = new ArrayList<>();
         HashMap<String, String> request = new HashMap<>();
         List<Map<String, String>> appResponse = new ArrayList<>();
         try {
 
             rKeyList = Common.extractJson(deviceMapper.getControlAuthKeyByUserId(userId).toString(), "controlAuthKey");
+            deviceIdList = Common.extractJson(deviceMapper.getControlAuthKeyByUserId(userId).toString(), "deviceId");
+            deviceNicknameList = Common.extractJson(deviceMapper.getDeviceNicknameAndDeviceLocNickname(deviceMapper.getControlAuthKeyByUserId(userId)).toString(), "deviceNickname");
+            addrNicknameList = Common.extractJson(deviceMapper.getDeviceNicknameAndDeviceLocNickname(deviceMapper.getControlAuthKeyByUserId(userId)).toString(), "addrNickname");
 
             if(rKeyList == null){
                 msg = "등록된 R/C가 없습니다";
@@ -824,7 +830,7 @@ public class DeviceServiceImpl implements DeviceService {
             redisCommand.setValues(uuId, redisValue);
             response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(request));
 
-            if(response.getResponseCode().equals("201")){
+            if(response.getResponseCode().equals("201") && deviceIdList != null){
                 try {
                     for(int i = 0; i < rKeyList.size(); ++i){
                         // 메시징 시스템을 통해 응답 메시지 대기
@@ -842,9 +848,26 @@ public class DeviceServiceImpl implements DeviceService {
                         }
                         responseList.add(responseMessage);
                         Map<String, String> data = new HashMap<>();
-                        if(rKeyList.get(i).equals(common.getHomeViewDataList(responseList, "rKey").get(i)))
-                        data.put("powr", common.getHomeViewDataList(responseList, "powr").get(i));
-                        appResponse.add(data);
+                        if(rKeyList.get(i).equals(common.getHomeViewDataList(responseList, "rKey").get(i))){
+
+                            data.put("deviceId", common.getHomeViewDataList(responseList, "rKey").get(i));
+                            data.put("controlAuthKey", deviceIdList.get(i));
+                            data.put("deviceStatus", "1");
+                            data.put("powr", common.getHomeViewDataList(responseList, "powr").get(i));
+                            data.put("opMd", common.getHomeViewDataList(responseList, "opMd").get(i));
+                            data.put("htTp", common.getHomeViewDataList(responseList, "htTp").get(i));
+                            data.put("wtTp", common.getHomeViewDataList(responseList, "wtTp").get(i));
+                            data.put("hwTp", common.getHomeViewDataList(responseList, "hwTp").get(i));
+                            data.put("ftMd", common.getHomeViewDataList(responseList, "ftMd").get(i));
+                            data.put("chTp", common.getHomeViewDataList(responseList, "chTp").get(i));
+                            data.put("mfDf", common.getHomeViewDataList(responseList, "mfDf").get(i));
+                            data.put("type24h", common.getHomeViewDataList(responseList, "type24h").get(i));
+                            data.put("slCd", common.getHomeViewDataList(responseList, "slCd").get(i));
+                            data.put("hwSt", common.getHomeViewDataList(responseList, "hwSt").get(i));
+                            data.put("fcLc", common.getHomeViewDataList(responseList, "fcLc").get(i));
+                            appResponse.add(data);
+                        }
+
                     }
 
                     System.out.println("appResonse: " + JSON.toJson(appResponse, true));

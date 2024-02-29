@@ -51,7 +51,7 @@ dependencies {
 
 	// Mysql 라이브러리
 	implementation 'mysql:mysql-connector-java'
-	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2:-jdbc4:1.16'
+//	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2:-jdbc4:1.16'
 
 	// Mybatis 라이브러리
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.2'
@@ -70,11 +70,11 @@ dependencies {
 	// import a BOM
 	implementation platform('org.springframework.cloud:spring-cloud-dependencies:2021.0.3')
 
-	implementation 'org.yaml:snakeyaml:1.28' // snakeyaml 버전은 필요에 따라 조정
+//	implementation 'org.yaml:snakeyaml:1.28' // snakeyaml 버전은 필요에 따라 조정
 
 	// Connection
 	implementation 'org.springframework:spring-webflux:5.3.21'
-	implementation group: 'io.netty', name: 'netty-all', version: '4.1.90.Final'
+//	implementation group: 'io.netty', name: 'netty-all', version: '4.1.90.Final'
 
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
