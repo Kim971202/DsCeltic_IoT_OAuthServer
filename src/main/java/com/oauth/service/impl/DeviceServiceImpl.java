@@ -883,8 +883,6 @@ public class DeviceServiceImpl implements DeviceService {
                             }
                         }
                     }
-                    System.out.println("appResonse: " + JSON.toJson(appResponse, true));
-
                 } catch (InterruptedException e) {
                     // 대기 중 인터럽트 처리
                     log.error("", e);
@@ -894,6 +892,23 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
+            System.out.println("StringObject: " + stringObject);
+            if(stringObject.equals("Y")) {
+                msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 성공";
+                result.setHomeViewValue(appResponse);
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+            else if(stringObject.equals("N")) {
+                msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+            else {
+                msg = "응답이 없거나 시간 초과";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+
+            redisCommand.deleteValues(uuId);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
         }

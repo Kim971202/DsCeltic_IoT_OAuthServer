@@ -1,6 +1,7 @@
 package com.oauth.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -75,6 +76,9 @@ public class ApiResponse {
         private String latitude;
         private String longitude;
         private String tmpRegistKey;
+
+        @JsonProperty("device")
+        private Object homeViewValue;
 
         // GW에서 받은 값을 던지는 시험용 변수
         private Object testVariable;
