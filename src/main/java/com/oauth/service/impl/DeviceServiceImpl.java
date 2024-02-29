@@ -805,7 +805,9 @@ public class DeviceServiceImpl implements DeviceService {
         List<String> deviceIdList;
         List<String> deviceNicknameList;
         List<String> addrNicknameList;
+        List<String> regSortList;
         List<String> responseList = new ArrayList<>();
+        List<String> gwRKeyList;
         HashMap<String, String> request = new HashMap<>();
         List<Map<String, String>> appResponse = new ArrayList<>();
         try {
@@ -814,6 +816,7 @@ public class DeviceServiceImpl implements DeviceService {
             deviceIdList = Common.extractJson(deviceMapper.getControlAuthKeyByUserId(userId).toString(), "deviceId");
             deviceNicknameList = Common.extractJson(deviceMapper.getDeviceNicknameAndDeviceLocNickname(deviceMapper.getControlAuthKeyByUserId(userId)).toString(), "deviceNickname");
             addrNicknameList = Common.extractJson(deviceMapper.getDeviceNicknameAndDeviceLocNickname(deviceMapper.getControlAuthKeyByUserId(userId)).toString(), "addrNickname");
+            regSortList = Common.extractJson(deviceMapper.getDeviceNicknameAndDeviceLocNickname(deviceMapper.getControlAuthKeyByUserId(userId)).toString(), "regSort");
 
             if(rKeyList == null){
                 msg = "등록된 R/C가 없습니다";
@@ -830,7 +833,11 @@ public class DeviceServiceImpl implements DeviceService {
             redisCommand.setValues(uuId, redisValue);
             response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(request));
 
-            if(response.getResponseCode().equals("201") && deviceIdList != null){
+            if(response.getResponseCode().equals("201") &&
+                    deviceIdList != null &&
+                    deviceNicknameList != null &&
+                    addrNicknameList != null &&
+                    regSortList != null){
                 try {
                     for(int i = 0; i < rKeyList.size(); ++i){
                         // 메시징 시스템을 통해 응답 메시지 대기
@@ -847,29 +854,35 @@ public class DeviceServiceImpl implements DeviceService {
                             System.out.println("응답이 없거나 시간 초과");
                         }
                         responseList.add(responseMessage);
-                        Map<String, String> data = new HashMap<>();
-                        if(rKeyList.get(i).equals(common.getHomeViewDataList(responseList, "rKey").get(i))){
-
-                            data.put("deviceId", common.getHomeViewDataList(responseList, "rKey").get(i));
-                            data.put("controlAuthKey", deviceIdList.get(i));
-                            data.put("deviceStatus", "1");
-                            data.put("powr", common.getHomeViewDataList(responseList, "powr").get(i));
-                            data.put("opMd", common.getHomeViewDataList(responseList, "opMd").get(i));
-                            data.put("htTp", common.getHomeViewDataList(responseList, "htTp").get(i));
-                            data.put("wtTp", common.getHomeViewDataList(responseList, "wtTp").get(i));
-                            data.put("hwTp", common.getHomeViewDataList(responseList, "hwTp").get(i));
-                            data.put("ftMd", common.getHomeViewDataList(responseList, "ftMd").get(i));
-                            data.put("chTp", common.getHomeViewDataList(responseList, "chTp").get(i));
-                            data.put("mfDf", common.getHomeViewDataList(responseList, "mfDf").get(i));
-                            data.put("type24h", common.getHomeViewDataList(responseList, "type24h").get(i));
-                            data.put("slCd", common.getHomeViewDataList(responseList, "slCd").get(i));
-                            data.put("hwSt", common.getHomeViewDataList(responseList, "hwSt").get(i));
-                            data.put("fcLc", common.getHomeViewDataList(responseList, "fcLc").get(i));
-                            appResponse.add(data);
-                        }
-
                     }
-
+                    gwRKeyList = common.getHomeViewDataList(responseList, "rkey");
+                    for(int i = 0; i < responseList.size(); ++i){
+                        for(int j = 0; j < responseList.size(); ++j){
+                            if(rKeyList.get(i).equals(gwRKeyList.get(j))){
+                                Map<String, String> data = new HashMap<>();
+                                data.put("rKey", rKeyList.get(i));
+                                data.put("deviceNickname", deviceNicknameList.get(i));
+                                data.put("addrNickName", addrNicknameList.get(i));
+                                data.put("regSort", regSortList.get(i));
+                                data.put("deviceId", deviceIdList.get(i));
+                                data.put("controlAuthKey", deviceIdList.get(i));
+                                data.put("deviceStatus", "1");
+                                data.put("powr", common.getHomeViewDataList(responseList, "powr").get(j));
+                                data.put("opMd", common.getHomeViewDataList(responseList, "opMd").get(j));
+                                data.put("htTp", common.getHomeViewDataList(responseList, "htTp").get(j));
+                                data.put("wtTp", common.getHomeViewDataList(responseList, "wtTp").get(j));
+                                data.put("hwTp", common.getHomeViewDataList(responseList, "hwTp").get(j));
+                                data.put("ftMd", common.getHomeViewDataList(responseList, "ftMd").get(j));
+                                data.put("chTp", common.getHomeViewDataList(responseList, "chTp").get(j));
+                                data.put("mfDt", common.getHomeViewDataList(responseList, "mfDt").get(j));
+                                data.put("type24h", common.getHomeViewDataList(responseList, "type24h").get(j));
+                                data.put("slCd", common.getHomeViewDataList(responseList, "slCd").get(j));
+                                data.put("hwSt", common.getHomeViewDataList(responseList, "hwSt").get(j));
+                                data.put("fcLc", common.getHomeViewDataList(responseList, "fcLc").get(j));
+                                appResponse.add(data);
+                            }
+                        }
+                    }
                     System.out.println("appResonse: " + JSON.toJson(appResponse, true));
 
                 } catch (InterruptedException e) {

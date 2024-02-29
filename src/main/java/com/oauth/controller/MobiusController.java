@@ -64,6 +64,7 @@ public class MobiusController {
         if(functionId.equals("fcnt-homeView")){
             // TODO: GW서버에서 넘겨주는 format을 알아야 함 배열로 주는 건지 여러번 한개씩 주는건지
 
+            dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
             dr910WDevice.setPowr(common.readCon(jsonBody, "powr"));
             dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd"));
             dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp"));
