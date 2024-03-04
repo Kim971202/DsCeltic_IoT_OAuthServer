@@ -228,7 +228,10 @@ public class UserServiceImpl implements UserService {
         List<AuthServerDTO> member;
         List<String> userId = null;
         try {
-
+            System.out.println("userHp: " + userHp);
+            System.out.println("modelCode: " + modelCode);
+            System.out.println("deviceId: " + deviceId);
+            System.out.println("modelCodeMap: " + modelCodeMap);
             // 구형 모델의 경우
             if(modelCode.equals(modelCodeMap.get("oldModel")) || modelCode.equals(modelCodeMap.get("newModel")))
                 member = memberMapper.getUserByHp(userHp);

@@ -82,6 +82,8 @@ public class UserController {
     public ResponseEntity<?> doDuplicationCheck(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException{
 
+        System.out.println("params.getUserId(): " + params.getUserId());
+
         String logStep = "[ID 중복 확인]";
 
         if(Validator.isNullOrEmpty(params.getUserId())){
@@ -98,7 +100,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[ID 찾기]";
-
+        System.out.println("params.getHp(): " + params.getHp());
         if(Validator.isNullOrEmpty(params.getHp()) ||
            Validator.isNullOrEmpty(params.getDeviceType()) ||
            Validator.isNullOrEmpty(params.getModelCode()) ||

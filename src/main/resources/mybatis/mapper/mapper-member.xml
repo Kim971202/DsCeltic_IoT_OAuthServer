@@ -9,7 +9,7 @@
     <select id="getUserByUserId" parameterType="String" resultMap="member">
         SELECT HP AS hp, USER_ID AS userId, USER_NICK AS userNickname, API_ATTC_KEY AS accessToken
         FROM TBR_OPR_USER
-        WHERE USER_ID = #{value}
+        WHERE USER_ID = #{userId}
     </select>
 
     <select id="getAccountByUserId" parameterType="String" resultMap="member">
