@@ -1,5 +1,6 @@
 package com.oauth.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
@@ -225,7 +226,7 @@ public class UserServiceImpl implements UserService {
         String modelCode = params.getModelCode();
         String deviceId = params.getDeviceId();
         String msg;
-        List<AuthServerDTO> member;
+        List<AuthServerDTO> member = null;
         List<String> userId = null;
         try {
             System.out.println("userHp: " + userHp);
@@ -233,10 +234,8 @@ public class UserServiceImpl implements UserService {
             System.out.println("deviceId: " + deviceId);
             System.out.println("modelCodeMap: " + modelCodeMap);
             // 구형 모델의 경우
-            if(modelCode.equals(modelCodeMap.get("oldModel")) || modelCode.equals(modelCodeMap.get("newModel")))
-                member = memberMapper.getUserByHp(userHp);
-            else
-                member = memberMapper.getUserByDeviceId(deviceId);
+            if(modelCode.equals(modelCodeMap.get("oldModel"))) member = memberMapper.getUserByHp(userHp);
+            else if(modelCode.equals(modelCodeMap.get("newModel"))) member = memberMapper.getUserByDeviceId(deviceId);
 
             if(member.isEmpty()) stringObject = "N";
             else {
@@ -269,7 +268,8 @@ public class UserServiceImpl implements UserService {
         String modelCode = params.getModelCode();
         AuthServerDTO member;
         String msg;
-
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             // 구형 모델의 경우
@@ -281,18 +281,30 @@ public class UserServiceImpl implements UserService {
             if(member == null) stringObject = "N";
             else stringObject = "Y";
 
-            if(stringObject.equals("Y")) msg = "비밀번호 찾기 - 초기화 성공";
-            else msg = "비밀번호 찾기 - 초기화 실패";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "Reset Password OK");
+                msg = "비밀번호 찾기 - 초기화 성공";
+            } else{
+                conMap.put("body", "Reset Password FAIL");
+                msg = "비밀번호 찾기 - 초기화 실패";
+            }
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Reset Password");
+            conMap.put("id", "Reset Password ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     /** 비밀번호 변경 - 생성 */
