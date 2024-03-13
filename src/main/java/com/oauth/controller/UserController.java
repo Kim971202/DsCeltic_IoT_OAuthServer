@@ -56,7 +56,7 @@ public class UserController {
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
 
-        return userService.doLogin(params.getUserId(), params.getUserPassword());
+        return userService.doLogin(params.getUserId(), params.getUserPassword(), params.getPushToken());
     }
 
     /** 회원가입 */

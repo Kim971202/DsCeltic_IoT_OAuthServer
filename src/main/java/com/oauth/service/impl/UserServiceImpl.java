@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     /** 회원 로그인 */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public ResponseEntity<?> doLogin(String userId, String userPassword) throws CustomException {
+    public ResponseEntity<?> doLogin(String userId, String userPassword, String pushToken) throws CustomException {
 
         String userNickname = null;
 
@@ -77,6 +77,10 @@ public class UserServiceImpl implements UserService {
         List<String> deviceNickname;
         List<String> regSort;
         String msg;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
         try {
             System.out.println(encoder.encode(userPassword));
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
@@ -128,16 +132,31 @@ public class UserServiceImpl implements UserService {
             result.setUserNickname(userNickname);
             result.setDevice(data);
 
-            if(stringObject.equals("Y")) msg = "로그인 성공";
-            else msg = "로그인 실패";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "Login OK");
+                msg = "로그인 성공";
+            }
+            else {
+                conMap.put("body", "Login FAIL");
+                msg = "로그인 실패";
+            }
+
+            conMap.put("targetToken", pushToken);
+            conMap.put("title", "Login");
+            conMap.put("id", "Login ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             result.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        }catch (CustomException e){
+        }catch (Exception e){
             System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -179,9 +198,9 @@ public class UserServiceImpl implements UserService {
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
             result = new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (CustomException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return result;
     }
@@ -209,9 +228,9 @@ public class UserServiceImpl implements UserService {
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (CustomException e){
+        }catch (Exception e){
             System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -252,9 +271,9 @@ public class UserServiceImpl implements UserService {
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
 
-        }catch (CustomException e){
+        }catch (Exception e){
             System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -303,6 +322,7 @@ public class UserServiceImpl implements UserService {
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("", e);
             throw new RuntimeException(e);
         }
     }
@@ -315,7 +335,8 @@ public class UserServiceImpl implements UserService {
         String stringObject;
         String msg;
         int result;
-
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try{
 
             Common.updateMemberDTOList(params, "userPassword", encoder.encode(params.getUserPassword()));
@@ -324,19 +345,32 @@ public class UserServiceImpl implements UserService {
             if(result > 0) stringObject = "Y";
             else stringObject = "N";
 
-            if(stringObject.equals("Y")) msg = "비밀번호 변경 - 생성 성공";
-            else msg = "비밀번호 변경 - 생성 실패";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "Change Password OK");
+                msg = "비밀번호 변경 - 생성 성공";
+            } else{
+                conMap.put("body", "Change Password FAIL");
+                msg = "비밀번호 변경 - 생성 실패";
+            }
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Change Password");
+            conMap.put("id", "Change Password ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error("", e);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     /** 사용자정보 조회 */
@@ -365,9 +399,9 @@ public class UserServiceImpl implements UserService {
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
 
-        }catch (CustomException e){
+        }catch (Exception e){
             System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -382,6 +416,8 @@ public class UserServiceImpl implements UserService {
         String userPassword = params.getUserPassword();
         String oldHp = params.getOldHp();
         String newHp = params.getNewHp();
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
 
         try{
 
@@ -398,18 +434,34 @@ public class UserServiceImpl implements UserService {
                 }
             }
 
-            if(stringObject.equals("Y")) msg = "회원 별칭(이름) 및 전화번호 변경 성공";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "Update Nickname and PhoneNum OK");
+                msg = "회원 별칭(이름) 및 전화번호 변경 성공";
+            }
             else if(stringObject.equals("M")) msg = "동일한 전화번호 변경 오류";
-            else msg = "회원 별칭(이름) 및 전화번호 변경 실패";
+            else {
+                conMap.put("body", "Update Nickname and PhoneNum FAIL");
+                msg = "회원 별칭(이름) 및 전화번호 변경 실패";
+            }
+
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Update Nickname and PhoneNum");
+            conMap.put("id", "Update Nickname and PhoneNum ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (CustomException e){
+        }catch (Exception e){
             System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -426,6 +478,9 @@ public class UserServiceImpl implements UserService {
         String msg;
         int pwChangeResult;
 
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
         try{
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
             params.setNewPassword(encoder.encode(params.getNewPassword()));
@@ -440,19 +495,32 @@ public class UserServiceImpl implements UserService {
             if(pwChangeResult > 0)  stringObject = "Y";
             else stringObject = "N";
 
-            if(stringObject.equals("Y")) msg = "비밀번호 변경 - 로그인시 성공";
-            else msg = "비밀번호 변경 - 로그인시 실패";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "Update Password OK");
+                msg = "비밀번호 변경 - 로그인시 성공";
+            } else{
+                conMap.put("body", "Update Password FAIL");
+                msg = "비밀번호 변경 - 로그인시 실패";
+            }
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Update Password");
+            conMap.put("id", "Update Password ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+        }catch (Exception e) {
+            log.error("", e);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     /** 사용자(세대원) 정보 조회 */
@@ -521,6 +589,9 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg = null;
         int result;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             result = memberMapper.inviteHouseMember(params);
@@ -528,18 +599,32 @@ public class UserServiceImpl implements UserService {
             if(result <= 0) stringObject = "N";
             else stringObject = "Y";
 
-            if(stringObject.equals("Y")) msg = "사용자 추가 - 초대 성공";
-            else msg = "사용자 추가 - 초대 실패";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "Add User OK");
+                msg = "사용자 추가 - 초대 성공";
+            }
+            else {
+                conMap.put("body", "Add User FAIL");
+                msg = "사용자 추가 - 초대 실패";
+            }
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Add User");
+            conMap.put("id", "Add User ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
             return new ResponseEntity<>(data, HttpStatus.OK);
-
-        }catch (CustomException e){
+        }catch (Exception e){
             System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -560,6 +645,8 @@ public class UserServiceImpl implements UserService {
         String responseUserId = params.getResponseUserId();
         String inviteAcceptYn = params.getInviteAcceptYn();
         MemberMapper mMapper = session.getMapper(MemberMapper.class);
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             /**
@@ -601,17 +688,31 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            if(stringObject.equals("Y")) msg = "사용자 초대 - 수락여부 성공";
-            else msg = "사용자 초대 - 수락여부 실패";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "Accept Invite OK");
+                msg = "사용자 초대 - 수락여부 성공";
+            }
+            else {
+                conMap.put("body", "Accept Invite FAIL");
+                msg = "사용자 초대 - 수락여부 실패";
+            }
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Accept Invite");
+            conMap.put("id", "Accept Invite ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+        }catch (Exception e){
+            log.error("", e);
         }
         return null;
     }
@@ -701,6 +802,8 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String userId = params.getUserId();
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
 
         try {
             int result = memberMapper.delHouseMember(userId);
@@ -708,15 +811,30 @@ public class UserServiceImpl implements UserService {
             if(result > 0) stringObject = "Y";
             else stringObject = "N";
 
-            if(stringObject.equals("Y")) msg = "사용자(세대원) - 강제탈퇴 성공";
-            else msg = "사용자(세대원) - 강제탈퇴 실패";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "Force Delete Member OK");
+                msg = "사용자(세대원) - 강제탈퇴 성공";
+            }
+            else {
+                conMap.put("body", "Force Delete Member FAIL");
+                msg = "사용자(세대원) - 강제탈퇴 실패";
+            }
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Force Delete Member");
+            conMap.put("id", "Force Delete Member ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -810,7 +928,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /** 사용자(세대주) 탈퇴 */
-    // TODO: result 관련 수정 필요
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResponseEntity<?> doDelHouseholder(AuthServerDTO params)
             throws CustomException{
@@ -822,10 +940,17 @@ public class UserServiceImpl implements UserService {
         int result = 0;
         int result1 = 0;
         int result2 = 0;
-            try {
 
-                List<AuthServerDTO> deviceIds = memberMapper.getDeviceIdByUserId(params.getUserId());
-                List<AuthServerDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
+        // Transaction용 클래스 선언
+        SqlSession session = sqlSessionFactory.openSession();
+        MemberMapper mMapper = session.getMapper(MemberMapper.class);
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+
+                List<AuthServerDTO> deviceIds = mMapper.getDeviceIdByUserId(params.getUserId());
+                List<AuthServerDTO> members = mMapper.getHouseMembersByUserId(deviceIds);
 
                 if(deviceIds != null && members != null){
                     stringObject = "Y";
@@ -841,25 +966,39 @@ public class UserServiceImpl implements UserService {
 
                     if(userIdList != null) nextHouseholdId = userIdList.get(0);
 
-                    result = memberMapper.delHouseMember(params.getUserId());
+                    result = mMapper.delHouseMember(params.getUserId());
                     if(result <= 0) stringObject = "N";
 
-                    result1 = memberMapper.updateHouseholdTbrOprUser(nextHouseholdId);
-                    result2 = memberMapper.updateHouseholdTbrOprUserDevice(nextHouseholdId);
+                    result1 = mMapper.updateHouseholdTbrOprUser(nextHouseholdId);
+                    result2 = mMapper.updateHouseholdTbrOprUserDevice(nextHouseholdId);
 
                 } else stringObject = "N";
                 
-                if(stringObject.equals("Y")) msg = "사용자(세대주) 탈퇴  성공";
-                else msg = "사용자(세대주) 탈퇴  실패";
+                if(stringObject.equals("Y")) {
+                    conMap.put("body", "Delete householder OK");
+                    msg = "사용자(세대주) 탈퇴  성공";
+                }
+                else {
+                    conMap.put("body", "Delete householder OK");
+                    msg = "사용자(세대주) 탈퇴  실패";
+                }
+
+                conMap.put("targetToken", params.getPushToken());
+                conMap.put("title", "Delete householder");
+                conMap.put("id", "Delete householder ID");
+                conMap.put("isEnd", "false");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+                System.out.println("jsonString: " + jsonString);
+                mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
                 data.setResult("Y".equalsIgnoreCase(stringObject) ?
                         ApiResponse.ResponseType.HTTP_200 :
                         ApiResponse.ResponseType.CUSTOM_1003, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
 
-            } catch (CustomException e){
-                System.out.println(e.getMessage());
-                e.printStackTrace();
+            } catch (Exception e){
+                log.error("", e);
             }
         return null;
     }

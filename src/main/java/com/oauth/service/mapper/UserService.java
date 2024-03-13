@@ -10,7 +10,7 @@ import java.util.HashMap;
 public interface UserService {
 
     /** 회원 로그인 */
-    ResponseEntity<?> doLogin(String userId, String userPassword) throws CustomException;
+    ResponseEntity<?> doLogin(String userId, String userPassword, String pushToken) throws CustomException;
 
     /** 회원가입 */
     ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException, SQLException;
