@@ -1057,6 +1057,8 @@ public class UserServiceImpl implements UserService {
         List<AuthServerDTO> deviceIdAndAuthKey;
         List<AuthServerDTO> deviceAuthCheck;
 
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try{
             deviceIdAndAuthKey = deviceMapper.getDeviceAuthCheckValuesByUserId(userId);
             if(deviceIdAndAuthKey.isEmpty()){
@@ -1069,17 +1071,32 @@ public class UserServiceImpl implements UserService {
                     stringObject = "Y";
                 }
             }
-            if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 인증 성공";
-            else msg = "홈 IoT 컨트롤러 인증 실패";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "Device Auth Check OK");
+                msg = "홈 IoT 컨트롤러 인증 성공";
+            }
+            else {
+                conMap.put("body", "Device Auth Check FAIL");
+                msg = "홈 IoT 컨트롤러 인증 실패";
+            }
 
             result.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
 
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Device Auth Check");
+            conMap.put("id", "Device Auth Check ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
             return new ResponseEntity<>(result, HttpStatus.OK);
-        }catch (CustomException e){
+        }catch (Exception e){
             System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -1099,6 +1116,9 @@ public class UserServiceImpl implements UserService {
         List<AuthServerDTO> deviceAuthCheck;
         AuthServerDTO deviceTempAuthCheck;
 
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
         try{
             deviceIdAndAuthKey = deviceMapper.getDeviceAuthCheckValuesByUserId(userId);
             if(deviceIdAndAuthKey.isEmpty()){
@@ -1115,17 +1135,31 @@ public class UserServiceImpl implements UserService {
                 }
             }
 
-            if(stringObject.equals("Y")) msg = "홈 IoT 최초 등록 인증 성공";
-            else msg = "홈 IoT 최초 등록 인증 실패";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "First Device Auth Check OK");
+                msg = "홈 IoT 최초 등록 인증 성공";
+            }
+            else {
+                conMap.put("body", "First Device Auth Check FAIL");
+                msg = "홈 IoT 최초 등록 인증 실패";
+            }
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "First Device Auth Check");
+            conMap.put("id", "First Device Auth Check ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             result.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
-        }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+        }catch (Exception e){
+            log.error("", e);
         }
         return null;
     }
@@ -1174,11 +1208,13 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doUserDeviceDelete(AuthServerDTO params)
             throws CustomException {
 
-        String stringObject = null;
+        String stringObject;
         ApiResponse.Data data = new ApiResponse.Data();
-        String msg = null;
-        String member = null;
+        String msg;
+        String member;
 
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try{
             /**
              * TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
@@ -1190,17 +1226,31 @@ public class UserServiceImpl implements UserService {
             if(member.isEmpty()) stringObject = "N";
             else stringObject = "Y";
 
-            if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 성공";
-            else msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 실패";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "User Device Delete OK");
+                msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 성공";
+            }
+            else {
+                conMap.put("body", "User Device Delete OK");
+                msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 실패";
+            }
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "User Device Delete");
+            conMap.put("id", "User Device Delete ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
 
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+        }catch (Exception e){
+            log.error("", e);
         }
         return null;
     }
@@ -1279,9 +1329,12 @@ public class UserServiceImpl implements UserService {
             throws CustomException{
 
         ApiResponse.Data data = new ApiResponse.Data();
-        String stringObject = null;
-        String msg = null;
-        int result = 0;
+        String stringObject;
+        String msg;
+        int result;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             result = deviceMapper.changeDeviceNickname(params);
@@ -1289,17 +1342,31 @@ public class UserServiceImpl implements UserService {
             if(result <= 0) stringObject = "N";
             else stringObject = "Y";
 
-            if(stringObject.equals("Y")) msg = "기기 별칭 수정 성공";
-            else msg = "기기 별칭 수정 실패";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "Device Nickname Change OK");
+                msg = "기기 별칭 수정 성공";
+            }
+            else {
+                conMap.put("body", "Device Nickname Change FAIL");
+                msg = "기기 별칭 수정 실패";
+            }
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Device Nickname Change");
+            conMap.put("id", "Device Nickname Change ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
 
-        }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+        }catch (Exception e){
+            log.error("", e);
         }
         return null;
     }
@@ -1310,15 +1377,16 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = null;
-        String msg = null;
+        String msg;
         AuthServerDTO serialNumber = null;
         String userId = params.getUserId();
         String uuId = common.getTransactionId();
         String redisValue;
         Map<String, Object> conMap = new HashMap<>();
-        MobiusResponse mobiusResponse = null;
+        Map<String, Object> conMap1 = new HashMap<>();
+        MobiusResponse mobiusResponse;
         ObjectMapper objectMapper = new ObjectMapper();
-        String responseMessage = null;
+        String responseMessage;
         try{
             serialNumber = deviceMapper.getSerialNumberBydeviceId(params.getDeviceId());
 
@@ -1356,10 +1424,12 @@ public class UserServiceImpl implements UserService {
             }
 
             if(stringObject.equals("Y")) {
+                conMap1.put("body", "Brightness Control OK");
                 msg = "기기 밝기 수정 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
             else if(stringObject.equals("N")) {
+                conMap1.put("body", "Brightness Control OK");
                 msg = "기기 밝기 수정 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
@@ -1367,6 +1437,15 @@ public class UserServiceImpl implements UserService {
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
+
+            conMap1.put("targetToken", params.getPushToken());
+            conMap1.put("title", "Reset Password");
+            conMap1.put("id", "Reset Password ID");
+            conMap1.put("isEnd", "false");
+
+            String jsonString1 = objectMapper.writeValueAsString(conMap1);
+            System.out.println("jsonString1: " + jsonString1);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1);
 
             redisCommand.deleteValues(uuId);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1481,5 +1560,38 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    /** 임시저장키 생성 */
+    @Override
+    public ResponseEntity<?> doGenerateTempKey(String userId) throws CustomException {
 
+        ApiResponse.Data result = new ApiResponse.Data();
+        String stringObject = null;
+        String msg = null;
+        String tempKey = null;
+        AuthServerDTO userInfo = null;
+        try {
+
+            userInfo = memberMapper.getUserByUserId(userId);
+
+            if(userInfo != null) {
+                stringObject = "Y";
+                tempKey = userId + "_" + common.getCurrentDateTime();
+                redisCommand.setValues(tempKey, userId, Duration.ofMinutes(TIME_OUT));
+            }
+            else stringObject = "N";
+
+            if(stringObject.equals("Y")) msg = "임시저장키 생성 성공";
+            else msg = "임시저장키 생성 실패";
+
+            result.setTempKey(tempKey);
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200
+                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("", e);
+        }
+        return null;
+    }
 }

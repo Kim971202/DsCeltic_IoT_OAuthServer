@@ -530,4 +530,20 @@ public class UserController {
         }
         return userService.doNotice(params);
     }
+
+    /**
+     * 임시저장키 생성
+     */
+    @PostMapping(value = "/generateTempKey")
+    @ResponseBody
+    public ResponseEntity<?> doGenerateTempKey(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException {
+
+        String logStep = "[임시저장키 생성]";
+
+        if(Validator.isNullOrEmpty(params.getUserId())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return userService.doGenerateTempKey(params.getUserId());
+    }
 }

@@ -15,6 +15,7 @@ public class WebConfigure implements WebMvcConfigurer {
 
         // 토큰 인터셉터 추가
         registry.addInterceptor(apiTokenInterceptor())
+                .excludePathPatterns("/users/v1/generateTempKey")
                 .addPathPatterns("/users/v1/**")
                 .addPathPatterns("/devices/v1/**")
                 .addPathPatterns("/reservation/v1/**");

@@ -285,4 +285,13 @@
         WHERE DEVC_ID = #{deviceId}
     </update>
 
+    <select id="getUserIdByUserId" resultMap="member">
+        SELECT
+            USER_ID AS userId
+        FROM
+            TBR_OPR_ACCOUNT
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
 </mapper>

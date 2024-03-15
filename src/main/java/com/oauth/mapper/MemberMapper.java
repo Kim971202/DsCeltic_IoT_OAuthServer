@@ -42,7 +42,7 @@ public interface MemberMapper {
     public String deleteControllerMapping(AuthServerDTO member);
     public List<AuthServerDTO> getPushInfoList(String userId);
     public List<AuthServerDTO> getNoticeList();
-
     public int updateDeviceLocationNicknameDeviceDetail(AuthServerDTO member);
     public int updateDeviceLocationNicknameDeviceRegist(AuthServerDTO member);
+    public AuthServerDTO getUserIdByUserId (String userId);
 }
