@@ -68,6 +68,9 @@ public class DeviceServiceImpl implements DeviceService {
         String serialNumber;
         String responseMessage = null;
         MobiusResponse response;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
             powerOnOff.setUserId(params.getUserId());
             powerOnOff.setDeviceId(params.getDeviceId());
@@ -114,18 +117,29 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             if(stringObject.equals("Y")) {
+                conMap.put("body", "Device ON/OFF OK");
                 msg = "전원 On/Off 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 result.setTestVariable(responseMessage);
             }
             else if(stringObject.equals("N")) {
+                conMap.put("body", "Device ON/OFF OK");
                 msg = "전원 On/Off 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
             else {
+                conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Device ON/OFF");
+            conMap.put("id", "Device ON/OFF ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             redisCommand.deleteValues(powerOnOff.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -166,6 +180,9 @@ public class DeviceServiceImpl implements DeviceService {
 
         int updateDeviceRegistLocationResult;
         int updateDeviceDetailLocationResult;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             deviceInfoUpsert.setAccessToken(params.getAccessToken());
@@ -250,9 +267,9 @@ public class DeviceServiceImpl implements DeviceService {
 
             }
 
-
             System.out.println("stringObject: " + stringObject);
             if (stringObject.equals("Y") && registYn.equals("Y")) {
+                conMap.put("body", "Device Insert OK");
                 msg = "홈 IoT 컨트롤러 정보 등록 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 result.setLatitude(params.getLatitude());
@@ -260,6 +277,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setTmpRegistKey(params.getTmpRegistKey());
 
             } else if(stringObject.equals("Y") && registYn.equals("N")){
+                conMap.put("body", "Device Update OK");
                 msg = "홈 IoT 컨트롤러 정보 수정 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 result.setLatitude(params.getLatitude());
@@ -267,21 +285,27 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setTmpRegistKey("NULL");
 
             } else if(stringObject.equals("N")) {
+                conMap.put("body", "Device Insert/Update FAIL");
                 msg = "홈 IoT 컨트롤러 정보 등록/수정 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-            else {
+            } else {
+                conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "DeviceInfoUpsert");
+            conMap.put("id", "DeviceInfoUpsert ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
             redisCommand.deleteValues(deviceInfoUpsert.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception e){
+            log.error("", e);
         }
         return null;
     }
@@ -298,6 +322,7 @@ public class DeviceServiceImpl implements DeviceService {
         HashMap<String, String> request = new HashMap<>();
         String responseMessage = null;
         MobiusResponse response;
+        Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = null;
         try {
@@ -338,18 +363,29 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             if(stringObject.equals("Y")) {
+                conMap.put("body", "Device Status Info OK");
                 msg = "홈 IoT 컨트롤러 상태 정보 조회 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 result.setDevice(rootNode);
             }
             else if(stringObject.equals("N")) {
+                conMap.put("body", "Device Status Info FAIL");
                 msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
             else {
+                conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Device Status Info");
+            conMap.put("id", "Device Status Info ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             redisCommand.deleteValues(uuId);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -375,6 +411,8 @@ public class DeviceServiceImpl implements DeviceService {
         String responseMessage;
         String redisValue;
         MobiusResponse response;
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try  {
 
             modeChange.setAccessToken(params.getAccessToken());
@@ -413,17 +451,29 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             if(stringObject.equals("Y")) {
+                conMap.put("body", "Mode Change OK");
                 msg = "모드변경 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
             else if(stringObject.equals("N")) {
+                conMap.put("body", "Mode Change FAIL");
                 msg = "모드변경 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
             else {
+                conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Mode Change");
+            conMap.put("id", "Mode Change ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             redisCommand.deleteValues(modeChange.getUuid());
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -441,11 +491,14 @@ public class DeviceServiceImpl implements DeviceService {
         ApiResponse.Data result = new ApiResponse.Data();
         TemperatureSet temperatureSet = new TemperatureSet();
         String stringObject = null;
-        String msg ;
+        String msg;
         String responseMessage;
         String userId = params.getUserId();
         String redisValue;
         MobiusResponse response;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             temperatureSet.setAccessToken(params.getAccessToken());
@@ -478,26 +531,37 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
-                e.printStackTrace();
+                log.error("", e);
             }
 
             if(stringObject.equals("Y")) {
+                conMap.put("body", "TemperatureSet OK");
                 msg = "실내온도 설정 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
             else if(stringObject.equals("N")) {
+                conMap.put("body", "TemperatureSet OK");
                 msg = "실내온도 설정 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
             else {
+                conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "TemperatureSet");
+            conMap.put("id", "TemperatureSet ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
             redisCommand.deleteValues(temperatureSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -514,6 +578,9 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         String responseMessage;
         MobiusResponse response;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             boiledWaterTempertureSet.setAccessToken(params.getAccessToken());
@@ -546,26 +613,38 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
-                e.printStackTrace();
+                log.error("", e);
             }
 
             if(stringObject.equals("Y")) {
+                conMap.put("body", "BoiledWaterTempertureSet OK");
                 msg = "난방수온도 설정 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
             else if(stringObject.equals("N")) {
+                conMap.put("body", "BoiledWaterTempertureSet FAIL");
                 msg = "난방수온도 설정 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
             else {
+                conMap.put("body", "Service TIME-OUT ");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "BoiledWaterTempertureSet");
+            conMap.put("id", "BoiledWaterTempertureSet ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            System.out.println("jsonString: " + jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
             redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -582,6 +661,9 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         String responseMessage;
         MobiusResponse response;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             waterTempertureSet.setAccessToken(params.getAccessToken());
@@ -614,26 +696,37 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
-                e.printStackTrace();
+                log.error("", e);
             }
 
             if(stringObject.equals("Y")) {
+                conMap.put("body", "WaterTempertureSet OK");
                 msg = "온수온도 설정 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
             else if(stringObject.equals("N")) {
+                conMap.put("body", "WaterTempertureSet FAIL");
                 msg = "온수온도 설정 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
             else {
+                conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "WaterTempertureSet");
+            conMap.put("id", "WaterTempertureSet ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
             redisCommand.deleteValues(waterTempertureSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -650,6 +743,9 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         MobiusResponse response;
         String responseMessage;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             fastHotWaterSet.setAccessToken(params.getAccessToken());
@@ -682,27 +778,38 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
-                e.printStackTrace();
+                log.error("", e);
             }
 
             if(stringObject.equals("Y")) {
+                conMap.put("body", "FastHotWaterSet OK");
                 msg = "빠른온수 설정 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
             else if(stringObject.equals("N")) {
+                conMap.put("body", "FastHotWaterSet FAIL");
                 msg = "빠른온수 설정 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
             else {
+                conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "FastHotWaterSet");
+            conMap.put("id", "FastHotWaterSet ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             redisCommand.deleteValues(fastHotWaterSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
 
         } catch (Exception e){
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -720,6 +827,9 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         MobiusResponse response;
         String responseMessage;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             lockSet.setAccessToken(params.getAccessToken());
@@ -754,26 +864,37 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
-                e.printStackTrace();
+                log.error("", e);
             }
 
             if(stringObject.equals("Y")) {
+                conMap.put("body", "LockSet OK");
                 msg = "잠금 모드 설정 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
             else if(stringObject.equals("N")) {
+                conMap.put("body", "c FAIL");
                 msg = "잠금 모드 설정 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
             else {
+                conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "LockSet");
+            conMap.put("id", "LockSet ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
             redisCommand.deleteValues(lockSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -785,7 +906,7 @@ public class DeviceServiceImpl implements DeviceService {
         /*
         * 구현전 생각해야 할 것
         * 1. 몇개의 응답을 올지 모름 (사용자가 몇개의 기기를 등록했는지 알아야함)
-        * 2. 받으 응답을 어떻게 Passing 할 것인가
+        * 2. 받은 응답을 어떻게 Passing 할 것인가
         * */
 
         ApiResponse.Data result = new ApiResponse.Data();
