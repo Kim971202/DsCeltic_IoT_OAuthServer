@@ -1538,6 +1538,9 @@ public class UserServiceImpl implements UserService {
         String userId = params.getUserId();
         int updateResult1 = 0;
         int updateResult2 = 0;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             updateResult1 = mMapper.updateDeviceLocationNicknameDeviceDetail(params);
@@ -1546,12 +1549,26 @@ public class UserServiceImpl implements UserService {
             if(updateResult1 > 0 && updateResult2 > 0) stringObject = "Y";
             else stringObject = "N";
 
-            if(stringObject.equals("Y")) msg = "기기 설치 위치 별칭 수정 성공";
-            else msg = "기기 설치 위치 별칭 수정 실패";
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "Update Device Location OK");
+                msg = "기기 설치 위치 별칭 수정 성공";
+            }
+            else {
+                conMap.put("body", "Update Device Location FAIL");
+                msg = "기기 설치 위치 별칭 수정 실패";
+            }
 
             result.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
+
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Device Auth Check");
+            conMap.put("id", "Device Auth Check ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -1565,10 +1582,10 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doGenerateTempKey(String userId) throws CustomException {
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = null;
-        String msg = null;
+        String stringObject;
+        String msg;
         String tempKey = null;
-        AuthServerDTO userInfo = null;
+        AuthServerDTO userInfo;
         try {
 
             userInfo = memberMapper.getUserByUserId(userId);
