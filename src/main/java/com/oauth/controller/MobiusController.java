@@ -33,6 +33,8 @@ public class MobiusController {
     @ResponseBody
     public String receiveCin(@RequestBody String jsonBody) throws Exception {
 
+        System.out.println("GW Received JSON: " + JSON.toJson(jsonBody, true));
+
         DeviceStatusInfo dr910W = new DeviceStatusInfo();
         DeviceStatusInfo.Device dr910WDevice = new DeviceStatusInfo.Device();
 

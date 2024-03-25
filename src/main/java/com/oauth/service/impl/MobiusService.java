@@ -19,6 +19,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.apache.http.entity.StringEntity;
 import reactor.core.publisher.Mono;
@@ -33,7 +34,12 @@ public class MobiusService {
 
     @Autowired
     Common common;
-    private String inCSEAddress = "localhost:7579";
+    @Value("${app.server.address.short.gw}")
+    private String shortGwServerAddr;
+    @Value("${app.server.address.long.gw}")
+    private String longGwServerAddr;
+    @Value("${app.server.address.push}")
+    private String pushServerAddr;
     ObjectMapper objectMapper = new ObjectMapper();
     private static PoolingHttpClientConnectionManager connectionManager = null;
     private static CloseableHttpClient httpClient;
@@ -85,12 +91,12 @@ public class MobiusService {
         return mobiusResponse;
     }
 
-    public String createAe(String modelCode) throws Exception {
+    public MobiusResponse createAe(String serialNumber) throws Exception {
 
         AeDTO aeObject = new AeDTO();
         AeDTO.Ae ae = new AeDTO.Ae();
 
-        ae.setRn(modelCode + "." + common.getTimeAsiaSeoulNow());
+        ae.setRn(serialNumber);
         ae.setApi("api");
         ae.setLbl(Arrays.asList("key1", "key2"));
         ae.setRr(true);
@@ -102,7 +108,7 @@ public class MobiusService {
 
         URI uri = new URIBuilder()
                 .setScheme("http")
-                .setHost(inCSEAddress)
+                .setHost(shortGwServerAddr)
                 .setPath("/Mobius")
                 .build();
 
@@ -128,16 +134,15 @@ public class MobiusService {
         } finally {
             response.close();
         }
-        System.out.println(ae.getRn());
-        return ae.getRn();
+        return mobiusResponse;
     }
 
-    public String createCnt(String srNo, String aeName) throws Exception {
+    public MobiusResponse createCnt(String aeName, String cntName) throws Exception {
 
         CntDTO cntObject = new CntDTO();
         CntDTO.Cnt cnt = new CntDTO.Cnt();
 
-        cnt.setRn(srNo + "." + common.getTimeAsiaSeoulNow());
+        cnt.setRn(cntName);
         cnt.setMbs(10000);
 
         cntObject.setDefaultValue(cnt);
@@ -148,7 +153,7 @@ public class MobiusService {
 
         URI uri = new URIBuilder()
                 .setScheme("http")
-                .setHost(inCSEAddress)
+                .setHost(shortGwServerAddr)
                 .setPath("/Mobius" + "/" + aeName)
                 .build();
 
@@ -174,8 +179,7 @@ public class MobiusService {
         } finally {
             response.close();
         }
-        System.out.println(cnt.getRn());
-        return cnt.getRn();
+        return mobiusResponse;
     }
 
     public MobiusResponse createCin(String aeName, String cntName, String con) throws Exception{
@@ -191,7 +195,7 @@ public class MobiusService {
 
         URI uri = new URIBuilder()
                 .setScheme("http")
-                .setHost(inCSEAddress)
+                .setHost(shortGwServerAddr)
                 .setPath("/Mobius" + "/" + aeName + "/" + cntName)
                 .build();
 
@@ -221,15 +225,31 @@ public class MobiusService {
         return mobiusResponse;
     }
 
-    public void createSub(String aeName, String cntName, String con) throws Exception{
+    public MobiusResponse createSub(String aeName, String cntName, String addrType) throws Exception{
 
         SubDTO subOject = new SubDTO();
         SubDTO.Sub sub = new SubDTO.Sub();
+        SubDTO.Sub.Enc enc = new SubDTO.Sub.Enc();
 
-        sub.setRn("AppServerToGWServer");
-        sub.setNu(List.of("http://127.0.0.1:8081/subMessage"));
+        String rnName = null;
+        String serverAddr = null;
+
+        if(addrType.equals("gw")){
+            rnName = "AppServerToGwServer";
+            serverAddr = longGwServerAddr;
+        } else if(addrType.equals("push")){
+            rnName = "AppServerToPushServer";
+            serverAddr = pushServerAddr;
+        }
+
+        System.out.println("serverAddr: " + serverAddr);
+
+        enc.setNet(List.of(3));
+
+        sub.setEnc(enc);
+        sub.setRn(rnName);
+        sub.setNu(List.of(serverAddr));
         sub.setExc(10);
-
         subOject.setDefaultValue(sub);
 
         String requestBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(subOject);
@@ -238,7 +258,7 @@ public class MobiusService {
 
         URI uri = new URIBuilder()
                 .setScheme("http")
-                .setHost(inCSEAddress)
+                .setHost(shortGwServerAddr)
                 .setPath("/Mobius" + "/" + aeName + "/" + cntName)
                 .build();
 
@@ -264,5 +284,6 @@ public class MobiusService {
         } finally {
             response.close();
         }
+        return mobiusResponse;
     }
 }

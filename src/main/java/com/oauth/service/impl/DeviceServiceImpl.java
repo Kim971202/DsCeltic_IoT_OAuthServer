@@ -87,7 +87,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             AuthServerDTO device = deviceMapper.getSerialNumberBydeviceId(deviceId);
             serialNumber = device.getSerialNumber();
-
+            System.out.println("serialNumber: " + serialNumber);
             if (!serialNumber.isEmpty()) {
                 stringObject = "Y";
                 response = mobiusService.createCin(serialNumber, userId, JSON.toJson(powerOnOff));
@@ -110,7 +110,7 @@ public class DeviceServiceImpl implements DeviceService {
                     }
                 } catch (InterruptedException e) {
                     // 대기 중 인터럽트 처리
-                    e.printStackTrace();
+                    log.error("", e);
                 }
             } else {
                 stringObject = "N";
@@ -144,8 +144,7 @@ public class DeviceServiceImpl implements DeviceService {
             redisCommand.deleteValues(powerOnOff.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -237,7 +236,7 @@ public class DeviceServiceImpl implements DeviceService {
                         }
                     } catch (InterruptedException e) {
                         // 대기 중 인터럽트 처리
-                        e.printStackTrace();
+                        log.error("", e);
                     }
                 }
                 else stringObject = "N";
@@ -354,7 +353,7 @@ public class DeviceServiceImpl implements DeviceService {
                     }
                 } catch (InterruptedException e) {
                     // 대기 중 인터럽트 처리
-                    e.printStackTrace();
+                    log.error("", e);
                 }
             }else {
                 msg = "중계서버 오류";
@@ -391,7 +390,7 @@ public class DeviceServiceImpl implements DeviceService {
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -447,7 +446,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
-                e.printStackTrace();
+                log.error("", e);
             }
 
             if(stringObject.equals("Y")) {
@@ -478,8 +477,7 @@ public class DeviceServiceImpl implements DeviceService {
             redisCommand.deleteValues(modeChange.getUuid());
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }

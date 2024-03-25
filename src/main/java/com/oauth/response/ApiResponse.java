@@ -76,14 +76,12 @@ public class ApiResponse {
         private String latitude;
         private String longitude;
         private String tmpRegistKey;
-
+        private String duplicationYn;
         //@JsonProperty("device")
         private Object homeViewValue;
-
         // GW에서 받은 값을 던지는 시험용 변수
         private Object testVariable;
-
-        private String tempKey;
+        private String deviceId;
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);

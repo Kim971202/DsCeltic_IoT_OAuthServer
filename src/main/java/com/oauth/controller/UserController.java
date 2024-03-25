@@ -70,7 +70,8 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getUserNickname()) ||
                 Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getUserPassword())){
+                Validator.isNullOrEmpty(params.getUserPassword()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
         return userService.doRegist(params);
@@ -412,7 +413,8 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getTmpRegistKey()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getDeviceId())){
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
         return userService.doFirstDeviceAuthCheck(params);

@@ -24,7 +24,7 @@ public class SubDTO {
         @Getter
         @Setter
         public static class Enc {
-            private List<String> net;
+            private List<Integer> net;
         }
     }
 

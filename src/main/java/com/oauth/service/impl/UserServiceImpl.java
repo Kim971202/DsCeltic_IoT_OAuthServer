@@ -223,9 +223,10 @@ public class UserServiceImpl implements UserService {
             if(stringObject.equals("Y")) msg = "중복 되는 ID";
             else msg = "중복 되지 않는 ID";
 
+            data.setDuplicationYn(stringObject);
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
+                    : ApiResponse.ResponseType.CUSTOM_1001, msg);
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
@@ -1101,6 +1102,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    // TODO: 푸시서버 AE, CNT 생성 관련 논의 필요
     /** 홈 IoT 최초 등록 인증 */
     @Override
     public ResponseEntity<?> doFirstDeviceAuthCheck(AuthServerDTO params)
@@ -1110,38 +1112,56 @@ public class UserServiceImpl implements UserService {
         String stringObject;
         String msg;
 
-        String userId = params.getUserId();
-
-        List<AuthServerDTO> deviceIdAndAuthKey;
-        List<AuthServerDTO> deviceAuthCheck;
-        AuthServerDTO deviceTempAuthCheck;
+        MobiusResponse aeResult1;
+        MobiusResponse aeResult2;
+        MobiusResponse cntResult1;
+        MobiusResponse cntResult2;
+        MobiusResponse cinResult;
+        MobiusResponse subResult;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try{
-            deviceIdAndAuthKey = deviceMapper.getDeviceAuthCheckValuesByUserId(userId);
-            if(deviceIdAndAuthKey.isEmpty()){
-                stringObject = "N";
-            }else {
-                deviceAuthCheck = deviceMapper.deviceAuthCheck(deviceIdAndAuthKey);
-                if(deviceAuthCheck.isEmpty()) {
-                    stringObject = "N";
-                } else {
-                    deviceTempAuthCheck = deviceMapper.deviceTempAuthCheck(deviceIdAndAuthKey);
-                    if(deviceTempAuthCheck == null){
-                        stringObject = "N";
-                    } else stringObject = "Y";
-                }
-            }
 
-            if(stringObject.equals("Y")) {
+            /*
+            * TODO:
+            *  1. App에서 요청 후 생성한 TempKey와 요청값에 보낸 TempKey가 있는지 확인
+            *  2. Redis에서 TempKey가 검색될 경우 유효한 요청으로 판단
+            *  3. 유효한 요청일 경우 DeviceId 생성 후 Return
+            *  4. DeviceId: 0.2.481.1.1.ModelCode.SerialNumber
+            * */
+
+            String redisValue = redisCommand.getValues(params.getTmpRegistKey());
+
+            if(!redisValue.isEmpty()) stringObject = "Y";
+            else stringObject = "N";
+
+
+
+            aeResult1 = mobiusService.createAe(params.getSerialNumber());
+            aeResult2 = mobiusService.createAe("ToPushServer");
+
+            cntResult1 = mobiusService.createCnt(params.getSerialNumber(), params.getUserId());
+            cntResult2 = mobiusService.createCnt("ToPushServer","ToPushServerCnt");
+
+            subResult = mobiusService.createSub(params.getSerialNumber(), params.getUserId(), "gw");
+
+            if(aeResult1.getResponseCode().equals("201") &&
+                    aeResult2.getResponseCode().equals("201") &&
+                    cntResult1.getResponseCode().equals("201") &&
+                    cntResult2.getResponseCode().equals("201") &&
+                    subResult.getResponseCode().equals("201")){
+                stringObject = "Y";
+            } else stringObject = "N";
+
+            if(stringObject.equals("Y")){
+                result.setDeviceId("0.2.481.1.1." + params.getModelCode() + "." + params.getSerialNumber());
                 conMap.put("body", "First Device Auth Check OK");
-                msg = "홈 IoT 최초 등록 인증 성공";
-            }
-            else {
+                msg = "최초 인증 성공";
+            } else {
                 conMap.put("body", "First Device Auth Check FAIL");
-                msg = "홈 IoT 최초 등록 인증 실패";
+                msg = "최초 인증 실패";
             }
 
             conMap.put("targetToken", params.getPushToken());
@@ -1150,8 +1170,12 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
+            cinResult = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
+            if(!cinResult.getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+            }
 
             result.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
@@ -1584,7 +1608,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject;
         String msg;
-        String tempKey = null;
+        String tmpRegistKey = null;
         AuthServerDTO userInfo;
         try {
 
@@ -1592,15 +1616,15 @@ public class UserServiceImpl implements UserService {
 
             if(userInfo != null) {
                 stringObject = "Y";
-                tempKey = userId + "_" + common.getCurrentDateTime();
-                redisCommand.setValues(tempKey, userId, Duration.ofMinutes(TIME_OUT));
+                tmpRegistKey = userId + "_" + common.getCurrentDateTime();
+                redisCommand.setValues(tmpRegistKey, userId, Duration.ofMinutes(TIME_OUT));
             }
             else stringObject = "N";
 
             if(stringObject.equals("Y")) msg = "임시저장키 생성 성공";
             else msg = "임시저장키 생성 실패";
 
-            result.setTempKey(tempKey);
+            result.setTmpRegistKey(tmpRegistKey);
             result.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);

@@ -39,7 +39,7 @@
         FROM
             TBR_OPR_DEVICE_DETAIL
         WHERE
-            TEMP_DEVC_REG_KEY = #{tmpRegistKey}
+            TEMP_DEVC_REG_KEY = #{controlAuthKey}
         AND
             DEVC_ID = #{deviceId}
         AND

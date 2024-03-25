@@ -24,8 +24,8 @@
     </insert>
 
     <insert id="insertAccount" parameterType="com.oauth.dto.AuthServerDTO">
-        INSERT INTO TBR_OPR_ACCOUNT (USER_ID, PW, REG_DATM)
-        VALUES (#{userId}, #{userPassword}, now())
+        INSERT INTO TBR_OPR_ACCOUNT (USER_ID, PW, REG_DATM, PUSH_TOKEN)
+        VALUES (#{userId}, #{userPassword}, now(), #{pushToken})
     </insert>
 
     <select id="getUserByHp" parameterType="String" resultMap="member">
