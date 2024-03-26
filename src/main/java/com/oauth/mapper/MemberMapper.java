@@ -21,7 +21,7 @@ public interface MemberMapper {
     public AuthServerDTO getUserByUserIdAndHp(AuthServerDTO member);
     public AuthServerDTO getUserByUserIdAndHpAndDeviceId(AuthServerDTO member);
     public int updatePassword(AuthServerDTO member);
-    public AuthServerDTO passwordCheck(String pw);
+    public AuthServerDTO getPasswordByUserId(String userId);
     public int updateUserNicknameAndHp(AuthServerDTO member);
     public AuthServerDTO accessTokenCheck(AuthServerDTO member);
     public List<AuthServerDTO> getHouseMembersByUserId(List<AuthServerDTO> members);

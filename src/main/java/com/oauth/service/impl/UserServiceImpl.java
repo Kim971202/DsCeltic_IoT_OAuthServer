@@ -415,36 +415,26 @@ public class UserServiceImpl implements UserService {
         String stringObject = null;
         String msg;
         String userPassword = params.getUserPassword();
-        String oldHp = params.getOldHp();
-        String newHp = params.getNewHp();
+        AuthServerDTO dbPassword;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try{
+            dbPassword = memberMapper.getPasswordByUserId(params.getUserId());
+            System.out.println(dbPassword);
+            if(!encoder.matches(userPassword, dbPassword.getUserPassword())) stringObject = "N";
+            else stringObject = "Y";
 
-            AuthServerDTO pwCheck = memberMapper.passwordCheck(userPassword);
-
-            if(pwCheck == null) stringObject = "N";
-            else {
-                if(oldHp.equals(newHp)) stringObject = "M";
-                else if(newHp == null) {
-                    params.setNewHp(oldHp);
-                    int result = memberMapper.updateUserNicknameAndHp(params);
-                    if(result > 0) stringObject = "Y";
-                    else stringObject = "N";
-                }
-            }
+            int result = memberMapper.updateUserNicknameAndHp(params);
+            if(result > 0) stringObject = "Y";
 
             if(stringObject.equals("Y")) {
                 conMap.put("body", "Update Nickname and PhoneNum OK");
                 msg = "회원 별칭(이름) 및 전화번호 변경 성공";
-            }
-            else if(stringObject.equals("M")) msg = "동일한 전화번호 변경 오류";
-            else {
+            } else {
                 conMap.put("body", "Update Nickname and PhoneNum FAIL");
                 msg = "회원 별칭(이름) 및 전화번호 변경 실패";
             }
-
 
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Update Nickname and PhoneNum");
@@ -1203,12 +1193,12 @@ public class UserServiceImpl implements UserService {
         System.out.println("newAccessToken: " + newAccessToken);
         try{
 
-            AuthServerDTO dbPassword = memberMapper.passwordCheck(inputPassword);
+           // AuthServerDTO dbPassword = memberMapper.passwordCheck(inputPassword);
 
-            if(inputPassword.equals(dbPassword.getUserPassword()) && encoder.matches(inputPassword, dbPassword.getUserPassword())){
-                stringObject = "Y";
-                redisCommand.setValues(userId, newAccessToken, Duration.ofMinutes(30));
-            } else stringObject = "N";
+//            if(inputPassword.equals(dbPassword.getUserPassword()) && encoder.matches(inputPassword, dbPassword.getUserPassword())){
+//                stringObject = "Y";
+//                redisCommand.setValues(userId, newAccessToken, Duration.ofMinutes(30));
+//            } else stringObject = "N";
 
             if(stringObject.equals("Y")) msg = "API인증키 갱신 성공";
             else msg = "API인증키 갱신 실패";

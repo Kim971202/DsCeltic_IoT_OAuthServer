@@ -151,12 +151,9 @@ public class UserController {
     public ResponseEntity<?> doSearch(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException{
 
-        String logStep = "[비밀번호 변경 - 생성]";
+        String logStep = "[사용자정보 조회]";
 
-        if(Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getHp()) ||
-                Validator.isNullOrEmpty(params.getDeviceType()) ||
-                Validator.isNullOrEmpty(params.getModelCode())){
+        if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
 
@@ -173,7 +170,6 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getUserPassword()) ||
-                Validator.isNullOrEmpty(params.getOldHp()) ||
                 Validator.isNullOrEmpty(params.getUserNickname())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }

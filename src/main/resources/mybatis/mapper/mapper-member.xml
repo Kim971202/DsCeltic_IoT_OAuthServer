@@ -53,14 +53,14 @@
     </select>
 
     <update id="updatePassword" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE TBR_OPR_ACCOUNT SET PW = #{userPassword}
+        UPDATE TBR_OPR_ACCOUNT SET PW = #{newPassword}
         WHERE USER_ID = #{userId}
     </update>
 
-    <select id="passwordCheck" parameterType="String" resultMap="member">
-        SELECT USER_ID AS userId
+    <select id="getPasswordByUserId" parameterType="String" resultMap="member">
+        SELECT PW AS userPassword
         FROM TBR_OPR_ACCOUNT
-        WHERE PW = #{pw};
+        WHERE USER_ID = #{userId};
     </select>
 
     <update id="updateUserNicknameAndHp" parameterType="com.oauth.dto.AuthServerDTO">
