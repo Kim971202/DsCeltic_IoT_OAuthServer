@@ -118,16 +118,17 @@
         RESPONSE_USER_HP,
         INVITE_START_DATE,
         INVITE_END_DATE,
-        RESPONSE_ACCEPTANCE_STATUS
+        INVITE_ACCEPT_YN,
+        REQUEST_USER_NICK
         )
         VALUES(
         #{requestUserId},
         #{responseUserId},
         #{responseHp},
         DATE_FORMAT(now(), "%y-%m-%d"),
-        DATE_ADD(DATE_FORMAT(now(), "%y-%m-%d"),
-        INTERVAL 3 DAY),
-        'N');
+        DATE_ADD(DATE_FORMAT(now(), "%y-%m-%d"), INTERVAL 3 DAY),
+        'N',
+        #{requestUserNick});
     </insert>
 
     <update id="updateInviteHouseMember" parameterType="com.oauth.dto.AuthServerDTO">
@@ -153,8 +154,12 @@
     </select>
     
     <update id="acceptInvite" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE TBR_OPR_USER_INVITE_STATUS
-        SET INVITE_ACCEPT_YN = #{inviteAcceptYn}, INVITE_ACCEPT_DATE = now()
+        UPDATE
+            TBR_OPR_USER_INVITE_STATUS
+        SET
+            INVITE_ACCEPT_YN = #{inviteAcceptYn},
+            INVITE_ACCEPT_DATE = now(),
+            RESPONSE_USER_NICK = #{responseUserNick}
         WHERE INVITATION_IDX = #{invitationIdx}
     </update>
 

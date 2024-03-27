@@ -61,7 +61,7 @@ public interface UserService {
     ResponseEntity<?> doDelHouseholder(AuthServerDTO params) throws CustomException;
 
     /** 홈IoT 서비스 회원 탈퇴 */
-    ResponseEntity<?> doWirhdrawal(AuthServerDTO params) throws CustomException;
+    ResponseEntity<?> doWithdrawal(AuthServerDTO params) throws CustomException;
 
     /** 홈 IoT 컨트롤러 인증 */
     ResponseEntity<?> doDeviceAuthCheck(AuthServerDTO params) throws CustomException;

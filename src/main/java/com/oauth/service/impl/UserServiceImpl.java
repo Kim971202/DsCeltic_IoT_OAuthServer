@@ -578,9 +578,9 @@ public class UserServiceImpl implements UserService {
 
         String stringObject;
         ApiResponse.Data data = new ApiResponse.Data();
-        String msg = null;
+        String msg;
         int result;
-
+        MobiusResponse mobiusCode;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -606,8 +606,13 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             System.out.println("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            mobiusCode = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
+            if(!mobiusCode.getResponseCode().equals("201")){
+                msg = "사용자 추가 - 초대 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
@@ -928,9 +933,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String nextHouseholdId = null;
-        int result = 0;
-        int result1 = 0;
-        int result2 = 0;
+        int result;
 
         // Transaction용 클래스 선언
         SqlSession session = sqlSessionFactory.openSession();
@@ -960,8 +963,8 @@ public class UserServiceImpl implements UserService {
                     result = mMapper.delHouseMember(params.getUserId());
                     if(result <= 0) stringObject = "N";
 
-                    result1 = mMapper.updateHouseholdTbrOprUser(nextHouseholdId);
-                    result2 = mMapper.updateHouseholdTbrOprUserDevice(nextHouseholdId);
+                    mMapper.updateHouseholdTbrOprUser(nextHouseholdId);
+                    mMapper.updateHouseholdTbrOprUserDevice(nextHouseholdId);
 
                 } else stringObject = "N";
                 
@@ -996,7 +999,7 @@ public class UserServiceImpl implements UserService {
 
     /** 홈IoT 서비스 회원 탈퇴 */
     @Override
-    public ResponseEntity<?> doWirhdrawal(AuthServerDTO params)
+    public ResponseEntity<?> doWithdrawal(AuthServerDTO params)
             throws CustomException{
 
         String stringObject;
@@ -1028,8 +1031,7 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>(data, HttpStatus.OK);
 
         }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }

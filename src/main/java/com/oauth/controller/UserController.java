@@ -221,7 +221,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getRequestUserId()) ||
                 Validator.isNullOrEmpty(params.getResponseHp()) ||
                 Validator.isNullOrEmpty(params.getResponseUserId()) ||
-                Validator.isNullOrEmpty(params.getInviteStartDate())){
+                Validator.isNullOrEmpty(params.getRequestUserNick())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
 
@@ -241,7 +241,8 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getResponseUserId()) ||
                 Validator.isNullOrEmpty(params.getResponseUserNick()) ||
                 Validator.isNullOrEmpty(params.getInviteAcceptYn()) ||
-                Validator.isNullOrEmpty(params.getInvitationIdx())){
+                Validator.isNullOrEmpty(params.getInvitationIdx()) ||
+                Validator.isNullOrEmpty(params.getRequestUserNick())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
 
@@ -344,9 +345,9 @@ public class UserController {
     /**
      * 홈IoT 서비스 회원 탈퇴
      */
-    @PostMapping(value = "/wirhdrawal")
+    @PostMapping(value = "/withdrawal")
     @ResponseBody
-    public ResponseEntity<?> doWirhdrawal(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+    public ResponseEntity<?> doWithdrawal(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException {
 
         String logStep = "[홈IoT 서비스 회원 탈퇴]";
@@ -354,7 +355,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getUserPassword())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
-        return userService.doWirhdrawal(params);
+        return userService.doWithdrawal(params);
     }
 
     /**
