@@ -1038,7 +1038,7 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public HashMap<String, Object> doDeviceInfoSearch(AuthServerDTO params) throws Exception {
 
-        String stringObject = null;
+        String rtCode;
         String msg;
         AuthServerDTO resultDto;
         HashMap<String, Object> result = new HashMap<>();
@@ -1046,19 +1046,26 @@ public class DeviceServiceImpl implements DeviceService {
 
         resultDto = deviceMapper.getDeviceInfoSearch(params.getDeviceId());
 
-        result.put("resultCode", "200");
-        result.put("resultMsg", "홈 IoT 정보 조회 성공");
-        result.put("modelCategoryCode", resultDto.getModelCode());
-        result.put("deviceNickname", resultDto.getDeviceNickname());
-        result.put("addrNickname", resultDto.getAddrNickname());
-        result.put("zipCode", resultDto.getZipCode());
-        result.put("oldAddr", resultDto.getOldAddr());
-        result.put("newAddr", resultDto.getNewAddr());
-        result.put("addrDetail", resultDto.getAddrDetail());
-        result.put("latitude", resultDto.getLatitude());
-        result.put("longitude", resultDto.getLongitude());
+        if(resultDto == null){
+            rtCode = "404";
+            msg = "홈 IoT 정보 조회 실패";
+        } else {
+            rtCode = "200";
+            msg = "홈 IoT 정보 조회 성공";
 
-        return result;
+            result.put("modelCategoryCode", resultDto.getModelCode());
+            result.put("deviceNickname", resultDto.getDeviceNickname());
+            result.put("addrNickname", resultDto.getAddrNickname());
+            result.put("zipCode", resultDto.getZipCode());
+            result.put("oldAddr", resultDto.getOldAddr());
+            result.put("newAddr", resultDto.getNewAddr());
+            result.put("addrDetail", resultDto.getAddrDetail());
+            result.put("latitude", resultDto.getLatitude());
+            result.put("longitude", resultDto.getLongitude());
+        }
+            result.put("resultCode", rtCode);
+            result.put("resultMsg", msg);
+            return result;
         } catch (Exception e) {
             log.error("", e);
         }
