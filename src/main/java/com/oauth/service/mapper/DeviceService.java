@@ -5,6 +5,7 @@ import com.oauth.utils.CustomException;
 import org.springframework.http.ResponseEntity;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 
 public interface DeviceService {
 
@@ -38,4 +39,6 @@ public interface DeviceService {
     /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
     public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws Exception;
 
+    /** 홈 IoT 컨트롤러 정보 조회-단건 */
+    public HashMap<String, Object> doDeviceInfoSearch(AuthServerDTO params) throws Exception;
 }

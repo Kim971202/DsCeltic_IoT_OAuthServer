@@ -22,4 +22,6 @@ public interface DeviceMapper {
     public int updateDeviceDetailLocation(AuthServerDTO device);
     public List<AuthServerDTO> getControlAuthKeyByUserId(String userId);
     public List<AuthServerDTO> getDeviceNicknameAndDeviceLocNickname(List<AuthServerDTO> device);
+    public AuthServerDTO getDeviceInfoSearch(String userId);
+
 }

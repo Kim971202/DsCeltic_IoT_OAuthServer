@@ -1033,4 +1033,35 @@ public class DeviceServiceImpl implements DeviceService {
         }
         return null;
     }
+
+    /** 홈 IoT 컨트롤러 정보 조회-단건 */
+    @Override
+    public HashMap<String, Object> doDeviceInfoSearch(AuthServerDTO params) throws Exception {
+
+        String stringObject = null;
+        String msg;
+        AuthServerDTO resultDto;
+        HashMap<String, Object> result = new HashMap<>();
+        try {
+
+        resultDto = deviceMapper.getDeviceInfoSearch(params.getDeviceId());
+
+        result.put("resultCode", "200");
+        result.put("resultMsg", "홈 IoT 정보 조회 성공");
+        result.put("modelCategoryCode", resultDto.getModelCode());
+        result.put("deviceNickname", resultDto.getDeviceNickname());
+        result.put("addrNickname", resultDto.getAddrNickname());
+        result.put("zipCode", resultDto.getZipCode());
+        result.put("oldAddr", resultDto.getOldAddr());
+        result.put("newAddr", resultDto.getNewAddr());
+        result.put("addrDetail", resultDto.getAddrDetail());
+        result.put("latitude", resultDto.getLatitude());
+        result.put("longitude", resultDto.getLongitude());
+
+        return result;
+        } catch (Exception e) {
+            log.error("", e);
+        }
+        return null;
+    }
 }

@@ -917,8 +917,7 @@ public class UserServiceImpl implements UserService {
 
             return resultMap;
         }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }

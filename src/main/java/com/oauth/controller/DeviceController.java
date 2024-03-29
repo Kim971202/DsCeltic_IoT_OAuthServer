@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 @RequestMapping("/devices/v1")
 @RestController
@@ -91,6 +92,22 @@ public class DeviceController {
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
         return deviceService.doDeviceInfoUpsert(params);
+    }
+
+    /** 홈 IoT 컨트롤러 정보 조회-단건 */
+    @PostMapping(value = "/deviceInfoSearch")
+    @ResponseBody
+    public HashMap<String, Object> doDeviceInfoSearch(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws Exception {
+
+        String logStep = "[홈 IoT 컨트롤러 정보 조회-단건]";
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+           Validator.isNullOrEmpty(params.getDeviceId()) ||
+           Validator.isNullOrEmpty(params.getControlAuthKey())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return deviceService.doDeviceInfoSearch(params);
     }
 
     /** 모드변경 */
