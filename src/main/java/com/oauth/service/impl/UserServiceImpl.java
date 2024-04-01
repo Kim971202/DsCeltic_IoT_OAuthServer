@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
+import com.oauth.jwt.ApiTokenUtils;
+import com.oauth.jwt.TokenMaterial;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.message.GwMessagingSystem;
@@ -48,6 +50,10 @@ public class UserServiceImpl implements UserService {
     private Common common;
     @Autowired
     private RedisCommand redisCommand;
+
+    @Autowired
+    private ApiTokenUtils apiTokenUtils;
+
     @Autowired
     SqlSessionFactory sqlSessionFactory;
     @Autowired
@@ -257,7 +263,7 @@ public class UserServiceImpl implements UserService {
             if(modelCode.equals(modelCodeMap.get("oldModel"))) member = memberMapper.getUserByHp(userHp);
             else if(modelCode.equals(modelCodeMap.get("newModel"))) member = memberMapper.getUserByDeviceId(deviceId);
 
-            if(member.isEmpty()) stringObject = "N";
+            if(member == null) stringObject = "N";
             else {
                 stringObject = "Y";
                 userId = Common.extractJson(member.toString(), "userId");
@@ -565,8 +571,7 @@ public class UserServiceImpl implements UserService {
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -645,7 +650,7 @@ public class UserServiceImpl implements UserService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 
-            /**
+            /* *
              * 수락시: responseUserId 사용자는 requestUserId 사용자가 가진 DeviceId에 자동으로 mapping된다.
              * 거부시: TBR_OPR_USER_INVITE_STATUS 수락여부 항목 N UPDATE
              * 수락시 쿼리 흐름:
@@ -784,7 +789,7 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>(data, HttpStatus.OK);
 
         }catch (CustomException e){
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -871,7 +876,7 @@ public class UserServiceImpl implements UserService {
 
         }catch (CustomException e){
             System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -1008,7 +1013,7 @@ public class UserServiceImpl implements UserService {
         String member;
         try {
 
-            /**
+            /* *
              * 홈IoT 서비스 탈퇴 시 삭제 Table
              * 1. TBR_OPR_ACCOUNT
              * 2. TBR_OPR_USER
@@ -1103,10 +1108,9 @@ public class UserServiceImpl implements UserService {
         String stringObject;
         String msg;
 
-        MobiusResponse aeResult1;
-        MobiusResponse aeResult2;
-        MobiusResponse cntResult1;
-        MobiusResponse cntResult2;
+        MobiusResponse testResult;
+        MobiusResponse aeResult;
+        MobiusResponse cntResult;
         MobiusResponse cinResult;
         MobiusResponse subResult;
 
@@ -1125,26 +1129,31 @@ public class UserServiceImpl implements UserService {
 
             String redisValue = redisCommand.getValues(params.getTmpRegistKey());
 
-            if(!redisValue.isEmpty()) stringObject = "Y";
-            else stringObject = "N";
+            if(redisValue.equals("false")){
+                msg = "틀린 요청";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
 
+            /*
+            * 위 API 호출 마다 SerialNum, UserId 정보로 Cin 생성
+            * 생성이 정상적으로 동작 후 201을 Return 한다면 해당 AE, CNT는 존재하므로 생성X
+            * 하지만 201을 Return 하지 못하는 경우 AE, CNT가 없다 판단하여 신규 생성
+            * */
 
+            testResult = mobiusService.createCin(params.getSerialNumber(), params.getUserId(), "Initial_Body" + "+" +common.getCurrentDateTime());
 
-            aeResult1 = mobiusService.createAe(params.getSerialNumber());
-            aeResult2 = mobiusService.createAe("ToPushServer");
+            if(!testResult.getResponseCode().equals("201")){
+                aeResult = mobiusService.createAe(params.getSerialNumber());
+                cntResult = mobiusService.createCnt(params.getSerialNumber(), params.getUserId());
+                subResult = mobiusService.createSub(params.getSerialNumber(), params.getUserId(), "gw");
 
-            cntResult1 = mobiusService.createCnt(params.getSerialNumber(), params.getUserId());
-            cntResult2 = mobiusService.createCnt("ToPushServer","ToPushServerCnt");
-
-            subResult = mobiusService.createSub(params.getSerialNumber(), params.getUserId(), "gw");
-
-            if(aeResult1.getResponseCode().equals("201") &&
-                    aeResult2.getResponseCode().equals("201") &&
-                    cntResult1.getResponseCode().equals("201") &&
-                    cntResult2.getResponseCode().equals("201") &&
-                    subResult.getResponseCode().equals("201")){
-                stringObject = "Y";
-            } else stringObject = "N";
+                if(aeResult.getResponseCode().equals("201") &&
+                        cntResult.getResponseCode().equals("201") &&
+                        subResult.getResponseCode().equals("201")){
+                    stringObject = "Y";
+                } else stringObject = "N";
+            } else stringObject = "Y";
 
             if(stringObject.equals("Y")){
                 result.setDeviceId("0.2.481.1.1." + params.getModelCode() + "." + params.getSerialNumber());
@@ -1164,9 +1173,7 @@ public class UserServiceImpl implements UserService {
 
             cinResult = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
-            if(!cinResult.getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-            }
+            if(!cinResult.getResponseCode().equals("201")) msg = "PUSH 메세지 전송 오류";
 
             result.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
@@ -1179,7 +1186,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    /** API인증키 갱신 */
+    /** API 인증키 갱신 */
     @Override
     public ResponseEntity<?> doAccessTokenRenewal(AuthServerDTO params)
             throws CustomException{
@@ -1194,17 +1201,24 @@ public class UserServiceImpl implements UserService {
         System.out.println("newAccessToken: " + newAccessToken);
         try{
 
-           // AuthServerDTO dbPassword = memberMapper.passwordCheck(inputPassword);
+            TokenMaterial tokenMaterial = TokenMaterial.builder()
+                    .header(TokenMaterial.Header.builder()
+                            .userId("myId")
+                            .contentType("myType")
+                            .build())
+                    .payload(TokenMaterial.Payload.builder()
+                            .functionId("myFunctionId")
+                            .build())
+                    .build();
 
-//            if(inputPassword.equals(dbPassword.getUserPassword()) && encoder.matches(inputPassword, dbPassword.getUserPassword())){
-//                stringObject = "Y";
-//                redisCommand.setValues(userId, newAccessToken, Duration.ofMinutes(30));
-//            } else stringObject = "N";
+
+            String token = apiTokenUtils.createJWT(tokenMaterial);
+            System.out.println("token: " + token);
 
             if(stringObject.equals("Y")) msg = "API인증키 갱신 성공";
             else msg = "API인증키 갱신 실패";
 
-            result.setAccessToken(newAccessToken);
+            result.setAccessToken(token);
             result.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
@@ -1212,8 +1226,7 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>(result, HttpStatus.OK);
 
         }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -1231,7 +1244,7 @@ public class UserServiceImpl implements UserService {
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try{
-            /**
+            /* *
              * TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
              * TBR_OPR_USER_DEVICE - 사용자 단말 정보
              * TBR_OPR_DEVICE_DETAIL - 단말정보상세
@@ -1332,8 +1345,7 @@ public class UserServiceImpl implements UserService {
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -1393,7 +1405,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = null;
         String msg;
-        AuthServerDTO serialNumber = null;
+        AuthServerDTO serialNumber;
         String userId = params.getUserId();
         String uuId = common.getTransactionId();
         String redisValue;
@@ -1402,6 +1414,7 @@ public class UserServiceImpl implements UserService {
         MobiusResponse mobiusResponse;
         ObjectMapper objectMapper = new ObjectMapper();
         String responseMessage;
+
         try{
             serialNumber = deviceMapper.getSerialNumberBydeviceId(params.getDeviceId());
 
@@ -1415,7 +1428,7 @@ public class UserServiceImpl implements UserService {
             redisValue = userId + "," + "blCf";
             redisCommand.setValues(uuId, redisValue);
             String jsonString = objectMapper.writeValueAsString(conMap);
-            mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", jsonString);
+            mobiusResponse = mobiusService.createCin(serialNumber.getSerialNumber(), userId, jsonString);
             if(!mobiusResponse.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
@@ -1435,7 +1448,7 @@ public class UserServiceImpl implements UserService {
 
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
-                e.printStackTrace();
+                log.error("", e);
             }
 
             if(stringObject.equals("Y")) {
@@ -1465,8 +1478,7 @@ public class UserServiceImpl implements UserService {
             redisCommand.deleteValues(uuId);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1480,9 +1492,9 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         ApiResponse.Data.NoticeInfo noticeInfo = new ApiResponse.Data.NoticeInfo();
 
-        String stringObject = null;
-        String msg = null;
-        List<AuthServerDTO> noticeList = null;
+        String stringObject;
+        String msg;
+        List<AuthServerDTO> noticeList;
         try {
 
             noticeList = memberMapper.getNoticeList();
@@ -1533,8 +1545,7 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>(data, HttpStatus.OK);
 
         }catch (CustomException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -1548,9 +1559,9 @@ public class UserServiceImpl implements UserService {
         SqlSession session = sqlSessionFactory.openSession();
         MemberMapper mMapper = session.getMapper(MemberMapper.class);
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = null;
-        String msg = null;
-        String userId = params.getUserId();
+        String stringObject;
+        String msg;
+
         int updateResult1 = 0;
         int updateResult2 = 0;
 
@@ -1601,6 +1612,7 @@ public class UserServiceImpl implements UserService {
         String msg;
         String tmpRegistKey = null;
         AuthServerDTO userInfo;
+
         try {
 
             userInfo = memberMapper.getUserByUserId(userId);
@@ -1612,8 +1624,8 @@ public class UserServiceImpl implements UserService {
             }
             else stringObject = "N";
 
-            if(stringObject.equals("Y")) msg = "임시저장키 생성 성공";
-            else msg = "임시저장키 생성 실패";
+            if(stringObject.equals("Y")) msg = "Temp 저장키 생성 성공";
+            else msg = "Temp 저장키 생성 실패";
 
             result.setTmpRegistKey(tmpRegistKey);
             result.setResult("Y".equalsIgnoreCase(stringObject)
@@ -1626,4 +1638,5 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
 }
