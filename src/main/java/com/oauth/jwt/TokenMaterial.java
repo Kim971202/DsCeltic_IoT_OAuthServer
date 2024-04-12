@@ -32,5 +32,7 @@ public class TokenMaterial {
     public static class Payload{
         // FunctionId
         private String functionId;
+        // TIME
+        private String timestamp;
     }
 }

@@ -161,7 +161,6 @@ public class UserServiceImpl implements UserService {
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
-            System.out.println(e.getMessage());
             log.error("", e);
         }
         return null;
@@ -1129,11 +1128,11 @@ public class UserServiceImpl implements UserService {
 
             String redisValue = redisCommand.getValues(params.getTmpRegistKey());
 
-            if(redisValue.equals("false")){
-                msg = "틀린 요청";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+//            if(redisValue.equals("false")){
+//                msg = "틀린 요청";
+//                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+//                return new ResponseEntity<>(result, HttpStatus.OK);
+//            }
 
             /*
             * 위 API 호출 마다 SerialNum, UserId 정보로 Cin 생성
@@ -1193,7 +1192,7 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = "Y";
-        String msg = null;
+        String msg;
 
         String inputPassword = params.getUserPassword();
         String userId = params.getUserId();
@@ -1203,14 +1202,14 @@ public class UserServiceImpl implements UserService {
 
             TokenMaterial tokenMaterial = TokenMaterial.builder()
                     .header(TokenMaterial.Header.builder()
-                            .userId("myId")
-                            .contentType("myType")
+                            .userId(userId)
+                            .contentType("NORMAL")
                             .build())
                     .payload(TokenMaterial.Payload.builder()
-                            .functionId("myFunctionId")
+                            .functionId("AccessTokenRenewal")
+                            .timestamp(common.getCurrentDateTime())
                             .build())
                     .build();
-
 
             String token = apiTokenUtils.createJWT(tokenMaterial);
             System.out.println("token: " + token);
@@ -1416,7 +1415,8 @@ public class UserServiceImpl implements UserService {
         String responseMessage;
 
         try{
-            serialNumber = deviceMapper.getSerialNumberBydeviceId(params.getDeviceId());
+
+            serialNumber = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
 
             conMap.put("controlAuthKey", params.getControlAuthKey());
             conMap.put("deviceId", params.getDeviceId());

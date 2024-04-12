@@ -46,6 +46,7 @@ public class MobiusController {
          * */
 
         String uuId = common.readCon(jsonBody, "uuId");
+        System.out.println("uuId: " + uuId);
         String userId;
         String resultCode;
         String functionId;
@@ -114,6 +115,7 @@ public class MobiusController {
             gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(dr910W));
         } else {
             resultCode = common.readCon(jsonBody, "rtCd");
+            System.out.println("resultCode: " + resultCode);
             gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
         }
         return null;

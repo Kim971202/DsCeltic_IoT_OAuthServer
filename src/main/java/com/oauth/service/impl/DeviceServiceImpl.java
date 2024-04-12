@@ -85,9 +85,9 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisCommand.setValues(powerOnOff.getUuId(), redisValue);
 
-            AuthServerDTO device = deviceMapper.getSerialNumberBydeviceId(deviceId);
+            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
             serialNumber = device.getSerialNumber();
-            System.out.println("serialNumber: " + serialNumber);
+
             if (!serialNumber.isEmpty()) {
                 stringObject = "Y";
                 response = mobiusService.createCin(serialNumber, userId, JSON.toJson(powerOnOff));
@@ -319,11 +319,12 @@ public class DeviceServiceImpl implements DeviceService {
         String userId = params.getUserId();
         String uuId = common.getTransactionId();
         HashMap<String, String> request = new HashMap<>();
-        String responseMessage = null;
+        String responseMessage;
         MobiusResponse response;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = null;
+
         try {
 
             request.put("accessToken", params.getAccessToken());
@@ -385,7 +386,6 @@ public class DeviceServiceImpl implements DeviceService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
-
             redisCommand.deleteValues(uuId);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
@@ -403,6 +403,7 @@ public class DeviceServiceImpl implements DeviceService {
         ModeChange modeChange = new ModeChange();
         String stringObject = null;
         String msg;
+        String serialNumber;
 
         String modeCode = params.getModeCode();
         String sleepCode = params.getSleepCode();
@@ -413,6 +414,9 @@ public class DeviceServiceImpl implements DeviceService {
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try  {
+
+            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            serialNumber = device.getSerialNumber();
 
             modeChange.setAccessToken(params.getAccessToken());
             modeChange.setUserId(params.getUserId());
@@ -426,7 +430,7 @@ public class DeviceServiceImpl implements DeviceService {
             System.out.println("modeChange.getUuid(): " + modeChange.getUuid());
             redisValue = userId + "," + modeChange.getFunctionId();
             redisCommand.setValues(modeChange.getUuid(), redisValue);
-            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(modeChange));
+            response = mobiusService.createCin(serialNumber, params.getUserId(), JSON.toJson(modeChange));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -494,10 +498,14 @@ public class DeviceServiceImpl implements DeviceService {
         String userId = params.getUserId();
         String redisValue;
         MobiusResponse response;
+        String serialNumber;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+
+            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            serialNumber = device.getSerialNumber();
 
             temperatureSet.setAccessToken(params.getAccessToken());
             temperatureSet.setUserId(userId);
@@ -509,7 +517,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisValue = userId + "," + temperatureSet.getFunctionId();
             redisCommand.setValues(temperatureSet.getUuId(), redisValue);
-            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(temperatureSet));
+            response = mobiusService.createCin(serialNumber, userId, JSON.toJson(temperatureSet));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -576,10 +584,14 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         String responseMessage;
         MobiusResponse response;
+        String serialNumber;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+
+            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            serialNumber = device.getSerialNumber();
 
             boiledWaterTempertureSet.setAccessToken(params.getAccessToken());
             boiledWaterTempertureSet.setUserId(userId);
@@ -591,7 +603,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisValue = userId + "," + boiledWaterTempertureSet.getFunctionId();
             redisCommand.setValues(boiledWaterTempertureSet.getUuId(), redisValue);
-            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(boiledWaterTempertureSet));
+            response = mobiusService.createCin(serialNumber, userId, JSON.toJson(boiledWaterTempertureSet));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -659,10 +671,14 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         String responseMessage;
         MobiusResponse response;
+        String serialNumber;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+
+            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            serialNumber = device.getSerialNumber();
 
             waterTempertureSet.setAccessToken(params.getAccessToken());
             waterTempertureSet.setUserId(userId);
@@ -674,7 +690,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisValue = userId + "," + waterTempertureSet.getFunctionId();
             redisCommand.setValues(waterTempertureSet.getUuId(), redisValue);
-            response = mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(waterTempertureSet));
+            response = mobiusResponse = mobiusService.createCin(serialNumber, userId, JSON.toJson(waterTempertureSet));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -741,10 +757,14 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         MobiusResponse response;
         String responseMessage;
+        String serialNumber;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+
+            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            serialNumber = device.getSerialNumber();
 
             fastHotWaterSet.setAccessToken(params.getAccessToken());
             fastHotWaterSet.setUserId(userId);
@@ -756,7 +776,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisValue = userId + "," + fastHotWaterSet.getFunctionId();
             redisCommand.setValues(fastHotWaterSet.getUuId(), redisValue);
-            response = mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(fastHotWaterSet));
+            response = mobiusResponse = mobiusService.createCin(serialNumber, userId, JSON.toJson(fastHotWaterSet));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -825,10 +845,14 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         MobiusResponse response;
         String responseMessage;
+        String serialNumber;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+
+            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            serialNumber = device.getSerialNumber();
 
             lockSet.setAccessToken(params.getAccessToken());
             lockSet.setUserId(userId);
@@ -841,7 +865,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisValue = userId + "," + lockSet.getFunctionId();
             redisCommand.setValues(lockSet.getUuId(), redisValue);
-            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(lockSet));
+            response = mobiusService.createCin(serialNumber, userId, JSON.toJson(lockSet));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -920,13 +944,14 @@ public class DeviceServiceImpl implements DeviceService {
         MobiusResponse response;
         String responseMessage;
 
+        List<String> serialNumberList;
         List<String> rKeyList;
         List<String> deviceIdList;
         List<String> deviceNicknameList;
         List<String> addrNicknameList;
         List<String> regSortList;
         List<String> responseList = new ArrayList<>();
-        List<String> gwRKeyList;
+        List<String> gwRKeyList = null;
         HashMap<String, String> request = new HashMap<>();
         List<Map<String, String>> appResponse = new ArrayList<>();
         try {
@@ -936,6 +961,14 @@ public class DeviceServiceImpl implements DeviceService {
             deviceNicknameList = Common.extractJson(deviceMapper.getDeviceNicknameAndDeviceLocNickname(deviceMapper.getControlAuthKeyByUserId(userId)).toString(), "deviceNickname");
             addrNicknameList = Common.extractJson(deviceMapper.getDeviceNicknameAndDeviceLocNickname(deviceMapper.getControlAuthKeyByUserId(userId)).toString(), "addrNickname");
             regSortList = Common.extractJson(deviceMapper.getDeviceNicknameAndDeviceLocNickname(deviceMapper.getControlAuthKeyByUserId(userId)).toString(), "regSort");
+            serialNumberList = Common.extractJson(deviceMapper.getMultiSerialNumberBydeviceId(deviceMapper.getControlAuthKeyByUserId(userId)).toString(), "serialNumber");
+
+            System.out.println("rKeyList: " + rKeyList);
+            System.out.println("deviceIdList: " + deviceIdList);
+            System.out.println("deviceNicknameList: " + deviceNicknameList);
+            System.out.println("addrNicknameList: " + addrNicknameList);
+            System.out.println("regSortList: " + regSortList);
+            System.out.println("serialNumberList: " + serialNumberList);
 
             if(rKeyList == null){
                 msg = "등록된 R/C가 없습니다";
@@ -950,15 +983,17 @@ public class DeviceServiceImpl implements DeviceService {
             System.out.println("request1: " + request);
             redisValue = userId + "," + functionId + "-homeView";
             redisCommand.setValues(uuId, redisValue);
-            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(request));
 
-            if(response.getResponseCode().equals("201") &&
-                    deviceIdList != null &&
+            if(deviceIdList != null &&
                     deviceNicknameList != null &&
                     addrNicknameList != null &&
-                    regSortList != null){
+                    regSortList != null &&
+                    serialNumberList != null){
                 try {
-                    for(int i = 0; i < rKeyList.size(); ++i){
+
+                    for (String s : serialNumberList) {
+                        response = mobiusService.createCin(s, userId, JSON.toJson(request));
+                        if (!response.getResponseCode().equals("201")) return null;
                         // 메시징 시스템을 통해 응답 메시지 대기
                         responseMessage = gwMessagingSystem.waitForResponse(functionId + "-homeView" + uuId, TIME_OUT, TimeUnit.SECONDS);
 
@@ -973,8 +1008,16 @@ public class DeviceServiceImpl implements DeviceService {
                             System.out.println("응답이 없거나 시간 초과");
                         }
                         responseList.add(responseMessage);
+                        System.out.println("responseList");
+                        System.out.println(responseList);
                     }
-                    gwRKeyList = common.getHomeViewDataList(responseList, "rkey");
+
+                    if(stringObject.equals("T")) {
+                        msg = "홈 IoT 컨트롤러 상태 정보 조회 – 조회 Error";
+                        result.setResult(ApiResponse.ResponseType.HTTP_500, msg);
+                        return new ResponseEntity<>(result, HttpStatus.OK);
+                    } else gwRKeyList = common.getHomeViewDataList(responseList, "rkey");
+
                     for(int i = 0; i < responseList.size(); ++i){
                         for(int j = 0; j < responseList.size(); ++j){
                             if(rKeyList.get(i).equals(gwRKeyList.get(j))){
@@ -1011,7 +1054,8 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
-            System.out.println("StringObject: " + stringObject);
+            System.out.println("appResponse");
+            System.out.println(appResponse);
             if(stringObject.equals("Y")) {
                 msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 성공";
                 result.setHomeViewValue(appResponse);
@@ -1042,6 +1086,7 @@ public class DeviceServiceImpl implements DeviceService {
         String msg;
         AuthServerDTO resultDto;
         HashMap<String, Object> result = new HashMap<>();
+
         try {
 
         resultDto = deviceMapper.getDeviceInfoSearch(params.getDeviceId());
