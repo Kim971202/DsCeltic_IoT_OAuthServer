@@ -86,8 +86,16 @@ public class UserServiceImpl implements UserService {
         String token;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+        AuthServerDTO param = new AuthServerDTO();
+        int insertCommandHistory = 0;
 
         try {
+            param.setFunctionId("Login");
+            param.setDeviceId("");
+            param.setUserId(userId);
+            insertCommandHistory = memberMapper.insertCommandHistory(param);
+            System.out.println("insertCommandHistory: " + insertCommandHistory);
+
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
 

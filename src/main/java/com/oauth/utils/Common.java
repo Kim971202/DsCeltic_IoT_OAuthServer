@@ -372,7 +372,6 @@ public class Common {
                         .timestamp(getCurrentDateTime())
                         .build())
                 .build();
-
         return apiTokenUtils.createJWT(tokenMaterial);
     }
 

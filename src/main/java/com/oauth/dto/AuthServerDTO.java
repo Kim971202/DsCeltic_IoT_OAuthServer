@@ -149,7 +149,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String pushToken;                    // 푸시 토큰
     private String startDate;                    // 통계 시작일(YYYYMMDD)
     private String endDate;                      // 통계 종료일(YYYYMMDD)
-
+    private String functionId;                   // Command ID
 
 
     private Role role = Role.USER;

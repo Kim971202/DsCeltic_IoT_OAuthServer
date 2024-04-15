@@ -299,4 +299,24 @@
             USER_ID = #{userId}
     </select>
 
+    <insert id="insertCommandHistory" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_IOT_CTRL_REQ
+        (
+            CTRL_NM,
+            REG_DATM,
+            LAST_COLEC_DATM,
+            DEVC_ID,
+            USER_ID
+        )
+            VALUES
+        (
+            #{functionId},
+            now(),
+            now(),
+            #{deviceId},
+            #{userId}
+        )
+    </insert>
+
 </mapper>
