@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.oauth.dto.AuthServerDTO;
+import com.oauth.jwt.ApiTokenUtils;
+import com.oauth.jwt.TokenMaterial;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.response.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ import java.util.stream.Collectors;
 
 @Component
 public class Common {
+
+    @Autowired
+    private ApiTokenUtils apiTokenUtils;
 
     @Autowired
     MemberMapper memberMapper;
@@ -353,6 +358,22 @@ public class Common {
             desiredValues.add(desiredValue);
         }
         return desiredValues;
+    }
+
+    public String createJwtToken(String userId, String contentType, String functionId){
+
+        TokenMaterial tokenMaterial = TokenMaterial.builder()
+                .header(TokenMaterial.Header.builder()
+                        .userId(userId)
+                        .contentType("NORMAL")
+                        .build())
+                .payload(TokenMaterial.Payload.builder()
+                        .functionId("AccessTokenRenewal")
+                        .timestamp(getCurrentDateTime())
+                        .build())
+                .build();
+
+        return apiTokenUtils.createJWT(tokenMaterial);
     }
 
 }

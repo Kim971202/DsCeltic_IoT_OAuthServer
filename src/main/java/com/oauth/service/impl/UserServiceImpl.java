@@ -83,12 +83,11 @@ public class UserServiceImpl implements UserService {
         List<String> deviceNickname;
         List<String> regSort;
         String msg;
-
+        String token;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            System.out.println(encoder.encode(userPassword));
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
 
@@ -134,7 +133,9 @@ public class UserServiceImpl implements UserService {
                 }
             }
 
-            result.setAccessToken(common.getTransactionId());
+            token = common.createJwtToken(userId, "NORMAL", "Login");
+            log.info("Token: " + token);
+            result.setAccessToken(token);
             result.setUserNickname(userNickname);
             result.setDevice(data);
 
@@ -1191,28 +1192,25 @@ public class UserServiceImpl implements UserService {
             throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = "Y";
+        String stringObject;
         String msg;
-
         String inputPassword = params.getUserPassword();
         String userId = params.getUserId();
-        String newAccessToken = common.getTransactionId();
-        System.out.println("newAccessToken: " + newAccessToken);
+        String token;
+        AuthServerDTO account = memberMapper.getAccountByUserId(userId);
         try{
 
-            TokenMaterial tokenMaterial = TokenMaterial.builder()
-                    .header(TokenMaterial.Header.builder()
-                            .userId(userId)
-                            .contentType("NORMAL")
-                            .build())
-                    .payload(TokenMaterial.Payload.builder()
-                            .functionId("AccessTokenRenewal")
-                            .timestamp(common.getCurrentDateTime())
-                            .build())
-                    .build();
+            if(!encoder.matches(inputPassword, account.getUserPassword())){
+                msg = "PW 에러";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
 
-            String token = apiTokenUtils.createJWT(tokenMaterial);
+            token = common.createJwtToken(userId, "NORMAL", "AccessTokenRenewal");
             System.out.println("token: " + token);
+
+            if(token.isEmpty()) stringObject = "N";
+            else stringObject = "Y";
 
             if(stringObject.equals("Y")) msg = "API인증키 갱신 성공";
             else msg = "API인증키 갱신 실패";

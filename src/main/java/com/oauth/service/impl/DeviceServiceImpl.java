@@ -318,6 +318,7 @@ public class DeviceServiceImpl implements DeviceService {
         String msg;
         String userId = params.getUserId();
         String uuId = common.getTransactionId();
+        AuthServerDTO serialNumber;
         HashMap<String, String> request = new HashMap<>();
         String responseMessage;
         MobiusResponse response;
@@ -326,6 +327,8 @@ public class DeviceServiceImpl implements DeviceService {
         JsonNode rootNode = null;
 
         try {
+
+            serialNumber = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
 
             request.put("accessToken", params.getAccessToken());
             request.put("userId", params.getUserId());
@@ -336,7 +339,7 @@ public class DeviceServiceImpl implements DeviceService {
             request.put("uuId", uuId);
 
             redisCommand.setValues(uuId, userId + "," + "fcnt");
-            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(request));
+            response = mobiusService.createCin(serialNumber.getSerialNumber(), userId, JSON.toJson(request));
             if(response.getResponseCode().equals("201")){
                 try {
                     // 메시징 시스템을 통해 응답 메시지 대기
@@ -1112,6 +1115,33 @@ public class DeviceServiceImpl implements DeviceService {
             result.put("resultMsg", msg);
             return result;
         } catch (Exception e) {
+            log.error("", e);
+        }
+        return null;
+    }
+
+    /**	홈 IoT 컨트롤러 에러 정보 조회  */
+    @Override
+    public ResponseEntity<?> doDeviceErrorInfo(AuthServerDTO params) throws Exception {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        String stringObject = null;
+        String msg;
+
+        try {
+
+            if(stringObject.equals("Y")) {
+                msg = "홈 IoT 컨트롤러 에러 정보 조회 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            } else if(stringObject.equals("N")) {
+                msg = "홈 IoT 컨트롤러 에러 정보 조회 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            } else {
+                msg = "응답이 없거나 시간 초과";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
             log.error("", e);
         }
         return null;

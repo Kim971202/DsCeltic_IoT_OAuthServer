@@ -41,4 +41,8 @@ public interface DeviceService {
 
     /** 홈 IoT 컨트롤러 정보 조회-단건 */
     public HashMap<String, Object> doDeviceInfoSearch(AuthServerDTO params) throws Exception;
+
+    /**	홈 IoT 컨트롤러 에러 정보 조회  */
+    public ResponseEntity<?> doDeviceErrorInfo(AuthServerDTO params) throws Exception;
+
 }

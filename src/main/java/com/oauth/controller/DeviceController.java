@@ -228,4 +228,22 @@ public class DeviceController {
         return deviceService.doBasicDeviceStatusInfo(params);
     }
 
+    /**	홈 IoT 컨트롤러 에러 정보 조회  */
+    @PostMapping(value = "/deviceErrorInfo")
+    @ResponseBody
+    public ResponseEntity<?> doDeviceErrorInfo(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws Exception {
+
+        String logStep = "[홈 IoT 컨트롤러 에러 정보 조회]";
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getDeviceType()) ||
+                Validator.isNullOrEmpty(params.getModeCode())){
+            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+        }
+        return deviceService.doDeviceErrorInfo(params);
+    }
+
 }
