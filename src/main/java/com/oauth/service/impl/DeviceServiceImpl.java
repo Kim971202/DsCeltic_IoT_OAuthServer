@@ -102,11 +102,11 @@ public class DeviceServiceImpl implements DeviceService {
 
                     if (responseMessage != null) {
                         // 응답 처리
-                        System.out.println("receiveCin에서의 응답: " + responseMessage);
+                        log.info("receiveCin에서의 응답: " + responseMessage);
                     } else {
                         // 타임아웃이나 응답 없음 처리
                         stringObject = "T";
-                        System.out.println("응답이 없거나 시간 초과");
+                        log.info("응답이 없거나 시간 초과");
                     }
                 } catch (InterruptedException e) {
                     // 대기 중 인터럽트 처리
@@ -228,11 +228,11 @@ public class DeviceServiceImpl implements DeviceService {
                         responseMessage = gwMessagingSystem.waitForResponse("mfAr" + deviceInfoUpsert.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                         if (responseMessage != null) {
                             // 응답 처리
-                            System.out.println("receiveCin에서의 응답: " + responseMessage);
+                            log.info("receiveCin에서의 응답: " + responseMessage);
                         } else {
                             // 타임아웃이나 응답 없음 처리
                             stringObject = "T";
-                            System.out.println("응답이 없거나 시간 초과");
+                            log.info("응답이 없거나 시간 초과");
                         }
                     } catch (InterruptedException e) {
                         // 대기 중 인터럽트 처리
@@ -266,7 +266,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             }
 
-            System.out.println("stringObject: " + stringObject);
+            log.info("stringObject: " + stringObject);
             if (stringObject.equals("Y") && registYn.equals("Y")) {
                 conMap.put("body", "Device Insert OK");
                 msg = "홈 IoT 컨트롤러 정보 등록 성공";
@@ -349,11 +349,11 @@ public class DeviceServiceImpl implements DeviceService {
                     if (responseMessage != null) {
                         stringObject = "Y";
                         // 응답 처리
-                        System.out.println("receiveCin에서의 응답: " + responseMessage);
+                        log.info("receiveCin에서의 응답: " + responseMessage);
                     } else {
                         // 타임아웃이나 응답 없음 처리
                         stringObject = "T";
-                        System.out.println("응답이 없거나 시간 초과");
+                        log.info("응답이 없거나 시간 초과");
                     }
                 } catch (InterruptedException e) {
                     // 대기 중 인터럽트 처리
@@ -392,7 +392,6 @@ public class DeviceServiceImpl implements DeviceService {
             redisCommand.deleteValues(uuId);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
-            System.out.println(e.getMessage());
             log.error("", e);
         }
         return null;
@@ -430,7 +429,7 @@ public class DeviceServiceImpl implements DeviceService {
             modeChange.setSleepCode(sleepCode);
             modeChange.setFunctionId("opMd");
             modeChange.setUuid(common.getTransactionId());
-            System.out.println("modeChange.getUuid(): " + modeChange.getUuid());
+            log.info("modeChange.getUuid(): " + modeChange.getUuid());
             redisValue = userId + "," + modeChange.getFunctionId();
             redisCommand.setValues(modeChange.getUuid(), redisValue);
             response = mobiusService.createCin(serialNumber, params.getUserId(), JSON.toJson(modeChange));
@@ -449,7 +448,7 @@ public class DeviceServiceImpl implements DeviceService {
                     if(responseMessage.equals("\"200\"")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
-                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -478,7 +477,7 @@ public class DeviceServiceImpl implements DeviceService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             redisCommand.deleteValues(modeChange.getUuid());
@@ -536,7 +535,7 @@ public class DeviceServiceImpl implements DeviceService {
                     if(responseMessage.equals("\"200\"")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
-                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -622,7 +621,7 @@ public class DeviceServiceImpl implements DeviceService {
                     if(responseMessage.equals("\"200\"")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
-                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -651,7 +650,7 @@ public class DeviceServiceImpl implements DeviceService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
@@ -709,7 +708,7 @@ public class DeviceServiceImpl implements DeviceService {
                     if(responseMessage.equals("\"200\"")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
-                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -795,7 +794,7 @@ public class DeviceServiceImpl implements DeviceService {
                     if(responseMessage.equals("\"200\"")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
-                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -885,7 +884,7 @@ public class DeviceServiceImpl implements DeviceService {
                     if(responseMessage.equals("\"200\"")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
-                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -966,12 +965,12 @@ public class DeviceServiceImpl implements DeviceService {
             regSortList = Common.extractJson(deviceMapper.getDeviceNicknameAndDeviceLocNickname(deviceMapper.getControlAuthKeyByUserId(userId)).toString(), "regSort");
             serialNumberList = Common.extractJson(deviceMapper.getMultiSerialNumberBydeviceId(deviceMapper.getControlAuthKeyByUserId(userId)).toString(), "serialNumber");
 
-            System.out.println("rKeyList: " + rKeyList);
-            System.out.println("deviceIdList: " + deviceIdList);
-            System.out.println("deviceNicknameList: " + deviceNicknameList);
-            System.out.println("addrNicknameList: " + addrNicknameList);
-            System.out.println("regSortList: " + regSortList);
-            System.out.println("serialNumberList: " + serialNumberList);
+            log.info("rKeyList: " + rKeyList);
+            log.info("deviceIdList: " + deviceIdList);
+            log.info("deviceNicknameList: " + deviceNicknameList);
+            log.info("addrNicknameList: " + addrNicknameList);
+            log.info("regSortList: " + regSortList);
+            log.info("serialNumberList: " + serialNumberList);
 
             if(rKeyList == null){
                 msg = "등록된 R/C가 없습니다";
@@ -983,7 +982,7 @@ public class DeviceServiceImpl implements DeviceService {
             request.put("controlAuthKey", controlAuthKey);
             request.put("functionId", functionId);
             request.put("uuId", uuId);
-            System.out.println("request1: " + request);
+            log.info("request1: " + request);
             redisValue = userId + "," + functionId + "-homeView";
             redisCommand.setValues(uuId, redisValue);
 
@@ -1004,15 +1003,14 @@ public class DeviceServiceImpl implements DeviceService {
                         if (responseMessage != null) {
                             stringObject = "Y";
                             // 응답 처리
-                            System.out.println("receiveCin에서의 응답 responseMessage: " + responseMessage);
+                            log.info("receiveCin에서의 응답 responseMessage: " + responseMessage);
                         } else {
                             // 타임아웃이나 응답 없음 처리
                             stringObject = "T";
-                            System.out.println("응답이 없거나 시간 초과");
+                            log.info("응답이 없거나 시간 초과");
                         }
                         responseList.add(responseMessage);
-                        System.out.println("responseList");
-                        System.out.println(responseList);
+                        log.info("responseList: " + responseList);
                     }
 
                     if(stringObject.equals("T")) {
@@ -1057,8 +1055,8 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
-            System.out.println("appResponse");
-            System.out.println(appResponse);
+            log.info("appResponse: " + appResponse);
+
             if(stringObject.equals("Y")) {
                 msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 성공";
                 result.setHomeViewValue(appResponse);

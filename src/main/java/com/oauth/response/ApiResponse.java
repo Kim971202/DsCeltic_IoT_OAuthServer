@@ -146,26 +146,5 @@ public class ApiResponse {
             private String noticeStartDate;
             private String noticeEndDate;
         }
-
-//        @Getter
-//        @Setter
-//        public static class DeviceStatusInfo {
-//            private String mfcd;
-//            private String rKey;
-//            private String powr;
-//            private String opMd;
-//            private String htTp;
-//            private String wtTp;
-//            private String hwTp;
-//            private String rsCf;
-//            private String ftMd;
-//            private String bCdt;
-//            private String chTp;
-//            private String cwTp;
-//            private String hwSt;
-//            private String slCd;
-//            private String mfDt;
-//        }
-
     }
 }

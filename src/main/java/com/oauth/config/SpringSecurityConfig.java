@@ -2,6 +2,7 @@ package com.oauth.config;
 
 import com.oauth.constants.Constants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import org.springframework.security.web.firewall.StrictHttpFirewall;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+@Slf4j
 @SuppressWarnings("deprecation")
 @Configuration
 @EnableWebSecurity
@@ -62,7 +64,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
 
-        System.out.println("WebSecurityConfig configure(WebSecurity web) CALLED");
+        log.info("WebSecurityConfig configure(WebSecurity web) CALLED");
         /**
          * org.springframework.security.web.firewall.RequestRejectedException: The request was rejected because the URL contained a potentially malicious String "%3B" 에러 처리
          * https://blog.csdn.net/qq_42483257/article/details/122426009

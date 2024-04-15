@@ -10,6 +10,7 @@ import com.oauth.jwt.ApiTokenUtils;
 import com.oauth.jwt.TokenMaterial;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.response.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class Common {
 
@@ -182,14 +184,13 @@ public class Common {
     }
 
     public boolean tokenVerify(AuthServerDTO params) {
-        System.out.println(params);
         AuthServerDTO member = memberMapper.accessTokenCheck(params);
         if(member == null) return false;
 
         List<String> userId = Common.extractJson(member.toString(), "userId");
         List<String> accessToken = Common.extractJson(member.toString(), "accessToken");
-        System.out.println(userId);
-        System.out.println(accessToken);
+        log.info("userId: " + userId);
+        log.info("accessToken: " + accessToken);
         return userId != null && accessToken != null;
     }
 
@@ -219,7 +220,7 @@ public class Common {
                 field.set(authServerDTO, newValue);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 // 원하는 Key가 없을 경우 예외 처리 또는 다른 작업 수행
-                System.out.println("Unsupported key: " + targetKey);
+                log.info("Unsupported key: " + targetKey);
             }
         }
     }
@@ -232,7 +233,7 @@ public class Common {
                 field.set(authServerDTO, newValue);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 // 원하는 Key가 없을 경우 예외 처리 또는 다른 작업 수행
-                System.out.println("Unsupported key: " + targetKey);
+                log.info("Unsupported key: " + targetKey);
             }
     }
 
@@ -301,7 +302,7 @@ public class Common {
 
             System.out.println(modifiedJson);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("", e);
         }
         return modifiedJson;
     }
@@ -311,7 +312,7 @@ public class Common {
         try {
             return objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {});
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -325,10 +326,10 @@ public class Common {
             nameList.add(splitStrings[0].trim());  // trim() 메서드로 앞뒤 공백 제거
             nameList.add(splitStrings[1].trim());
 
-            System.out.println("첫번째 문자열: " + nameList.add(splitStrings[0].trim()));
-            System.out.println("두번째 문자열: " + nameList.add(splitStrings[1].trim()));
+            log.info("첫번째 문자열: " + nameList.add(splitStrings[0].trim()));
+            log.info("두번째 문자열: " + nameList.add(splitStrings[1].trim()));
         } else {
-            System.out.println("적절한 형식의 문자열이 아닙니다.");
+            log.info("적절한 형식의 문자열이 아닙니다.");
         }
 
         return nameList;

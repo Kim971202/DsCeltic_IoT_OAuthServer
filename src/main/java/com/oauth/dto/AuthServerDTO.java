@@ -189,21 +189,3 @@ public class AuthServerDTO implements UserDetails, Serializable {
         return false;
     }
 }
-
-//@SuppressWarnings("rawtypes")
-//class CustomAuthorityDeserializer extends JsonDeserializer {
-//    @Override
-//    public Object deserialize(JsonParser p, DeserializationContext context) throws IOException, JsonProcessingException {
-//
-//        ObjectMapper mapper = (ObjectMapper) p.getCodec();
-//        JsonNode jsonNode = mapper.readTree(p);
-//        LinkedList<GrantedAuthority> grantedAuthorities = new LinkedList<>();
-//        Iterator<JsonNode> elements = jsonNode.elements();
-//        while (elements.hasNext()) {
-//            JsonNode next = elements.next();
-//            JsonNode authority = next.get("authority");
-//            grantedAuthorities.add(new SimpleGrantedAuthority(authority.asText()));
-//        }
-//        return grantedAuthorities;
-//    }
-//}

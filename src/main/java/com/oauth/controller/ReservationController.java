@@ -6,6 +6,7 @@ import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.Validator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+@Slf4j
 @RequestMapping("/reservation/v1")
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class ReservationController {
             throws CustomException {
 
         String logStep = "[24시간 예약]";
+        log.info("[24시간 예약]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -51,6 +54,7 @@ public class ReservationController {
             throws CustomException {
 
         String logStep = "[반복(12시간) 예약]";
+        log.info("[반복(12시간) 예약]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -71,6 +75,7 @@ public class ReservationController {
             throws CustomException {
 
         String logStep = "[빠른 온수 예약]";
+        log.info("[빠른 온수 예약]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -88,6 +93,7 @@ public class ReservationController {
             throws CustomException {
 
         String logStep = "[주간 예약]";
+        log.info("[주간 예약]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||

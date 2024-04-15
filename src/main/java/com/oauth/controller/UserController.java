@@ -7,6 +7,7 @@ import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.Validator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.*;
 
+@Slf4j
 @RequestMapping("/users/v1")
 @RestController
 @RequiredArgsConstructor
@@ -51,6 +53,7 @@ public class UserController {
         throws CustomException {
 
         String logStep = "[회원 로그인]";
+        log.info("[회원 로그인]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getUserPassword())) {
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -66,6 +69,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[회원 가입]";
+        log.info("[회원 가입]");
 
         if(Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getUserNickname()) ||
@@ -83,9 +87,8 @@ public class UserController {
     public ResponseEntity<?> doDuplicationCheck(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException{
 
-        System.out.println("params.getUserId(): " + params.getUserId());
-
         String logStep = "[ID 중복 확인]";
+        log.info("[ID 중복 확인]");
 
         if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -101,7 +104,8 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[ID 찾기]";
-        System.out.println("params.getHp(): " + params.getHp());
+        log.info("[ID 찾기]");
+
         if(Validator.isNullOrEmpty(params.getHp()) ||
            Validator.isNullOrEmpty(params.getDeviceType()) ||
            Validator.isNullOrEmpty(params.getModelCode()) ||
@@ -120,6 +124,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[비밀번호 찾기 - 초기화]";
+        log.info("[비밀번호 찾기 - 초기화]");
 
         if(Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getHp()) ||
@@ -138,6 +143,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[비밀번호 변경 - 생성]";
+        log.info("[비밀번호 변경 - 생성]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getUserPassword())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -152,6 +158,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[사용자정보 조회]";
+        log.info("[사용자정보 조회]");
 
         if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -167,6 +174,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[회원 별칭(이름) 및 전화번호 변경]";
+        log.info("[회원 별칭(이름) 및 전화번호 변경]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getUserPassword()) ||
@@ -184,6 +192,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[회원 별칭(이름) 및 전화번호 변경]";
+        log.info("[회원 별칭(이름) 및 전화번호 변경]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getOldPassword()) ||
@@ -202,6 +211,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[사용자(세대원) 정보 조회]";
+        log.info("[사용자(세대원) 정보 조회]");
 
         if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -217,6 +227,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[사용자 추가 - 초대]";
+        log.info("[사용자 추가 - 초대]");
 
         if(Validator.isNullOrEmpty(params.getRequestUserId()) ||
                 Validator.isNullOrEmpty(params.getResponseHp()) ||
@@ -235,6 +246,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[사용자 초대 - 수락여부]";
+        log.info("[사용자 초대 - 수락여부]");
 
         if(Validator.isNullOrEmpty(params.getRequestUserId()) ||
                 Validator.isNullOrEmpty(params.getResponseHp()) ||
@@ -256,6 +268,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[회원 별칭(이름) 및 전화번호 변경]";
+        log.info("[회원 별칭(이름) 및 전화번호 변경]");
 
         if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -271,6 +284,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[사용자(세대원) - 강제탈퇴]";
+        log.info("[사용자(세대원) - 강제탈퇴경]");
 
         if(Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getUserNickname()) ||
@@ -287,6 +301,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[홈 IoT 컨트롤러 알림 설정]";
+        log.info("[홈 IoT 컨트롤러 알림 설정]");
 
         if(Validator.isNullOrEmpty(params.getUserNickname()) ||
                 Validator.isNullOrEmpty(params.getHp()) ||
@@ -314,6 +329,7 @@ public class UserController {
             throws CustomException{
 
         String logStep = "[홈 IoT 컨트롤러 알림 정보 조회]";
+        log.info("[홈 IoT 컨트롤러 알림 정보 조회]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -335,6 +351,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[사용자(세대주) 탈퇴]";
+        log.info("[사용자(세대주) 탈퇴]");
 
         if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -351,6 +368,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[홈IoT 서비스 회원 탈퇴]";
+        log.info("[홈IoT 서비스 회원 탈퇴]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getUserPassword())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -367,6 +385,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[홈 IoT 컨트롤러 인증]";
+        log.info("[홈 IoT 컨트롤러 인증]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceIdList()) ||
@@ -388,6 +407,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[API인증키 갱신]";
+        log.info("[API인증키 갱신]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getUserPassword())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -404,6 +424,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[홈 IoT 최초 등록 인증]";
+        log.info("[홈 IoT 최초 등록 인증]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getSerialNumber()) ||
@@ -426,6 +447,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[홈 IoT 컨트롤러 삭제(회원 매핑 삭제)]";
+        log.info("[홈 IoT 컨트롤러 삭제(회원 매핑 삭제)]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -446,6 +468,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[스마트알림 - PUSH 이력 조회]";
+        log.info("[스마트알림 - PUSH 이력 조회]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getDeviceType())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -463,6 +486,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[기기 별칭 수정]";
+        log.info("[기기 별칭 수정]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -483,6 +507,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[기기 밝기 조절]";
+        log.info("[기기 밝기 조절]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
@@ -505,6 +530,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[공지사항 조회]";
+        log.info("[공지사항 조회]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getDeviceType())
         ){
@@ -522,6 +548,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[기기 설치 위치 별칭 수정]";
+        log.info("[기기 설치 위치 별칭 수정]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getDeviceType())
         ){
@@ -539,6 +566,7 @@ public class UserController {
             throws CustomException {
 
         String logStep = "[임시저장키 생성]";
+        log.info("[임시저장키 생성]");
 
         if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");

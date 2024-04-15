@@ -1,5 +1,6 @@
 package com.oauth.message;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -11,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 
+@Slf4j
 @Component
 public class GwMessagingSystem implements MessagingSystem {
     private final Map<String, BlockingQueue<String>> messageQueues = new ConcurrentHashMap<>();
@@ -19,7 +21,7 @@ public class GwMessagingSystem implements MessagingSystem {
     public void sendMessage(String destination, String message) {
         // 해당 destination에 대한 큐를 가져오거나 생성
         BlockingQueue<String> messageQueue = messageQueues.computeIfAbsent(destination, k -> new LinkedBlockingQueue<>());
-        System.out.println("destination: " + destination);
+        log.info("destination: " + destination);
         // 메시지 큐에 메시지 추가
         messageQueue.offer(message);
     }
@@ -36,9 +38,9 @@ public class GwMessagingSystem implements MessagingSystem {
 
     // 현재 큐 목록을 출력하는 함수
     public void printMessageQueues() {
-        System.out.println("Current Message Queues:");
+        log.info("Current Message Queues:");
         for (Map.Entry<String, BlockingQueue<String>> entry : messageQueues.entrySet()) {
-            System.out.println("Destination: " + entry.getKey() + ", Queue Size: " + entry.getValue().size());
+            log.info("Destination: " + entry.getKey() + ", Queue Size: " + entry.getValue().size());
         }
     }
 

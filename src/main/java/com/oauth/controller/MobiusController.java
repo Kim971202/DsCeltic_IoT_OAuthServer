@@ -8,11 +8,13 @@ import com.oauth.utils.Common;
 import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -46,19 +48,19 @@ public class MobiusController {
          * */
 
         String uuId = common.readCon(jsonBody, "uuId");
-        System.out.println("uuId: " + uuId);
+        log.info("uuId: " + uuId);
         String userId;
         String resultCode;
         String functionId;
         String redisValue = redisCommand.getValues(uuId);
-        System.out.println("redisValue: " + redisValue);
+        log.info("redisValue: " + redisValue);
         List<String> redisValueList;
         if(!redisValue.equals("false")){
             redisValueList = common.getUserIdAndFunctionId(redisCommand.getValues(uuId));
             userId = redisValueList.get(0);
             functionId = redisValueList.get(1);
-            System.out.println("userId: " + userId);
-            System.out.println("functionId: " + functionId);
+            log.info("userId: " + userId);
+            log.info("functionId: " + functionId);
         } else {
             return "0x0106-Devices 상태 보고 요청";
         }
@@ -80,7 +82,7 @@ public class MobiusController {
             dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt"));
             dr910WDevice.setCwTp(common.readCon(jsonBody, "fcLc"));
             dr910W.setDevice(dr910WDevice);
-            System.out.println(JSON.toJson(dr910W));
+            log.info(JSON.toJson(dr910W));
             gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(dr910W));
 
         }else if(functionId.equals("fcnt")){
@@ -111,53 +113,13 @@ public class MobiusController {
             dr910W.setModelCategoryCode("01");
             dr910W.setDeviceStatus("01");
             dr910W.setDevice(dr910WDevice);
-            System.out.println(JSON.toJson(dr910W));
+            log.info(JSON.toJson(dr910W));
             gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(dr910W));
         } else {
             resultCode = common.readCon(jsonBody, "rtCd");
-            System.out.println("resultCode: " + resultCode);
+            log.info("resultCode: " + resultCode);
             gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
         }
         return null;
     }
 }
-//        List<String> ufId = common.getUserIdAndFunctionId(redisCommand.getValues(common.readCon(reqBody, "uuId")));
-//
-//        String userId = ufId.get(0);
-//        String functionId = ufId.get(0);
-//
-//
-//
-//
-//        DeviceStatusInfoDR910W dr910W = DeviceStatusInfoDR910W.getInstance();
-//        DeviceStatusInfoDR910W.Device dr910WDevice = new DeviceStatusInfoDR910W.Device();
-//
-//        dr910WDevice.setRKey(common.readCon(reqBody, "rKey"));
-//        dr910WDevice.setMfcd(common.readCon(reqBody, "mfcd"));
-//        dr910WDevice.setPowr(common.readCon(reqBody, "powr"));
-//        dr910WDevice.setOpMd(common.readCon(reqBody, "opMd"));
-//        dr910WDevice.setHtTp(common.readCon(reqBody, "htTp"));
-//        dr910WDevice.setWtTp(common.readCon(reqBody, "wtTp"));
-//        dr910WDevice.setHwTp(common.readCon(reqBody, "hwTp"));
-//        dr910WDevice.setRsCf(common.readCon(reqBody, "rsCf"));
-//        dr910WDevice.setFtMd(common.readCon(reqBody, "ftMd"));
-//        dr910WDevice.setBCdt(common.readCon(reqBody, "bCdt"));
-//        dr910WDevice.setChTp(common.readCon(reqBody, "chTp"));
-//        dr910WDevice.setCwTp(common.readCon(reqBody, "cwTp"));
-//        dr910WDevice.setHwSt(common.readCon(reqBody, "hwSt"));
-//        dr910WDevice.setSlCd(common.readCon(reqBody, "slCd"));
-//        dr910WDevice.setMfDt(common.readCon(reqBody, "mfDt"));
-//
-//        dr910WDevice.setModelCategoryCode("01");
-
-        // TBR_OPR_USER_DEVICE - 사용자 단말 정보 Table에서 해당 DATA 취득
-//        dr910WDevice.setDeviceNickName();
-//        dr910WDevice.setAddrNickname();
-//        dr910WDevice.setRegSort();
-//        dr910WDevice.setDeviceId();
-//        dr910WDevice.setControlAuthKey();
-//        dr910WDevice.setDeviceStatus("1");
-
-//        dr910W.addDr910W(dr910WDevice);
-
-        //dr910W.setRsCf(common.changeStringToJson(common.readCon(reqBody, "rsCf")));

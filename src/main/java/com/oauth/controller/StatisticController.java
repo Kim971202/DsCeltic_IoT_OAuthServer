@@ -5,6 +5,7 @@ import com.oauth.service.mapper.StatisticService;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.Validator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+@Slf4j
 @RequestMapping("/stats/v1")
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class StatisticController {
             throws CustomException {
 
         String logStep = "[홈 IoT가동시간 통계조회]";
+        log.info("[홈 IoT가동시간 통계조회]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||

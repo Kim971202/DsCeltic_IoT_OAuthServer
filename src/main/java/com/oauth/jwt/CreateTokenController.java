@@ -30,7 +30,7 @@ public class CreateTokenController {
 
 
         String token = apiTokenUtils.createJWT(tokenMaterial);
-        System.out.println("token: " + token);
+        log.info("token: " + token);
         return token;
     }
 }

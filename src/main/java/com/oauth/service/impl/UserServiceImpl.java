@@ -87,14 +87,14 @@ public class UserServiceImpl implements UserService {
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         AuthServerDTO param = new AuthServerDTO();
-        int insertCommandHistory = 0;
+        int insertCommandHistory;
 
         try {
             param.setFunctionId("Login");
             param.setDeviceId("");
             param.setUserId(userId);
             insertCommandHistory = memberMapper.insertCommandHistory(param);
-            System.out.println("insertCommandHistory: " + insertCommandHistory);
+            log.info("insertCommandHistory: " + insertCommandHistory);
 
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             result.setResult("Y".equalsIgnoreCase(stringObject)
@@ -263,10 +263,10 @@ public class UserServiceImpl implements UserService {
         List<AuthServerDTO> member = null;
         List<String> userId = null;
         try {
-            System.out.println("userHp: " + userHp);
-            System.out.println("modelCode: " + modelCode);
-            System.out.println("deviceId: " + deviceId);
-            System.out.println("modelCodeMap: " + modelCodeMap);
+            log.info("userHp: " + userHp);
+            log.info("modelCode: " + modelCode);
+            log.info("deviceId: " + deviceId);
+            log.info("modelCodeMap: " + modelCodeMap);
             // 구형 모델의 경우
             if(modelCode.equals(modelCodeMap.get("oldModel"))) member = memberMapper.getUserByHp(userHp);
             else if(modelCode.equals(modelCodeMap.get("newModel"))) member = memberMapper.getUserByDeviceId(deviceId);
@@ -287,7 +287,6 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>(data, HttpStatus.OK);
 
         }catch (Exception e){
-            System.out.println(e.getMessage());
             log.error("", e);
         }
         return null;
@@ -329,7 +328,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
@@ -374,7 +373,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
@@ -415,7 +414,6 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>(data, HttpStatus.OK);
 
         }catch (Exception e){
-            System.out.println(e.getMessage());
             log.error("", e);
         }
         return null;
@@ -435,7 +433,7 @@ public class UserServiceImpl implements UserService {
 
         try{
             dbPassword = memberMapper.getPasswordByUserId(params.getUserId());
-            System.out.println(dbPassword);
+            log.info("dbPassword: " + dbPassword);
             if(!encoder.matches(userPassword, dbPassword.getUserPassword())) stringObject = "N";
             else stringObject = "Y";
 
@@ -456,7 +454,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
@@ -465,7 +463,6 @@ public class UserServiceImpl implements UserService {
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
-            System.out.println(e.getMessage());
             log.error("", e);
         }
         return null;
@@ -518,7 +515,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -546,7 +543,7 @@ public class UserServiceImpl implements UserService {
             if(!deviceIds.isEmpty()){
                 stringObject = "Y";
                 List<AuthServerDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
-                System.out.println("members: " + members.size());
+                log.info("members: " + members.size());
                 List<AuthServerDTO> memberStream = Common.deduplication(members, AuthServerDTO::getUserId);
 
                 List<String> userIdList = Common.extractJson(memberStream.toString(), "userId");
@@ -618,7 +615,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusCode = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             if(!mobiusCode.getResponseCode().equals("201")){
@@ -632,7 +629,6 @@ public class UserServiceImpl implements UserService {
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
-            System.out.println(e.getMessage());
             log.error("", e);
         }
         return null;
@@ -679,7 +675,7 @@ public class UserServiceImpl implements UserService {
                 Common.updateMemberDTOList(member, "responseUserId", responseUserId);
                 Common.updateMemberDTOList(member, "householder", "N");
 
-                System.out.println(member);
+                log.info("member: " + member);
                 insertNewHouseMemberResult = mMapper.insertNewHouseMember(member);
 
                 if(insertNewHouseMemberResult > 0 && acceptInviteResult > 0) stringObject = "Y";
@@ -712,7 +708,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
@@ -835,7 +831,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
@@ -883,7 +879,6 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
 
         }catch (CustomException e){
-            System.out.println(e.getMessage());
             log.error("", e);
         }
         return null;
@@ -995,7 +990,7 @@ public class UserServiceImpl implements UserService {
                 conMap.put("isEnd", "false");
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
-                System.out.println("jsonString: " + jsonString);
+                log.info("jsonString: " + jsonString);
                 mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
                 data.setResult("Y".equalsIgnoreCase(stringObject) ?
@@ -1095,12 +1090,11 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
-            System.out.println(e.getMessage());
             log.error("", e);
         }
         return null;
@@ -1215,7 +1209,7 @@ public class UserServiceImpl implements UserService {
             }
 
             token = common.createJwtToken(userId, "NORMAL", "AccessTokenRenewal");
-            System.out.println("token: " + token);
+            log.info("token: " + token);
 
             if(token.isEmpty()) stringObject = "N";
             else stringObject = "Y";
@@ -1274,7 +1268,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
@@ -1296,10 +1290,10 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         ApiResponse.Data.PushInfo pushInfo = new ApiResponse.Data.PushInfo();
 
-        String stringObject = null;
-        String msg = null;
+        String stringObject;
+        String msg;
         String userId = params.getUserId();
-        List<AuthServerDTO> member = null;
+        List<AuthServerDTO> member;
         try{
 
             member = memberMapper.getPushInfoList(userId);
@@ -1389,7 +1383,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            System.out.println("jsonString: " + jsonString);
+            log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
@@ -1449,7 +1443,7 @@ public class UserServiceImpl implements UserService {
                     if(responseMessage.equals("\"200\"")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
-                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
 
             } catch (InterruptedException e) {
@@ -1478,7 +1472,7 @@ public class UserServiceImpl implements UserService {
             conMap1.put("isEnd", "false");
 
             String jsonString1 = objectMapper.writeValueAsString(conMap1);
-            System.out.println("jsonString1: " + jsonString1);
+            log.info("jsonString1: " + jsonString1);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1);
 
             redisCommand.deleteValues(uuId);

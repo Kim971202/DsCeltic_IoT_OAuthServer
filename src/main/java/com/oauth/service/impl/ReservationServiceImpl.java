@@ -3,10 +3,12 @@ package com.oauth.service.impl;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.*;
+import com.oauth.mapper.DeviceMapper;
 import com.oauth.message.GwMessagingSystem;
 import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.ReservationService;
 import com.oauth.utils.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import javax.servlet.http.HttpSession;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class ReservationServiceImpl implements ReservationService{
 
@@ -35,6 +38,8 @@ public class ReservationServiceImpl implements ReservationService{
     MobiusResponse mobiusResponse;
     @Autowired
     GwMessagingSystem gwMessagingSystem;
+    @Autowired
+    DeviceMapper deviceMapper;
     @Value("${server.timeout}")
     private long TIME_OUT;
 
@@ -46,13 +51,14 @@ public class ReservationServiceImpl implements ReservationService{
         Set24 set24 = new Set24();
         String stringObject = null;
         String msg;
-
         String userId = params.getUserId();
-
         String redisValue;
-        MobiusResponse response = null;
+        MobiusResponse response;
         String responseMessage;
+        AuthServerDTO device;
         try {
+
+            device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
 
             set24.setAccessToken(params.getAccessToken());
             set24.setUserId(params.getUserId());
@@ -67,7 +73,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             redisValue = userId + "," + set24.getFunctionId();
             redisCommand.setValues(set24.getUuId(), redisValue);
-            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(set24));
+            response = mobiusService.createCin(device.getSerialNumber(), userId, JSON.toJson(set24));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -83,11 +89,10 @@ public class ReservationServiceImpl implements ReservationService{
                     if(responseMessage.equals("\"200\"")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
-                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
             } catch (InterruptedException e) {
-                // 대기 중 인터럽트 처리
-                e.printStackTrace();
+                log.error("", e);
             }
 
 
@@ -107,7 +112,7 @@ public class ReservationServiceImpl implements ReservationService{
             redisCommand.deleteValues(set24.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -125,7 +130,10 @@ public class ReservationServiceImpl implements ReservationService{
         String responseMessage = null;
         String redisValue;
         MobiusResponse response;
+        AuthServerDTO device;
         try {
+
+            device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
 
             set12.setAccessToken(params.getAccessToken());
             set12.setUserId(userId);
@@ -140,7 +148,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             redisValue = userId + "," + set12.getFunctionId();
             redisCommand.setValues(set12.getUuId(), redisValue);
-            response = mobiusResponse = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(set12));
+            response = mobiusResponse = mobiusService.createCin(device.getSerialNumber(), userId, JSON.toJson(set12));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -156,11 +164,11 @@ public class ReservationServiceImpl implements ReservationService{
                     if(responseMessage.equals("\"200\"")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
-                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
-                e.printStackTrace();
+                log.error("", e);
             }
 
             if(stringObject.equals("Y")) {
@@ -179,7 +187,7 @@ public class ReservationServiceImpl implements ReservationService{
             redisCommand.deleteValues(set12.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -200,8 +208,11 @@ public class ReservationServiceImpl implements ReservationService{
         String redisValue;
         MobiusResponse response;
         String responseMessage;
-
+        AuthServerDTO device;
         try {
+
+            device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+
             /**
              * “awakeList” :
              * [
@@ -232,7 +243,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             redisValue = userId + "," + awakeAlarmSet.getFunctionId();
             redisCommand.setValues(awakeAlarmSet.getUuId(), redisValue);
-            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(awakeAlarmSet));
+            response = mobiusService.createCin(device.getSerialNumber(), userId, JSON.toJson(awakeAlarmSet));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -248,11 +259,11 @@ public class ReservationServiceImpl implements ReservationService{
                     if(responseMessage.equals("\"200\"")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
-                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
-                e.printStackTrace();
+                log.error("", e);
             }
 
             if(stringObject.equals("Y")) {
@@ -271,7 +282,7 @@ public class ReservationServiceImpl implements ReservationService{
             redisCommand.deleteValues(awakeAlarmSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }
@@ -292,7 +303,10 @@ public class ReservationServiceImpl implements ReservationService{
         String responseMessage;
         String redisValue;
         MobiusResponse response;
+        AuthServerDTO device;
         try {
+
+            device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
 
             setWeek.setAccessToken(params.getAccessToken());
             setWeek.setUuId(params.getUserId());
@@ -313,7 +327,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             redisValue = userId + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
-            response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(setWeek));
+            response = mobiusService.createCin(device.getSerialNumber(), userId, JSON.toJson(setWeek));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -329,11 +343,11 @@ public class ReservationServiceImpl implements ReservationService{
                     if(responseMessage.equals("\"200\"")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
-                    System.out.println("receiveCin에서의 응답: " + responseMessage);
+                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
-                e.printStackTrace();
+                log.error("", e);
             }
 
             if(stringObject.equals("Y")) {
@@ -352,7 +366,7 @@ public class ReservationServiceImpl implements ReservationService{
             redisCommand.deleteValues(setWeek.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
-            e.printStackTrace();
+            log.error("", e);
         }
         return null;
     }

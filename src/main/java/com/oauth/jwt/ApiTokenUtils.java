@@ -106,7 +106,7 @@ public class ApiTokenUtils {
      */
     public boolean verifySignedJWT(SignedJWT signedJWT, JWSVerifier jwsVerifier){
         try {
-            System.out.println("signedJWT.verify(jwsVerifier): " + signedJWT.verify(jwsVerifier));
+            log.info("signedJWT.verify(jwsVerifier): " + signedJWT.verify(jwsVerifier));
             if (signedJWT.verify(jwsVerifier)){
                 return true;
             }
@@ -156,7 +156,8 @@ public class ApiTokenUtils {
         try {
             SignedJWT signedJWT = new SignedJWT(header, claimsSet);
             signedJWT.sign(tokenConfig.getRsaSigner());
-            System.out.println("signedJWT.serialize(): " + signedJWT.serialize());
+
+            log.info("signedJWT.serialize(): " + signedJWT.serialize());
             return signedJWT.serialize();
         } catch (Exception e){
             log.error("", e);

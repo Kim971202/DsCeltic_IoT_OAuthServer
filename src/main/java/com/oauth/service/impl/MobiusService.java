@@ -7,6 +7,7 @@ import com.oauth.dto.mobius.CinDTO;
 import com.oauth.dto.mobius.CntDTO;
 import com.oauth.dto.mobius.SubDTO;
 import com.oauth.utils.Common;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -29,6 +30,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @Service
 public class MobiusService {
 
@@ -46,7 +48,7 @@ public class MobiusService {
     private static int requestIndex = 0;
 
     public CloseableHttpClient getHttpClient() {
-        System.out.println("InteractionRequest -> getHttpClient CALLED");
+        log.info("InteractionRequest -> getHttpClient CALLED");
         if(connectionManager == null) {
             connectionManager = new PoolingHttpClientConnectionManager();
             connectionManager.setMaxTotal(500);
@@ -76,17 +78,17 @@ public class MobiusService {
         String responseString = EntityUtils.toString(responseEntity);
         mobiusResponse.setResponseContent(responseString);
 
-        System.out.println(response.getFirstHeader("Content-Location"));
-        System.out.println(response.getLastHeader("Content-Location"));
+        log.info("FirstHeader Content-Location: " + response.getFirstHeader("Content-Location"));
+        log.info("LastHeader Content-Location: " + response.getLastHeader("Content-Location"));
 
-        System.out.println("====HTTP Request URI===============================================================================");
-        System.out.println("HTTP Request URI : " + uri.toString());
-        System.out.println("====HTTP Request Body=================================================================================");
-        System.out.println("HTTP Request Body : " + reqBody);
-        System.out.println("====HTTP Response Code=================================================================================");
-        System.out.println("HTTP Response Code, dKey : " + responseCode);
-        System.out.println("====HTTP Response String=================================================================================");
-        System.out.println("HTTP Response String : " + responseString);
+        log.info("====HTTP Request URI===============================================================================");
+        log.info("HTTP Request URI : " + uri.toString());
+        log.info("====HTTP Request Body=================================================================================");
+        log.info("HTTP Request Body : " + reqBody);
+        log.info("====HTTP Response Code=================================================================================");
+        log.info("HTTP Response Code, dKey : " + responseCode);
+        log.info("====HTTP Response String=================================================================================");
+        log.info("HTTP Response String : " + responseString);
 
         return mobiusResponse;
     }
@@ -130,7 +132,7 @@ public class MobiusService {
             mobiusResponse = pickupResponse(uri, requestBody, response);
             
         } catch (Exception e) {
-            System.out.println("send to oneM2M Error : " + e);
+            log.error("send to oneM2M Error : " + e);
         } finally {
             response.close();
         }
@@ -175,7 +177,7 @@ public class MobiusService {
             mobiusResponse = pickupResponse(uri, requestBody, response);
 
         } catch (Exception e) {
-            System.out.println("send to oneM2M Error : " + e);
+            log.error("send to oneM2M Error : " + e);
         } finally {
             response.close();
         }
@@ -190,7 +192,7 @@ public class MobiusService {
         cinObject.setDefaultValue(cin);
 
         String requestBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(cinObject);
-        System.out.println(requestBody);
+        log.info("requestBody: " + requestBody);
         StringEntity entity = new StringEntity(requestBody);
 
         URI uri = new URIBuilder()
@@ -215,9 +217,9 @@ public class MobiusService {
             CloseableHttpClient httpClient = getHttpClient();
             response = httpClient.execute(post);
             mobiusResponse = pickupResponse(uri, requestBody, response);
-            System.out.println(mobiusResponse);
+            log.info("mobiusResponse: " + mobiusResponse);
         } catch (Exception e) {
-            System.out.println("send to oneM2M Error : " + e);
+            log.error("send to oneM2M Error : " + e);
             return mobiusResponse;
         } finally {
             response.close();
@@ -242,7 +244,7 @@ public class MobiusService {
             serverAddr = pushServerAddr;
         }
 
-        System.out.println("serverAddr: " + serverAddr);
+        log.info("serverAddr: " + serverAddr);
 
         enc.setNet(List.of(3));
 
@@ -280,7 +282,7 @@ public class MobiusService {
             mobiusResponse = pickupResponse(uri, requestBody, response);
 
         } catch (Exception e) {
-            System.out.println("send to oneM2M Error : " + e);
+            log.error("send to oneM2M Error : " + e);
         } finally {
             response.close();
         }

@@ -1,5 +1,6 @@
 package com.oauth.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
@@ -19,6 +20,8 @@ import lombok.RequiredArgsConstructor;
  * 웹 소켓 통신 및 open api 통신을 위한 accessToken 값을 조회하기 위한 용도.
  *
  */
+
+@Slf4j
 @Configuration
 @EnableRedisRepositories
 @RequiredArgsConstructor
@@ -29,9 +32,9 @@ public class RedisConfig {
     public CommandLineRunner redisFlushAllOnStartup(
             @Autowired RedisTemplate<String, Object> redisTemplate) {
         return args -> {
-            System.out.println("Flushing all data from Redis on application startup...");
+            log.info("Flushing all data from Redis on application startup...");
             redisTemplate.getConnectionFactory().getConnection().flushAll();
-            System.out.println("Flush complete.");
+            log.info(("Flush complete."));
         };
     }
 

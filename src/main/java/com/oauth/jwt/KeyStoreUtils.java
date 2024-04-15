@@ -3,6 +3,7 @@ package com.oauth.jwt;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
@@ -19,13 +20,14 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Base64;
 
+@Slf4j
 @Component
 public class KeyStoreUtils {
 
     public String resourceFileToString(String path) throws Exception {
 
-        System.out.println("KeyStoreUtils -> resourceFileToString(String path)");
-        System.out.println("Path: " + path);
+        log.info("KeyStoreUtils -> resourceFileToString(String path)");
+        log.info("Path: " + path);
         return new String(FileCopyUtils.copyToByteArray(new ClassPathResource(path).getInputStream()), "UTF-8");
     }
 
@@ -37,7 +39,7 @@ public class KeyStoreUtils {
      */
     public String createAesEncryptKeyBase64() throws Exception {
 
-        System.out.println("KeyStoreUtils -> createAesEncryptKeyBase64()");
+        log.info("KeyStoreUtils -> createAesEncryptKeyBase64()");
 
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256);
@@ -53,7 +55,7 @@ public class KeyStoreUtils {
      */
     public SecretKey createAesEncryptKey() throws Exception {
 
-        System.out.println("KeyStoreUtils -> createAesEncryptKey()");
+        log.info("KeyStoreUtils -> createAesEncryptKey()");
 
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256);
@@ -70,8 +72,8 @@ public class KeyStoreUtils {
      */
     public SecretKey getAesEncryptKey(String path) throws Exception {
 
-        System.out.println("KeyStoreUtils -> getAesEncryptKey(String path)");
-        System.out.println("path: " + path);
+        log.info("KeyStoreUtils -> getAesEncryptKey(String path)");
+        log.info("path: " + path);
         String key = resourceFileToString(path);
 
         byte[] decodedKey = Base64.getDecoder().decode(key);
@@ -89,7 +91,7 @@ public class KeyStoreUtils {
      */
     public KeyPair createRsaAesEncryptKey() throws Exception {
 
-        System.out.println("KeyStoreUtils -> createRsaAesEncryptKey()");
+        log.info("KeyStoreUtils -> createRsaAesEncryptKey()");
 
         RSAKey rsaKey = new RSAKeyGenerator(2048)
                 .keyUse(KeyUse.SIGNATURE)
@@ -108,11 +110,11 @@ public class KeyStoreUtils {
      */
     public RSAPublicKey getPublicKey(String base64Str) throws Exception {
 
-        System.out.println("KeyStoreUtils -> getPublicKey(String base64Str)");
+        log.info("KeyStoreUtils -> getPublicKey(String base64Str)");
 
         byte[] decoded = Base64.getDecoder().decode(base64Str);
 
-        System.out.println("decoded: " + Arrays.toString(decoded));
+        log.info("decoded: " + Arrays.toString(decoded));
 
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
@@ -128,11 +130,11 @@ public class KeyStoreUtils {
      */
     public RSAPrivateKey getPrivateKey(String base64Str) throws Exception {
 
-        System.out.println("KeyStoreUtils -> getPrivateKey(String base64Str)");
+        log.info("KeyStoreUtils -> getPrivateKey(String base64Str)");
 
         byte[] decoded = Base64.getDecoder().decode(base64Str);
 
-        System.out.println("decoded: " + Arrays.toString(decoded));
+        log.info("decoded: " + Arrays.toString(decoded));
 
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
@@ -148,8 +150,8 @@ public class KeyStoreUtils {
      */
     public RSAPublicKey readPublicKey(String path) throws Exception {
 
-        System.out.println("KeyStoreUtils -> readPublicKey(String path) :" + path);
-        System.out.println("path: " + path);
+        log.info("KeyStoreUtils -> readPublicKey(String path) :" + path);
+        log.info("path: " + path);
 
         String publicKeyPEM = resourceFileToString(path);
 
@@ -169,11 +171,11 @@ public class KeyStoreUtils {
      */
     public RSAPrivateKey readPrivateKey(String path) throws Exception {
 
-        System.out.println("KeyStoreUtils -> readPrivateKey(String path)");
-        System.out.println("path: " + path);
+        log.info("KeyStoreUtils -> readPrivateKey(String path)");
+        log.info("path: " + path);
 
         String privateKeyPEM = resourceFileToString(path);
-        System.out.println("privateKeyPEM: " + privateKeyPEM);
+        log.info("privateKeyPEM: " + privateKeyPEM);
 
         byte[] encoded = Base64.getDecoder().decode(privateKeyPEM);
 

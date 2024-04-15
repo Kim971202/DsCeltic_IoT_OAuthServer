@@ -6,6 +6,7 @@ import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.Validator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.HashMap;
 
+@Slf4j
 @RequestMapping("/devices/v1")
 @RestController
 @RequiredArgsConstructor
@@ -35,6 +37,7 @@ public class DeviceController {
             throws CustomException {
 
         String logStep = "[홈 IoT 컨트롤러 상태 정보 조회]";
+        log.info("[홈 IoT 컨트롤러 상태 정보 조회]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
@@ -54,6 +57,7 @@ public class DeviceController {
             throws CustomException {
 
         String logStep = "[전원 On/Off]";
+        log.info("[전원 On/Off]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -73,6 +77,7 @@ public class DeviceController {
             throws CustomException {
 
         String logStep = "[홈 IoT 컨트롤러 정보 등록/수정]";
+        log.info("[홈 IoT 컨트롤러 정보 등록/수정]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getHp()) ||
@@ -101,6 +106,7 @@ public class DeviceController {
             throws Exception {
 
         String logStep = "[홈 IoT 컨트롤러 정보 조회-단건]";
+        log.info("[홈 IoT 컨트롤러 정보 조회-단건]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
            Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -117,6 +123,7 @@ public class DeviceController {
             throws CustomException {
 
         String logStep = "[모드변경]";
+        log.info("[모드변경]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -136,6 +143,7 @@ public class DeviceController {
             throws CustomException {
 
         String logStep = "[실내온도 설정]";
+        log.info("[실내온도 설정]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -153,6 +161,7 @@ public class DeviceController {
             throws CustomException {
 
         String logStep = "[난방수온도 설정]";
+        log.info("[난방수온도 설정]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -170,6 +179,7 @@ public class DeviceController {
             throws CustomException{
 
         String logStep = "[온수온도 설정]";
+        log.info("[온수온도 설정]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -187,6 +197,7 @@ public class DeviceController {
             throws CustomException{
 
         String logStep = "[빠른온수 설정]";
+        log.info("[빠른온수 설정]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -204,6 +215,7 @@ public class DeviceController {
             throws CustomException{
 
         String logStep = "[잠금 모드 설정]";
+        log.info("[잠금 모드 설정]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -221,6 +233,7 @@ public class DeviceController {
             throws Exception {
 
         String logStep = "[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]";
+        log.info("[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getControlAuthKey())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
@@ -235,6 +248,7 @@ public class DeviceController {
             throws Exception {
 
         String logStep = "[홈 IoT 컨트롤러 에러 정보 조회]";
+        log.info("[홈 IoT 컨트롤러 에러 정보 조회]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||

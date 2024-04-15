@@ -10,6 +10,7 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
@@ -17,6 +18,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 
+@Slf4j
 @Getter
 @Setter
 @RequiredArgsConstructor
@@ -79,12 +81,12 @@ public class TokenConfig {
 
             setJwsVerifierApp();
         } catch(Exception e) {
-            System.out.println(e.getMessage());
+            log.error("", e);
         }
     }
 
     private void setJwsVerifierApp() {
-        System.out.println("setJwsVerifierApp CALLED");
+        log.info("setJwsVerifierApp CALLED");
 
         if (StringUtils.hasText(this.pathAppPublicKey)){
             try {
