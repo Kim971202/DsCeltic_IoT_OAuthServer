@@ -2,6 +2,7 @@ package com.oauth.controller;
 
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.mapper.MemberMapper;
+import com.oauth.service.impl.MobiusService;
 import com.oauth.service.impl.UserServiceImpl;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
@@ -37,6 +38,9 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
 
+    @Autowired
+    private MobiusService mobiusService;
+
     /**
      * 인증 서버 활성화 체크
      */
@@ -50,7 +54,7 @@ public class UserController {
     @PostMapping(value = "/login")
     @ResponseBody
     public ResponseEntity<?> doLogin(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
-        throws CustomException {
+            throws Exception {
 
         String logStep = "[회원 로그인]";
         log.info("[회원 로그인]");
@@ -431,7 +435,6 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getTmpRegistKey()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }

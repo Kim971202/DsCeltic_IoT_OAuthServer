@@ -267,15 +267,18 @@ public class Common {
 
         JsonNode baseNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin");
         JsonNode conNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin").path("con");
+        JsonNode surNode = jsonNode.path("m2m:sgn").path("sur");
         JsonNode returnNode = conNode.path(value);
         JsonNode returnConNode = baseNode.path(value);
         String returnValue = objectMapper.writeValueAsString(returnNode);
         String returnConValue = objectMapper.writeValueAsString(returnConNode);
+        String returnSurValue = objectMapper.writeValueAsString(surNode);
 
 
         // TODO: 추후 True/False 로 분기 할것
         if(value.equals("rsCf")) return returnValue;
         else if(value.equals("con")) return returnConValue;
+        else if(value.equals("sur")) return returnSurValue;
         else return returnValue.replace("\"", "");
     }
 
@@ -331,9 +334,7 @@ public class Common {
         } else {
             log.info("적절한 형식의 문자열이 아닙니다.");
         }
-
         return nameList;
-
     }
 
     public String getCurrentDateTime() {

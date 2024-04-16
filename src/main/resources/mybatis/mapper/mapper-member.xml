@@ -319,4 +319,21 @@
         )
     </insert>
 
+    <select id="identifyRKey" resultMap="member">
+        SELECT
+            a.DEVC_ID AS deviceId,
+            a.SERIAL_NO AS serialNumber,
+            b.DEVC_CTRL_KEY AS controlAuthKey
+        FROM
+            TBR_IOT_DEVICE a
+        INNER JOIN
+            TBR_OPR_DEVICE_DETAIL b
+        WHERE
+            a.DEVC_ID = b.DEVC_ID
+        AND
+            SERIAL_NO = '1234567890123458'
+        AND
+            DEVC_CTRL_KEY = '1213';
+    </select>
+
 </mapper>

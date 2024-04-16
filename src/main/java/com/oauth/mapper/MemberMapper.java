@@ -44,5 +44,6 @@ public interface MemberMapper {
     public List<AuthServerDTO> getNoticeList();
     public int updateDeviceLocationNicknameDeviceDetail(AuthServerDTO member);
     public int updateDeviceLocationNicknameDeviceRegist(AuthServerDTO member);
-    public int insertCommandHistory (AuthServerDTO member);
+    public int insertCommandHistory(AuthServerDTO member);
+    public AuthServerDTO identifyRKey(AuthServerDTO member);
 }

@@ -288,4 +288,12 @@ public class MobiusService {
         }
         return mobiusResponse;
     }
+
+    public void errorHandler(String rKey, String errorCode, String error) throws Exception{
+
+        String sample = "di12" + "_" + common.getTransactionId();
+        System.out.println("sample: " + sample);
+        String[] sample1 = (sample.split("_"));
+        System.out.println("sample1: " + sample1[0]);
+    }
 }

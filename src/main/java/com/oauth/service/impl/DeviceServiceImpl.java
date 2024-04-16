@@ -7,6 +7,7 @@ import com.oauth.controller.MobiusController;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.*;
 import com.oauth.mapper.DeviceMapper;
+import com.oauth.mapper.MemberMapper;
 import com.oauth.message.GwMessagingSystem;
 import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.DeviceService;
@@ -41,13 +42,13 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     DeviceMapper deviceMapper;
     @Autowired
+    MemberMapper memberMapper;
+    @Autowired
     RedisCommand redisCommand;
     @Autowired
     SqlSessionFactory sqlSessionFactory;
     @Autowired
     MobiusResponse mobiusResponse;
-    @Autowired
-    MobiusController mobiusController;
     @Autowired
     GwMessagingSystem gwMessagingSystem;
     @Value("${server.timeout}")
@@ -1125,8 +1126,14 @@ public class DeviceServiceImpl implements DeviceService {
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = null;
         String msg;
-
+        AuthServerDTO device;
         try {
+
+            device = memberMapper.identifyRKey(params);
+
+            System.out.println("device: " + device.getDeviceId());
+            System.out.println("device: " + device.getSerialNumber());
+            System.out.println("device");
 
             if(stringObject.equals("Y")) {
                 msg = "홈 IoT 컨트롤러 에러 정보 조회 성공";

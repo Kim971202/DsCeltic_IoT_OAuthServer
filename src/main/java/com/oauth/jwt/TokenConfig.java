@@ -7,10 +7,12 @@ import com.nimbusds.jose.crypto.DirectDecrypter;
 import com.nimbusds.jose.crypto.DirectEncrypter;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.oauth.service.impl.MobiusService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
@@ -69,7 +71,6 @@ public class TokenConfig {
     public void init() {
 
         try {
-
             if( configSkip ) return;
 
             this.jwsVerifier = new RSASSAVerifier(keyStoreUtils.readPublicKey(this.getPathPublicKey()));
