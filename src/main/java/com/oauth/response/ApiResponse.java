@@ -82,6 +82,10 @@ public class ApiResponse {
         // GW에서 받은 값을 던지는 시험용 변수
         private Object testVariable;
         private String deviceId;
+        private String errorCode;
+        private String errorName;
+        private String errorMessage;
+
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);

@@ -250,11 +250,11 @@ public class DeviceController {
         String logStep = "[홈 IoT 컨트롤러 에러 정보 조회]";
         log.info("[홈 IoT 컨트롤러 에러 정보 조회]");
 
-        if(Validator.isNullOrEmpty(params.getUserId()) ||
+        if(Validator.isNullOrEmpty(params.getUserId())||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getDeviceType()) ||
-                Validator.isNullOrEmpty(params.getModeCode())){
+                Validator.isNullOrEmpty(params.getControlAuthKey())||
+                Validator.isNullOrEmpty(params.getDeviceType())||
+                Validator.isNullOrEmpty(params.getModelCode())){
             throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
         }
         return deviceService.doDeviceErrorInfo(params);

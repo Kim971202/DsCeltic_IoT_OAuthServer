@@ -173,6 +173,9 @@ public class DeviceServiceImpl implements DeviceService {
 
         DeviceMapper dMapper = session.getMapper(DeviceMapper.class);
 
+        AuthServerDTO device;
+        String serialNumber;
+
         int insertDeviceModelCodeResult;
         int insertDeviceResult;
         int insertDeviceRegistResult;
@@ -184,6 +187,9 @@ public class DeviceServiceImpl implements DeviceService {
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+
+            device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
+            serialNumber = device.getSerialNumber();
 
             deviceInfoUpsert.setAccessToken(params.getAccessToken());
             deviceInfoUpsert.setUserId(params.getUserId());
@@ -218,7 +224,7 @@ public class DeviceServiceImpl implements DeviceService {
 
                     redisValue = userId + "," + deviceInfoUpsert.getFunctionId();
                     redisCommand.setValues(deviceInfoUpsert.getUuId(), redisValue);
-                    response = mobiusService.createCin("gwSever", "gwSeverCnt", JSON.toJson(deviceInfoUpsert));
+                    response = mobiusService.createCin(serialNumber, userId, JSON.toJson(deviceInfoUpsert));
                     if(!response.getResponseCode().equals("201")){
                         msg = "중계서버 오류";
                         result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
@@ -251,7 +257,7 @@ public class DeviceServiceImpl implements DeviceService {
                  * 4. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * */
                 params.setDeviceId(DEVICE_ID_PREFIX + "." + params.getModelCode() + "." + params.getSerialNumber());
-                params.setTmpRegistKey(params.getUserId() + "_" +common.getCurrentDateTime());
+                params.setTmpRegistKey(params.getUserId() + "_" + common.getCurrentDateTime());
 
                 insertDeviceModelCodeResult = dMapper.insertDeviceModelCode(params);
                 insertDeviceResult = dMapper.insertDevice(params);
@@ -1124,7 +1130,7 @@ public class DeviceServiceImpl implements DeviceService {
     public ResponseEntity<?> doDeviceErrorInfo(AuthServerDTO params) throws Exception {
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = null;
+        String stringObject;
         String msg;
         AuthServerDTO device;
         try {
@@ -1133,16 +1139,23 @@ public class DeviceServiceImpl implements DeviceService {
 
             System.out.println("device: " + device.getDeviceId());
             System.out.println("device: " + device.getSerialNumber());
-            System.out.println("device");
+            System.out.println("device: " + device.getControlAuthKey());
+
+            if(device.getDeviceId() == null ||
+                    device.getSerialNumber() == null ||
+                    device.getControlAuthKey() == null){
+                stringObject = "N";
+            } else stringObject = "Y";
 
             if(stringObject.equals("Y")) {
                 msg = "홈 IoT 컨트롤러 에러 정보 조회 성공";
+                // TODO: 추후 Input 값 변경
+                result.setErrorCode("ERROR_CODE");
+                result.setErrorName("ERROR_NAME");
+                result.setErrorMessage("ERROR_MESSAGE");
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            } else if(stringObject.equals("N")) {
-                msg = "홈 IoT 컨트롤러 에러 정보 조회 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             } else {
-                msg = "응답이 없거나 시간 초과";
+                msg = "홈 IoT 컨트롤러 에러 정보 조회 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
             return new ResponseEntity<>(result, HttpStatus.OK);

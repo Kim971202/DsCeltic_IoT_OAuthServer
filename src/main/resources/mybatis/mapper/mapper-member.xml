@@ -331,9 +331,9 @@
         WHERE
             a.DEVC_ID = b.DEVC_ID
         AND
-            SERIAL_NO = '1234567890123458'
+            SERIAL_NO = #{serialNumber}
         AND
-            DEVC_CTRL_KEY = '1213';
+            DEVC_CTRL_KEY = #{controlAuthKey};
     </select>
 
 </mapper>
