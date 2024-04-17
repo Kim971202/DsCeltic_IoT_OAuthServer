@@ -39,7 +39,7 @@ public class StatisticController {
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getStartDate()) ||
                 Validator.isNullOrEmpty(params.getEndDate())) {
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "홈 IoT가동시간 통계조회 값 오류");
         }
 
         return statisticService.doInfoDaily(params);

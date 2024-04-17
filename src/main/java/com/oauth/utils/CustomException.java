@@ -2,10 +2,12 @@ package com.oauth.utils;
 
 public class CustomException extends RuntimeException{
 
-    CustomException(){}
+    private String code;
+    private String msg;
 
-    public CustomException(String message) {
-        super(message); // RuntimeException 클래스 생성자 호출
+    public CustomException(String code, String msg){
+        this.code = code;
+        this.msg = msg;
     }
 
 }

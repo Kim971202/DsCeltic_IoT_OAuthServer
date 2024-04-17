@@ -41,7 +41,7 @@ public class ReservationController {
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getType24h()) ||
                 Validator.isNullOrEmpty(params.getOnOffFlag())) {
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "24시간 예약 값 오류");
         }
 
         return reservationService.doSet24(params);
@@ -62,7 +62,7 @@ public class ReservationController {
                 Validator.isNullOrEmpty(params.getWorkPeriod()) ||
                 Validator.isNullOrEmpty(params.getWorkTime()) ||
                 Validator.isNullOrEmpty(params.getOnOffFlag())) {
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "반복(12시간) 예약 값 오류");
         }
 
         return reservationService.doSet12(params);
@@ -80,7 +80,7 @@ public class ReservationController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "빠른 온수 예약 값 오류");
         }
 
         return reservationService.doAwakeAlarmSet(params);
@@ -99,7 +99,7 @@ public class ReservationController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getOnOffFlag())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "주간 예약 값 오류");
         }
 
         return reservationService.doSetWeek(params);

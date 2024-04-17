@@ -13,7 +13,7 @@ public interface DeviceService {
     ResponseEntity<?> doPowerOnOff(AuthServerDTO params) throws CustomException;
 
     /** 홈 IoT 컨트롤러 정보 등록/수정 */
-    ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws CustomException, SQLException;
+    ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws Exception;
 
     /** 홈 IoT 컨트롤러 상태 정보 조회  */
     ResponseEntity<?> doDeviceStatusInfo(AuthServerDTO params) throws CustomException;

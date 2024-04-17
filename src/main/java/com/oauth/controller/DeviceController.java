@@ -43,7 +43,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getModelCode())) {
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "홈 IoT 컨트롤러 상태 정보 조회 값 오류");
         }
 
         return deviceService.doDeviceStatusInfo(params);
@@ -65,7 +65,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getPowerStatus()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "전원 On/Off 값 오류");
         }
         return deviceService.doPowerOnOff(params);
     }
@@ -74,28 +74,28 @@ public class DeviceController {
     @PostMapping(value = "/deviceInfoUpsert")
     @ResponseBody
     public ResponseEntity<?> doDeviceInfoUpsert(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
-            throws CustomException {
+            throws Exception {
 
         String logStep = "[홈 IoT 컨트롤러 정보 등록/수정]";
         log.info("[홈 IoT 컨트롤러 정보 등록/수정]");
 
-//        if(Validator.isNullOrEmpty(params.getUserId()) ||
-//                Validator.isNullOrEmpty(params.getHp()) ||
-//                Validator.isNullOrEmpty(params.getRegistYn()) ||
-//                Validator.isNullOrEmpty(params.getTmpRegistKey()) ||
-//                Validator.isNullOrEmpty(params.getDeviceType()) ||
-//                Validator.isNullOrEmpty(params.getModelCode()) ||
-//                Validator.isNullOrEmpty(params.getSerialNumber()) ||
-//                Validator.isNullOrEmpty(params.getZipCode()) ||
-//                Validator.isNullOrEmpty(params.getOldAddr()) ||
-//                Validator.isNullOrEmpty(params.getNewAddr()) ||
-//                Validator.isNullOrEmpty(params.getAddrDetail()) ||
-//                Validator.isNullOrEmpty(params.getLatitude()) ||
-//                Validator.isNullOrEmpty(params.getLongitude()) ||
-//                Validator.isNullOrEmpty(params.getDeviceNickname()) ||
-//                Validator.isNullOrEmpty(params.getAddrNickname())){
-//            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
-//        }
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getHp()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getRegistYn()) ||
+                Validator.isNullOrEmpty(params.getDeviceType()) ||
+                Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getSerialNumber()) ||
+                Validator.isNullOrEmpty(params.getZipCode()) ||
+                Validator.isNullOrEmpty(params.getOldAddr()) ||
+                Validator.isNullOrEmpty(params.getNewAddr()) ||
+                Validator.isNullOrEmpty(params.getAddrDetail()) ||
+                Validator.isNullOrEmpty(params.getLatitude()) ||
+                Validator.isNullOrEmpty(params.getLongitude()) ||
+                Validator.isNullOrEmpty(params.getDeviceNickname()) ||
+                Validator.isNullOrEmpty(params.getAddrNickname())){
+            throw new CustomException("404", "전원 On/Off 값 오류");
+        }
         return deviceService.doDeviceInfoUpsert(params);
     }
 
@@ -111,7 +111,7 @@ public class DeviceController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
            Validator.isNullOrEmpty(params.getDeviceId()) ||
            Validator.isNullOrEmpty(params.getControlAuthKey())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "홈 IoT 컨트롤러 정보 조회-단건 값 오류");
         }
         return deviceService.doDeviceInfoSearch(params);
     }
@@ -131,7 +131,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getModeCode()) ||
                 Validator.isNullOrEmpty(params.getSleepCode())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "모드변경 값 오류");
         }
         return deviceService.doModeChange(params);
     }
@@ -149,7 +149,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getTemperture())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "실내온도 설정 값 오류");
         }
         return deviceService.doTemperatureSet(params);
     }
@@ -167,7 +167,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getTemperture())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "난방수온도 설정 값 오류");
         }
         return deviceService.doBoiledWaterTempertureSet(params);
     }
@@ -185,7 +185,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getTemperture())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "온수온도 설정 값 오류");
         }
         return deviceService.doWaterTempertureSet(params);
     }
@@ -203,7 +203,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getModeCode())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "빠른온수 설정 값 오류");
         }
         return deviceService.doFastHotWaterSet(params);
     }
@@ -221,7 +221,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getLockSet())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "잠금 모드 설정 값 오류");
         }
         return deviceService.doLockSet(params);
     }
@@ -236,7 +236,7 @@ public class DeviceController {
         log.info("[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getControlAuthKey())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 값 오류");
         }
         return deviceService.doBasicDeviceStatusInfo(params);
     }
@@ -255,7 +255,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getControlAuthKey())||
                 Validator.isNullOrEmpty(params.getDeviceType())||
                 Validator.isNullOrEmpty(params.getModelCode())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+            throw new CustomException("404", "홈 IoT 컨트롤러 에러 정보 조회 값 오류");
         }
         return deviceService.doDeviceErrorInfo(params);
     }

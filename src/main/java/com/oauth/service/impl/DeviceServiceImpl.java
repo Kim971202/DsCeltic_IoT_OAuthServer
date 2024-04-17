@@ -16,16 +16,21 @@ import com.oauth.utils.CustomException;
 import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -33,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
+@Transactional(rollbackFor = {Exception.class, CustomException.class})
 public class DeviceServiceImpl implements DeviceService {
 
     @Autowired
@@ -45,8 +51,6 @@ public class DeviceServiceImpl implements DeviceService {
     MemberMapper memberMapper;
     @Autowired
     RedisCommand redisCommand;
-    @Autowired
-    SqlSessionFactory sqlSessionFactory;
     @Autowired
     MobiusResponse mobiusResponse;
     @Autowired
@@ -151,30 +155,22 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     /** 홈 IoT 컨트롤러 정보 등록/수정 */
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws CustomException {
-
-        // Transaction용 클래스 선언
-        SqlSession session = sqlSessionFactory.openSession();
+    public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws Exception {
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject;
+        String stringObject = null;
         String msg;
         DeviceInfoUpsert deviceInfoUpsert = new DeviceInfoUpsert();
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
+        String serialNumber = params.getSerialNumber();
         String controlAuthKey = params.getControlAuthKey();
         String registYn = params.getRegistYn();
         String responseMessage;
         String redisValue;
 
         MobiusResponse response;
-
-        DeviceMapper dMapper = session.getMapper(DeviceMapper.class);
-
-        AuthServerDTO device;
-        String serialNumber;
 
         int insertDeviceModelCodeResult;
         int insertDeviceResult;
@@ -188,7 +184,6 @@ public class DeviceServiceImpl implements DeviceService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 
-            deviceInfoUpsert.setAccessToken(params.getAccessToken());
             deviceInfoUpsert.setUserId(params.getUserId());
             deviceInfoUpsert.setHp(params.getHp());
             deviceInfoUpsert.setRegisYn(registYn);
@@ -206,47 +201,52 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfoUpsert.setFunctionId("mfAr");
             deviceInfoUpsert.setUuId(common.getTransactionId());
 
+            // 수정
             if(registYn.equals("N")){
 
-                device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
-                serialNumber = device.getSerialNumber();
+                if(params.getTmpRegistKey() == null || params.getDeviceId() == null) {
+                    msg = "TEMP-KEY-MISSING";
+                    result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
 
                 /* *
                  * IoT 디바이스 UPDATE 순서
                  * 1. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
                  * 2. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * */
-                updateDeviceRegistLocationResult = dMapper.updateDeviceRegistLocation(params);
-                updateDeviceDetailLocationResult = dMapper.updateDeviceDetailLocation(params);
+                updateDeviceDetailLocationResult = deviceMapper.updateDeviceDetailLocation(params);
+                log.info("updateDeviceDetailLocationResult: " + updateDeviceDetailLocationResult);
+                if(updateDeviceDetailLocationResult >= 0) throw new CustomException("507", "입력값 오류");
 
-                if(updateDeviceRegistLocationResult > 0 && updateDeviceDetailLocationResult > 0){
-                    stringObject = "Y";
+                updateDeviceRegistLocationResult = deviceMapper.updateDeviceRegistLocation(params);
+                log.info("updateDeviceRegistLocationResult: " + updateDeviceRegistLocationResult);
+                if(updateDeviceRegistLocationResult <= 0) throw new CustomException("507", "입력값 오류");
 
-                    redisValue = userId + "," + deviceInfoUpsert.getFunctionId();
-                    redisCommand.setValues(deviceInfoUpsert.getUuId(), redisValue);
-                    response = mobiusService.createCin(serialNumber, userId, JSON.toJson(deviceInfoUpsert));
-                    if(!response.getResponseCode().equals("201")){
-                        msg = "중계서버 오류";
-                        result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
-                        return new ResponseEntity<>(result, HttpStatus.OK);
-                    }
+                redisValue = userId + "," + deviceInfoUpsert.getFunctionId();
+                redisCommand.setValues(deviceInfoUpsert.getUuId(), redisValue);
+                response = mobiusService.createCin(serialNumber, userId, JSON.toJson(deviceInfoUpsert));
 
-                    try {
-                        responseMessage = gwMessagingSystem.waitForResponse("mfAr" + deviceInfoUpsert.getUuId(), TIME_OUT, TimeUnit.SECONDS);
-                        if (responseMessage != null) {
-                            // 응답 처리
-                            log.info("receiveCin에서의 응답: " + responseMessage);
-                        } else {
-                            // 타임아웃이나 응답 없음 처리
-                            stringObject = "T";
-                            log.info("응답이 없거나 시간 초과");
-                        }
-                    } catch (InterruptedException e) {
-                        // 대기 중 인터럽트 처리
-                        log.error("", e);
-                    }
+                if(!response.getResponseCode().equals("201")){
+                    msg = "중계서버 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
-                else stringObject = "N";
+
+                try {
+                    responseMessage = gwMessagingSystem.waitForResponse("mfAr" + deviceInfoUpsert.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                    if (responseMessage != null) {
+                        // 응답 처리
+                        log.info("receiveCin에서의 응답: " + responseMessage);
+                    } else {
+                        // 타임아웃이나 응답 없음 처리
+                        stringObject = "T";
+                        log.info("응답이 없거나 시간 초과");
+                    }
+                } catch (InterruptedException e) {
+                    // 대기 중 인터럽트 처리
+                    log.error("", e);
+                }
             } else {
 
                 /* *
@@ -259,10 +259,10 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setDeviceId(DEVICE_ID_PREFIX + "." + params.getModelCode() + "." + params.getSerialNumber());
                 params.setTmpRegistKey(params.getUserId() + "_" + common.getCurrentDateTime());
 
-                insertDeviceModelCodeResult = dMapper.insertDeviceModelCode(params);
-                insertDeviceResult = dMapper.insertDevice(params);
-                insertDeviceRegistResult = dMapper.insertDeviceRegist(params);
-                insertDeviceDetailResult = dMapper.insertDeviceDetail(params);
+                insertDeviceModelCodeResult = deviceMapper.insertDeviceModelCode(params);
+                insertDeviceResult = deviceMapper.insertDevice(params);
+                insertDeviceRegistResult = deviceMapper.insertDeviceRegist(params);
+                insertDeviceDetailResult = deviceMapper.insertDeviceDetail(params);
 
                 if(insertDeviceModelCodeResult > 0 &&
                         insertDeviceResult > 0 &&
@@ -312,8 +312,8 @@ public class DeviceServiceImpl implements DeviceService {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
+            throw new Exception();
         }
-        return null;
     }
 
     /** 홈 IoT 컨트롤러 상태 정보 조회  */
