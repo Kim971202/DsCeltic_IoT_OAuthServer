@@ -48,21 +48,16 @@ public class MobiusController {
          * */
 
         String uuId = common.readCon(jsonBody, "uuId");
-        String sur = common.readCon(jsonBody, "sur");
-        System.out.println("sur: " + sur);
-        // 문자열을 '/'로 분할하여 배열로 만듭니다.
-        String[] parts = sur.split("/");
-
-        // 3번째 항목을 출력합니다. (인덱스는 0부터 시작하므로 인덱스 2)
-        String thirdItem = parts[2];
-
-        System.out.println("3번째 항목: " + thirdItem);
         log.info("uuId: " + uuId);
+
+        String errorCode = common.readCon(jsonBody, "erCd");
+        String errorDateTime = common.readCon(jsonBody, "erDt");
+        String controlAuthKey = common.readCon(jsonBody, "rKey");
+        String[] serialNumber = common.readCon(jsonBody, "sur").split("/");
+
         String userId;
         String resultCode;
-        String functionId;
-        String errorCode;
-        String errorDateTime;
+        String functionId = null;
         String redisValue = redisCommand.getValues(uuId);
         log.info("redisValue: " + redisValue);
         List<String> redisValueList;
@@ -72,6 +67,9 @@ public class MobiusController {
             functionId = redisValueList.get(1);
             log.info("userId: " + userId);
             log.info("functionId: " + functionId);
+        } else if(errorCode != null && errorDateTime != null){
+            mobiusService.errorHandler(serialNumber[0], controlAuthKey, errorCode, errorDateTime);
+            return "DB Added";
         } else {
             return "0x0106-Devices 상태 보고 요청";
         }
@@ -127,13 +125,8 @@ public class MobiusController {
             log.info(JSON.toJson(dr910W));
             gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(dr910W));
         } else {
-
             resultCode = common.readCon(jsonBody, "rtCd");
-            errorCode = common.readCon(jsonBody, "erCd");
-            errorDateTime = common.readCon(jsonBody, "erDt");
-            if(errorCode == null && errorDateTime == null){
-
-            }else gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(resultCode));
             log.info("resultCode: " + resultCode);
         }
         return null;

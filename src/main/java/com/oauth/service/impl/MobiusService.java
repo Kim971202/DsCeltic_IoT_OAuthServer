@@ -2,10 +2,13 @@ package com.oauth.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
+import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.mobius.AeDTO;
 import com.oauth.dto.mobius.CinDTO;
 import com.oauth.dto.mobius.CntDTO;
 import com.oauth.dto.mobius.SubDTO;
+import com.oauth.mapper.DeviceMapper;
+import com.oauth.mapper.MemberMapper;
 import com.oauth.utils.Common;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
@@ -36,6 +39,8 @@ public class MobiusService {
 
     @Autowired
     Common common;
+    @Autowired
+    MemberMapper memberMapper;
     @Value("${app.server.address.short.gw}")
     private String shortGwServerAddr;
     @Value("${app.server.address.long.gw}")
@@ -289,11 +294,17 @@ public class MobiusService {
         return mobiusResponse;
     }
 
-    public void errorHandler(String rKey, String errorCode, String error) throws Exception{
+    public void errorHandler(String serialNumber, String controlAuthKey, String errorCode, String error) throws Exception{
 
-        String sample = "di12" + "_" + common.getTransactionId();
-        System.out.println("sample: " + sample);
-        String[] sample1 = (sample.split("_"));
-        System.out.println("sample1: " + sample1[0]);
+        AuthServerDTO input = new AuthServerDTO();
+        String myString = "1234567890123458";
+        String conKey = "1213";
+        input.setSerialNumber(myString);
+        input.setControlAuthKey(conKey);
+        AuthServerDTO result = memberMapper.identifyRKey(input);
+
+        System.out.println("result.getSerialNumber(): " + result.getSerialNumber());
+        System.out.println("result.getControlAuthKey(): " + result.getControlAuthKey());
+
     }
 }

@@ -1,12 +1,9 @@
 package com.oauth.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.jwt.ApiTokenUtils;
-import com.oauth.jwt.TokenMaterial;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.message.GwMessagingSystem;
@@ -14,7 +11,6 @@ import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.UserService;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
-import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
@@ -28,8 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Member;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -119,6 +113,11 @@ public class UserServiceImpl implements UserService {
                 controlAuthKey = Common.extractJson(deviceInfoList.toString(), "controlAuthKey");
                 deviceNickname = Common.extractJson(deviceInfoList.toString(), "deviceNickname");
                 regSort = Common.extractJson(deviceInfoList.toString(), "regSort");
+
+                System.out.println("deviceId: " + deviceId);
+                System.out.println("controlAuthKey: " + controlAuthKey);
+                System.out.println("deviceNickname: " + deviceNickname);
+                System.out.println("regSort: " + regSort);
 
                 // Mapper실행 후 사용자가 가지고 있는 Device 개수
                 int numDevices = deviceInfoList.size();
@@ -1100,7 +1099,6 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    // TODO: 푸시서버 AE, CNT 생성 관련 논의 필요
     /** 홈 IoT 최초 등록 인증 */
     @Override
     public ResponseEntity<?> doFirstDeviceAuthCheck(AuthServerDTO params)
@@ -1110,7 +1108,6 @@ public class UserServiceImpl implements UserService {
         String stringObject;
         String msg;
 
-        MobiusResponse testResult;
         MobiusResponse aeResult;
         MobiusResponse cntResult;
         MobiusResponse cinResult;
@@ -1143,19 +1140,12 @@ public class UserServiceImpl implements UserService {
             * 하지만 201을 Return 하지 못하는 경우 AE, CNT가 없다 판단하여 신규 생성
             * */
 
-            testResult = mobiusService.createCin(params.getSerialNumber(), params.getUserId(), "Initial_Body" + "+" +common.getCurrentDateTime());
+            aeResult = mobiusService.createAe(params.getSerialNumber());
+            cntResult = mobiusService.createCnt(params.getSerialNumber(), params.getUserId());
+            subResult = mobiusService.createSub(params.getSerialNumber(), params.getUserId(), "gw");
 
-            if(!testResult.getResponseCode().equals("201")){
-                aeResult = mobiusService.createAe(params.getSerialNumber());
-                cntResult = mobiusService.createCnt(params.getSerialNumber(), params.getUserId());
-                subResult = mobiusService.createSub(params.getSerialNumber(), params.getUserId(), "gw");
-
-                if(aeResult.getResponseCode().equals("201") &&
-                        cntResult.getResponseCode().equals("201") &&
-                        subResult.getResponseCode().equals("201")){
-                    stringObject = "Y";
-                } else stringObject = "N";
-            } else stringObject = "Y";
+            if(aeResult == null && cntResult == null && subResult == null) stringObject = "N";
+            else stringObject = "Y";
 
             if(stringObject.equals("Y")){
                 result.setDeviceId("0.2.481.1.1." + params.getModelCode() + "." + params.getSerialNumber());

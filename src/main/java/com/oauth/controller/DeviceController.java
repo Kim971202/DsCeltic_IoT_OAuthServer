@@ -79,23 +79,23 @@ public class DeviceController {
         String logStep = "[홈 IoT 컨트롤러 정보 등록/수정]";
         log.info("[홈 IoT 컨트롤러 정보 등록/수정]");
 
-        if(Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getHp()) ||
-                Validator.isNullOrEmpty(params.getRegistYn()) ||
-                Validator.isNullOrEmpty(params.getTmpRegistKey()) ||
-                Validator.isNullOrEmpty(params.getDeviceType()) ||
-                Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getSerialNumber()) ||
-                Validator.isNullOrEmpty(params.getZipCode()) ||
-                Validator.isNullOrEmpty(params.getOldAddr()) ||
-                Validator.isNullOrEmpty(params.getNewAddr()) ||
-                Validator.isNullOrEmpty(params.getAddrDetail()) ||
-                Validator.isNullOrEmpty(params.getLatitude()) ||
-                Validator.isNullOrEmpty(params.getLongitude()) ||
-                Validator.isNullOrEmpty(params.getDeviceNickname()) ||
-                Validator.isNullOrEmpty(params.getAddrNickname())){
-            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
-        }
+//        if(Validator.isNullOrEmpty(params.getUserId()) ||
+//                Validator.isNullOrEmpty(params.getHp()) ||
+//                Validator.isNullOrEmpty(params.getRegistYn()) ||
+//                Validator.isNullOrEmpty(params.getTmpRegistKey()) ||
+//                Validator.isNullOrEmpty(params.getDeviceType()) ||
+//                Validator.isNullOrEmpty(params.getModelCode()) ||
+//                Validator.isNullOrEmpty(params.getSerialNumber()) ||
+//                Validator.isNullOrEmpty(params.getZipCode()) ||
+//                Validator.isNullOrEmpty(params.getOldAddr()) ||
+//                Validator.isNullOrEmpty(params.getNewAddr()) ||
+//                Validator.isNullOrEmpty(params.getAddrDetail()) ||
+//                Validator.isNullOrEmpty(params.getLatitude()) ||
+//                Validator.isNullOrEmpty(params.getLongitude()) ||
+//                Validator.isNullOrEmpty(params.getDeviceNickname()) ||
+//                Validator.isNullOrEmpty(params.getAddrNickname())){
+//            throw new CustomException(logStep + ": NULL OR EMPTY ERROR");
+//        }
         return deviceService.doDeviceInfoUpsert(params);
     }
 

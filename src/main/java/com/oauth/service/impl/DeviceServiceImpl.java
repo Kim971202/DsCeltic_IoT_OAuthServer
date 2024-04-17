@@ -188,9 +188,6 @@ public class DeviceServiceImpl implements DeviceService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 
-            device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
-            serialNumber = device.getSerialNumber();
-
             deviceInfoUpsert.setAccessToken(params.getAccessToken());
             deviceInfoUpsert.setUserId(params.getUserId());
             deviceInfoUpsert.setHp(params.getHp());
@@ -210,6 +207,9 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfoUpsert.setUuId(common.getTransactionId());
 
             if(registYn.equals("N")){
+
+                device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
+                serialNumber = device.getSerialNumber();
 
                 /* *
                  * IoT 디바이스 UPDATE 순서
