@@ -377,4 +377,21 @@ public class Common {
         return apiTokenUtils.createJWT(tokenMaterial);
     }
 
+    public String hexToString(String hex){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i = 0; i < hex.length(); ++i){
+            String str = hex.substring(i, i + 2);
+            stringBuilder.append((char) Integer.parseInt(str, 16));
+        }
+        return stringBuilder.toString();
+    }
+
+    public String stringToHex(String input){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(char character : input.toCharArray()){
+            stringBuilder.append(Integer.toHexString((int) character));
+        }
+        return  stringBuilder.toString();
+    }
+
 }
