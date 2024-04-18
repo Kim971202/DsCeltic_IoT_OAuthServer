@@ -81,13 +81,12 @@ public class DeviceServiceImpl implements DeviceService {
             powerOnOff.setDeviceId(params.getDeviceId());
             powerOnOff.setControlAuthKey(params.getControlAuthKey());
             powerOnOff.setDeviceType(params.getDeviceType());
-            powerOnOff.setModelCode(params.getModelCode());
+            powerOnOff.setModelCode(common.stringToHex(params.getModelCode()));
             powerOnOff.setPowerStatus(params.getPowerStatus());
             powerOnOff.setFunctionId("powr");
             powerOnOff.setUuId(common.getTransactionId());
 
             redisValue = userId + "," + powerOnOff.getFunctionId();
-
             redisCommand.setValues(powerOnOff.getUuId(), redisValue);
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
@@ -117,9 +116,8 @@ public class DeviceServiceImpl implements DeviceService {
                     // 대기 중 인터럽트 처리
                     log.error("", e);
                 }
-            } else {
-                stringObject = "N";
-            }
+            } else stringObject = "N";
+
 
             if(stringObject.equals("Y")) {
                 conMap.put("body", "Device ON/OFF OK");
@@ -144,8 +142,9 @@ public class DeviceServiceImpl implements DeviceService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            log.info("doPowerOnOff jsonString: " + jsonString);
 
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(powerOnOff.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
@@ -250,6 +249,10 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             } else {
 
+                params.setSerialNumber(common.stringToHex(params.getSerialNumber()));
+                params.setModelCode(common.stringToHex(params.getModelCode()));
+                System.out.println("params.getSerialNumber(): " + params.getSerialNumber());
+                System.out.println("params.getModelCode(): " + params.getModelCode());
                 /* *
                  * IoT 디바이스 등록 INSERT 순서
                  * 1. TBD_IOT_DEVICE_MODL_CD - 디바이스 모델 코드
@@ -257,7 +260,7 @@ public class DeviceServiceImpl implements DeviceService {
                  * 3. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
                  * 4. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * */
-                params.setDeviceId(DEVICE_ID_PREFIX + "." + params.getModelCode() + "." + params.getSerialNumber());
+                params.setDeviceId(DEVICE_ID_PREFIX + "." + params.getSerialNumber() + "." + params.getSerialNumber());
                 params.setTmpRegistKey(params.getUserId() + "_" + common.getCurrentDateTime());
 
                 insertDeviceResult = deviceMapper.insertDevice(params);
@@ -320,9 +323,9 @@ public class DeviceServiceImpl implements DeviceService {
         String userId = params.getUserId();
         String uuId = common.getTransactionId();
         AuthServerDTO serialNumber;
-        HashMap<String, String> request = new HashMap<>();
         String responseMessage;
         MobiusResponse response;
+        HashMap<String, String> request = new HashMap<>();
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = null;
@@ -331,7 +334,6 @@ public class DeviceServiceImpl implements DeviceService {
 
             serialNumber = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
 
-            request.put("accessToken", params.getAccessToken());
             request.put("userId", params.getUserId());
             request.put("controlAuthKey", params.getControlAuthKey());
             request.put("deviceId", params.getDeviceId());
@@ -341,6 +343,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisCommand.setValues(uuId, userId + "," + "fcnt");
             response = mobiusService.createCin(serialNumber.getSerialNumber(), userId, JSON.toJson(request));
+
             if(response.getResponseCode().equals("201")){
                 try {
                     // 메시징 시스템을 통해 응답 메시지 대기
@@ -939,7 +942,6 @@ public class DeviceServiceImpl implements DeviceService {
         String msg;
 
         String userId = params.getUserId();
-        String controlAuthKey = params.getControlAuthKey();
         String uuId = common.getTransactionId();
         String functionId = "fcnt";
 
@@ -980,7 +982,7 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             request.put("userId", userId);
-            request.put("controlAuthKey", controlAuthKey);
+            request.put("controlAuthKey", "controlAuthKey");
             request.put("functionId", functionId);
             request.put("uuId", uuId);
             log.info("request1: " + request);

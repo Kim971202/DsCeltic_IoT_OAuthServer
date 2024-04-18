@@ -1140,15 +1140,15 @@ public class UserServiceImpl implements UserService {
             * 하지만 201을 Return 하지 못하는 경우 AE, CNT가 없다 판단하여 신규 생성
             * */
 
-            aeResult = mobiusService.createAe(params.getSerialNumber());
-            cntResult = mobiusService.createCnt(params.getSerialNumber(), params.getUserId());
-            subResult = mobiusService.createSub(params.getSerialNumber(), params.getUserId(), "gw");
+            aeResult = mobiusService.createAe(common.stringToHex(params.getSerialNumber()));
+            cntResult = mobiusService.createCnt(common.stringToHex(params.getSerialNumber()), params.getUserId());
+            subResult = mobiusService.createSub(common.stringToHex(params.getSerialNumber()), params.getUserId(), "gw");
 
             if(aeResult == null && cntResult == null && subResult == null) stringObject = "N";
             else stringObject = "Y";
 
             if(stringObject.equals("Y")){
-                result.setDeviceId("0.2.481.1.1." + params.getModelCode() + "." + params.getSerialNumber());
+                result.setDeviceId("0.2.481.1.1." + params.getUserId() + "." + common.stringToHex(params.getSerialNumber()));
                 conMap.put("body", "First Device Auth Check OK");
                 msg = "최초 인증 성공";
             } else {

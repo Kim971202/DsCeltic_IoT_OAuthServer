@@ -235,7 +235,7 @@ public class DeviceController {
         String logStep = "[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]";
         log.info("[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]");
 
-        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getControlAuthKey())){
+        if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException("404", "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 값 오류");
         }
         return deviceService.doBasicDeviceStatusInfo(params);
