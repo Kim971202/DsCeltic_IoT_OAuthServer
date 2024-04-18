@@ -159,7 +159,7 @@ public class DeviceServiceImpl implements DeviceService {
     public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws Exception {
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = null;
+        String stringObject = "N";
         String msg;
         DeviceInfoUpsert deviceInfoUpsert = new DeviceInfoUpsert();
         String userId = params.getUserId();
@@ -172,7 +172,6 @@ public class DeviceServiceImpl implements DeviceService {
 
         MobiusResponse response;
 
-        int insertDeviceModelCodeResult;
         int insertDeviceResult;
         int insertDeviceRegistResult;
         int insertDeviceDetailResult;
@@ -210,19 +209,6 @@ public class DeviceServiceImpl implements DeviceService {
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                /* *
-                 * IoT 디바이스 UPDATE 순서
-                 * 1. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
-                 * 2. TBR_OPR_DEVICE_DETAIL - 단말정보상세
-                 * */
-                updateDeviceDetailLocationResult = deviceMapper.updateDeviceDetailLocation(params);
-                log.info("updateDeviceDetailLocationResult: " + updateDeviceDetailLocationResult);
-                if(updateDeviceDetailLocationResult >= 0) throw new CustomException("507", "입력값 오류");
-
-                updateDeviceRegistLocationResult = deviceMapper.updateDeviceRegistLocation(params);
-                log.info("updateDeviceRegistLocationResult: " + updateDeviceRegistLocationResult);
-                if(updateDeviceRegistLocationResult <= 0) throw new CustomException("507", "입력값 오류");
-
                 redisValue = userId + "," + deviceInfoUpsert.getFunctionId();
                 redisCommand.setValues(deviceInfoUpsert.getUuId(), redisValue);
                 response = mobiusService.createCin(serialNumber, userId, JSON.toJson(deviceInfoUpsert));
@@ -233,9 +219,23 @@ public class DeviceServiceImpl implements DeviceService {
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
+                /* *
+                 * IoT 디바이스 UPDATE 순서
+                 * 1. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
+                 * 2. TBR_OPR_DEVICE_DETAIL - 단말정보상세
+                 * */
+                updateDeviceDetailLocationResult = deviceMapper.updateDeviceDetailLocation(params);
+                log.info("updateDeviceDetailLocationResult: " + updateDeviceDetailLocationResult);
+                if(updateDeviceDetailLocationResult <= 0) throw new CustomException("507", "입력값 오류");
+
+                updateDeviceRegistLocationResult = deviceMapper.updateDeviceRegistLocation(params);
+                log.info("updateDeviceRegistLocationResult: " + updateDeviceRegistLocationResult);
+                if(updateDeviceRegistLocationResult <= 0) throw new CustomException("507", "입력값 오류");
+
                 try {
                     responseMessage = gwMessagingSystem.waitForResponse("mfAr" + deviceInfoUpsert.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                     if (responseMessage != null) {
+                        stringObject = "Y";
                         // 응답 처리
                         log.info("receiveCin에서의 응답: " + responseMessage);
                     } else {
@@ -246,6 +246,7 @@ public class DeviceServiceImpl implements DeviceService {
                 } catch (InterruptedException e) {
                     // 대기 중 인터럽트 처리
                     log.error("", e);
+                    throw new CustomException("507", "입력값 오류");
                 }
             } else {
 
@@ -259,21 +260,18 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setDeviceId(DEVICE_ID_PREFIX + "." + params.getModelCode() + "." + params.getSerialNumber());
                 params.setTmpRegistKey(params.getUserId() + "_" + common.getCurrentDateTime());
 
-                insertDeviceModelCodeResult = deviceMapper.insertDeviceModelCode(params);
                 insertDeviceResult = deviceMapper.insertDevice(params);
-                insertDeviceRegistResult = deviceMapper.insertDeviceRegist(params);
-                insertDeviceDetailResult = deviceMapper.insertDeviceDetail(params);
+                if(insertDeviceResult <= 0) throw new CustomException("507", "DB저장 오류");
 
-                if(insertDeviceModelCodeResult > 0 &&
-                        insertDeviceResult > 0 &&
-                        insertDeviceRegistResult > 0 &&
-                        insertDeviceDetailResult > 0)
-                    stringObject = "Y";
-                else stringObject = "N";
+                insertDeviceRegistResult = deviceMapper.insertDeviceRegist(params);
+                if(insertDeviceRegistResult <= 0) throw new CustomException("507", "DB저장 오류");
+
+                insertDeviceDetailResult = deviceMapper.insertDeviceDetail(params);
+                if(insertDeviceDetailResult <= 0) throw new CustomException("507", "DB저장 오류");
+                else stringObject = "Y";
 
             }
 
-            log.info("stringObject: " + stringObject);
             if (stringObject.equals("Y") && registYn.equals("Y")) {
                 conMap.put("body", "Device Insert OK");
                 msg = "홈 IoT 컨트롤러 정보 등록 성공";
@@ -290,10 +288,6 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setLongitude(params.getLongitude());
                 result.setTmpRegistKey("NULL");
 
-            } else if(stringObject.equals("N")) {
-                conMap.put("body", "Device Insert/Update FAIL");
-                msg = "홈 IoT 컨트롤러 정보 등록/수정 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             } else {
                 conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
@@ -310,9 +304,9 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisCommand.deleteValues(deviceInfoUpsert.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (CustomException e){
             log.error("", e);
-            throw new Exception();
+            throw new CustomException("507", "입력값 오류");
         }
     }
 
