@@ -129,8 +129,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getModeCode()) ||
-                Validator.isNullOrEmpty(params.getSleepCode())){
+                Validator.isNullOrEmpty(params.getModeCode())){
             throw new CustomException("404", "모드변경 값 오류");
         }
         return deviceService.doModeChange(params);

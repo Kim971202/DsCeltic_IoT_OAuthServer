@@ -410,27 +410,31 @@ public class DeviceServiceImpl implements DeviceService {
         String stringObject = null;
         String msg;
         String serialNumber;
-
         String modeCode = params.getModeCode();
-        String sleepCode = params.getSleepCode();
+
+        String sleepCode = null;
+        if(params.getModeCode().equals("06")) sleepCode = params.getSleepCode();
+
         String userId = params.getUserId();
         String responseMessage;
         String redisValue;
         MobiusResponse response;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+
         try  {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             serialNumber = device.getSerialNumber();
 
-            modeChange.setAccessToken(params.getAccessToken());
             modeChange.setUserId(params.getUserId());
             modeChange.setDeviceId(params.getDeviceId());
             modeChange.setControlAuthKey(params.getControlAuthKey());
             modeChange.setModelCode(params.getModelCode());
             modeChange.setModeCode(modeCode);
-            modeChange.setSleepCode(sleepCode);
+
+            if(modeCode.equals("06")) modeChange.setSleepCode(sleepCode);
+
             modeChange.setFunctionId("opMd");
             modeChange.setUuid(common.getTransactionId());
             log.info("modeChange.getUuid(): " + modeChange.getUuid());
@@ -513,7 +517,6 @@ public class DeviceServiceImpl implements DeviceService {
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             serialNumber = device.getSerialNumber();
 
-            temperatureSet.setAccessToken(params.getAccessToken());
             temperatureSet.setUserId(userId);
             temperatureSet.setDeviceId(params.getDeviceId());
             temperatureSet.setControlAuthKey(params.getControlAuthKey());
@@ -599,7 +602,6 @@ public class DeviceServiceImpl implements DeviceService {
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             serialNumber = device.getSerialNumber();
 
-            boiledWaterTempertureSet.setAccessToken(params.getAccessToken());
             boiledWaterTempertureSet.setUserId(userId);
             boiledWaterTempertureSet.setDeviceId(params.getDeviceId());
             boiledWaterTempertureSet.setControlAuthKey(params.getControlAuthKey());
@@ -686,7 +688,6 @@ public class DeviceServiceImpl implements DeviceService {
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             serialNumber = device.getSerialNumber();
 
-            waterTempertureSet.setAccessToken(params.getAccessToken());
             waterTempertureSet.setUserId(userId);
             waterTempertureSet.setDeviceId(params.getDeviceId());
             waterTempertureSet.setControlAuthKey(params.getControlAuthKey());
@@ -772,7 +773,6 @@ public class DeviceServiceImpl implements DeviceService {
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             serialNumber = device.getSerialNumber();
 
-            fastHotWaterSet.setAccessToken(params.getAccessToken());
             fastHotWaterSet.setUserId(userId);
             fastHotWaterSet.setDeviceId(params.getDeviceId());
             fastHotWaterSet.setControlAuthKey(params.getControlAuthKey());
@@ -860,7 +860,6 @@ public class DeviceServiceImpl implements DeviceService {
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             serialNumber = device.getSerialNumber();
 
-            lockSet.setAccessToken(params.getAccessToken());
             lockSet.setUserId(userId);
             lockSet.setDeviceId(params.getDeviceId());
             lockSet.setControlAuthKey(params.getControlAuthKey());
@@ -956,7 +955,7 @@ public class DeviceServiceImpl implements DeviceService {
         List<String> addrNicknameList;
         List<String> regSortList;
         List<String> responseList = new ArrayList<>();
-        List<String> gwRKeyList = null;
+        List<String> gwRKeyList;
         HashMap<String, String> request = new HashMap<>();
         List<Map<String, String>> appResponse = new ArrayList<>();
         try {
@@ -975,14 +974,15 @@ public class DeviceServiceImpl implements DeviceService {
             log.info("regSortList: " + regSortList);
             log.info("serialNumberList: " + serialNumberList);
 
-            if(rKeyList == null){
+            if(rKeyList == null || deviceIdList == null){
                 msg = "등록된 R/C가 없습니다";
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
             request.put("userId", userId);
-            request.put("controlAuthKey", "controlAuthKey");
+            request.put("controlAuthKey", rKeyList.get(0));
+            request.put("deviceId", deviceIdList.get(0));
             request.put("functionId", functionId);
             request.put("uuId", uuId);
             log.info("request1: " + request);
