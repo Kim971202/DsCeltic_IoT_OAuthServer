@@ -55,9 +55,12 @@ public class MobiusController {
         String controlAuthKey = common.readCon(jsonBody, "rKey");
         String[] serialNumber = common.readCon(jsonBody, "sur").split("/");
 
+        String mfStFunctionId = common.readCon(jsonBody, "functionId");
+        String rtStFunctionId = common.readCon(jsonBody, "functionId");
+
         String userId;
         String resultCode;
-        String functionId = null;
+        String functionId = "null";
         String redisValue = redisCommand.getValues(uuId);
         log.info("redisValue: " + redisValue);
         List<String> redisValueList;
@@ -67,9 +70,24 @@ public class MobiusController {
             functionId = redisValueList.get(1);
             log.info("userId: " + userId);
             log.info("functionId: " + functionId);
-        } else if(errorCode != null && errorDateTime != null){
+        } else if(!errorCode.equals("null") && !errorDateTime.equals("null")){
             mobiusService.errorHandler(serialNumber[0], controlAuthKey, errorCode, errorDateTime);
             return "DB Added";
+        } else if(mfStFunctionId.equals("mfSt")){
+            // 변경실시간상태
+            if(common.readCon(jsonBody, "htTp") != null){ // 실내 온도 설정 - 실내 난방
+
+            } else if(common.readCon(jsonBody, "wtTp") != null){ // 난방수 온도 설정 - 온돌 난방
+
+            } else if(common.readCon(jsonBody, "hwTp") != null){ // 온수 온도 설정 - 온수 전용
+
+            }
+
+
+
+        } else if(rtStFunctionId.equals("rtSt")){
+            // 주기상태보고
+
         } else {
             return "0x0106-Devices 상태 보고 요청";
         }
