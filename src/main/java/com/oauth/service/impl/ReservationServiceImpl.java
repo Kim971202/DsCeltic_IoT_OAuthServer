@@ -308,8 +308,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
 
-            setWeek.setAccessToken(params.getAccessToken());
-            setWeek.setUuId(params.getUserId());
+            setWeek.setUserId(params.getUserId());
             setWeek.setDeviceId(params.getDeviceId());
             setWeek.setControlAuthKey(params.getControlAuthKey());
             setWeek.setFunctionId("7wk");
@@ -327,6 +326,9 @@ public class ReservationServiceImpl implements ReservationService{
 
             redisValue = userId + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
+
+            System.out.println(JSON.toJson(setWeek, true));
+
             response = mobiusService.createCin(device.getSerialNumber(), userId, JSON.toJson(setWeek));
 
             if(!response.getResponseCode().equals("201")){

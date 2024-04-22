@@ -147,6 +147,8 @@ public class UserServiceImpl implements UserService {
             result.setDevice(data);
 
             if(stringObject.equals("Y")) {
+                param.setAccessToken(token);
+                memberMapper.updateLoginDatetime(param);
                 conMap.put("body", "Login OK");
                 msg = "로그인 성공";
             }
@@ -170,8 +172,8 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
-        return null;
     }
 
     /** 회원가입 */

@@ -94,7 +94,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getLongitude()) ||
                 Validator.isNullOrEmpty(params.getDeviceNickname()) ||
                 Validator.isNullOrEmpty(params.getAddrNickname())){
-            throw new CustomException("404", "전원 On/Off 값 오류");
+            throw new CustomException("404", "홈 IoT 컨트롤러 정보 등록/수정 값 오류");
         }
         return deviceService.doDeviceInfoUpsert(params);
     }

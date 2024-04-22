@@ -336,4 +336,15 @@
             DEVC_CTRL_KEY = #{controlAuthKey};
     </select>
 
+    <update id="updateLoginDatetime" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_USER
+        SET
+            LAST_LOGIN_DATM = now(),
+            API_ATTC_KEY = #{accessToken},
+            API_ATTC_KEY_CRE_DATM = now()
+        WHERE
+            USER_ID = #{userId}
+    </update>
+
 </mapper>

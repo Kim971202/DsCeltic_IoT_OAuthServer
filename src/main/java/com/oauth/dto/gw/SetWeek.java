@@ -10,7 +10,6 @@ import java.util.List;
 @Setter
 public class SetWeek {
 
-    private String accessToken;
     private String userId;
     private String deviceId;
     private String controlAuthKey;
