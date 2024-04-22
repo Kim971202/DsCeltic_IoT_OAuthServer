@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Transactional(rollbackFor = {Exception.class, CustomException.class})
 public class UserServiceImpl implements UserService {
     @Autowired
     MobiusService mobiusService;
@@ -44,12 +45,8 @@ public class UserServiceImpl implements UserService {
     private Common common;
     @Autowired
     private RedisCommand redisCommand;
-
     @Autowired
     private ApiTokenUtils apiTokenUtils;
-
-    @Autowired
-    SqlSessionFactory sqlSessionFactory;
     @Autowired
     GwMessagingSystem gwMessagingSystem;
     @Value("${server.timeout}")
@@ -58,7 +55,6 @@ public class UserServiceImpl implements UserService {
     Map<String, String> modelCodeMap;
 
     /** 회원 로그인 */
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResponseEntity<?> doLogin(String userId, String userPassword, String pushToken) throws CustomException {
 
@@ -177,33 +173,36 @@ public class UserServiceImpl implements UserService {
     }
 
     /** 회원가입 */
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException {
 
         ResponseEntity<?> result = null;
 
-        // Transaction용 클래스 선언
-        SqlSession session = sqlSessionFactory.openSession();
-
         ApiResponse.Data data = new ApiResponse.Data();
-        String stringObject;
+        String stringObject = "N";
 
         String userPassword = params.getUserPassword();
         String msg;
-        int result1;
-        int result2;
-        MemberMapper mMapper = session.getMapper(MemberMapper.class);
+
         try {
 
             userPassword = encoder.encode(userPassword);
             params.setUserPassword(userPassword);
 
-            result1 = mMapper.insertAccount(params);
-            result2 = mMapper.insertMember(params);
+            if(memberMapper.insertAccount(params) > 0) stringObject = "Y";
+            else {
+                msg = "회원가입 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
 
-            if (result1 > 0 && result2 > 0) stringObject = "Y";
-            else stringObject = "N";
+            if(memberMapper.insertMember(params) > 0) stringObject = "Y";
+            else {
+                msg = "회원가입 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
 
             if (stringObject.equals("Y")) msg = "회원가입 성공";
             else msg = "회원가입 실패";
