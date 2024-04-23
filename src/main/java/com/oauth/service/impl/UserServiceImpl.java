@@ -77,14 +77,17 @@ public class UserServiceImpl implements UserService {
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         AuthServerDTO param = new AuthServerDTO();
-        int insertCommandHistory;
 
         try {
             param.setFunctionId("Login");
-            param.setDeviceId("");
+            param.setDeviceId("EMPTY");
             param.setUserId(userId);
-            insertCommandHistory = memberMapper.insertCommandHistory(param);
-            log.info("insertCommandHistory: " + insertCommandHistory);
+
+            if(memberMapper.insertCommandHistory(param) <= 0) {
+                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
 
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
@@ -186,6 +189,15 @@ public class UserServiceImpl implements UserService {
 
         try {
 
+            params.setFunctionId("Regist");
+            params.setDeviceId("EMPTY");
+            params.setUserId(params.getUserId());
+            if(memberMapper.insertCommandHistory(params) <= 0) {
+                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             userPassword = encoder.encode(userPassword);
             params.setUserPassword(userPassword);
 
@@ -213,8 +225,8 @@ public class UserServiceImpl implements UserService {
 
             result = new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
         return result;
     }
@@ -246,8 +258,8 @@ public class UserServiceImpl implements UserService {
         }catch (Exception e){
             System.out.println(e.getMessage());
             log.error("", e);
+            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
         }
-        return null;
     }
 
     /** ID 찾기 */
@@ -263,10 +275,16 @@ public class UserServiceImpl implements UserService {
         List<AuthServerDTO> member = null;
         List<String> userId = null;
         try {
-            log.info("userHp: " + userHp);
-            log.info("modelCode: " + modelCode);
-            log.info("deviceId: " + deviceId);
-            log.info("modelCodeMap: " + modelCodeMap);
+
+            params.setFunctionId("IdFind");
+            params.setDeviceId(deviceId);
+            params.setUserId(params.getUserId());
+            if(memberMapper.insertCommandHistory(params) <= 0) {
+                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
+
             // 구형 모델의 경우
             if(modelCode.equals(modelCodeMap.get("oldModel"))) member = memberMapper.getUserByHp(userHp);
             else if(modelCode.equals(modelCodeMap.get("newModel"))) member = memberMapper.getUserByDeviceId(deviceId);
@@ -288,8 +306,8 @@ public class UserServiceImpl implements UserService {
 
         }catch (Exception e){
             log.error("", e);
+            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
         }
-        return null;
     }
 
     /** 비밀번호 찾기 - 초기화 */
@@ -304,6 +322,15 @@ public class UserServiceImpl implements UserService {
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+
+            params.setFunctionId("ResetPassword");
+            params.setDeviceId(params.getDeviceId());
+            params.setUserId(params.getUserId());
+            if(memberMapper.insertCommandHistory(params) <= 0) {
+                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
             // 구형 모델의 경우
             if(modelCode.equals(modelCodeMap.get("oldModel")) || modelCode.equals(modelCodeMap.get("newModel")))
@@ -337,7 +364,7 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
-            throw new RuntimeException(e);
+            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -346,18 +373,19 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doChangePassword(AuthServerDTO params) throws CustomException {
 
         ApiResponse.Data data = new ApiResponse.Data();
-        String stringObject;
+        String stringObject = "N";
         String msg;
-        int result;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try{
 
-            Common.updateMemberDTOList(params, "userPassword", encoder.encode(params.getUserPassword()));
-            result = memberMapper.updatePassword(params);
+            params.setNewPassword(encoder.encode(params.getUserPassword()));
 
-            if(result > 0) stringObject = "Y";
-            else stringObject = "N";
+            if(memberMapper.updatePassword(params) <= 0){
+                msg = "비밀번호 변경 - 생성 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            } else stringObject = "Y";
 
             if(stringObject.equals("Y")) {
                 conMap.put("body", "Change Password OK");
@@ -379,6 +407,15 @@ public class UserServiceImpl implements UserService {
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
+
+            params.setFunctionId("ChangePassword");
+            params.setDeviceId("EMPTY");
+            params.setUserId(params.getUserId());
+            if(memberMapper.insertCommandHistory(params) <= 0) {
+                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
@@ -640,16 +677,12 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doInviteStatus(AuthServerDTO params)
             throws CustomException{
 
-        // Transaction용 클래스 선언
-        SqlSession session = sqlSessionFactory.openSession();
-
         String stringObject;
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String requestUserId = params.getRequestUserId();
         String responseUserId = params.getResponseUserId();
         String inviteAcceptYn = params.getInviteAcceptYn();
-        MemberMapper mMapper = session.getMapper(MemberMapper.class);
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -668,22 +701,22 @@ public class UserServiceImpl implements UserService {
             int acceptInviteResult;
             if(inviteAcceptYn.equals("Y")){
 
-                acceptInviteResult = mMapper.acceptInvite(params);
+                acceptInviteResult = memberMapper.acceptInvite(params);
 
-                member = mMapper.getDeviceIdByUserId(requestUserId);
+                member = memberMapper.getDeviceIdByUserId(requestUserId);
 
                 Common.updateMemberDTOList(member, "responseUserId", responseUserId);
                 Common.updateMemberDTOList(member, "householder", "N");
 
                 log.info("member: " + member);
-                insertNewHouseMemberResult = mMapper.insertNewHouseMember(member);
+                insertNewHouseMemberResult = memberMapper.insertNewHouseMember(member);
 
                 if(insertNewHouseMemberResult > 0 && acceptInviteResult > 0) stringObject = "Y";
                 else stringObject = "N";
 
             } else if(inviteAcceptYn.equals("N")){
 
-                acceptInviteResult = mMapper.acceptInvite(params);
+                acceptInviteResult = memberMapper.acceptInvite(params);
                 if(acceptInviteResult > 0) stringObject = "Y";
                 else stringObject = "N";
 
@@ -942,16 +975,12 @@ public class UserServiceImpl implements UserService {
         String nextHouseholdId = null;
         int result;
 
-        // Transaction용 클래스 선언
-        SqlSession session = sqlSessionFactory.openSession();
-        MemberMapper mMapper = session.getMapper(MemberMapper.class);
-
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 
-                List<AuthServerDTO> deviceIds = mMapper.getDeviceIdByUserId(params.getUserId());
-                List<AuthServerDTO> members = mMapper.getHouseMembersByUserId(deviceIds);
+                List<AuthServerDTO> deviceIds = memberMapper.getDeviceIdByUserId(params.getUserId());
+                List<AuthServerDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
 
                 if(deviceIds != null && members != null){
                     stringObject = "Y";
@@ -967,11 +996,11 @@ public class UserServiceImpl implements UserService {
 
                     if(userIdList != null) nextHouseholdId = userIdList.get(0);
 
-                    result = mMapper.delHouseMember(params.getUserId());
+                    result = memberMapper.delHouseMember(params.getUserId());
                     if(result <= 0) stringObject = "N";
 
-                    mMapper.updateHouseholdTbrOprUser(nextHouseholdId);
-                    mMapper.updateHouseholdTbrOprUserDevice(nextHouseholdId);
+                    memberMapper.updateHouseholdTbrOprUser(nextHouseholdId);
+                    memberMapper.updateHouseholdTbrOprUserDevice(nextHouseholdId);
 
                 } else stringObject = "N";
                 
@@ -1546,9 +1575,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> doUpdateDeviceLocationNickname(AuthServerDTO params) throws CustomException {
 
-        // Transaction용 클래스 선언
-        SqlSession session = sqlSessionFactory.openSession();
-        MemberMapper mMapper = session.getMapper(MemberMapper.class);
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject;
         String msg;
@@ -1560,8 +1586,8 @@ public class UserServiceImpl implements UserService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 
-            updateResult1 = mMapper.updateDeviceLocationNicknameDeviceDetail(params);
-            updateResult2 = mMapper.updateDeviceLocationNicknameDeviceRegist(params);
+            updateResult1 = memberMapper.updateDeviceLocationNicknameDeviceDetail(params);
+            updateResult2 = memberMapper.updateDeviceLocationNicknameDeviceRegist(params);
 
             if(updateResult1 > 0 && updateResult2 > 0) stringObject = "Y";
             else stringObject = "N";
