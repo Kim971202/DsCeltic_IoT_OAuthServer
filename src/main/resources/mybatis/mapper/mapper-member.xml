@@ -115,24 +115,27 @@
     </select>
 
     <insert id="inviteHouseMember" parameterType="com.oauth.dto.AuthServerDTO">
-        INSERT INTO TBR_OPR_USER_INVITE_STATUS
-        (
-        REQUEST_USER_ID,
-        RESPONSE_USER_ID,
-        RESPONSE_USER_HP,
-        INVITE_START_DATE,
-        INVITE_END_DATE,
-        INVITE_ACCEPT_YN,
-        REQUEST_USER_NICK
-        )
-        VALUES(
-        #{requestUserId},
-        #{responseUserId},
-        #{responseHp},
-        DATE_FORMAT(now(), "%y-%m-%d"),
-        DATE_ADD(DATE_FORMAT(now(), "%y-%m-%d"), INTERVAL 3 DAY),
-        'N',
-        #{requestUserNick});
+        INSERT INTO
+            TBR_OPR_USER_INVITE_STATUS
+            (
+                REQUEST_USER_ID,
+                RESPONSE_USER_ID,
+                RESPONSE_USER_HP,
+                INVITE_START_DATE,
+                INVITE_END_DATE,
+                INVITE_ACCEPT_YN,
+                REQUEST_USER_NICK
+            )
+            VALUES(
+                #{requestUserId},
+                #{responseUserId},
+                #{responseHp},
+                DATE_FORMAT(now(), "%y-%m-%d"),
+                DATE_ADD(DATE_FORMAT(now(), "%y-%m-%d"),
+                INTERVAL 3 DAY),
+                'N',
+                #{requestUserNick}
+            );
     </insert>
 
     <update id="updateInviteHouseMember" parameterType="com.oauth.dto.AuthServerDTO">

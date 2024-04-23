@@ -66,7 +66,8 @@
     <update id="changeDeviceNickname" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBR_OPR_DEVICE_DETAIL
-            SET DEVC_NICK = #{newDeviceNickname}
+        SET
+            DEVC_NICK = #{newDeviceNickname}
         WHERE
             DEVC_ID = #{deviceId}
     </update>
