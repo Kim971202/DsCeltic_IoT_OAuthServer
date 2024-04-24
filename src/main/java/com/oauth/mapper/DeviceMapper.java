@@ -1,6 +1,7 @@
 package com.oauth.mapper;
 
 import com.oauth.dto.AuthServerDTO;
+import com.oauth.dto.gw.DeviceStatusInfo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -24,5 +25,8 @@ public interface DeviceMapper {
     public List<AuthServerDTO> getControlAuthKeyByUserId(String userId);
     public List<AuthServerDTO> getDeviceNicknameAndDeviceLocNickname(List<AuthServerDTO> device);
     public AuthServerDTO getDeviceInfoSearch(String userId);
-
+    public int insertDeviceStatus(DeviceStatusInfo.Device device);
+    public int updateDeviceStatus(DeviceStatusInfo.Device device);
+    public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
+    public int insertUserDevice(AuthServerDTO device);
 }

@@ -75,17 +75,19 @@ public class UserServiceImpl implements UserService {
         List<String> regSort;
         String msg;
         String token;
+        String hp;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         AuthServerDTO param = new AuthServerDTO();
 
         try {
 
+            hp = memberMapper.getHpByUserId(userId).getHp();
+
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
 
             password = account.getUserPassword();
-
             if(!encoder.matches(userPassword, password)){
                 msg = "PW 에러";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
@@ -166,6 +168,7 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
+            result.setHp(hp);
             result.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);

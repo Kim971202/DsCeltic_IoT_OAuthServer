@@ -1,6 +1,7 @@
 package com.oauth.dto.gw;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Data
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -24,6 +26,8 @@ public class DeviceStatusInfo {
       }
       return dr910W;
    }
+   public void addDr910W(Device device) {devices.add(device);}
+   public void setDevices(List<Device> devices) {this.devices.addAll(devices);}
 
    private String modelCategoryCode;
    private String deviceStatus;
@@ -31,11 +35,9 @@ public class DeviceStatusInfo {
    private String uuId;
    private String functionId;
 
-   public void addDr910W(Device device) {devices.add(device);}
-   public void setDevices(List<Device> devices) {
-      this.devices.addAll(devices);
-   }
 
+
+   @Data
    @Getter
    @Setter
    @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -49,6 +51,7 @@ public class DeviceStatusInfo {
       private String wtTp;
       private String hwTp;
       private Map<String, Object> rsCf;
+      private String stringRsCf;
       private String ftMd;
       private String bCdt;
       private String chTp;
@@ -60,7 +63,6 @@ public class DeviceStatusInfo {
       private String fcLc;
       private String blCf;
 
-
       private String modelCategoryCode;
       private String deviceNickName;
       private String regSort;
@@ -68,6 +70,6 @@ public class DeviceStatusInfo {
       private String controlAuthKey;
       private String deviceStatus;
       private String addrNickname;
-
+      private String serialNumber;
    }
 }

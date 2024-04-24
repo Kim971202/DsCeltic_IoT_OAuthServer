@@ -4,6 +4,7 @@ import com.oauth.dto.gw.DeviceStatusInfo;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.message.GwMessagingSystem;
 import com.oauth.service.impl.MobiusService;
+import com.oauth.service.impl.PushService;
 import com.oauth.utils.Common;
 import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
@@ -30,7 +31,8 @@ public class MobiusController {
     DeviceMapper deviceMapper;
     @Autowired
     GwMessagingSystem gwMessagingSystem;
-
+    @Autowired
+    PushService pushService;
     @PostMapping(value = "/GatewayToAppServer")
     @ResponseBody
     public String receiveCin(@RequestBody String jsonBody) throws Exception {
@@ -75,6 +77,20 @@ public class MobiusController {
             return "DB Added";
         } else if(mfStFunctionId.equals("mfSt")){
             // 변경실시간상태
+
+            pushService.sendPushMessage
+                    (
+                            common.readCon(jsonBody, "mfCd"),
+                            common.readCon(jsonBody, "rKey"),
+                            common.readCon(jsonBody, "wtTp"),
+                            common.readCon(jsonBody, "htTp"),
+                            common.readCon(jsonBody, "hwTp"),
+                            common.readCon(jsonBody, "mfDt"),
+                            common.readCon(jsonBody, "functionId"),
+                            common.readCon(jsonBody, "srNo"),
+                            common.readCon(jsonBody, "deviceId")
+                    );
+
             if(common.readCon(jsonBody, "htTp") != null){ // 실내 온도 설정 - 실내 난방
 
             } else if(common.readCon(jsonBody, "wtTp") != null){ // 난방수 온도 설정 - 온돌 난방
@@ -82,11 +98,25 @@ public class MobiusController {
             } else if(common.readCon(jsonBody, "hwTp") != null){ // 온수 온도 설정 - 온수 전용
 
             }
-
-
-
         } else if(rtStFunctionId.equals("rtSt")){
             // 주기상태보고
+            dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));
+            dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
+            dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
+            dr910WDevice.setPowr(common.readCon(jsonBody, "powr"));
+            dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd"));
+            dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp"));
+            dr910WDevice.setWtTp(common.readCon(jsonBody, "wtTp"));
+            dr910WDevice.setHwTp(common.readCon(jsonBody, "hwTp"));
+            dr910WDevice.setStringRsCf(common.readCon(jsonBody, "rsCf"));
+            dr910WDevice.setFtMd(common.readCon(jsonBody, "ftMd"));
+            dr910WDevice.setBCdt(common.readCon(jsonBody, "bCdt"));
+            dr910WDevice.setChTp(common.readCon(jsonBody, "chTp"));
+            dr910WDevice.setCwTp(common.readCon(jsonBody, "cwTp"));
+            dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt"));
+            dr910WDevice.setSlCd(common.readCon(jsonBody, "slCd"));
+            dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt"));
+            mobiusService.rtstHandler(dr910WDevice);
 
         } else {
             return "0x0106-Devices 상태 보고 요청";

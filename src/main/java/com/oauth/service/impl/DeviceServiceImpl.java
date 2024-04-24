@@ -183,13 +183,6 @@ public class DeviceServiceImpl implements DeviceService {
 
         MobiusResponse response;
 
-        int insertDeviceResult;
-        int insertDeviceRegistResult;
-        int insertDeviceDetailResult;
-
-        int updateDeviceRegistLocationResult;
-        int updateDeviceDetailLocationResult;
-
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -235,15 +228,13 @@ public class DeviceServiceImpl implements DeviceService {
                  * 1. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
                  * 2. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * */
-                updateDeviceDetailLocationResult = deviceMapper.updateDeviceDetailLocation(params);
-                if(updateDeviceDetailLocationResult <= 0) {
+                if(deviceMapper.updateDeviceDetailLocation(params) <= 0) {
                     msg = "홈 IoT 컨트롤러 정보 수정 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 }
 
-                updateDeviceRegistLocationResult = deviceMapper.updateDeviceRegistLocation(params);
-                if(updateDeviceRegistLocationResult <= 0) {
+                if(deviceMapper.updateDeviceRegistLocation(params) <= 0) {
                     msg = "홈 IoT 컨트롤러 정보 수정 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
@@ -269,30 +260,33 @@ public class DeviceServiceImpl implements DeviceService {
 
                 /* *
                  * IoT 디바이스 등록 INSERT 순서
-                 * 1. TBD_IOT_DEVICE_MODL_CD - 디바이스 모델 코드
-                 * 2. TBR_IOT_DEVICE - 디바이스
-                 * 3. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
-                 * 4. TBR_OPR_DEVICE_DETAIL - 단말정보상세
+                 * 1. TBR_IOT_DEVICE - 디바이스
+                 * 2. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
+                 * 3. TBR_OPR_DEVICE_DETAIL - 단말정보상세
+                 * 4. TBR_OPR_USER_DEVICE - 사용자 단말 정보
                  * */
                 params.setDeviceId(DEVICE_ID_PREFIX + "." + params.getSerialNumber() + "." + params.getSerialNumber());
                 params.setTmpRegistKey(params.getUserId() + "_" + common.getCurrentDateTime());
 
-                insertDeviceResult = deviceMapper.insertDevice(params);
-                if(insertDeviceResult <= 0){
+                if(deviceMapper.insertDevice(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 } else stringObject = "Y";
 
-                insertDeviceRegistResult = deviceMapper.insertDeviceRegist(params);
-                if(insertDeviceRegistResult <= 0){
+                if(deviceMapper.insertDeviceRegist(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 } else stringObject = "Y";
 
-                insertDeviceDetailResult = deviceMapper.insertDeviceDetail(params);
-                if(insertDeviceDetailResult <= 0){
+                if(deviceMapper.insertDeviceDetail(params) <= 0){
+                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                } else stringObject = "Y";
+
+                if(deviceMapper.insertUserDevice(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);

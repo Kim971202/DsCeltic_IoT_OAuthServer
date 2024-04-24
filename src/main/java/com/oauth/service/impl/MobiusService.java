@@ -3,12 +3,14 @@ package com.oauth.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
+import com.oauth.dto.gw.DeviceStatusInfo;
 import com.oauth.dto.mobius.AeDTO;
 import com.oauth.dto.mobius.CinDTO;
 import com.oauth.dto.mobius.CntDTO;
 import com.oauth.dto.mobius.SubDTO;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
+import com.oauth.response.ApiResponse;
 import com.oauth.utils.Common;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
@@ -24,9 +26,10 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.apache.http.entity.StringEntity;
-import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.net.URI;
@@ -41,6 +44,8 @@ public class MobiusService {
     Common common;
     @Autowired
     MemberMapper memberMapper;
+    @Autowired
+    DeviceMapper deviceMapper;
     @Value("${app.server.address.short.gw}")
     private String shortGwServerAddr;
     @Value("${app.server.address.long.gw}")
@@ -307,4 +312,24 @@ public class MobiusService {
         System.out.println("result.getControlAuthKey(): " + result.getControlAuthKey());
 
     }
+
+    public void rtstHandler(DeviceStatusInfo.Device dr910W){
+        ApiResponse.Data result = new ApiResponse.Data();
+        if(deviceMapper.getDeviceStautsByDeviceId(dr910W.getDeviceId()) == null){
+            // 신규 기기 INSERT
+            if(deviceMapper.insertDeviceStatus(dr910W) <= 0) {
+                String msg = "모드변경 실패";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            // 기존 기기 UPDATE
+            if(deviceMapper.updateDeviceStatus(dr910W) <= 0){
+                String msg = "모드변경 실패";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+        }
+    }
+
 }

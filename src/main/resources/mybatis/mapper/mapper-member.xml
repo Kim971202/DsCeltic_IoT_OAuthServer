@@ -354,4 +354,13 @@
             USER_ID = #{userId}
     </update>
 
+    <select id="getHpByUserId" parameterType="String" resultMap="member">
+        SELECT
+            HP AS hp
+        FROM
+            TBR_OPR_USER
+        WHERE
+            USER_ID = #{userID}
+    </select>
+
 </mapper>

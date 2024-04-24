@@ -47,4 +47,5 @@ public interface MemberMapper {
     public int insertCommandHistory(AuthServerDTO member);
     public AuthServerDTO identifyRKey(AuthServerDTO member);
     public int updateLoginDatetime(AuthServerDTO member);
+    public AuthServerDTO getHpByUserId(String userId);
 }

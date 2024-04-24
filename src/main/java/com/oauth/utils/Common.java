@@ -33,8 +33,6 @@ public class Common {
     @Autowired
     private ApiTokenUtils apiTokenUtils;
 
-    @Autowired
-    MemberMapper memberMapper;
     private static HashMap<String, String> mymap = new HashMap<>();
 
     public static String getMyMap(String rKey){
@@ -181,17 +179,6 @@ public class Common {
         }
 
         return userIds;
-    }
-
-    public boolean tokenVerify(AuthServerDTO params) {
-        AuthServerDTO member = memberMapper.accessTokenCheck(params);
-        if(member == null) return false;
-
-        List<String> userId = Common.extractJson(member.toString(), "userId");
-        List<String> accessToken = Common.extractJson(member.toString(), "accessToken");
-        log.info("userId: " + userId);
-        log.info("accessToken: " + accessToken);
-        return userId != null && accessToken != null;
     }
 
     /**
