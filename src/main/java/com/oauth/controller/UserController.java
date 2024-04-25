@@ -577,6 +577,6 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException("404", "임시저장키 생성 값 오류");
         }
-        return userService.doGenerateTempKey(params.getUserId());
+        return userService.doGenerateTempKey(params);
     }
 }

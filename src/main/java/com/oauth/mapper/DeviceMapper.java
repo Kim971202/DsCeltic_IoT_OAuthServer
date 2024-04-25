@@ -29,4 +29,6 @@ public interface DeviceMapper {
     public int updateDeviceStatus(DeviceStatusInfo.Device device);
     public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public int insertUserDevice(AuthServerDTO device);
+    public AuthServerDTO getPushinfoByDeviceId(String deviceId);
+
 }

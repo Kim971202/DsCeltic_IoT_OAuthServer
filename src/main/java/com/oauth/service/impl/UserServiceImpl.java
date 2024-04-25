@@ -1290,7 +1290,8 @@ public class UserServiceImpl implements UserService {
             * 생성이 정상적으로 동작 후 201을 Return 한다면 해당 AE, CNT는 존재하므로 생성X
             * 하지만 201을 Return 하지 못하는 경우 AE, CNT가 없다 판단하여 신규 생성
             * */
-
+            params.setSerialNumber("    " + params.getSerialNumber());
+            params.setModelCode(" " + params.getModelCode());
             aeResult = mobiusService.createAe(common.stringToHex(params.getSerialNumber()));
             cntResult = mobiusService.createCnt(common.stringToHex(params.getSerialNumber()), params.getUserId());
             subResult = mobiusService.createSub(common.stringToHex(params.getSerialNumber()), params.getUserId(), "gw");
@@ -1303,7 +1304,7 @@ public class UserServiceImpl implements UserService {
             else stringObject = "Y";
 
             if(stringObject.equals("Y")){
-                result.setDeviceId("0.2.481.1.1." + params.getUserId() + "." + common.stringToHex(params.getSerialNumber()));
+                result.setDeviceId("0.2.481.1.1." + common.stringToHex(params.getModelCode()) + "." + common.stringToHex(params.getSerialNumber()));
                 conMap.put("body", "First Device Auth Check OK");
                 msg = "최초 인증 성공";
             } else {
@@ -1322,7 +1323,7 @@ public class UserServiceImpl implements UserService {
             if(!cinResult.getResponseCode().equals("201")) msg = "PUSH 메세지 전송 오류";
 
             params.setFunctionId("FirstDeviceAuthCheck");
-            params.setDeviceId("EMPTY");
+            params.setDeviceId(result.getDeviceId());
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
@@ -1824,45 +1825,15 @@ public class UserServiceImpl implements UserService {
 
     /** 임시저장키 생성 */
     @Override
-    public ResponseEntity<?> doGenerateTempKey(String userId) throws CustomException {
+    public ResponseEntity<?> doGenerateTempKey(AuthServerDTO params) throws CustomException {
 
-        ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject;
-        String msg;
-        String tmpRegistKey = null;
-        AuthServerDTO userInfo;
-        AuthServerDTO params = new AuthServerDTO();
-        try {
-
-            userInfo = memberMapper.getUserByUserId(userId);
-
-            if(userInfo != null) {
-                stringObject = "Y";
-                tmpRegistKey = userId + "_" + common.getCurrentDateTime();
-                redisCommand.setValues(tmpRegistKey, userId, Duration.ofMinutes(TIME_OUT));
-            }
-            else stringObject = "N";
-
-            if(stringObject.equals("Y")) msg = "Temp 저장키 생성 성공";
-            else msg = "Temp 저장키 생성 실패";
-
-            result.setTmpRegistKey(tmpRegistKey);
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
-
-            params.setFunctionId("GenerateTempKey");
-            params.setDeviceId("EMPTY");
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e){
-            log.error("", e);
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-        }
+        params.setModelCode(" " + params.getModelCode());
+        params.setSerialNumber("    " + params.getSerialNumber());
+        System.out.println(common.stringToHex(params.getModelCode()));
+        System.out.println(common.stringToHex(params.getSerialNumber()));
+        System.out.println("0.2.481.1.1." + common.stringToHex(params.getModelCode()) + "." + common.stringToHex(params.getSerialNumber()));
+        System.out.println(common.stringToHex(params.getModelCode().replaceAll(" ", "")));
+        System.out.println(common.stringToHex(params.getSerialNumber().replaceAll(" ", "")));
+        return null;
     }
 }

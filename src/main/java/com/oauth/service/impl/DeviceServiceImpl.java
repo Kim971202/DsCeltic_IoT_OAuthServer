@@ -57,7 +57,7 @@ public class DeviceServiceImpl implements DeviceService {
     GwMessagingSystem gwMessagingSystem;
     @Value("${server.timeout}")
     private long TIME_OUT;
-    private final String DEVICE_ID_PREFIX = "0.2.481.1.1.";
+    private final String DEVICE_ID_PREFIX = "0.2.481.1.1";
 
     /** 전원 On/Off */
     @Override
@@ -265,8 +265,15 @@ public class DeviceServiceImpl implements DeviceService {
                  * 3. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * 4. TBR_OPR_USER_DEVICE - 사용자 단말 정보
                  * */
-                params.setDeviceId(DEVICE_ID_PREFIX + "." + params.getSerialNumber() + "." + params.getSerialNumber());
+
+                params.setModelCode(" " + params.getModelCode());
+                params.setSerialNumber("    " + params.getSerialNumber());
+
+                params.setDeviceId(DEVICE_ID_PREFIX + "." + common.stringToHex(params.getModelCode()) + "." + common.stringToHex(params.getSerialNumber()));
                 params.setTmpRegistKey(params.getUserId() + "_" + common.getCurrentDateTime());
+
+                params.setModelCode(params.getModelCode().replaceAll(" ", ""));
+                params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
 
                 if(deviceMapper.insertDevice(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
@@ -325,6 +332,7 @@ public class DeviceServiceImpl implements DeviceService {
             redisCommand.deleteValues(deviceInfoUpsert.getUuId());
 
             params.setFunctionId("DeviceInfoUpsert");
+            if(deviceId == null) deviceId = "EMPTy";
             params.setDeviceId(deviceId);
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {

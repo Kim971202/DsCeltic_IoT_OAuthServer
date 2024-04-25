@@ -78,18 +78,7 @@ public class MobiusController {
         } else if(mfStFunctionId.equals("mfSt")){
             // 변경실시간상태
 
-            pushService.sendPushMessage
-                    (
-                            common.readCon(jsonBody, "mfCd"),
-                            common.readCon(jsonBody, "rKey"),
-                            common.readCon(jsonBody, "wtTp"),
-                            common.readCon(jsonBody, "htTp"),
-                            common.readCon(jsonBody, "hwTp"),
-                            common.readCon(jsonBody, "mfDt"),
-                            common.readCon(jsonBody, "functionId"),
-                            common.readCon(jsonBody, "srNo"),
-                            common.readCon(jsonBody, "deviceId")
-                    );
+            pushService.sendPushMessage(jsonBody);
 
             if(common.readCon(jsonBody, "htTp") != null){ // 실내 온도 설정 - 실내 난방
 

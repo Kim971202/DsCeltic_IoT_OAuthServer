@@ -345,4 +345,18 @@
             'N'
         )
     </insert>
+
+    <select id="getPushinfoByDeviceId" parameterType="String" resultMap="device">
+        SELECT
+            a.USER_ID AS userId,
+            a.PUSH_TOKEN AS pushToken,
+            b.DEVC_ID AS deviceId
+        FROM
+            TBR_OPR_ACCOUNT a
+        INNER JOIN
+            TBR_OPR_USER_DEVICE b
+        WHERE
+            a.USER_ID = b.USER_ID AND DEVC_ID = #{deviceId}
+    </select>
+
 </mapper>
