@@ -255,17 +255,21 @@ public class Common {
         JsonNode baseNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin");
         JsonNode conNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin").path("con");
         JsonNode surNode = jsonNode.path("m2m:sgn").path("sur");
+        JsonNode rsCf24HNode = jsonNode.path("24h");
+        JsonNode rsCf12HNode = jsonNode.path("12h");
+        JsonNode rsCf7WKNode = jsonNode.path("7wk");
         JsonNode returnNode = conNode.path(value);
         JsonNode returnConNode = baseNode.path(value);
         String returnValue = objectMapper.writeValueAsString(returnNode);
         String returnConValue = objectMapper.writeValueAsString(returnConNode);
         String returnSurValue = objectMapper.writeValueAsString(surNode);
-
+        String returnRsCf24HNode = objectMapper.writeValueAsString(rsCf24HNode.get("md"));
 
         // TODO: 추후 True/False 로 분기 할것
         if(value.equals("rsCf")) return returnValue;
-        else if(value.equals("con")) return returnConValue;
-        else if(value.equals("sur")) return returnSurValue;
+        else if(value.equals("con")) return returnConValue.replace("\"", "");
+        else if(value.equals("sur")) return returnSurValue.replace("\"", "");
+        else if(value.equals("md")) return returnRsCf24HNode.replace("\"", "");
         else return returnValue.replace("\"", "");
     }
 

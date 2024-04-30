@@ -73,7 +73,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             redisValue = userId + "," + set24.getFunctionId();
             redisCommand.setValues(set24.getUuId(), redisValue);
-            response = mobiusService.createCin(device.getSerialNumber(), userId, JSON.toJson(set24));
+            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(set24));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -148,7 +148,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             redisValue = userId + "," + set12.getFunctionId();
             redisCommand.setValues(set12.getUuId(), redisValue);
-            response = mobiusResponse = mobiusService.createCin(device.getSerialNumber(), userId, JSON.toJson(set12));
+            response = mobiusResponse = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(set12));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -243,7 +243,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             redisValue = userId + "," + awakeAlarmSet.getFunctionId();
             redisCommand.setValues(awakeAlarmSet.getUuId(), redisValue);
-            response = mobiusService.createCin(device.getSerialNumber(), userId, JSON.toJson(awakeAlarmSet));
+            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(awakeAlarmSet));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -316,8 +316,8 @@ public class ReservationServiceImpl implements ReservationService{
             setWeek.setOnOffFlag(params.getOnOffFlag());
 
             for(int i = 0 ; i < params.getTimeWeek().length; ++i){
-                map.put("dayWeek", params.getDayWeek()[i]);
-                map.put("timeWeek", Arrays.asList(params.getTimeWeek()[i]));
+                map.put("wk", params.getDayWeek()[i]);
+                map.put("hs", Arrays.asList(params.getTimeWeek()[i]));
                 weekList.add(map);
                 map = new HashMap<>();
             }
@@ -329,7 +329,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             System.out.println(JSON.toJson(setWeek, true));
 
-            response = mobiusService.createCin(device.getSerialNumber(), userId, JSON.toJson(setWeek));
+            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(setWeek));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";

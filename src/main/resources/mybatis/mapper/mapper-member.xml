@@ -2,9 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.oauth.mapper.MemberMapper">
 
-    <resultMap id="member" type="com.oauth.dto.AuthServerDTO">
-
-    </resultMap>
+    <resultMap id="member" type="com.oauth.dto.AuthServerDTO"> </resultMap>
 
     <select id="getUserByUserId" parameterType="String" resultMap="member">
         SELECT HP AS hp, USER_ID AS userId, USER_NICK AS userNickname, API_ATTC_KEY AS accessToken
@@ -130,8 +128,8 @@
                 #{requestUserId},
                 #{responseUserId},
                 #{responseHp},
-                DATE_FORMAT(now(), "%y-%m-%d"),
-                DATE_ADD(DATE_FORMAT(now(), "%y-%m-%d"),
+                DATE_FORMAT(now(), "%y-%m-%d %H:%i:%S"),
+                DATE_ADD(DATE_FORMAT(now(), "%y-%m-%d %H:%i:%S"),
                 INTERVAL 3 DAY),
                 'N',
                 #{requestUserNick}
@@ -339,8 +337,6 @@
             a.DEVC_ID = b.DEVC_ID
         AND
             SERIAL_NO = #{serialNumber}
-        AND
-            DEVC_CTRL_KEY = #{controlAuthKey};
     </select>
 
     <update id="updateLoginDatetime" parameterType="com.oauth.dto.AuthServerDTO">

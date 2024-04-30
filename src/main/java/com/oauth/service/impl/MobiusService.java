@@ -302,10 +302,7 @@ public class MobiusService {
     public void errorHandler(String serialNumber, String controlAuthKey, String errorCode, String error) throws Exception{
 
         AuthServerDTO input = new AuthServerDTO();
-        String myString = "1234567890123458";
-        String conKey = "1213";
-        input.setSerialNumber(myString);
-        input.setControlAuthKey(conKey);
+        input.setSerialNumber(serialNumber);
         AuthServerDTO result = memberMapper.identifyRKey(input);
 
         System.out.println("result.getSerialNumber(): " + result.getSerialNumber());

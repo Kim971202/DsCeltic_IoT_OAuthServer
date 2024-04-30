@@ -77,7 +77,6 @@ public class ApiResponse {
         private String longitude;
         private String tmpRegistKey;
         private String duplicationYn;
-        //@JsonProperty("device")
         private Object homeViewValue;
         // GW에서 받은 값을 던지는 시험용 변수
         private Object testVariable;

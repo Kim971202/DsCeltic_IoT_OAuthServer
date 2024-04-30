@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -37,7 +38,7 @@ public class MobiusController {
     @ResponseBody
     public String receiveCin(@RequestBody String jsonBody) throws Exception {
 
-        System.out.println("GW Received JSON: " + JSON.toJson(jsonBody, true));
+        System.out.println("GW Received JSON: " + jsonBody);
 
         DeviceStatusInfo dr910W = new DeviceStatusInfo();
         DeviceStatusInfo.Device dr910WDevice = new DeviceStatusInfo.Device();
@@ -56,7 +57,7 @@ public class MobiusController {
         String errorDateTime = common.readCon(jsonBody, "erDt");
         String controlAuthKey = common.readCon(jsonBody, "rKey");
         String[] serialNumber = common.readCon(jsonBody, "sur").split("/");
-
+        System.out.println("serialNumber: " + Arrays.toString(serialNumber));
         String mfStFunctionId = common.readCon(jsonBody, "functionId");
         String rtStFunctionId = common.readCon(jsonBody, "functionId");
 
@@ -73,7 +74,11 @@ public class MobiusController {
             log.info("userId: " + userId);
             log.info("functionId: " + functionId);
         } else if(!errorCode.equals("null") && !errorDateTime.equals("null")){
-            mobiusService.errorHandler(serialNumber[0], controlAuthKey, errorCode, errorDateTime);
+            System.out.println("serialNumber[2]: " + serialNumber[2]);
+            System.out.println("controlAuthKey: " + controlAuthKey);
+            System.out.println("errorCode: " + errorCode);
+            System.out.println("errorDateTime: " + errorDateTime);
+            mobiusService.errorHandler(serialNumber[2], controlAuthKey, errorCode, errorDateTime);
             return "DB Added";
         } else if(mfStFunctionId.equals("mfSt")){
             // 변경실시간상태

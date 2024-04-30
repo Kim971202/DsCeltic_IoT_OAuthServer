@@ -357,6 +357,34 @@
             TBR_OPR_USER_DEVICE b
         WHERE
             a.USER_ID = b.USER_ID AND DEVC_ID = #{deviceId}
+        LIMIT 1
     </select>
+
+    <select id="getDeviceStauts" parameterType="java.util.List" resultMap="dr910w">
+        SELECT
+            DEVC_ID AS deviceId,
+            SERIAL_NO AS serialNumber,
+            R_KEY AS rKey,
+            POWR AS powr,
+            OPMD AS opMd,
+            HTTP AS htTp,
+            WTTP AS wtTp,
+            HWTP AS hwTp,
+            FTMD AS ftMd,
+            CHTP AS chTp,
+            RSCF AS stringRsCf,
+            HWST AS hwSt,
+            FCLC AS fcLc,
+            MFDT AS mfDt,
+            SLCD AS slCd
+        FROM
+            TBR_OPR_DEVICE_STATUS
+        WHERE
+            SERIAL_NO IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
 
 </mapper>

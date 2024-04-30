@@ -30,5 +30,5 @@ public interface DeviceMapper {
     public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public int insertUserDevice(AuthServerDTO device);
     public AuthServerDTO getPushinfoByDeviceId(String deviceId);
-
+    public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);
 }

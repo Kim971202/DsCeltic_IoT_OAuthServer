@@ -50,7 +50,6 @@ dependencies {
 
 	// Mysql 라이브러리
 	implementation 'mysql:mysql-connector-java'
-//	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2:-jdbc4:1.16'
 
 	// Mybatis 라이브러리
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.2'
