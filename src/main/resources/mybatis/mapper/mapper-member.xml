@@ -101,15 +101,20 @@
             a.DEVC_CTRL_KEY AS controlAuthKey,
             a.ATTC_DATM AS authenticationDatetime,
             b.DEVC_NICK AS deviceNickname,
+            c.TEMP_DEVC_REG_KEY AS tmpRegistKey,
+            c.LAT AS latitude,
+            c.LON AS longitude,
             ROW_NUMBER() OVER () AS regSort
         FROM
             TBR_OPR_USER_DEVICE a
         INNER JOIN
             TBR_OPR_DEVICE_DETAIL b ON a.DEVC_ID = b.DEVC_ID
+        INNER JOIN
+            TBT_OPR_DEVICE_REGIST c ON c.DEVC_ID = b.DEVC_ID
         WHERE
             a.DEVC_ID = b.DEVC_ID AND a.USER_ID = #{userId}
         ORDER BY
-        REG_DATM ASC;
+            a.REG_DATM ASC
     </select>
 
     <insert id="inviteHouseMember" parameterType="com.oauth.dto.AuthServerDTO">

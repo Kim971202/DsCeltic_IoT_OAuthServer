@@ -48,6 +48,9 @@ public class Common {
             String controlAuthKey,
             String nickname,
             String regSort,
+            String tmpRegistKey,
+            String latitude,
+            String longitude,
             Set<String> usedDeviceIds) {
         // 중복 체크
         if (usedDeviceIds.contains(deviceId)) {
@@ -63,6 +66,9 @@ public class Common {
         device.setControlAuthKey(controlAuthKey);
         device.setDeviceNickname(nickname);
         device.setRegSort(regSort);
+        device.setTmpRegistKey(tmpRegistKey);
+        device.setLatitude(latitude);
+        device.setLongitude(longitude);
 
         return device;
     }

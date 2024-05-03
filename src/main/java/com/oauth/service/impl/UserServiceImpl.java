@@ -71,6 +71,10 @@ public class UserServiceImpl implements UserService {
         List<String> controlAuthKey;
         List<String> deviceNickname;
         List<String> regSort;
+        List<String> tmpRegistKey;
+        List<String> latitude;
+        List<String> longitude;
+
         String msg;
         String token;
         String hp;
@@ -112,11 +116,18 @@ public class UserServiceImpl implements UserService {
                 controlAuthKey = Common.extractJson(deviceInfoList.toString(), "controlAuthKey");
                 deviceNickname = Common.extractJson(deviceInfoList.toString(), "deviceNickname");
                 regSort = Common.extractJson(deviceInfoList.toString(), "regSort");
+                tmpRegistKey = Common.extractJson(deviceInfoList.toString(), "tmpRegistKey");
+                latitude = Common.extractJson(deviceInfoList.toString(), "latitude");
+                longitude = Common.extractJson(deviceInfoList.toString(), "longitude");
 
-                System.out.println("deviceId: " + deviceId);
-                System.out.println("controlAuthKey: " + controlAuthKey);
-                System.out.println("deviceNickname: " + deviceNickname);
-                System.out.println("regSort: " + regSort);
+                log.info("deviceId: " + deviceId);
+                log.info("controlAuthKey: " + controlAuthKey);
+                log.info("deviceNickname: " + deviceNickname);
+                log.info("regSort: " + regSort);
+                log.info("tmpRegistKey: " + tmpRegistKey);
+                log.info("latitude: " + latitude);
+                log.info("longitude: " + longitude);
+
 
                 // Mapper실행 후 사용자가 가지고 있는 Device 개수
                 int numDevices = deviceInfoList.size();
@@ -124,7 +135,10 @@ public class UserServiceImpl implements UserService {
                 if(deviceId != null &&
                         controlAuthKey != null &&
                         deviceNickname != null &&
-                        regSort != null){
+                        regSort != null &&
+                        tmpRegistKey != null &&
+                        latitude != null &&
+                        longitude != null){
 
                     // Device 추가
                     for (int i = 0; i < numDevices; i++) {
@@ -133,6 +147,9 @@ public class UserServiceImpl implements UserService {
                                 controlAuthKey.get(i),
                                 deviceNickname.get(i),
                                 regSort.get(i),
+                                tmpRegistKey.get(i),
+                                latitude.get(i),
+                                longitude.get(i),
                                 userDeviceIds);
                         data.add(device);
                     }
@@ -165,7 +182,7 @@ public class UserServiceImpl implements UserService {
             if(memberMapper.insertCommandHistory(param) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
             hp = memberMapper.getHpByUserId(userId).getHp();
@@ -188,10 +205,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException {
 
         ResponseEntity<?> result = null;
-
         ApiResponse.Data data = new ApiResponse.Data();
-        String stringObject = "N";
-
         String userPassword = params.getUserPassword();
         String msg;
 
@@ -200,22 +214,19 @@ public class UserServiceImpl implements UserService {
             userPassword = encoder.encode(userPassword);
             params.setUserPassword(userPassword);
 
-            if(memberMapper.insertAccount(params) > 0) stringObject = "Y";
-            else {
+            if(memberMapper.insertAccount(params) <= 0) {
                 msg = "회원가입 실패";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            if(memberMapper.insertMember(params) > 0) stringObject = "Y";
-            else {
+            if(memberMapper.insertMember(params) <= 0) {
                 msg = "회원가입 실패";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            if (stringObject.equals("Y")) msg = "회원가입 성공";
-            else msg = "회원가입 실패";
+            msg = "회원가입 성공";
 
             params.setFunctionId("Regist");
             params.setDeviceId("EMPTY");
@@ -226,16 +237,12 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
-
-            result = new ResponseEntity<>(data, HttpStatus.OK);
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
         }
-        return result;
     }
 
     /** 회원중복 체크 */
@@ -274,27 +281,25 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doIdFind(AuthServerDTO params) throws CustomException {
 
         ApiResponse.Data data = new ApiResponse.Data();
-        String stringObject;
         String userHp = params.getHp();
         String modelCode = params.getModelCode();
         String deviceId = params.getDeviceId();
         String msg;
         List<AuthServerDTO> member = null;
-        List<String> userId = null;
+        List<String> userId;
         try {
 
             // 구형 모델의 경우
             if(modelCode.equals(modelCodeMap.get("oldModel"))) member = memberMapper.getUserByHp(userHp);
             else if(modelCode.equals(modelCodeMap.get("newModel"))) member = memberMapper.getUserByDeviceId(deviceId);
 
-            if(member == null) stringObject = "N";
-            else {
-                stringObject = "Y";
-                userId = Common.extractJson(member.toString(), "userId");
-            }
-            
-            if(stringObject.equals("Y")) msg = "ID 찾기 성공";
-            else msg = "일치하는 회원정보가 없습니다.";
+            if (member == null) {
+                msg = "일치하는 회원정보가 없습니다.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            } else userId = Common.extractJson(member.toString(), "userId");
+
+            msg = "ID 찾기 성공";
 
             params.setFunctionId("IdFind");
             if(deviceId.isEmpty()) deviceId = "EMPTY";
@@ -307,11 +312,8 @@ public class UserServiceImpl implements UserService {
             }
 
             data.setUserIdList(userId);
-            data.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
-
         }catch (Exception e){
             log.error("", e);
             return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
@@ -436,7 +438,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> doSearch(AuthServerDTO params) throws CustomException {
 
-        String stringObject;
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String userId = params.getUserId();
@@ -444,15 +445,16 @@ public class UserServiceImpl implements UserService {
         try{
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
 
-            if (member != null) {
-                stringObject = "Y";
+            if (member == null) {
+                msg = "사용자정보가 없습니다.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            } else {
                 data.setUserId(member.getUserId());
                 data.setUserNickname(member.getUserNickname());
                 data.setHp(member.getHp());
-            } else stringObject = "N";
-
-            if(stringObject.equals("Y")) msg = "사용자정보 조회 성공";
-            else msg = "사용자정보 조회 실패";
+                msg = "사용자정보 조회 성공";
+            }
 
             params.setFunctionId("SearchUsers");
             params.setDeviceId("EMPTY");
@@ -463,11 +465,8 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
-
         }catch (Exception e){
             log.error("", e);
             return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
@@ -479,7 +478,6 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doUpdateUserNicknameHp(AuthServerDTO params) throws CustomException{
 
         ApiResponse.Data data = new ApiResponse.Data();
-        String stringObject;
         String msg;
         String userPassword = params.getUserPassword();
         AuthServerDTO dbPassword;
@@ -488,19 +486,25 @@ public class UserServiceImpl implements UserService {
 
         try{
             dbPassword = memberMapper.getPasswordByUserId(params.getUserId());
-            log.info("dbPassword: " + dbPassword);
-            if(!encoder.matches(userPassword, dbPassword.getUserPassword())) stringObject = "N";
-            else stringObject = "Y";
+            if (dbPassword == null) {
+                msg = "계정이 존재하지 않습니다.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
-            int result = memberMapper.updateUserNicknameAndHp(params);
-            if(result > 0) stringObject = "Y";
+            if(!encoder.matches(userPassword, dbPassword.getUserPassword())) {
+                msg = "비밀번호 오류.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
-            if(stringObject.equals("Y")) {
+            if(memberMapper.updateUserNicknameAndHp(params) <= 0) {
+                msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            } else {
                 conMap.put("body", "Update Nickname and PhoneNum OK");
                 msg = "회원 별칭(이름) 및 전화번호 변경 성공";
-            } else {
-                conMap.put("body", "Update Nickname and PhoneNum FAIL");
-                msg = "회원 별칭(이름) 및 전화번호 변경 실패";
             }
 
             conMap.put("targetToken", params.getPushToken());
@@ -518,13 +522,10 @@ public class UserServiceImpl implements UserService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
-
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -547,6 +548,12 @@ public class UserServiceImpl implements UserService {
 
         try{
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
+
+            if (account == null) {
+                msg = "계정이 존재하지 않습니다.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
             params.setNewPassword(encoder.encode(params.getNewPassword()));
 
             if(!encoder.matches(oldPassword, account.getUserPassword())){
@@ -602,7 +609,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> doViewHouseholdMemebers(AuthServerDTO params) throws CustomException{
 
-        String stringObject;
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String userId = params.getUserId();
@@ -613,8 +619,7 @@ public class UserServiceImpl implements UserService {
             List<ApiResponse.Data.User> user = new ArrayList<>();
 
             List<AuthServerDTO> deviceIds = memberMapper.getDeviceIdByUserId(userId);
-            if(!deviceIds.isEmpty()){
-                stringObject = "Y";
+            if(deviceIds != null){
                 List<AuthServerDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
                 log.info("members: " + members.size());
                 List<AuthServerDTO> memberStream = Common.deduplication(members, AuthServerDTO::getUserId);
@@ -637,10 +642,13 @@ public class UserServiceImpl implements UserService {
                         user.add(users);
                     }
                 }
-            } else stringObject = "N";
+            } else {
+                msg = "계정이 존재하지 않습니다.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
-            if(stringObject.equals("Y")) msg = "사용자(세대원) 정보 조회 성공";
-            else msg = "사용자(세대원) 정보 조회 실패";
+            msg = "사용자(세대원) 정보 조회 성공";
 
             params.setFunctionId("ViewHouseholdMemebers");
             params.setDeviceId("EMPTY");
@@ -652,10 +660,7 @@ public class UserServiceImpl implements UserService {
             }
 
             data.setUser(user);
-            data.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
-
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -732,7 +737,6 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doInviteStatus(AuthServerDTO params)
             throws CustomException{
 
-        String stringObject = "N";
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String requestUserId = params.getRequestUserId();
@@ -758,10 +762,15 @@ public class UserServiceImpl implements UserService {
                 if(memberMapper.acceptInvite(params) <= 0){
                     msg = "사용자 초대 - 수락 실패";
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                } else stringObject = "Y";
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
 
                 member = memberMapper.getDeviceIdByUserId(requestUserId);
+                if (member == null) {
+                    msg = "계정이 존재하지 않습니다.";
+                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
                 log.info("member: " + member);
 
                 Common.updateMemberDTOList(member, "responseUserId", responseUserId);
@@ -770,17 +779,16 @@ public class UserServiceImpl implements UserService {
                 if(memberMapper.insertNewHouseMember(member) <= 0){
                     msg = "사용자 초대 - 수락 실패";
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                } else stringObject = "Y";
-
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
 
             } else if(inviteAcceptYn.equals("N")){
 
                 if(memberMapper.acceptInvite(params) <= 0){
                     msg = "사용자 초대 - 수락 실패";
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                } else stringObject = "Y";
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
 
             } else {
                 msg = "예기치 못한 오류로 인해 서버에 연결할 수 없습니다";
@@ -788,14 +796,8 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Accept Invite OK");
-                msg = "사용자 초대 - 수락여부 성공";
-            }
-            else {
-                conMap.put("body", "Accept Invite FAIL");
-                msg = "사용자 초대 - 수락여부 실패";
-            }
+            conMap.put("body", "Accept Invite OK");
+            msg = "사용자 초대 - 수락여부 성공";
 
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Accept Invite");
@@ -815,10 +817,7 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
-
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -831,15 +830,18 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doInviteListView(AuthServerDTO params)
             throws CustomException{
 
-        String stringObject;
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String userId = params.getUserId();
         try {
 
             List<AuthServerDTO> invitationInfo = memberMapper.getInvitationList(userId);
-            if(invitationInfo.isEmpty()) stringObject = "N";
-            else stringObject = "Y";
+            System.out.println("invitationInfo: " + invitationInfo);
+            if (invitationInfo.isEmpty()) {
+                msg = "사용자 초대 이력이 없습니다.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
             // Device Set 생성
             Set<String> invitationIds = new HashSet<>();
@@ -885,8 +887,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
 
-            if(stringObject.equals("Y")) msg = "사용자 초대 - 목록 조회 성공";
-            else msg = "사용자 초대 - 목록 조회 실패";
+            msg = "사용자 초대 - 목록 조회 성공";
 
             params.setFunctionId("InviteListView");
             params.setDeviceId("EMPTY");
@@ -897,11 +898,8 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult("Y".equalsIgnoreCase(stringObject) ?
-                    ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
             data.setInvitation(inv);
-
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -914,7 +912,6 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doDelHouseholdMembers(AuthServerDTO params)
             throws CustomException{
 
-        String stringObject = "N";
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String userId = params.getUserId();
@@ -923,22 +920,16 @@ public class UserServiceImpl implements UserService {
 
         try {
             if(memberMapper.delHouseMember(userId) <= 0){
-                msg = "사용자(세대원) 실패";
+                msg = "사용자(세대원) 강제탈퇴 실패";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            } else stringObject = "Y";
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Force Delete Member OK");
-                msg = "사용자(세대원) - 강제탈퇴 성공";
-            }
-            else {
-                conMap.put("body", "Force Delete Member FAIL");
-                msg = "사용자(세대원) - 강제탈퇴 실패";
-            }
+            msg = "사용자(세대원) - 강제탈퇴 성공";
 
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Force Delete Member");
+            conMap.put("body", "Force Delete Member OK");
             conMap.put("id", "Force Delete Member ID");
             conMap.put("isEnd", "false");
 
@@ -952,12 +943,10 @@ public class UserServiceImpl implements UserService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult("Y".equalsIgnoreCase(stringObject) ?
-                    ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -971,7 +960,6 @@ public class UserServiceImpl implements UserService {
             throws CustomException{
 
         ApiResponse.Data data = new ApiResponse.Data();
-        String stringObject = "N";
         String msg ;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
@@ -990,12 +978,10 @@ public class UserServiceImpl implements UserService {
                 if(memberMapper.updatePushCodeStatus(memberList) <= 0){
                     msg = "홈 IoT 컨트롤러 알림 설정 실패";
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
 
-                } else stringObject = "Y";
-
-                if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 알림 설정 성공";
-                else msg = "홈 IoT 컨트롤러 알림 설정 실패";
+                msg = "홈 IoT 컨트롤러 알림 설정 실패";
 
                 params.setFunctionId("PushSet");
                 params.setDeviceId(deviceId);
@@ -1003,12 +989,10 @@ public class UserServiceImpl implements UserService {
                 if(memberMapper.insertCommandHistory(params) <= 0) {
                     msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
                 }
 
-                data.setResult("Y".equalsIgnoreCase(stringObject) ?
-                        ApiResponse.ResponseType.HTTP_200 :
-                        ApiResponse.ResponseType.CUSTOM_1003, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -1021,8 +1005,6 @@ public class UserServiceImpl implements UserService {
     public HashMap<String, Object> doSearchPushSet(AuthServerDTO params)
             throws CustomException{
 
-        ApiResponse.Data result = new ApiResponse.Data();
-        String msg;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         HashMap<String, Object> resultMap = new LinkedHashMap<String, Object>();
@@ -1035,6 +1017,11 @@ public class UserServiceImpl implements UserService {
             resultMap.put("resultMsg", "홈 IoT 컨트롤러 알림 정보 조회 성공");
 
             AuthServerDTO pushCodeInfo = memberMapper.getPushCodeStatus(params);
+            if (pushCodeInfo == null) {
+                resultMap.put("resultCode", "200");
+                resultMap.put("resultMsg", "홈 IoT 컨트롤러 알림 정보 조회 실패");
+                return resultMap;
+            }
 
             // 각각의 "pushCd"와 "pushYn"을 가지는 Map을 생성하여 리스트에 추가
             Map<String, String> push1 = new LinkedHashMap<>();
@@ -1058,16 +1045,17 @@ public class UserServiceImpl implements UserService {
             params.setDeviceId(deviceId);
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                resultMap.put("resultCode", "200");
+                resultMap.put("resultMsg", "DB_ERROR 잠시 후 다시 시도 해주십시오.");
+                return resultMap;
             }
-
             return resultMap;
         }catch (CustomException e){
             log.error("", e);
+            resultMap.put("resultCode", "400");
+            resultMap.put("resultMsg", "ERROR");
+            return resultMap;
         }
-        return null;
     }
 
     /** 사용자(세대주) 탈퇴 */
@@ -1075,7 +1063,6 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doDelHouseholder(AuthServerDTO params)
             throws CustomException{
 
-        String stringObject = "N";
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String nextHouseholdId = null;
@@ -1085,48 +1072,49 @@ public class UserServiceImpl implements UserService {
         try {
 
             List<AuthServerDTO> deviceIds = memberMapper.getDeviceIdByUserId(params.getUserId());
+            if (deviceIds.isEmpty()) {
+                msg = "등록된 존재하지 않습니다.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
+
             List<AuthServerDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
-
-            if(deviceIds != null && members != null){
-
-                    // List에서 요청자 userId 제거
-                members.stream()
-                        .filter(x -> x.getUserId()
-                                .equals(params.getUserId()))
-                        .collect(Collectors.toList())
-                        .forEach(members::remove);
-
-                List<String> userIdList = Common.extractJson(members.toString(), "userId");
-
-                if(userIdList != null) nextHouseholdId = userIdList.get(0);
-
-                if(memberMapper.delHouseMember(params.getUserId()) <= 0){
-                    msg = "사용자(세대주) 탈퇴 실패";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                } else stringObject = "Y";
-
-                if(memberMapper.updateHouseholdTbrOprUser(nextHouseholdId) <= 0){
-                    msg = "사용자(세대주) 탈퇴 실패";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                } else stringObject = "Y";
-
-                if( memberMapper.updateHouseholdTbrOprUserDevice(nextHouseholdId) <= 0){
-                    msg = "사용자(세대주) 탈퇴 실패";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                } else stringObject = "Y";
-            } else stringObject = "N";
-                
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Delete householder OK");
-                msg = "사용자(세대주) 탈퇴  성공";
+            if (members == null) {
+                msg = "등록된 사용자가 존재하지 않습니다.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
-            else {
-                conMap.put("body", "Delete householder OK");
-                msg = "사용자(세대주) 탈퇴  실패";
+            // List에서 요청자 userId 제거
+            members.stream()
+                    .filter(x -> x.getUserId()
+                            .equals(params.getUserId()))
+                    .collect(Collectors.toList())
+                    .forEach(members::remove);
+
+            List<String> userIdList = Common.extractJson(members.toString(), "userId");
+
+            if(userIdList != null) nextHouseholdId = userIdList.get(0);
+
+            if(memberMapper.delHouseMember(params.getUserId()) <= 0){
+                msg = "사용자(세대주) 탈퇴 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
+
+            if(memberMapper.updateHouseholdTbrOprUser(nextHouseholdId) <= 0){
+                msg = "사용자(세대주) 탈퇴 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
+
+            if( memberMapper.updateHouseholdTbrOprUserDevice(nextHouseholdId) <= 0){
+                msg = "사용자(세대주) 탈퇴 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
+
+            conMap.put("body", "Delete householder OK");
+            msg = "사용자(세대주) 탈퇴  실패";
 
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Delete householder");
@@ -1146,15 +1134,12 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult("Y".equalsIgnoreCase(stringObject) ?
-                    ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
-
         } catch (Exception e){
             log.error("", e);
+            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
         }
-        return null;
     }
 
     /** 홈IoT 서비스 회원 탈퇴 */
@@ -1162,7 +1147,6 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doWithdrawal(AuthServerDTO params)
             throws CustomException{
 
-        String stringObject = "N";
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String userId = params.getUserId();
@@ -1187,11 +1171,10 @@ public class UserServiceImpl implements UserService {
             if(!memberMapper.deleteMemberFromService(userId).equals("100")){
                 msg = "홈IoT 서비스 회원 탈퇴 실패";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            } else stringObject = "Y";
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
-            if(stringObject.equals("Y")) msg = "홈IoT 서비스 회원 탈퇴 성공";
-            else msg = "홈IoT 서비스 회원 탈퇴 실패";
+            msg = "홈IoT 서비스 회원 탈퇴 성공";
 
             params.setFunctionId("Withdrawal");
             params.setDeviceId("EMPTY");
@@ -1199,13 +1182,10 @@ public class UserServiceImpl implements UserService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult("Y".equalsIgnoreCase(stringObject) ?
-                    ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
-
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -1219,7 +1199,6 @@ public class UserServiceImpl implements UserService {
             throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject;
         String msg;
         String userId = params.getUserId();
         List<AuthServerDTO> deviceIdAndAuthKey;
@@ -1230,27 +1209,22 @@ public class UserServiceImpl implements UserService {
         try{
             deviceIdAndAuthKey = deviceMapper.getDeviceAuthCheckValuesByUserId(userId);
             if(deviceIdAndAuthKey.isEmpty()){
-                stringObject = "N";
+                msg = "홈 IoT 컨트롤러 인증 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }else {
                 deviceAuthCheck = deviceMapper.deviceAuthCheck(deviceIdAndAuthKey);
                 if(deviceAuthCheck.isEmpty()) {
-                    stringObject = "N";
-                } else {
-                    stringObject = "Y";
+                    msg = "홈 IoT 컨트롤러 인증 실패.";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 }
             }
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Device Auth Check OK");
-                msg = "홈 IoT 컨트롤러 인증 성공";
-            }
-            else {
-                conMap.put("body", "Device Auth Check FAIL");
-                msg = "홈 IoT 컨트롤러 인증 실패";
-            }
 
-            result.setResult("Y".equalsIgnoreCase(stringObject) ?
-                    ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            conMap.put("body", "Device Auth Check OK");
+            msg = "홈 IoT 컨트롤러 인증 성공";
+
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Device Auth Check");
@@ -1363,8 +1337,14 @@ public class UserServiceImpl implements UserService {
         String inputPassword = params.getUserPassword();
         String userId = params.getUserId();
         String token;
-        AuthServerDTO account = memberMapper.getAccountByUserId(userId);
+        AuthServerDTO account;
         try{
+            account = memberMapper.getAccountByUserId(userId);
+            if (account == null) {
+                msg = "계정이 존재하지 않습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
 
             if(!encoder.matches(inputPassword, account.getUserPassword())){
                 msg = "PW 에러";
@@ -1473,18 +1453,17 @@ public class UserServiceImpl implements UserService {
             throws CustomException{
 
         ApiResponse.Data data = new ApiResponse.Data();
-
-        String stringObject;
         String msg;
         String userId = params.getUserId();
         List<AuthServerDTO> member;
         try{
 
             member = memberMapper.getPushInfoList(userId);
-
-            if(member == null) stringObject = "N";
-            else {
-                stringObject = "Y";
+            if (member == null) {
+                msg = "계정이 존재하지 않습니다.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            } else {
 
                 // Set 생성
                 Set<String> pushSet = new HashSet<>();
@@ -1520,8 +1499,7 @@ public class UserServiceImpl implements UserService {
                 data.setPushInfo(pushInfoArray);
             }
 
-            if(stringObject.equals("Y")) msg = "스마트알림 - PUSH 이력 조회 성공";
-            else msg = "스마트알림 - PUSH 이력 조회 실패";
+            msg = "스마트알림 - PUSH 이력 조회 성공";
 
             params.setFunctionId("ViewPushHistory");
             params.setDeviceId("EMPTY");
@@ -1532,9 +1510,7 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult("Y".equalsIgnoreCase(stringObject) ?
-                    ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -1593,7 +1569,6 @@ public class UserServiceImpl implements UserService {
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
-
         }catch (Exception e){
             log.error("", e);
             return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
@@ -1605,7 +1580,6 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doBrightnessControl(AuthServerDTO params) throws CustomException {
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = null;
         String msg;
         AuthServerDTO serialNumber;
         String userId = params.getUserId();
@@ -1624,7 +1598,7 @@ public class UserServiceImpl implements UserService {
             if(serialNumber.getSerialNumber() == null){
                 msg = "기기 밝기 조절 실패";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
             conMap.put("controlAuthKey", params.getControlAuthKey());
             conMap.put("deviceId", params.getDeviceId());
@@ -1646,32 +1620,26 @@ public class UserServiceImpl implements UserService {
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
                 responseMessage = gwMessagingSystem.waitForResponse("blCf" + uuId, TIME_OUT, TimeUnit.SECONDS);
-                if(responseMessage == null) stringObject = "T";
-                else {
-                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
-                    else stringObject = "N";
-                    // 응답 처리
-                    log.info("receiveCin에서의 응답: " + responseMessage);
+                if(responseMessage == null) {
+                    msg = "REQ_TIME_OUT";
+                    result.setResult(ApiResponse.ResponseType.HTTP_500, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+
+                } else if(!responseMessage.equals("\"200\"")) {
+                    msg = "기기 밝기 수정 실패";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
+                // 응답 확인
+                log.info("receiveCin에서의 응답: " + responseMessage);
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
                 log.error("", e);
             }
 
-            if(stringObject.equals("Y")) {
-                conMap1.put("body", "Brightness Control OK");
-                msg = "기기 밝기 수정 성공";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            }
-            else if(stringObject.equals("N")) {
-                conMap1.put("body", "Brightness Control OK");
-                msg = "기기 밝기 수정 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-            else {
-                msg = "응답이 없거나 시간 초과";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
+            conMap1.put("body", "Brightness Control OK");
+            msg = "기기 밝기 수정 성공";
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
             conMap1.put("targetToken", params.getPushToken());
             conMap1.put("title", "Reset Password");
@@ -1690,9 +1658,8 @@ public class UserServiceImpl implements UserService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
-
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1705,17 +1672,18 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doNotice(AuthServerDTO params) throws CustomException {
 
         ApiResponse.Data data = new ApiResponse.Data();
-        ApiResponse.Data.NoticeInfo noticeInfo = new ApiResponse.Data.NoticeInfo();
         String userId = params.getUserId();
-        String stringObject;
         String msg;
         List<AuthServerDTO> noticeList;
         try {
 
             noticeList = memberMapper.getNoticeList();
-            if(noticeList.isEmpty()) stringObject = "N";
+            if(noticeList.isEmpty()) {
+                msg = "공지사항 목록이 없습니다.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
             else {
-                stringObject = "Y";
 
                 Set<String> noticeSet = new HashSet<>();
                 List<ApiResponse.Data.NoticeInfo> noticeInfoArray = new ArrayList<>();
@@ -1751,8 +1719,7 @@ public class UserServiceImpl implements UserService {
                 data.setNoticeInfo(noticeInfoArray);
             }
 
-            if(stringObject.equals("Y")) msg = "공지사항 조회 성공";
-            else msg = "공지사항 조회 실패";
+            msg = "공지사항 조회 성공";
 
             params.setFunctionId("Notice");
             params.setDeviceId("EMPTY");
@@ -1763,9 +1730,7 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult("Y".equalsIgnoreCase(stringObject) ?
-                    ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -1837,14 +1802,6 @@ public class UserServiceImpl implements UserService {
     /** 임시저장키 생성 */
     @Override
     public ResponseEntity<?> doGenerateTempKey(AuthServerDTO params) throws CustomException {
-
-        params.setModelCode(" " + params.getModelCode());
-        params.setSerialNumber("    " + params.getSerialNumber());
-        System.out.println(common.stringToHex(params.getModelCode()));
-        System.out.println(common.stringToHex(params.getSerialNumber()));
-        System.out.println("0.2.481.1.1." + common.stringToHex(params.getModelCode()) + "." + common.stringToHex(params.getSerialNumber()));
-        System.out.println(common.stringToHex(params.getModelCode().replaceAll(" ", "")));
-        System.out.println(common.stringToHex(params.getSerialNumber().replaceAll(" ", "")));
         return null;
     }
 }

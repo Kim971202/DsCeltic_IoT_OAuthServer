@@ -101,6 +101,9 @@ public class ApiResponse {
             private String controlAuthKey;
             private String deviceNickname;
             private String regSort;
+            private String tmpRegistKey;
+            private String latitude;
+            private String longitude;
         }
 
         @Getter
