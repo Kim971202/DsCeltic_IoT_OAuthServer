@@ -71,5 +71,6 @@ public class DeviceStatusInfo {
       private String deviceStatus;
       private String addrNickname;
       private String serialNumber;
+
    }
 }

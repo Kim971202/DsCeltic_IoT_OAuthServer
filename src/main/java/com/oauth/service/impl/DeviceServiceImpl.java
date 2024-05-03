@@ -1209,31 +1209,42 @@ public class DeviceServiceImpl implements DeviceService {
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject;
         String msg;
-        AuthServerDTO device;
+
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
+        String serialNumber;
+        List<Map<String, String>> resultMap = new ArrayList<>();
+        List<AuthServerDTO> errorInfoList;
+        AuthServerDTO rKeyIdentification;
         try {
 
-            device = memberMapper.identifyRKey(params);
-
-            System.out.println("device: " + device.getDeviceId());
-            System.out.println("device: " + device.getSerialNumber());
-            System.out.println("device: " + device.getControlAuthKey());
-
-            if(device.getDeviceId() == null ||
-                    device.getSerialNumber() == null ||
-                    device.getControlAuthKey() == null){
-                stringObject = "N";
-            } else stringObject = "Y";
+            String[] parts = params.getDeviceId().split("\\.");
+            serialNumber = parts[parts.length - 1]; // 배열의 마지막 요소 가져오기
+            rKeyIdentification = memberMapper.identifyRKey(common.hexToString(serialNumber).replaceAll(" ", ""));
+            System.out.println(rKeyIdentification.getSerialNumber());
+            if(rKeyIdentification.getDeviceId() != null &&
+                    rKeyIdentification.getSerialNumber() != null &&
+                    rKeyIdentification.getControlAuthKey() != null) {
+                errorInfoList = deviceMapper.getDeviceErroInfo(rKeyIdentification.getSerialNumber());
+                if(errorInfoList != null){
+                    for (AuthServerDTO authServerDTO : errorInfoList) {
+                        Map<String, String> data = new HashMap<>();
+                        data.put("errorMessage", authServerDTO.getErrorMessage());
+                        data.put("errorCode", authServerDTO.getErrorCode());
+                        data.put("errorDateTime", authServerDTO.getErrorDateTime());
+                        data.put("serialNumber", authServerDTO.getSerialNumber());
+                        resultMap.add(data);
+                    }
+                    stringObject = "Y";
+                } else stringObject = "N";
+            } else stringObject = "N";
 
             if(stringObject.equals("Y")) {
                 msg = "홈 IoT 컨트롤러 에러 정보 조회 성공";
-                // TODO: 추후 Input 값 변경
-                result.setErrorCode("ERROR_CODE");
-                result.setErrorName("ERROR_NAME");
-                result.setErrorMessage("ERROR_MESSAGE");
+                result.setErrorInfo(resultMap);
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            } else {
+            }
+            if(stringObject.equals("N")) {
                 msg = "홈 IoT 컨트롤러 에러 정보 조회 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }

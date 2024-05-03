@@ -324,7 +324,7 @@
         )
     </insert>
 
-    <select id="identifyRKey" resultMap="member">
+    <select id="identifyRKey" parameterType="String" resultMap="member">
         SELECT
             a.DEVC_ID AS deviceId,
             a.SERIAL_NO AS serialNumber,
@@ -336,7 +336,7 @@
         WHERE
             a.DEVC_ID = b.DEVC_ID
         AND
-            SERIAL_NO = #{serialNumber}
+            a.SERIAL_NO = #{serialNumber}
     </select>
 
     <update id="updateLoginDatetime" parameterType="com.oauth.dto.AuthServerDTO">

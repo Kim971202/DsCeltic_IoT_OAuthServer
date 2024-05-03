@@ -386,5 +386,39 @@
         </foreach>
     </select>
 
+    <insert id="insertErrorInfo" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_IOT_ERROR_COLEC
+        (
+            ERROR_NM,
+            ERROR_CODE,
+            REG_DATM,
+            KEEP_CYCLE,
+            SERIAL_NO,
+            LAST_ERROR_DATM
+        )
+        VALUES
+        (
+            #{errorMessage},
+            #{errorCode},
+            now(),
+            6,
+            #{serialNumber},
+            #{errorDateTime}
+        )
+    </insert>
+
+    <select id="getDeviceErroInfo" parameterType="String" resultMap="device">
+        SELECT
+            ERROR_NM AS errorMessage,
+            ERROR_CODE AS errorCode,
+            LAST_ERROR_DATM AS errorDateTime,
+            SERIAL_NO AS serialNumber
+        FROM
+            TBR_IOT_ERROR_COLEC
+        WHERE
+            SERIAL_NO = #{serialNumber}
+    </select>
+
 
 </mapper>
