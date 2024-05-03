@@ -370,7 +370,7 @@ public class Common {
 
     public String hexToString(String hex){
         StringBuilder stringBuilder = new StringBuilder();
-        for(int i = 0; i < hex.length(); ++i){
+        for (int i = 0; i < hex.length(); i += 2) {
             String str = hex.substring(i, i + 2);
             stringBuilder.append((char) Integer.parseInt(str, 16));
         }
