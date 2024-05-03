@@ -82,18 +82,21 @@ public class UserServiceImpl implements UserService {
 
         try {
 
-            hp = memberMapper.getHpByUserId(userId).getHp();
-
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
-            AuthServerDTO member = memberMapper.getUserByUserId(userId);
-
-            password = account.getUserPassword();
-            if(!encoder.matches(userPassword, password)){
-                msg = "PW 에러";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
+            if (account == null) {
+                msg = "계정이 존재하지 않습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            } else {
+                password = account.getUserPassword();
+                if(!encoder.matches(userPassword, password)){
+                    msg = "PW 에러";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
             }
 
+            AuthServerDTO member = memberMapper.getUserByUserId(userId);
             if(member != null) userNickname = member.getUserNickname();
 
             List<AuthServerDTO> deviceInfoList = memberMapper.getDeviceIdByUserId(userId);
@@ -168,6 +171,7 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
+            hp = memberMapper.getHpByUserId(userId).getHp();
             result.setHp(hp);
             result.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200 :
@@ -290,11 +294,12 @@ public class UserServiceImpl implements UserService {
             }
             
             if(stringObject.equals("Y")) msg = "ID 찾기 성공";
-            else msg = "입력한 아이디와 일치하는 회원정보가 없습니다.";
+            else msg = "일치하는 회원정보가 없습니다.";
 
             params.setFunctionId("IdFind");
+            if(deviceId.isEmpty()) deviceId = "EMPTY";
             params.setDeviceId(deviceId);
-            params.setUserId(params.getUserId());
+            params.setUserId("EMPTY");
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
