@@ -59,9 +59,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> doLogin(String userId, String userPassword, String pushToken) throws CustomException {
 
-        String userNickname = null;
-
-        String stringObject;
+        String userNickname;
         String password;
         ApiResponse.Data result = new ApiResponse.Data();
 
@@ -97,13 +95,18 @@ public class UserServiceImpl implements UserService {
             }
 
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
-            if(member != null) userNickname = member.getUserNickname();
+            if (member == null) {
+                msg = "계정이 존재하지 않습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            } else userNickname = member.getUserNickname();
 
             List<AuthServerDTO> deviceInfoList = memberMapper.getDeviceIdByUserId(userId);
             if(deviceInfoList == null) {
-                stringObject = "N";
+                msg = "계정이 존재하지 않습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             } else {
-                stringObject = "Y";
 
                 deviceId = Common.extractJson(deviceInfoList.toString(), "deviceId");
                 controlAuthKey = Common.extractJson(deviceInfoList.toString(), "controlAuthKey");
@@ -142,16 +145,10 @@ public class UserServiceImpl implements UserService {
             result.setUserNickname(userNickname);
             result.setDevice(data);
 
-            if(stringObject.equals("Y")) {
-                param.setAccessToken(token);
-                memberMapper.updateLoginDatetime(param);
-                conMap.put("body", "Login OK");
-                msg = "로그인 성공";
-            }
-            else {
-                conMap.put("body", "Login FAIL");
-                msg = "로그인 실패";
-            }
+            param.setAccessToken(token);
+            memberMapper.updateLoginDatetime(param);
+            conMap.put("body", "Login OK");
+            msg = "로그인 성공";
 
             conMap.put("targetToken", pushToken);
             conMap.put("title", "Login");
@@ -172,10 +169,13 @@ public class UserServiceImpl implements UserService {
             }
 
             hp = memberMapper.getHpByUserId(userId).getHp();
-            result.setHp(hp);
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+            if (hp == null) {
+                msg = "계정이 존재하지 않습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            } else result.setHp(hp);
+
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
