@@ -72,14 +72,17 @@ public class ApiResponse {
         private Object deviceStatusInfo;
         private Object pushInfo;
         private Object noticeInfo;
+        private Object errorInfo;
         private String mobiusResponseCode;
         private String latitude;
         private String longitude;
         private String tmpRegistKey;
         private String duplicationYn;
         private Object homeViewValue;
+
         // GW에서 받은 값을 던지는 시험용 변수
         private Object testVariable;
+
         private String deviceId;
         private String errorCode;
         private String errorName;
@@ -148,6 +151,15 @@ public class ApiResponse {
             private String noticeType;
             private String noticeStartDate;
             private String noticeEndDate;
+        }
+
+        @Getter
+        @Setter
+        public static class ErrorInfo {
+            private String errorMessage;
+            private String errorCode;
+            private String errorDateTime;
+            private String serialNumber;
         }
     }
 }

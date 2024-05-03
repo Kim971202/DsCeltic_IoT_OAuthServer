@@ -41,10 +41,6 @@ import java.util.List;
 public class MobiusService {
 
     @Autowired
-    Common common;
-    @Autowired
-    MemberMapper memberMapper;
-    @Autowired
     DeviceMapper deviceMapper;
     @Value("${app.server.address.short.gw}")
     private String shortGwServerAddr;
@@ -297,17 +293,6 @@ public class MobiusService {
             response.close();
         }
         return mobiusResponse;
-    }
-
-    public void errorHandler(String serialNumber, String controlAuthKey, String errorCode, String error) throws Exception{
-
-        AuthServerDTO input = new AuthServerDTO();
-        input.setSerialNumber(serialNumber);
-        AuthServerDTO result = memberMapper.identifyRKey(input);
-
-        System.out.println("result.getSerialNumber(): " + result.getSerialNumber());
-        System.out.println("result.getControlAuthKey(): " + result.getControlAuthKey());
-
     }
 
     public void rtstHandler(DeviceStatusInfo.Device dr910W){
