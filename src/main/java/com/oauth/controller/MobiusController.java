@@ -55,6 +55,7 @@ public class MobiusController {
         String uuId = common.readCon(jsonBody, "uuId");
 
         String errorCode = common.readCon(jsonBody, "erCd");
+        String replyErrorCode = common.readCon(jsonBody, "errorCode");
         String errorMessage = common.readCon(jsonBody, "erMg");
         String errorDateTime = common.readCon(jsonBody, "erDt");
 
@@ -75,6 +76,8 @@ public class MobiusController {
             functionId = redisValueList.get(1);
             log.info("userId: " + userId);
             log.info("functionId: " + functionId);
+            log.info("replyErrorCode: " + replyErrorCode);
+            gwMessagingSystem.sendMessage(functionId + uuId, replyErrorCode);
         } else if (!errorCode.equals("null") && !errorDateTime.equals("null")) {
             AuthServerDTO errorInfo = new AuthServerDTO();
             errorInfo.setErrorCode(errorCode);
@@ -87,19 +90,9 @@ public class MobiusController {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, "DB_ERROR 잠시 후 다시 시도 해주십시오.");
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
-
         } else if (mfStFunctionId.equals("mfSt")) {
             // 변경실시간상태
-
             pushService.sendPushMessage(jsonBody);
-
-            if (common.readCon(jsonBody, "htTp") != null) { // 실내 온도 설정 - 실내 난방
-
-            } else if (common.readCon(jsonBody, "wtTp") != null) { // 난방수 온도 설정 - 온돌 난방
-
-            } else if (common.readCon(jsonBody, "hwTp") != null) { // 온수 온도 설정 - 온수 전용
-
-            }
         } else if (rtStFunctionId.equals("rtSt")) {
             // 주기상태보고
             dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));

@@ -105,6 +105,8 @@ public class DeviceServiceImpl implements DeviceService {
                     if (responseMessage != null) {
                         // 응답 처리
                         log.info("receiveCin에서의 응답: " + responseMessage);
+                        if (responseMessage.equals("0")) stringObject = "Y";
+                        else stringObject = "N";
                     } else {
                         // 타임아웃이나 응답 없음 처리
                         stringObject = "T";
@@ -159,7 +161,7 @@ public class DeviceServiceImpl implements DeviceService {
     public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws Exception {
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = "N";
+        String stringObject;
         String msg;
         DeviceInfoUpsert deviceInfoUpsert = new DeviceInfoUpsert();
         String userId = params.getUserId();
@@ -235,6 +237,8 @@ public class DeviceServiceImpl implements DeviceService {
                         stringObject = "Y";
                         // 응답 처리
                         log.info("receiveCin에서의 응답: " + responseMessage);
+                        if (responseMessage.equals("0")) stringObject = "Y";
+                        else stringObject = "N";
                     } else {
                         // 타임아웃이나 응답 없음 처리
                         stringObject = "T";
@@ -337,6 +341,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     /** 홈 IoT 컨트롤러 상태 정보 조회  */
+    // TODO: DB쿼리 정보 Return 하는 걸로 수정
     @Override
     public ResponseEntity<?> doDeviceStatusInfo(AuthServerDTO params) throws CustomException{
 
@@ -499,7 +504,7 @@ public class DeviceServiceImpl implements DeviceService {
                 responseMessage = gwMessagingSystem.waitForResponse("opMd" + modeChange.getUuid(), TIME_OUT, TimeUnit.SECONDS);
                 if(responseMessage == null) stringObject = "T";
                 else {
-                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    if (responseMessage.equals("0")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
                     log.info("receiveCin에서의 응답: " + responseMessage);
@@ -606,7 +611,7 @@ public class DeviceServiceImpl implements DeviceService {
                 responseMessage = gwMessagingSystem.waitForResponse("htTp" + temperatureSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if(responseMessage == null) stringObject = "T";
                 else {
-                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    if (responseMessage.equals("0")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
                     log.info("receiveCin에서의 응답: " + responseMessage);
@@ -711,7 +716,7 @@ public class DeviceServiceImpl implements DeviceService {
                 responseMessage = gwMessagingSystem.waitForResponse("wtTp" + boiledWaterTempertureSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if(responseMessage == null) stringObject = "T";
                 else {
-                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    if (responseMessage.equals("0")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
                     log.info("receiveCin에서의 응답: " + responseMessage);
@@ -816,7 +821,7 @@ public class DeviceServiceImpl implements DeviceService {
                 responseMessage = gwMessagingSystem.waitForResponse("hwTp" + waterTempertureSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if(responseMessage == null) stringObject = "T";
                 else {
-                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    if (responseMessage.equals("0")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
                     log.info("receiveCin에서의 응답: " + responseMessage);
@@ -922,7 +927,7 @@ public class DeviceServiceImpl implements DeviceService {
                 responseMessage = gwMessagingSystem.waitForResponse("opMd" + fastHotWaterSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if(responseMessage == null) stringObject = "T";
                 else {
-                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    if (responseMessage.equals("0")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
                     log.info("receiveCin에서의 응답: " + responseMessage);
