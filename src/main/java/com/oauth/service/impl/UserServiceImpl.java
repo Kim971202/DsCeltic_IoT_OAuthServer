@@ -1799,9 +1799,4 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /** 임시저장키 생성 */
-    @Override
-    public ResponseEntity<?> doGenerateTempKey(AuthServerDTO params) throws CustomException {
-        return null;
-    }
 }

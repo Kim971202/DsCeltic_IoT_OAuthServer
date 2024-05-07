@@ -72,9 +72,6 @@ public interface UserService {
     /** API인증키 갱신 */
     ResponseEntity<?> doAccessTokenRenewal(AuthServerDTO params) throws CustomException;
 
-    /** 임시저장키 생성 */
-    ResponseEntity<?> doGenerateTempKey(AuthServerDTO params) throws CustomException;
-
     /** 홈 IoT 컨트롤러 삭제(회원 매핑 삭제) */
     ResponseEntity<?> doUserDeviceDelete(AuthServerDTO params) throws CustomException;
 
