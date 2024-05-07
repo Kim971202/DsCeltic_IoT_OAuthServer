@@ -63,6 +63,14 @@ public class DeviceStatusInfo {
       private String fcLc;
       private String blCf;
 
+      private String new24h;
+      private String new12h;
+      private String new7wk;
+
+      private String old24h;
+      private String old12h;
+      private String old7wk;
+
       private String modelCategoryCode;
       private String deviceNickName;
       private String regSort;

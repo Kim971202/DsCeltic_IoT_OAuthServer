@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -93,6 +94,10 @@ public class MobiusController {
         } else if (mfStFunctionId.equals("mfSt")) {
             // 변경실시간상태
             pushService.sendPushMessage(jsonBody);
+
+            // 변경내용 DB에 UPDATE
+            List<DeviceStatusInfo.Device> device = deviceMapper.getDeviceStauts(Collections.singletonList(common.readCon(jsonBody, "srNo")));
+            common.readCon()
         } else if (rtStFunctionId.equals("rtSt")) {
             // 주기상태보고
             dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));

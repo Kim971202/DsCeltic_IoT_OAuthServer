@@ -269,13 +269,20 @@ public class Common {
         String returnValue = objectMapper.writeValueAsString(returnNode);
         String returnConValue = objectMapper.writeValueAsString(returnConNode);
         String returnSurValue = objectMapper.writeValueAsString(surNode);
-        String returnRsCf24HNode = objectMapper.writeValueAsString(rsCf24HNode.get("md"));
+        String returnRsCf24HMdNode = objectMapper.writeValueAsString(rsCf24HNode.get("md"));
+
+        String returnRsCf24HNode = objectMapper.writeValueAsString(rsCf24HNode);
+        String returnRsCf12HNode = objectMapper.writeValueAsString(rsCf12HNode);
+        String returnRsCf7WKNode = objectMapper.writeValueAsString(rsCf7WKNode);
 
         // TODO: 추후 True/False 로 분기 할것
         if(value.equals("rsCf")) return returnValue;
         else if(value.equals("con")) return returnConValue.replace("\"", "");
         else if(value.equals("sur")) return returnSurValue.replace("\"", "");
-        else if(value.equals("md")) return returnRsCf24HNode.replace("\"", "");
+        else if(value.equals("md")) return returnRsCf24HMdNode.replace("\"", "");
+        else if(value.equals("24h")) return returnRsCf24HNode.replace("\"", "");
+        else if(value.equals("12h")) return returnRsCf12HNode.replace("\"", "");
+        else if(value.equals("7wk")) return returnRsCf7WKNode.replace("\"", "");
         else return returnValue.replace("\"", "");
     }
 

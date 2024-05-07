@@ -16,6 +16,6 @@ public class ModeChange {
     private String sleepCode;
 
     private String functionId;
-    private String uuid;
+    private String uuId;
 
 }

@@ -33,5 +33,8 @@ public interface DeviceMapper {
     public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);
     public int insertErrorInfo(AuthServerDTO device);
     public List<AuthServerDTO> getDeviceErroInfo(String serialNumber);
+    public int updateMfstDeviceStatus(DeviceStatusInfo.Device device);
+    public int updateDeviceResv(DeviceStatusInfo.Device device);
+
 
 }

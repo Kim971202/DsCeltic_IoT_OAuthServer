@@ -360,6 +360,75 @@
         LIMIT 1
     </select>
 
+    <update id="updateMfstDeviceStatus" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_DEVICE_STATUS
+        SET
+            <if test="serialNumber != null">
+                SERIAL_NO = #{serialNumber},
+            </if>
+            <if test="rKey != null">
+                R_KEY = #{rKey},
+            </if>
+            <if test="powr != null">
+                POWR = #{powr},
+            </if>
+            <if test="opMd != null">
+                OPMD = #{opMd},
+            </if>
+            <if test="htTp != null">
+                HTTP = #{htTp},
+            </if>
+            <if test="wtTp != null">
+                WTTP = #{wtTp},
+            </if>
+            <if test="hwTp != null">
+                HWTP = #{hwTp},
+            </if>
+            <if test="ftMd != null">
+                FTMD = #{ftMd},
+            </if>
+            <if test="bCdt != null">
+                BCDT = #{bCdt},
+            </if>
+            <if test="chTp != null">
+                CHTP = #{chTp},
+            </if>
+            <if test="cwTp != null">
+                CWTP = #{cwTp},
+            </if>
+            <if test="hwSt != null">
+                HWST = #{hwSt},
+            </if>
+            <if test="stringRsCf != null">
+                RSCF = REPLACE(RSCF, #{old24h}, #{new24h})
+            </if>
+
+        SLCD = #{slCd},
+        MFDT = #{mfDt}
+        WHERE
+        DEVC_ID = #{deviceId}
+    </update>
+
+    <update id="updateDeviceResv" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_DEVICE_STATUS
+        SET
+        <if test="new24h != null">
+            RSCF = REPLACE(RSCF, #{old24h}, #{new24h})
+            WHERE RSCF LIKE %#{old24h}%
+        </if>
+        <if test="new12h != null">
+            RSCF = REPLACE(RSCF, #{old12h}, #{new12h})
+            WHERE RSCF LIKE %#{old12h}%
+        </if>
+        <if test="new7wk != null">
+            RSCF = REPLACE(RSCF, #{old7wk}, #{new7wk})
+            WHERE RSCF LIKE %#{old7wk}%
+        </if>
+        AND SERIAL_NO = #{SERIAL_NO}
+    </update>
+
     <select id="getDeviceStauts" parameterType="java.util.List" resultMap="dr910w">
         SELECT
             DEVC_ID AS deviceId,
@@ -376,7 +445,9 @@
             HWST AS hwSt,
             FCLC AS fcLc,
             MFDT AS mfDt,
-            SLCD AS slCd
+            SLCD AS slCd,
+            BCDT AS bCdt,
+            CWTP AS cwTp
         FROM
             TBR_OPR_DEVICE_STATUS
         WHERE

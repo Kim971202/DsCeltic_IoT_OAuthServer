@@ -346,18 +346,15 @@ public class DeviceServiceImpl implements DeviceService {
     public ResponseEntity<?> doDeviceStatusInfo(AuthServerDTO params) throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = "N";
         String msg;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String uuId = common.getTransactionId();
         AuthServerDTO serialNumber;
-        String responseMessage;
-        MobiusResponse response;
-        HashMap<String, String> request = new HashMap<>();
         Map<String, String> conMap = new HashMap<>();
+        Map<String, String> resultMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = null;
+        List<DeviceStatusInfo.Device> device;
 
         try {
             serialNumber = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
@@ -366,65 +363,45 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             } else {
-                request.put("userId", params.getUserId());
-                request.put("controlAuthKey", params.getControlAuthKey());
-                request.put("deviceId", params.getDeviceId());
-                request.put("modelCode", params.getModelCode());
-                request.put("functionId", "fcnt");
-                request.put("uuId", uuId);
-                redisCommand.setValues(uuId, userId + "," + "fcnt");
-                response = mobiusService.createCin(common.stringToHex("    " + serialNumber.getSerialNumber()), userId, JSON.toJson(request));
-
-                if(response.getResponseCode().equals("201")){
-                    try {
-                        // 메시징 시스템을 통해 응답 메시지 대기
-                        responseMessage = gwMessagingSystem.waitForResponse("fcnt" + uuId, TIME_OUT, TimeUnit.SECONDS);
-                        // JSON 문자열 파싱
-                        rootNode = objectMapper.readTree(responseMessage);
-                        if (responseMessage != null) {
-                            stringObject = "Y";
-                            // 응답 처리
-                            log.info("receiveCin에서의 응답: " + responseMessage);
-                        } else {
-                            // 타임아웃이나 응답 없음 처리
-                            stringObject = "T";
-                            log.info("응답이 없거나 시간 초과");
-                        }
-                    } catch (InterruptedException e) {
-                        // 대기 중 인터럽트 처리
-                        log.error("", e);
+                device = deviceMapper.getDeviceStauts(Collections.singletonList(serialNumber.getSerialNumber()));
+                if(device == null) {
+                    msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                } else {
+                    resultMap.put("modelCategoryCode", "01");
+                    resultMap.put("deviceStatus", "01");
+                    for(int i = 0; i < device.size(); ++i){
+                        resultMap.put("rKey", device.get(i).getRKey());
+                        resultMap.put("powr", device.get(i).getPowr());
+                        resultMap.put("opMd", device.get(i).getOpMd());
+                        resultMap.put("htTp", device.get(i).getHtTp());
+                        resultMap.put("wtTp", device.get(i).getWtTp());
+                        resultMap.put("hwTp", device.get(i).getHwTp());
+                        resultMap.put("rsCf", device.get(i).getStringRsCf().replaceAll("\"", ""));
+                        resultMap.put("ftMd", device.get(i).getFtMd());
+                        resultMap.put("bCdt", device.get(i).getBCdt());
+                        resultMap.put("chTp", device.get(i).getChTp());
+                        resultMap.put("cwTp", device.get(i).getCwTp());
+                        resultMap.put("mfDt", device.get(i).getMfDt());
+                        resultMap.put("type24h", common.readCon(device.get(i).getStringRsCf(), "md"));
+                        resultMap.put("slCd", device.get(i).getSlCd());
+                        resultMap.put("hwSt", device.get(i).getHwSt());
+                        resultMap.put("fcLc", device.get(i).getFcLc());
                     }
-                }else {
-                    msg = "중계서버 오류";
-                    result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
-                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
             }
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Device Status Info OK");
-                msg = "홈 IoT 컨트롤러 상태 정보 조회 성공";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                result.setDevice(rootNode);
-            }
-            else if(stringObject.equals("N")) {
-                conMap.put("body", "Device Status Info FAIL");
-                msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-            else {
-                conMap.put("body", "Service TIME-OUT");
-                msg = "응답이 없거나 시간 초과";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
+            conMap.put("body", "Device Status Info OK");
+            msg = "홈 IoT 컨트롤러 상태 정보 조회 성공";
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Device Status Info");
             conMap.put("id", "Device Status Info ID");
             conMap.put("isEnd", "false");
 
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", objectMapper.writeValueAsString(conMap));
             redisCommand.deleteValues(uuId);
 
             params.setFunctionId("DeviceStatusInfo");
@@ -435,6 +412,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+            result.setDeviceStatusInfo(resultMap);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -487,10 +465,10 @@ public class DeviceServiceImpl implements DeviceService {
             if(modeCode.equals("06")) modeChange.setSleepCode(sleepCode);
 
             modeChange.setFunctionId("opMd");
-            modeChange.setUuid(common.getTransactionId());
-            log.info("modeChange.getUuid(): " + modeChange.getUuid());
+            modeChange.setUuId(common.getTransactionId());
+            log.info("modeChange.getUuid(): " + modeChange.getUuId());
             redisValue = userId + "," + modeChange.getFunctionId();
-            redisCommand.setValues(modeChange.getUuid(), redisValue);
+            redisCommand.setValues(modeChange.getUuId(), redisValue);
             response = mobiusService.createCin(common.stringToHex("    " + serialNumber), params.getUserId(), JSON.toJson(modeChange));
 
             if(!response.getResponseCode().equals("201")){
@@ -501,7 +479,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
-                responseMessage = gwMessagingSystem.waitForResponse("opMd" + modeChange.getUuid(), TIME_OUT, TimeUnit.SECONDS);
+                responseMessage = gwMessagingSystem.waitForResponse("opMd" + modeChange.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if(responseMessage == null) stringObject = "T";
                 else {
                     if (responseMessage.equals("0")) stringObject = "Y";
@@ -539,7 +517,7 @@ public class DeviceServiceImpl implements DeviceService {
             log.info("jsonString: " + jsonString);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
-            redisCommand.deleteValues(modeChange.getUuid());
+            redisCommand.deleteValues(modeChange.getUuId());
 
             params.setFunctionId("ModeChange");
             params.setDeviceId(deviceId);
