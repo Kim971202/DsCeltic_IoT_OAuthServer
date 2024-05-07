@@ -54,7 +54,7 @@ public class DeviceServiceImpl implements DeviceService {
     public ResponseEntity<?> doPowerOnOff(AuthServerDTO params) throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = "N";
+        String stringObject;
         String msg;
         PowerOnOff powerOnOff = new PowerOnOff();
         String userId = params.getUserId();
@@ -80,11 +80,17 @@ public class DeviceServiceImpl implements DeviceService {
             redisCommand.setValues(powerOnOff.getUuId(), redisValue);
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
-            serialNumber = device.getSerialNumber();
+
+            if (device == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            } else serialNumber = device.getSerialNumber();
+
             if(serialNumber == null) {
                 msg = "전원 On/Off 실패";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             } else {
                 stringObject = "Y";
                 response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(powerOnOff));
@@ -116,11 +122,6 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 result.setTestVariable(responseMessage);
             }
-            else if(stringObject.equals("N")) {
-                conMap.put("body", "Device ON/OFF OK");
-                msg = "전원 On/Off 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
             else {
                 conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
@@ -144,9 +145,8 @@ public class DeviceServiceImpl implements DeviceService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
-
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -220,13 +220,13 @@ public class DeviceServiceImpl implements DeviceService {
                 if(deviceMapper.updateDeviceDetailLocation(params) <= 0) {
                     msg = "홈 IoT 컨트롤러 정보 수정 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 }
 
                 if(deviceMapper.updateDeviceRegistLocation(params) <= 0) {
                     msg = "홈 IoT 컨트롤러 정보 수정 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 }
 
                 try {
@@ -267,25 +267,25 @@ public class DeviceServiceImpl implements DeviceService {
                 if(deviceMapper.insertDevice(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 } else stringObject = "Y";
 
                 if(deviceMapper.insertDeviceRegist(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 } else stringObject = "Y";
 
                 if(deviceMapper.insertDeviceDetail(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 } else stringObject = "Y";
 
                 if(deviceMapper.insertUserDevice(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 } else stringObject = "Y";
             }
 
@@ -327,7 +327,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CustomException e){
@@ -359,7 +359,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(serialNumber == null) {
                 msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             } else {
                 request.put("userId", params.getUserId());
                 request.put("controlAuthKey", params.getControlAuthKey());
@@ -428,7 +428,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
@@ -461,11 +461,17 @@ public class DeviceServiceImpl implements DeviceService {
         try  {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            if (device == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             serialNumber = device.getSerialNumber();
             if(serialNumber == null) {
                 msg = "모드변경 실패";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
             modeChange.setUserId(params.getUserId());
             modeChange.setDeviceId(params.getDeviceId());
@@ -536,7 +542,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
@@ -565,11 +571,17 @@ public class DeviceServiceImpl implements DeviceService {
         try {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            if (device == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             serialNumber = device.getSerialNumber();
             if(serialNumber == null) {
                 msg = "실내온도 설정 실패";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
             temperatureSet.setUserId(userId);
@@ -635,7 +647,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -664,11 +676,17 @@ public class DeviceServiceImpl implements DeviceService {
         try {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            if (device == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             serialNumber = device.getSerialNumber();
             if(serialNumber == null) {
                 msg = "난방수온도 설정 실패";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
             boiledWaterTempertureSet.setUserId(userId);
@@ -735,7 +753,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -764,11 +782,17 @@ public class DeviceServiceImpl implements DeviceService {
         try {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            if (device == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             serialNumber = device.getSerialNumber();
             if(serialNumber == null) {
                 msg = "온수온도 설정 실패";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
             waterTempertureSet.setUserId(userId);
             waterTempertureSet.setDeviceId(params.getDeviceId());
@@ -833,7 +857,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -863,11 +887,17 @@ public class DeviceServiceImpl implements DeviceService {
         try {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            if (device == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             serialNumber = device.getSerialNumber();
             if(serialNumber == null) {
                 msg = "빠른온수 설정 실패";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
             fastHotWaterSet.setUserId(userId);
@@ -933,7 +963,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -963,11 +993,17 @@ public class DeviceServiceImpl implements DeviceService {
         try {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            if (device == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             serialNumber = device.getSerialNumber();
             if(serialNumber == null) {
                 msg = "잠금 모드 설정 실패";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
             lockSet.setUserId(userId);
@@ -1035,7 +1071,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -1077,8 +1113,25 @@ public class DeviceServiceImpl implements DeviceService {
         try {
 
             controlAuthKeyByUserIdResult = deviceMapper.getControlAuthKeyByUserId(userId);
+            if (controlAuthKeyByUserIdResult == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             deviceNicknameAndDeviceLocNicknameResult = deviceMapper.getDeviceNicknameAndDeviceLocNickname(controlAuthKeyByUserIdResult);
+            if (deviceNicknameAndDeviceLocNicknameResult == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             multiSerialNumberBydeviceIdResult = deviceMapper.getMultiSerialNumberBydeviceId(controlAuthKeyByUserIdResult);
+            if (multiSerialNumberBydeviceIdResult == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
 
             rKeyList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "controlAuthKey");
             deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
@@ -1088,6 +1141,11 @@ public class DeviceServiceImpl implements DeviceService {
             regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
 
             devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
+            if (devicesStatusInfo == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
 
             if(rKeyList == null || deviceIdList == null){
                 msg = "등록된 R/C가 없습니다";
@@ -1141,7 +1199,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -1221,7 +1279,12 @@ public class DeviceServiceImpl implements DeviceService {
             String[] parts = params.getDeviceId().split("\\.");
             serialNumber = parts[parts.length - 1]; // 배열의 마지막 요소 가져오기
             rKeyIdentification = memberMapper.identifyRKey(common.hexToString(serialNumber).replaceAll(" ", ""));
-            System.out.println(rKeyIdentification.getSerialNumber());
+            if (rKeyIdentification == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             if(rKeyIdentification.getDeviceId() != null &&
                     rKeyIdentification.getSerialNumber() != null &&
                     rKeyIdentification.getControlAuthKey() != null) {
@@ -1255,7 +1318,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
