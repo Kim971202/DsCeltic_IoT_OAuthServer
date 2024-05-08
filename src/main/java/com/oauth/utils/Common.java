@@ -254,63 +254,102 @@ public class Common {
         return UUID.randomUUID().toString();
     }
 
-    public String readCon(String jsonString,String value) throws Exception{
+//    public String readCon(String jsonString,String value) throws Exception{
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        JsonNode jsonNode = objectMapper.readTree(jsonString);
+//
+//        JsonNode baseNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin");
+//        JsonNode conNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin").path("con");
+//        JsonNode surNode = jsonNode.path("m2m:sgn").path("sur");
+//
+//        JsonNode rsCf24HNode = jsonNode.path("24h");
+//        JsonNode rsCf12HNode = jsonNode.path("12h");
+//        JsonNode rsCf7WKNode = jsonNode.path("7wk");
+//
+//        JsonNode newRsCf24HNode = conNode.path("rsCf").path("24h");
+//        JsonNode newRsCf12HNode = conNode.path("rsCf").path("12h");
+//        JsonNode newRsCf7WKNode = conNode.path("rsCf").path("7wk");
+//
+//        JsonNode returnNode = conNode.path(value);
+//        JsonNode returnConNode = baseNode.path(value);
+//
+//        String returnValue = objectMapper.writeValueAsString(returnNode);
+//        String returnConValue = objectMapper.writeValueAsString(returnConNode);
+//        String returnSurValue = objectMapper.writeValueAsString(surNode);
+//        String returnRsCf24HMdNode = objectMapper.writeValueAsString(rsCf24HNode.get("md"));
+//
+//        String returnRsCf24HNode = objectMapper.writeValueAsString(rsCf24HNode);
+//        String returnRsCf12HNode = objectMapper.writeValueAsString(rsCf12HNode);
+//        String returnRsCf7WKNode = objectMapper.writeValueAsString(rsCf7WKNode);
+//
+//
+//        String returnNewRsCf24HNode = objectMapper.writeValueAsString(newRsCf24HNode);
+//        String returnNewRsCf12HNode = objectMapper.writeValueAsString(newRsCf12HNode);
+//        String returnNewRsCf7WKNode = objectMapper.writeValueAsString(newRsCf7WKNode);
+//
+//        switch (value) {
+//            case "rsCf":
+//                return returnValue;
+//            case "con":
+//                return returnConValue.replace("\"", "");
+//            case "sur":
+//                return returnSurValue.replace("\"", "");
+//            case "md":
+//                return returnRsCf24HMdNode.replace("\"", "");
+//            case "24h":
+//                return returnNewRsCf24HNode.replace("\"", "");
+//            case "12h":
+//                return returnNewRsCf12HNode.replace("\"", "");
+//            case "7wk":
+//                return returnNewRsCf7WKNode.replace("\"", "");
+//            case "24h_old":
+//                return returnRsCf24HNode.replace("\"", "");
+//            case "12h_old":
+//                return returnRsCf12HNode.replace("\"", "");
+//            case "7wk_old":
+//                return returnRsCf7WKNode.replace("\"", "");
+//            default:
+//                return returnValue.replace("\"", "");
+//        }
+//    }
+
+    public String readCon(String jsonString, String value) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(jsonString);
 
         JsonNode baseNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin");
-        JsonNode conNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin").path("con");
+        JsonNode conNode = baseNode.path("con");
         JsonNode surNode = jsonNode.path("m2m:sgn").path("sur");
-
-        JsonNode rsCf24HNode = jsonNode.path("24h");
-        JsonNode rsCf12HNode = jsonNode.path("12h");
-        JsonNode rsCf7WKNode = jsonNode.path("7wk");
-
-        JsonNode newRsCf24HNode = conNode.path("rsCf").path("24h");
-        JsonNode newRsCf12HNode = conNode.path("rsCf").path("12h");
-        JsonNode newRsCf7WKNode = conNode.path("rsCf").path("7wk");
-
-        JsonNode returnNode = conNode.path(value);
-        JsonNode returnConNode = baseNode.path(value);
-
-        String returnValue = objectMapper.writeValueAsString(returnNode);
-        String returnConValue = objectMapper.writeValueAsString(returnConNode);
-        String returnSurValue = objectMapper.writeValueAsString(surNode);
-        String returnRsCf24HMdNode = objectMapper.writeValueAsString(rsCf24HNode.get("md"));
-
-        String returnRsCf24HNode = objectMapper.writeValueAsString(rsCf24HNode);
-        String returnRsCf12HNode = objectMapper.writeValueAsString(rsCf12HNode);
-        String returnRsCf7WKNode = objectMapper.writeValueAsString(rsCf7WKNode);
-
-
-        String returnNewRsCf24HNode = objectMapper.writeValueAsString(newRsCf24HNode);
-        String returnNewRsCf12HNode = objectMapper.writeValueAsString(newRsCf12HNode);
-        String returnNewRsCf7WKNode = objectMapper.writeValueAsString(newRsCf7WKNode);
 
         switch (value) {
             case "rsCf":
-                return returnValue;
+                return serializeAndClean(conNode.path(value), objectMapper);
             case "con":
-                return returnConValue.replace("\"", "");
+                return serializeAndClean(baseNode, objectMapper);
             case "sur":
-                return returnSurValue.replace("\"", "");
+                return serializeAndClean(surNode, objectMapper);
             case "md":
-                return returnRsCf24HMdNode.replace("\"", "");
+                return serializeAndClean(conNode.path("rsCf").path("24h").path("md"), objectMapper);
             case "24h":
-                return returnNewRsCf24HNode.replace("\"", "");
+                return serializeAndClean(conNode.path("rsCf").path("24h"), objectMapper);
             case "12h":
-                return returnNewRsCf12HNode.replace("\"", "");
+                return serializeAndClean(conNode.path("rsCf").path("12h"), objectMapper);
             case "7wk":
-                return returnNewRsCf7WKNode.replace("\"", "");
+                return serializeAndClean(conNode.path("rsCf").path("7wk"), objectMapper);
             case "24h_old":
-                return returnRsCf24HNode.replace("\"", "");
+                return serializeAndClean(jsonNode.path("24h"), objectMapper);
             case "12h_old":
-                return returnRsCf12HNode.replace("\"", "");
+                return serializeAndClean(jsonNode.path("12h"), objectMapper);
             case "7wk_old":
-                return returnRsCf7WKNode.replace("\"", "");
+                return serializeAndClean(jsonNode.path("7wk"), objectMapper);
             default:
-                return returnValue.replace("\"", "");
+                return serializeAndClean(conNode.path(value), objectMapper);
         }
+    }
+
+    private String serializeAndClean(JsonNode node, ObjectMapper mapper) throws Exception {
+        String serializedValue = mapper.writeValueAsString(node);
+        return serializedValue.replace("\"", "");
     }
 
     public String addCon(String body, List<String> key, List<String> value) throws Exception{

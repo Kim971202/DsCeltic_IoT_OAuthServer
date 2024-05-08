@@ -263,7 +263,8 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setSerialNumber("    " + params.getSerialNumber());
 
                 params.setDeviceId(DEVICE_ID_PREFIX + "." + common.stringToHex(params.getModelCode()) + "." + common.stringToHex(params.getSerialNumber()));
-                params.setTmpRegistKey(params.getUserId() + "_" + common.getCurrentDateTime());
+//                params.setTmpRegistKey(params.getUserId() + "_" + common.getCurrentDateTime());
+                params.setTmpRegistKey("user1_20240425133862");
 
                 params.setModelCode(params.getModelCode().replaceAll(" ", ""));
                 params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
@@ -274,6 +275,7 @@ public class DeviceServiceImpl implements DeviceService {
                     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 } else stringObject = "Y";
 
+                params.setDeviceId("0.2.481.1.1.2044522d39313057.2020202037");
                 if(deviceMapper.insertDeviceRegist(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
