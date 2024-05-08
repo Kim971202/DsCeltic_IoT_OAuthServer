@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
             if (account == null) {
                 msg = "계정이 존재하지 않습니다.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 password = account.getUserPassword();
                 if(!encoder.matches(userPassword, password)){
@@ -102,14 +102,14 @@ public class UserServiceImpl implements UserService {
             if (member == null) {
                 msg = "계정이 존재하지 않습니다.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else userNickname = member.getUserNickname();
 
             List<AuthServerDTO> deviceInfoList = memberMapper.getDeviceIdByUserId(userId);
             if(deviceInfoList == null) {
                 msg = "계정이 존재하지 않습니다.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
 
                 deviceId = Common.extractJson(deviceInfoList.toString(), "deviceId");
@@ -182,21 +182,21 @@ public class UserServiceImpl implements UserService {
             if(memberMapper.insertCommandHistory(param) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
             hp = memberMapper.getHpByUserId(userId).getHp();
             if (hp == null) {
                 msg = "계정이 존재하지 않습니다.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else result.setHp(hp);
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
     }
 

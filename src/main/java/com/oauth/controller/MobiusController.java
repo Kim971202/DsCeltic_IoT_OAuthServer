@@ -17,9 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -95,9 +93,45 @@ public class MobiusController {
             // 변경실시간상태
             pushService.sendPushMessage(jsonBody);
 
+            Map<String, String> rsCfMap = new HashMap<>();
+
             // 변경내용 DB에 UPDATE
             List<DeviceStatusInfo.Device> device = deviceMapper.getDeviceStauts(Collections.singletonList(common.readCon(jsonBody, "srNo")));
-            common.readCon()
+            System.out.println(device);
+            if(common.readCon(jsonBody, "mfCd").equals("powr")) device.get(0).setPowr(common.readCon(jsonBody, "powr"));
+            if(common.readCon(jsonBody, "mfCd").equals("opMd")) device.get(0).setOpMd(common.readCon(jsonBody, "opMd"));
+            if(common.readCon(jsonBody, "mfCd").equals("htTp")) device.get(0).setHtTp(common.readCon(jsonBody, "htTp"));
+            if(common.readCon(jsonBody, "mfCd").equals("wtTp")) device.get(0).setWtTp(common.readCon(jsonBody, "wtTp"));
+            if(common.readCon(jsonBody, "mfCd").equals("hwTp")) device.get(0).setHwTp(common.readCon(jsonBody, "hwTp"));
+            if(common.readCon(jsonBody, "mfCd").equals("ftMd")) device.get(0).setFtMd(common.readCon(jsonBody, "ftMd"));
+            if(common.readCon(jsonBody, "mfCd").equals("chTp")) device.get(0).setChTp(common.readCon(jsonBody, "chTp"));
+            if(common.readCon(jsonBody, "mfCd").equals("mfDt")) device.get(0).setMfDt(common.readCon(jsonBody, "mfDt"));
+            if(common.readCon(jsonBody, "mfCd").equals("slCd")) device.get(0).setSlCd(common.readCon(jsonBody, "slCd"));
+            if(common.readCon(jsonBody, "mfCd").equals("hwSt")) device.get(0).setHwSt(common.readCon(jsonBody, "hwSt"));
+            if(common.readCon(jsonBody, "mfCd").equals("fcLc")) device.get(0).setFcLc(common.readCon(jsonBody, "fcLc"));
+
+            if(common.readCon(jsonBody, "mfCd").equals("24h")){
+                rsCfMap.put("24h", common.readCon(jsonBody, "24h"));
+                rsCfMap.put("12h", common.readCon(device.get(0).getStringRsCf(), "12h_old"));
+                rsCfMap.put("7wk", common.readCon(device.get(0).getStringRsCf(), "7wk_old"));
+                device.get(0).setStringRsCf(JSON.toJson(rsCfMap));
+            }
+
+            if(common.readCon(jsonBody, "mfCd").equals("12h")){
+                rsCfMap.put("12h", common.readCon(jsonBody, "12h"));
+                rsCfMap.put("24h", common.readCon(device.get(0).getStringRsCf(), "24h_old"));
+                rsCfMap.put("7wk", common.readCon(device.get(0).getStringRsCf(), "7wk_old"));
+                device.get(0).setStringRsCf(JSON.toJson(rsCfMap));
+            }
+
+            if(common.readCon(jsonBody, "mfCd").equals("7wk")){
+                rsCfMap.put("7wk", common.readCon(jsonBody, "7wk"));
+                rsCfMap.put("24h", common.readCon(device.get(0).getStringRsCf(), "24h_old"));
+                rsCfMap.put("12h", common.readCon(device.get(0).getStringRsCf(), "12h_old"));
+                device.get(0).setStringRsCf(JSON.toJson(rsCfMap));
+            }
+
+            deviceMapper.updateDeviceStatus(device.get(0));
         } else if (rtStFunctionId.equals("rtSt")) {
             // 주기상태보고
             dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));

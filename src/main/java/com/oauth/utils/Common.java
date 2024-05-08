@@ -261,11 +261,18 @@ public class Common {
         JsonNode baseNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin");
         JsonNode conNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin").path("con");
         JsonNode surNode = jsonNode.path("m2m:sgn").path("sur");
+
         JsonNode rsCf24HNode = jsonNode.path("24h");
         JsonNode rsCf12HNode = jsonNode.path("12h");
         JsonNode rsCf7WKNode = jsonNode.path("7wk");
+
+        JsonNode newRsCf24HNode = conNode.path("rsCf").path("24h");
+        JsonNode newRsCf12HNode = conNode.path("rsCf").path("12h");
+        JsonNode newRsCf7WKNode = conNode.path("rsCf").path("7wk");
+
         JsonNode returnNode = conNode.path(value);
         JsonNode returnConNode = baseNode.path(value);
+
         String returnValue = objectMapper.writeValueAsString(returnNode);
         String returnConValue = objectMapper.writeValueAsString(returnConNode);
         String returnSurValue = objectMapper.writeValueAsString(surNode);
@@ -275,15 +282,35 @@ public class Common {
         String returnRsCf12HNode = objectMapper.writeValueAsString(rsCf12HNode);
         String returnRsCf7WKNode = objectMapper.writeValueAsString(rsCf7WKNode);
 
-        // TODO: 추후 True/False 로 분기 할것
-        if(value.equals("rsCf")) return returnValue;
-        else if(value.equals("con")) return returnConValue.replace("\"", "");
-        else if(value.equals("sur")) return returnSurValue.replace("\"", "");
-        else if(value.equals("md")) return returnRsCf24HMdNode.replace("\"", "");
-        else if(value.equals("24h")) return returnRsCf24HNode.replace("\"", "");
-        else if(value.equals("12h")) return returnRsCf12HNode.replace("\"", "");
-        else if(value.equals("7wk")) return returnRsCf7WKNode.replace("\"", "");
-        else return returnValue.replace("\"", "");
+
+        String returnNewRsCf24HNode = objectMapper.writeValueAsString(newRsCf24HNode);
+        String returnNewRsCf12HNode = objectMapper.writeValueAsString(newRsCf12HNode);
+        String returnNewRsCf7WKNode = objectMapper.writeValueAsString(newRsCf7WKNode);
+
+        switch (value) {
+            case "rsCf":
+                return returnValue;
+            case "con":
+                return returnConValue.replace("\"", "");
+            case "sur":
+                return returnSurValue.replace("\"", "");
+            case "md":
+                return returnRsCf24HMdNode.replace("\"", "");
+            case "24h":
+                return returnNewRsCf24HNode.replace("\"", "");
+            case "12h":
+                return returnNewRsCf12HNode.replace("\"", "");
+            case "7wk":
+                return returnNewRsCf7WKNode.replace("\"", "");
+            case "24h_old":
+                return returnRsCf24HNode.replace("\"", "");
+            case "12h_old":
+                return returnRsCf12HNode.replace("\"", "");
+            case "7wk_old":
+                return returnRsCf7WKNode.replace("\"", "");
+            default:
+                return returnValue.replace("\"", "");
+        }
     }
 
     public String addCon(String body, List<String> key, List<String> value) throws Exception{
