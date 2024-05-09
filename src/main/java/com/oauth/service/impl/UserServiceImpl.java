@@ -1799,4 +1799,18 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /** 임시 저장키 생성 */
+    @Override
+    public ResponseEntity<?> dogenerateTempKey(String userId) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+
+        try {
+            result.setTmpRegistKey("user1_" + common.getCurrentDateTime());
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+         log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+    }
 }

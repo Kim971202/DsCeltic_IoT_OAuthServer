@@ -89,4 +89,7 @@ public interface UserService {
 
     /** 기기 설치 위치 별칭 수정 */
     ResponseEntity<?> doUpdateDeviceLocationNickname(AuthServerDTO params) throws CustomException;
+
+    /** 임시 저장키 생성 */
+    ResponseEntity<?> dogenerateTempKey(String userId) throws CustomException;
 }

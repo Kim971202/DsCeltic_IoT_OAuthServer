@@ -562,4 +562,20 @@ public class UserController {
         return userService.doUpdateDeviceLocationNickname(params);
     }
 
+    /**
+     * 임시 저장키 생성
+     * */
+    @PostMapping(value = "/generateTempKey")
+    @ResponseBody
+    public ResponseEntity<?> dogenerateTempKey(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException {
+
+        String logStep = "[임시 저장키 생성]";
+        log.info("임시 저장키 생성");
+        if(Validator.isNullOrEmpty(params.getUserId())){
+            throw new CustomException("404", "임시 저장키 생성 오류");
+        }
+        return userService.dogenerateTempKey(params.getUserId());
+    }
+
 }
