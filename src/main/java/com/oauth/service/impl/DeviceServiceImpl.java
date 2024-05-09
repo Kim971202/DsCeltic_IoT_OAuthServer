@@ -366,6 +366,8 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             } else {
                 device = deviceMapper.getDeviceStauts(Collections.singletonList(serialNumber.getSerialNumber()));
+                System.out.println(device.get(0).getStringRsCf());
+                System.out.printf("\"%s\"%n", device.get(0).getStringRsCf());
                 if(device == null) {
                     msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -373,23 +375,23 @@ public class DeviceServiceImpl implements DeviceService {
                 } else {
                     resultMap.put("modelCategoryCode", "01");
                     resultMap.put("deviceStatus", "01");
-                    for(int i = 0; i < device.size(); ++i){
-                        resultMap.put("rKey", device.get(i).getRKey());
-                        resultMap.put("powr", device.get(i).getPowr());
-                        resultMap.put("opMd", device.get(i).getOpMd());
-                        resultMap.put("htTp", device.get(i).getHtTp());
-                        resultMap.put("wtTp", device.get(i).getWtTp());
-                        resultMap.put("hwTp", device.get(i).getHwTp());
-                        resultMap.put("rsCf", device.get(i).getStringRsCf().replaceAll("\"", ""));
-                        resultMap.put("ftMd", device.get(i).getFtMd());
-                        resultMap.put("bCdt", device.get(i).getBCdt());
-                        resultMap.put("chTp", device.get(i).getChTp());
-                        resultMap.put("cwTp", device.get(i).getCwTp());
-                        resultMap.put("mfDt", device.get(i).getMfDt());
-                        resultMap.put("type24h", common.readCon(device.get(i).getStringRsCf(), "md"));
-                        resultMap.put("slCd", device.get(i).getSlCd());
-                        resultMap.put("hwSt", device.get(i).getHwSt());
-                        resultMap.put("fcLc", device.get(i).getFcLc());
+                    for (DeviceStatusInfo.Device value : device) {
+                        resultMap.put("rKey", value.getRKey());
+                        resultMap.put("powr", value.getPowr());
+                        resultMap.put("opMd", value.getOpMd());
+                        resultMap.put("htTp", value.getHtTp());
+                        resultMap.put("wtTp", value.getWtTp());
+                        resultMap.put("hwTp", value.getHwTp());
+                        resultMap.put("rsCf", value.getStringRsCf().replaceAll("\"", ""));
+                        resultMap.put("ftMd", value.getFtMd());
+                        resultMap.put("bCdt", value.getBCdt());
+                        resultMap.put("chTp", value.getChTp());
+                        resultMap.put("cwTp", value.getCwTp());
+                        resultMap.put("mfDt", value.getMfDt());
+                        resultMap.put("type24h", common.readCon(String.format("\"%s\"%n", value.getStringRsCf()), "md"));
+                        resultMap.put("slCd", value.getSlCd());
+                        resultMap.put("hwSt", value.getHwSt());
+                        resultMap.put("fcLc", value.getFcLc());
                     }
                 }
             }

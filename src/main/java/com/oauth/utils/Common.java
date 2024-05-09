@@ -2,7 +2,9 @@ package com.oauth.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.oauth.dto.AuthServerDTO;
@@ -52,10 +54,11 @@ public class Common {
             String latitude,
             String longitude,
             Set<String> usedDeviceIds) {
+
         // 중복 체크
-        if (usedDeviceIds.contains(deviceId)) {
-            throw new IllegalArgumentException("Duplicate deviceId: " + deviceId);
-        }
+//        if (usedDeviceIds.contains(deviceId)) {
+//            throw new IllegalArgumentException("Duplicate deviceId: " + deviceId);
+//        }
 
         // 중복이 없다면 Set에 추가
         usedDeviceIds.add(deviceId);
@@ -315,21 +318,23 @@ public class Common {
 
     public String readCon(String jsonString, String value) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
+
         JsonNode jsonNode = objectMapper.readTree(jsonString);
 
+        JsonNode serviceNode = jsonNode.path("24h").get("md");
         JsonNode baseNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin");
         JsonNode conNode = baseNode.path("con");
         JsonNode surNode = jsonNode.path("m2m:sgn").path("sur");
 
         switch (value) {
-            case "rsCf":
-                return serializeAndClean(conNode.path(value), objectMapper);
             case "con":
                 return serializeAndClean(baseNode, objectMapper);
             case "sur":
                 return serializeAndClean(surNode, objectMapper);
             case "md":
                 return serializeAndClean(conNode.path("rsCf").path("24h").path("md"), objectMapper);
+            case "serviceMd":
+                return serializeAndClean(serviceNode, objectMapper);
             case "24h":
                 return serializeAndClean(conNode.path("rsCf").path("24h"), objectMapper);
             case "12h":
