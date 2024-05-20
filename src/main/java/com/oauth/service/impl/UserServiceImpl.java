@@ -208,7 +208,8 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String userPassword = params.getUserPassword();
         String msg;
-
+        String token;
+        String userId = params.getUserId();
         try {
 
             userPassword = encoder.encode(userPassword);
@@ -237,6 +238,9 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
+            token = common.createJwtToken(userId, "NORMAL", "Regist");
+            log.info("Token: " + token);
+            data.setAccessToken(token);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
