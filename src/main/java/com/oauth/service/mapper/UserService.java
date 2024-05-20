@@ -91,5 +91,5 @@ public interface UserService {
     ResponseEntity<?> doUpdateDeviceLocationNickname(AuthServerDTO params) throws CustomException;
 
     /** 임시 저장키 생성 */
-    ResponseEntity<?> dogenerateTempKey(String userId) throws CustomException;
+    ResponseEntity<?> dogenerateTempKey(String userId) throws Exception;
 }

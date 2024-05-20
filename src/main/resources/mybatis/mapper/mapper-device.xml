@@ -137,7 +137,8 @@
                 LAT,
                 LON,
                 DEVC_NICK,
-                REG_DATM
+                REG_DATM,
+                ADDR_NICK
             )
         VALUES
             (
@@ -152,7 +153,8 @@
                 #{latitude},
                 #{longitude},
                 #{deviceNickname},
-                now()
+                now(),
+                #{addrNickname}
             )
     </insert>
 

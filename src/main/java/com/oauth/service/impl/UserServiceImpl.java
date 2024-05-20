@@ -1805,7 +1805,7 @@ public class UserServiceImpl implements UserService {
 
     /** 임시 저장키 생성 */
     @Override
-    public ResponseEntity<?> dogenerateTempKey(String userId) throws CustomException {
+    public ResponseEntity<?> dogenerateTempKey(String userId) throws Exception {
 
         ApiResponse.Data result = new ApiResponse.Data();
 

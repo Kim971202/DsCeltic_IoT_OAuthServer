@@ -318,7 +318,6 @@ public class Common {
 
     public String readCon(String jsonString, String value) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-
         JsonNode jsonNode = objectMapper.readTree(jsonString);
 
         JsonNode serviceNode = jsonNode.path("24h").get("md");
@@ -353,8 +352,43 @@ public class Common {
     }
 
     private String serializeAndClean(JsonNode node, ObjectMapper mapper) throws Exception {
+        if (node == null || node.isMissingNode()) {
+            return null;
+        }
         String serializedValue = mapper.writeValueAsString(node);
         return serializedValue.replace("\"", "");
+    }
+
+    public String convertToJsonString(String jsonString) {
+        // Replace unquoted field names with quoted ones
+        jsonString = jsonString.replaceAll("([\\{,])\\s*(\\w+)\\s*:", "$1\"$2\":");
+
+        // Replace numeric values with leading zeroes or in arrays with quoted ones
+        jsonString = jsonString.replaceAll(":\\s*(\\d+)([\\},])", ":\"$1\"$2");
+        jsonString = jsonString.replaceAll(":\\s*(\\d+)(\\s*,|\\s*\\])", ":\"$1\"$2");
+        jsonString = jsonString.replaceAll("\\[(\\d+)", "[\"$1\"");
+        jsonString = jsonString.replaceAll("(\\d+)\\]", "\"$1\"]");
+        jsonString = jsonString.replaceAll("(\\d+),", "\"$1\",");
+
+        // Handle empty values properly
+        jsonString = jsonString.replaceAll(":\\s*,", ":\"\",");
+        jsonString = jsonString.replaceAll(":\\s*\\]", ":\"\"]");
+
+        return jsonString;
+    }
+
+    public static String extractMdValue(String jsonString) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(jsonString);
+
+        // Extract the md value from 24h
+        JsonNode mdNode = rootNode.path("24h").path("md");
+
+        if (mdNode.isMissingNode()) {
+            throw new Exception("md field is missing in the 24h node");
+        }
+
+        return mdNode.asText();
     }
 
     public String addCon(String body, List<String> key, List<String> value) throws Exception{

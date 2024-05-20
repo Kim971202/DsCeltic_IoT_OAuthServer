@@ -568,7 +568,7 @@ public class UserController {
     @PostMapping(value = "/generateTempKey")
     @ResponseBody
     public ResponseEntity<?> dogenerateTempKey(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
-            throws CustomException {
+            throws Exception {
 
         String logStep = "[임시 저장키 생성]";
         log.info("임시 저장키 생성");
@@ -576,6 +576,15 @@ public class UserController {
             throw new CustomException("404", "임시 저장키 생성 오류");
         }
         return userService.dogenerateTempKey(params.getUserId());
+    }
+
+    @PostMapping(value = "/test")
+    public String test() throws Exception {
+        String a = "{24h:{md:01,hs:[00,01,03,04,06,07,10,14,18,19,21,22]},12h:{hr:06,mn:20},7wk:[{wk:,hs:[]}]}";
+        String a1 = common.convertToJsonString(a);
+        System.out.println(a1);
+        System.out.println(common.readCon(a1, "serviceMd"));
+        return null;
     }
 
 }

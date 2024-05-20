@@ -179,6 +179,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         try {
 
+            deviceInfoUpsert.setAddrNickname(params.getAddrNickname());
             deviceInfoUpsert.setUserId(params.getUserId());
             deviceInfoUpsert.setHp(params.getHp());
             deviceInfoUpsert.setRegisYn(registYn);
@@ -263,7 +264,6 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setSerialNumber("    " + params.getSerialNumber());
 
                 params.setDeviceId(DEVICE_ID_PREFIX + "." + common.stringToHex(params.getModelCode()) + "." + common.stringToHex(params.getSerialNumber()));
-//                params.setTmpRegistKey(params.getUserId() + "_" + common.getCurrentDateTime());
                 params.setTmpRegistKey("user1_20240425133862");
 
                 params.setModelCode(params.getModelCode().replaceAll(" ", ""));
@@ -273,20 +273,19 @@ public class DeviceServiceImpl implements DeviceService {
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                } else stringObject = "Y";
+                }
 
-                params.setDeviceId("0.2.481.1.1.2044522d39313057.2020202037");
                 if(deviceMapper.insertDeviceRegist(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                } else stringObject = "Y";
+                }
 
                 if(deviceMapper.insertDeviceDetail(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                } else stringObject = "Y";
+                }
 
                 if(deviceMapper.insertUserDevice(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
@@ -1120,11 +1119,12 @@ public class DeviceServiceImpl implements DeviceService {
 
             rKeyList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "controlAuthKey");
             deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
+            System.out.println("deviceNicknameAndDeviceLocNicknameResult: " + deviceNicknameAndDeviceLocNicknameResult);
             deviceNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "deviceNickname");
             addrNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "addrNickname");
             serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
             regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
-
+            System.out.println("addrNicknameList: " + addrNicknameList);
             devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
             if (devicesStatusInfo == null) {
                 msg = "기기정보가 없습니다.";
@@ -1144,7 +1144,7 @@ public class DeviceServiceImpl implements DeviceService {
                     Map<String, String> data = new HashMap<>();
                     data.put("rKey", rKeyList.get(i));
                     data.put("deviceNickname", deviceNicknameList.get(i));
-                    data.put("addrNickName", addrNicknameList.get(i));
+                    data.put("addrNickname", addrNicknameList.get(i));
                     data.put("regSort", regSortList.get(i));
                     data.put("deviceId", deviceIdList.get(i));
                     data.put("controlAuthKey", deviceIdList.get(i));
@@ -1159,7 +1159,7 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("mfDt", devicesStatusInfo.get(i).getMfDt());
                     data.put("hwSt", devicesStatusInfo.get(i).getHwSt());
                     data.put("fcLc", devicesStatusInfo.get(i).getFcLc());
-                    data.put("type24h", common.readCon(devicesStatusInfo.get(i).getStringRsCf(), "md"));
+                    data.put("type24h", common.readCon(common.convertToJsonString(devicesStatusInfo.get(i).getStringRsCf()), "serviceMd"));
                     data.put("slCd", devicesStatusInfo.get(i).getSlCd());
                     appResponse.add(data);
                 }
