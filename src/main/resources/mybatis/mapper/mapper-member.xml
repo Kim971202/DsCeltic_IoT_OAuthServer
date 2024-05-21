@@ -104,6 +104,7 @@
             c.TEMP_DEVC_REG_KEY AS tmpRegistKey,
             c.LAT AS latitude,
             c.LON AS longitude,
+            a.REG_DATM,
             ROW_NUMBER() OVER () AS regSort
         FROM
             TBR_OPR_USER_DEVICE a
@@ -142,25 +143,30 @@
     </insert>
 
     <update id="updateInviteHouseMember" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE TBR_OPR_USER_INVITE_STATUS SET
-        INVITE_ACCEPT_YN = #{inviteAcceptYn},
-        INVITE_ACCEPT_DATE = #{inviteAcceptDate}
-        WHERE RESPONSE_USER_ID = #{userId}
+        UPDATE
+            TBR_OPR_USER_INVITE_STATUS
+        SET
+            INVITE_ACCEPT_YN = #{inviteAcceptYn},
+            INVITE_ACCEPT_DATE = #{inviteAcceptDate}
+        WHERE
+            RESPONSE_USER_ID = #{userId}
     </update>
 
     <select id="getInvitationList" parameterType="String" resultMap="member">
         SELECT
-        INVITATION_IDX AS invitationIdx,
-        REQUEST_USER_ID AS requestUserId,
-        RESPONSE_USER_ID AS responseUserId,
-        RESPONSE_USER_HP AS responseHp,
-        INVITE_START_DATE AS inviteStartDate,
-        INVITE_END_DATE AS inviteEndDate,
-        INVITE_ACCEPT_YN AS inviteAcceptYn,
-        REQUEST_USER_NICK AS requestUserNick,
-        RESPONSE_USER_NICK AS responseUserNick
-        FROM TBR_OPR_USER_INVITE_STATUS
-        WHERE REQUEST_USER_ID = #{responseUserId};
+            INVITATION_IDX AS invitationIdx,
+            REQUEST_USER_ID AS requestUserId,
+            RESPONSE_USER_ID AS responseUserId,
+            RESPONSE_USER_HP AS responseHp,
+            INVITE_START_DATE AS inviteStartDate,
+            INVITE_END_DATE AS inviteEndDate,
+            INVITE_ACCEPT_YN AS inviteAcceptYn,
+            REQUEST_USER_NICK AS requestUserNick,
+            RESPONSE_USER_NICK AS responseUserNick
+        FROM
+            TBR_OPR_USER_INVITE_STATUS
+        WHERE
+            REQUEST_USER_ID = #{responseUserId};
     </select>
     
     <update id="acceptInvite" parameterType="com.oauth.dto.AuthServerDTO">
@@ -175,7 +181,7 @@
 
     <insert id="insertNewHouseMember" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO TBR_OPR_USER_DEVICE
-        (USER_ID, DEVC_ID, DEVC_CTRL_KEY, ATTC_DATM, HOUSE_HOLDER)
+            (USER_ID, DEVC_ID, DEVC_CTRL_KEY, ATTC_DATM, HOUSE_HOLDER)
         VALUES
         <foreach collection="list" item="item" index="idx" separator=",">
         (
@@ -189,10 +195,14 @@
     </insert>
 
     <update id="changeHouseholdStatus" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE TBR_OPR_USER_DEVICE
-        SET HOUSE_HOLDER = #{householder}
-        WHERE USER_ID = #{userId}
-        AND DEVC_ID = #{deviceId}
+        UPDATE
+            TBR_OPR_USER_DEVICE
+        SET
+            HOUSE_HOLDER = #{householder}
+        WHERE
+            USER_ID = #{userId}
+        AND
+            DEVC_ID = #{deviceId}
     </update>
 
     <update id="updatePushCodeStatus" parameterType="hashmap">
