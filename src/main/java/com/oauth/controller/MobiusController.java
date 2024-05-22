@@ -77,7 +77,7 @@ public class MobiusController {
             log.info("functionId: " + functionId);
             log.info("replyErrorCode: " + replyErrorCode);
             gwMessagingSystem.sendMessage(functionId + uuId, replyErrorCode);
-        } else if (!errorCode.equals("null") && !errorDateTime.equals("null")) {
+        } else if (errorCode != null && errorDateTime != null) {
             AuthServerDTO errorInfo = new AuthServerDTO();
             errorInfo.setErrorCode(errorCode);
             errorInfo.setErrorMessage(errorMessage);

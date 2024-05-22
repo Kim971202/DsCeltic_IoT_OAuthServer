@@ -562,7 +562,7 @@ public class UserController {
         return userService.doUpdateDeviceLocationNickname(params);
     }
 
-    /**
+    /*
      * 임시 저장키 생성
      * */
     @PostMapping(value = "/generateTempKey")
