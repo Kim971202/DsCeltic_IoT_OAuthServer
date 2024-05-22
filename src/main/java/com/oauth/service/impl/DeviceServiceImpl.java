@@ -101,6 +101,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
                 try {
                     // 메시징 시스템을 통해 응답 메시지 대기
+                    gwMessagingSystem.printMessageQueues();
                     responseMessage = gwMessagingSystem.waitForResponse("powr" + powerOnOff.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                     if (responseMessage != null) {
                         // 응답 처리
