@@ -75,8 +75,8 @@ public class MobiusController {
             functionId = redisValueList.get(1);
             log.info("userId: " + userId);
             log.info("functionId: " + functionId);
-            log.info("replyErrorCode: " + replyErrorCode);
-            gwMessagingSystem.sendMessage(functionId + uuId, replyErrorCode);
+            log.info("SON.toJson(jsonBody, true): " + JSON.toJson(jsonBody, true));
+            gwMessagingSystem.sendMessage(functionId + uuId, JSON.toJson(jsonBody, true));
         } else if (errorCode != null && errorDateTime != null) {
             AuthServerDTO errorInfo = new AuthServerDTO();
             errorInfo.setErrorCode(errorCode);
