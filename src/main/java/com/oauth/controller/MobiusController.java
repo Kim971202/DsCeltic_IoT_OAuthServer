@@ -146,7 +146,7 @@ public class MobiusController {
             dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp"));
             dr910WDevice.setWtTp(common.readCon(jsonBody, "wtTp"));
             dr910WDevice.setHwTp(common.readCon(jsonBody, "hwTp"));
-            dr910WDevice.setStringRsCf(common.readCon(jsonBody, "rsCf"));
+            dr910WDevice.setStringRsCf(common.convertToJsonString(common.readCon(jsonBody, "rsCf")));
             dr910WDevice.setFtMd(common.readCon(jsonBody, "ftMd"));
             dr910WDevice.setBCdt(common.readCon(jsonBody, "bCdt"));
             dr910WDevice.setChTp(common.readCon(jsonBody, "chTp"));
