@@ -86,7 +86,7 @@ public class ReservationServiceImpl implements ReservationService{
                 responseMessage = gwMessagingSystem.waitForResponse(set24.getFunctionId() + set24.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if(responseMessage == null) stringObject = "T";
                 else {
-                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    if(responseMessage.equals("0")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
                     log.info("receiveCin에서의 응답: " + responseMessage);
@@ -124,10 +124,10 @@ public class ReservationServiceImpl implements ReservationService{
         ApiResponse.Data result = new ApiResponse.Data();
         Set12 set12 = new Set12();
         String stringObject = null;
-        String msg = null;
+        String msg;
 
         String userId = params.getUserId();
-        String responseMessage = null;
+        String responseMessage;
         String redisValue;
         MobiusResponse response;
         AuthServerDTO device;
@@ -161,7 +161,7 @@ public class ReservationServiceImpl implements ReservationService{
                 responseMessage = gwMessagingSystem.waitForResponse(set12.getFunctionId() + set12.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if(responseMessage == null) stringObject = "T";
                 else {
-                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    if(responseMessage.equals("0")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
                     log.info("receiveCin에서의 응답: " + responseMessage);
@@ -256,7 +256,7 @@ public class ReservationServiceImpl implements ReservationService{
                 responseMessage = gwMessagingSystem.waitForResponse(awakeAlarmSet.getFunctionId() + awakeAlarmSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if(responseMessage == null) stringObject = "T";
                 else {
-                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    if(responseMessage.equals("0")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
                     log.info("receiveCin에서의 응답: " + responseMessage);
@@ -342,7 +342,7 @@ public class ReservationServiceImpl implements ReservationService{
                 responseMessage = gwMessagingSystem.waitForResponse(setWeek.getFunctionId() + setWeek.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if(responseMessage == null) stringObject = "T";
                 else {
-                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    if(responseMessage.equals("0")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
                     log.info("receiveCin에서의 응답: " + responseMessage);
