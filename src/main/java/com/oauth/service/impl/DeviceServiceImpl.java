@@ -113,6 +113,7 @@ public class DeviceServiceImpl implements DeviceService {
                         stringObject = "T";
                         log.info("응답이 없거나 시간 초과");
                     }
+                    gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
                 } catch (InterruptedException e) {
                     // 대기 중 인터럽트 처리
                     log.error("", e);
