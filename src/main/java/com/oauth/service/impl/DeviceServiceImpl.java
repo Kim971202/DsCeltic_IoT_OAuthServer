@@ -1160,7 +1160,7 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("mfDt", devicesStatusInfo.get(i).getMfDt());
                     data.put("hwSt", devicesStatusInfo.get(i).getHwSt());
                     data.put("fcLc", devicesStatusInfo.get(i).getFcLc());
-                    data.put("type24h", common.readCon(common.convertToJsonString(devicesStatusInfo.get(i).getStringRsCf()), "serviceMd"));
+                    data.put("type24h", common.readCon(devicesStatusInfo.get(i).getStringRsCf(), "serviceMd"));
                     data.put("slCd", devicesStatusInfo.get(i).getSlCd());
                     appResponse.add(data);
                 }
