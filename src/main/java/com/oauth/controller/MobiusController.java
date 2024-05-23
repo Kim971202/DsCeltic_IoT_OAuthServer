@@ -137,6 +137,8 @@ public class MobiusController {
             deviceMapper.updateDeviceStatus(device.get(0));
         } else if (rtStFunctionId.equals("rtSt")) {
             // 주기상태보고
+            System.out.println(common.readCon(jsonBody, "rsCf"));
+            System.out.println(JSON.toJson(common.readCon(jsonBody, "rsCf")));
             dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));
             dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
             dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));

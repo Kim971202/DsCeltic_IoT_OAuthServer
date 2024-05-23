@@ -50,7 +50,7 @@ public class DeviceStatusInfo {
       private String htTp;
       private String wtTp;
       private String hwTp;
-      private Map<String, Object> rsCf;
+      private Map<String, String> rsCf;
       private String stringRsCf;
       private String ftMd;
       private String bCdt;
