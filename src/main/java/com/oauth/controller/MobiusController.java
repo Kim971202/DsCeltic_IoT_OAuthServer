@@ -114,7 +114,7 @@ public class MobiusController {
             log.info("mfStFunctionId.equals(\"mfSt\"): " + jsonBody);
 
             if(common.readCon(jsonBody, "mfCd").equals("24h")){
-                rsCfMap.put("24h", common.readCon(jsonBody, "24h"));
+                rsCfMap.put("24h", common.readCon(common.convertToJsonString(jsonBody), "24h"));
                 rsCfMap.put("12h", common.readCon(device.get(0).getStringRsCf(), "12h_old"));
                 rsCfMap.put("7wk", common.readCon(device.get(0).getStringRsCf(), "7wk_old"));
                 device.get(0).setStringRsCf(JSON.toJson(rsCfMap));
