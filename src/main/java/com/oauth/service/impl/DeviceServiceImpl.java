@@ -265,8 +265,9 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setModelCode(" " + params.getModelCode());
                 params.setSerialNumber("    " + params.getSerialNumber());
 
-                params.setDeviceId(DEVICE_ID_PREFIX + "." + common.stringToHex(params.getModelCode()) + "." + common.stringToHex(params.getSerialNumber()));
-                params.setTmpRegistKey("user1_20240425133862");
+//                params.setDeviceId(DEVICE_ID_PREFIX + "." + common.stringToHex(params.getModelCode()) + "." + common.stringToHex(params.getSerialNumber()));
+                params.setDeviceId(params.getDeviceId());
+                params.setTmpRegistKey(params.getTmpRegistKey());
 
                 params.setModelCode(params.getModelCode().replaceAll(" ", ""));
                 params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
