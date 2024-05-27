@@ -164,7 +164,7 @@ public class UserServiceImpl implements UserService {
 
             param.setAccessToken(token);
             memberMapper.updateLoginDatetime(param);
-            conMap.put("body", "Login OK");
+            conMap.put("con", "Login OK");
             msg = "로그인 성공";
 
             conMap.put("targetToken", pushToken);

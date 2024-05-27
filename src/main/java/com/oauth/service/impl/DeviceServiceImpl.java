@@ -113,12 +113,12 @@ public class DeviceServiceImpl implements DeviceService {
                         stringObject = "T";
                         log.info("응답이 없거나 시간 초과");
                     }
-                    gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
                 } catch (InterruptedException e) {
                     // 대기 중 인터럽트 처리
                     log.error("", e);
                 }
             }
+            gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
 
             if(stringObject.equals("Y")) {
                 conMap.put("body", "Device ON/OFF OK");
@@ -388,7 +388,7 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("chTp", value.getChTp());
                         resultMap.put("cwTp", value.getCwTp());
                         resultMap.put("mfDt", value.getMfDt());
-                        resultMap.put("type24h", common.readCon(String.format("\"%s\"%n", value.getStringRsCf()), "md"));
+                        resultMap.put("type24h", common.readCon(value.getStringRsCf(), "serviceMd"));
                         resultMap.put("slCd", value.getSlCd());
                         resultMap.put("hwSt", value.getHwSt());
                         resultMap.put("fcLc", value.getFcLc());

@@ -314,7 +314,7 @@ public class ReservationServiceImpl implements ReservationService{
             setWeek.setFunctionId("7wk");
             setWeek.setUuId(common.getTransactionId());
             setWeek.setOnOffFlag(params.getOnOffFlag());
-
+            log.info("params.getTimeWeek(): " + Arrays.deepToString(params.getTimeWeek()));
             for(int i = 0 ; i < params.getTimeWeek().length; ++i){
                 map.put("wk", params.getDayWeek()[i]);
                 map.put("hs", Arrays.asList(params.getTimeWeek()[i]));
