@@ -306,6 +306,12 @@ public class ReservationServiceImpl implements ReservationService{
         AuthServerDTO device;
         try {
 
+            if(params.getOnOffFlag().equals("of")){
+                msg = "최초 빠른온수 설정";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
             device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
 
             setWeek.setUserId(params.getUserId());
