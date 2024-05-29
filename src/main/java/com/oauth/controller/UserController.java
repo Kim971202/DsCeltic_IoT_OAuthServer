@@ -1,6 +1,8 @@
 package com.oauth.controller;
 
 import com.oauth.dto.AuthServerDTO;
+import com.oauth.dto.gw.DeviceStatusInfo;
+import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.service.impl.MobiusService;
 import com.oauth.service.impl.UserServiceImpl;
@@ -32,12 +34,13 @@ public class UserController {
     @Autowired
     private MemberMapper memberMapper;
     @Autowired
+    private DeviceMapper deviceMapper;
+    @Autowired
     private PasswordEncoder encoder;
     @Autowired
     private Common common;
     @Autowired
     private UserServiceImpl userService;
-
     @Autowired
     private MobiusService mobiusService;
 
@@ -579,11 +582,13 @@ public class UserController {
     }
 
     @PostMapping(value = "/test")
-    public String test() throws Exception {
-        String a = "{24h:{md:01,hs:[00,01,03,04,06,07,10,14,18,19,21,22]},12h:{hr:06,mn:20},7wk:[{wk:,hs:[]}]}";
-        String a1 = common.convertToJsonString(a);
-        System.out.println(a1);
-        System.out.println(common.readCon(a1, "serviceMd"));
+    public String test(String on) throws Exception {
+        DeviceStatusInfo.Device a = new DeviceStatusInfo.Device();
+        a.setPowr("on");
+        a.setOpMd("01");
+        a.setDeviceId("0.2.481.1.1.2045534365636f313353.20202020303833413844434146353435");
+        int b = deviceMapper.updateDeviceStatusFromApplication(a);
+        System.out.println(b);
         return null;
     }
 

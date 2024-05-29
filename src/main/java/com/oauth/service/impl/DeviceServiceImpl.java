@@ -66,6 +66,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
             powerOnOff.setUserId(params.getUserId());
             powerOnOff.setDeviceId(params.getDeviceId());
@@ -142,6 +143,10 @@ public class DeviceServiceImpl implements DeviceService {
 
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(powerOnOff.getUuId());
+
+            deviceInfo.setPowr(params.getPowerStatus());
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
             params.setFunctionId("PowerOnOff");
             params.setDeviceId(deviceId);
@@ -444,7 +449,7 @@ public class DeviceServiceImpl implements DeviceService {
         MobiusResponse response;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try  {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
@@ -523,6 +528,10 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisCommand.deleteValues(modeChange.getUuId());
 
+            deviceInfo.setOpMd(modeCode);
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
             params.setFunctionId("ModeChange");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
@@ -555,6 +564,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
@@ -628,6 +638,10 @@ public class DeviceServiceImpl implements DeviceService {
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(temperatureSet.getUuId());
 
+            deviceInfo.setHtTp(params.getTemperture());
+            deviceInfo.setDeviceId(params.getDeviceId());
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
             params.setFunctionId("TemperatureSet");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
@@ -660,6 +674,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
@@ -734,6 +749,10 @@ public class DeviceServiceImpl implements DeviceService {
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
 
+            deviceInfo.setWtTp(params.getTemperture());
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
             params.setFunctionId("BoiledWaterTempertureSet");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
@@ -766,6 +785,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
@@ -838,6 +858,10 @@ public class DeviceServiceImpl implements DeviceService {
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(waterTempertureSet.getUuId());
 
+            deviceInfo.setHwTp(params.getTemperture());
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
             params.setFunctionId("WaterTempertureSet");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
@@ -871,6 +895,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
@@ -944,6 +969,10 @@ public class DeviceServiceImpl implements DeviceService {
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(fastHotWaterSet.getUuId());
 
+            deviceInfo.setOpMd(params.getModeCode());
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
             params.setFunctionId("FastHotWaterSet");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
@@ -977,6 +1006,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
@@ -1051,6 +1081,10 @@ public class DeviceServiceImpl implements DeviceService {
             String jsonString = objectMapper.writeValueAsString(conMap);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(lockSet.getUuId());
+
+            deviceInfo.setFcLc(params.getLockSet());
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
             params.setFunctionId("LockSet");
             params.setDeviceId(deviceId);

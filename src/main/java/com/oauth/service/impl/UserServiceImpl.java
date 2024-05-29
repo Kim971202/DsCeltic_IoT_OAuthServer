@@ -1810,7 +1810,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data result = new ApiResponse.Data();
 
         try {
-            result.setTmpRegistKey("user1_" + common.getCurrentDateTime());
+            result.setTmpRegistKey(userId + common.getCurrentDateTime());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
          log.error("", e);
