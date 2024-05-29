@@ -144,7 +144,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String[][] ws;
     private String[] hr;
     private String[] mn;
-    private String[][] timeWeek;                 // 요일: 0,1,2,3,4,5,6 (일,월,화,수,목,금,토)
+    private String[][] weekList;                 // 요일: 0,1,2,3,4,5,6 (일,월,화,수,목,금,토)
     private String[] dayWeek;                    // 주간예약 요일별 가동시간
     private String pushToken;                    // 푸시 토큰
     private String startDate;                    // 통계 시작일(YYYYMMDD)
