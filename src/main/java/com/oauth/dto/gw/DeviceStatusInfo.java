@@ -50,8 +50,6 @@ public class DeviceStatusInfo {
       private String htTp;
       private String wtTp;
       private String hwTp;
-      private Map<String, String> rsCf;
-      private String stringRsCf;
       private String ftMd;
       private String bCdt;
       private String chTp;
@@ -62,6 +60,10 @@ public class DeviceStatusInfo {
       private String ecOp;
       private String fcLc;
       private String blCf;
+      private String h12;
+      private String h24;
+      private String wk7;
+      private String fwh;
 
       private String new24h;
       private String new12h;

@@ -34,6 +34,7 @@ public interface DeviceMapper {
     public int insertErrorInfo(AuthServerDTO device);
     public List<AuthServerDTO> getDeviceErroInfo(String serialNumber);
     public int updateDeviceStatusFromApplication(DeviceStatusInfo.Device device);
+    public int insertJson(String jsonBody);
 
 
 }

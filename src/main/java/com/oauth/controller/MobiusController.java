@@ -42,9 +42,8 @@ public class MobiusController {
     public String receiveCin(@RequestBody String jsonBody) throws Exception {
 
         log.info("GW Received JSON: " + jsonBody);
-        DeviceStatusInfo.Device dr910WDevice = new DeviceStatusInfo.Device();
         ApiResponse.Data result = new ApiResponse.Data();
-
+        deviceMapper.insertJson(jsonBody);
         /* *
          * 1. Redis에서 받은 uuId로 Redis에 저장된 Value값을 검색한다.
          * 2. 해당 Value는 userId,functionId 형태로 저장됨
@@ -61,12 +60,11 @@ public class MobiusController {
         // serialNumber: [Mobius, 20202020303833413844433645333841, 083A8DC6E38A, 3957]
         String[] serialNumber = common.readCon(jsonBody, "sur").split("/");
 
-        String mfStFunctionId = common.readCon(jsonBody, "functionId");
-        String rtStFunctionId = common.readCon(jsonBody, "functionId");
-
         String userId;
-        String functionId = "null";
+        String functionId = common.readCon(jsonBody, "functionId");
         String redisValue = redisCommand.getValues(uuId);
+
+        log.info("functionId: " + functionId);
         log.info("redisValue: " + redisValue);
         List<String> redisValueList;
         if (!redisValue.equals("false")) {
@@ -90,53 +88,39 @@ public class MobiusController {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, "DB_ERROR 잠시 후 다시 시도 해주십시오.");
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
-        } else if (mfStFunctionId.equals("mfSt")) {
+        } else if (functionId.equals("mfSt")) {
             // 변경실시간상태
             pushService.sendPushMessage(jsonBody);
 
-            Map<String, String> rsCfMap = new HashMap<>();
+            DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
+            deviceInfo.setMfcd(common.readCon(jsonBody, "mfcd"));
+            deviceInfo.setPowr(common.readCon(jsonBody, "powr"));
+            deviceInfo.setOpMd(common.readCon(jsonBody, "opMd"));
+            deviceInfo.setHtTp(common.readCon(jsonBody, "htTp"));
+            deviceInfo.setWtTp(common.readCon(jsonBody, "wtTp"));
+            deviceInfo.setHwTp(common.readCon(jsonBody, "hwTp"));
+            deviceInfo.setFtMd(common.readCon(jsonBody, "ftMd"));
+            deviceInfo.setBCdt(common.readCon(jsonBody, "bCdt"));
+            deviceInfo.setChTp(common.readCon(jsonBody, "chTp"));
+            deviceInfo.setCwTp(common.readCon(jsonBody, "cwTp"));
+            deviceInfo.setHwSt(common.readCon(jsonBody, "hwSt"));
+            deviceInfo.setWk7(common.readCon(jsonBody, "7wk"));
+            deviceInfo.setH12(common.readCon(jsonBody, "12h"));
+            deviceInfo.setH24(common.readCon(jsonBody, "24h"));
+            deviceInfo.setFwh(common.readCon(jsonBody, "fwh"));
 
-            // 변경내용 DB에 UPDATE
-            List<DeviceStatusInfo.Device> device = deviceMapper.getDeviceStauts(Collections.singletonList(common.readCon(jsonBody, "srNo")));
-            System.out.println(device);
-            if(common.readCon(jsonBody, "mfCd").equals("powr")) device.get(0).setPowr(common.readCon(jsonBody, "powr"));
-            if(common.readCon(jsonBody, "mfCd").equals("opMd")) device.get(0).setOpMd(common.readCon(jsonBody, "opMd"));
-            if(common.readCon(jsonBody, "mfCd").equals("htTp")) device.get(0).setHtTp(common.readCon(jsonBody, "htTp"));
-            if(common.readCon(jsonBody, "mfCd").equals("wtTp")) device.get(0).setWtTp(common.readCon(jsonBody, "wtTp"));
-            if(common.readCon(jsonBody, "mfCd").equals("hwTp")) device.get(0).setHwTp(common.readCon(jsonBody, "hwTp"));
-            if(common.readCon(jsonBody, "mfCd").equals("ftMd")) device.get(0).setFtMd(common.readCon(jsonBody, "ftMd"));
-            if(common.readCon(jsonBody, "mfCd").equals("chTp")) device.get(0).setChTp(common.readCon(jsonBody, "chTp"));
-            if(common.readCon(jsonBody, "mfCd").equals("mfDt")) device.get(0).setMfDt(common.readCon(jsonBody, "mfDt"));
-            if(common.readCon(jsonBody, "mfCd").equals("slCd")) device.get(0).setSlCd(common.readCon(jsonBody, "slCd"));
-            if(common.readCon(jsonBody, "mfCd").equals("hwSt")) device.get(0).setHwSt(common.readCon(jsonBody, "hwSt"));
-            if(common.readCon(jsonBody, "mfCd").equals("fcLc")) device.get(0).setFcLc(common.readCon(jsonBody, "fcLc"));
+            int rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+            log.info("rcUpdateResult: " + rcUpdateResult);
 
-            log.info("mfStFunctionId.equals(\"mfSt\"): " + jsonBody);
-
-            if(common.readCon(jsonBody, "mfCd").equals("24h")){
-                rsCfMap.put("24h", common.readCon(jsonBody, "24h"));
-                rsCfMap.put("12h", common.readCon(device.get(0).getStringRsCf(), "12h_old"));
-                rsCfMap.put("7wk", common.readCon(device.get(0).getStringRsCf(), "7wk_old"));
-                device.get(0).setStringRsCf(JSON.toJson(rsCfMap));
-            }
-
-            if(common.readCon(jsonBody, "mfCd").equals("12h")){
-                rsCfMap.put("12h", common.readCon(jsonBody, "12h"));
-                rsCfMap.put("24h", common.readCon(device.get(0).getStringRsCf(), "24h_old"));
-                rsCfMap.put("7wk", common.readCon(device.get(0).getStringRsCf(), "7wk_old"));
-                device.get(0).setStringRsCf(JSON.toJson(rsCfMap));
-            }
-
-            if(common.readCon(jsonBody, "mfCd").equals("7wk")){
-                rsCfMap.put("7wk", common.readCon(jsonBody, "7wk"));
-                rsCfMap.put("24h", common.readCon(device.get(0).getStringRsCf(), "24h_old"));
-                rsCfMap.put("12h", common.readCon(device.get(0).getStringRsCf(), "12h_old"));
-                device.get(0).setStringRsCf(JSON.toJson(rsCfMap));
-            }
-
-            deviceMapper.updateDeviceStatus(device.get(0));
-        } else if (rtStFunctionId.equals("rtSt")) {
+        } else if (functionId.equals("rtSt")) {
             // 주기상태보고
+
+            DeviceStatusInfo.Device dr910WDevice = new DeviceStatusInfo.Device();
+
+            dr910WDevice.setH24(common.convertToJsonString(common.readCon(jsonBody, "24h")));
+            dr910WDevice.setH12(common.convertToJsonString(common.readCon(jsonBody, "12h")));
+            dr910WDevice.setWk7(common.convertToJsonString(common.readCon(jsonBody, "7wk")));
+//            dr910WDevice.setFwh(common.convertToJsonString(common.readCon(jsonBody, "fwh")));
 
             dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));
             dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
@@ -146,7 +130,6 @@ public class MobiusController {
             dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp"));
             dr910WDevice.setWtTp(common.readCon(jsonBody, "wtTp"));
             dr910WDevice.setHwTp(common.readCon(jsonBody, "hwTp"));
-            dr910WDevice.setStringRsCf(common.convertToJsonString(common.readCon(jsonBody, "rsCf")));
             dr910WDevice.setFtMd(common.readCon(jsonBody, "ftMd"));
             dr910WDevice.setBCdt(common.readCon(jsonBody, "bCdt"));
             dr910WDevice.setChTp(common.readCon(jsonBody, "chTp"));

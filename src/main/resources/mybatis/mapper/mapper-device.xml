@@ -269,9 +269,12 @@
             CHTP,
             CWTP,
             HWST,
-            RSCF,
             SLCD,
-            MFDT
+            MFDT,
+            12H,
+            24H,
+            7WK,
+            FWH
         )
             VALUES
         (
@@ -288,9 +291,12 @@
             #{chTp},
             #{cwTp},
             #{hwSt},
-            #{stringRsCf},
             #{slCd},
-            #{mfDt}
+            #{mfDt},
+            #{h12},
+            #{h24},
+            #{wk7},
+            #{fwh},
         )
     </insert>
 
@@ -310,7 +316,10 @@
                     CHTP = #{chTp},
                     CWTP = #{cwTp},
                     HWST = #{hwSt},
-                    RSCF = #{stringRsCf},
+                    7WK = #{wk7},
+                    12H = #{h12},
+                    24H = #{h24},
+                    <if test="fwh != null">FWH = #{fwh},</if>
                     SLCD = #{slCd},
                     MFDT = #{mfDt}
         WHERE
@@ -332,7 +341,10 @@
             <if test="chTp != null">CHTP = #{chTp},</if>
             <if test="cwTp != null">CWTP = #{cwTp},</if>
             <if test="hwSt != null">HWST = #{hwSt},</if>
-            <if test="stringRsCf != null">RSCF = #{stringRsCf},</if>
+            <if test="7wk != null">7WK = #{wk7},</if>
+            <if test="12h != null">12H = #{h12},</if>
+            <if test="24h != null">24H = #{h24},</if>
+            <if test="fwh != null">FWH = #{fwh},</if>
             <if test="slCd != null">SLCD = #{slCd},</if>
             <if test="mfDt != null">MFDT = #{mfDt},</if>
         </set>
@@ -446,5 +458,16 @@
             SERIAL_NO = #{serialNumber}
     </select>
 
+    <insert id="insertJson" parameterType="String">
+        INSERT INTO
+            GW_TEST_TABLE
+        (
+            JSONBODY
+        )
+        VALUES
+        (
+            #{jsonbody}
+        )
+    </insert>
 
 </mapper>
