@@ -341,9 +341,9 @@
             <if test="chTp != null">CHTP = #{chTp},</if>
             <if test="cwTp != null">CWTP = #{cwTp},</if>
             <if test="hwSt != null">HWST = #{hwSt},</if>
-            <if test="7wk != null">7WK = #{wk7},</if>
-            <if test="12h != null">12H = #{h12},</if>
-            <if test="24h != null">24H = #{h24},</if>
+            <if test="wk7 != null">7WK = #{wk7},</if>
+            <if test="h12 != null">12H = #{h12},</if>
+            <if test="h24 != null">24H = #{h24},</if>
             <if test="fwh != null">FWH = #{fwh},</if>
             <if test="slCd != null">SLCD = #{slCd},</if>
             <if test="mfDt != null">MFDT = #{mfDt},</if>
