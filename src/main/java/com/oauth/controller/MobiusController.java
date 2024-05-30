@@ -108,7 +108,7 @@ public class MobiusController {
             deviceInfo.setH12(common.readCon(jsonBody, "12h"));
             deviceInfo.setH24(common.readCon(jsonBody, "24h"));
             deviceInfo.setFwh(common.readCon(jsonBody, "fwh"));
-
+            deviceInfo.setDeviceId(common.readCon(jsonBody, "deviceId"));
             int rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
             log.info("rcUpdateResult: " + rcUpdateResult);
 
