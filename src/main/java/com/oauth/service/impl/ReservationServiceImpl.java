@@ -365,7 +365,6 @@ public class ReservationServiceImpl implements ReservationService{
         MobiusResponse response;
         AuthServerDTO device;
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
-        ConcurrentHashMap<String, String> dbMap = new ConcurrentHashMap<String, String>();
         try {
 
             if(params.getOnOffFlag().equals("of")){
@@ -385,8 +384,8 @@ public class ReservationServiceImpl implements ReservationService{
             log.info("params.getWeekList(): " + params.getWeekList());
 
             // JSON 파싱
-            JSONObject jsonObject = new JSONObject(params.getWeekList());
-            JSONArray sevenWkArray = jsonObject.getJSONArray("7wk");
+//            JSONObject jsonObject = new JSONObject(params.getWeekList());
+            JSONArray sevenWkArray = params.getWeekList().getJSONArray("7wk");
             setWeek.setWeekList(String.valueOf(sevenWkArray));
 
             redisValue = userId + "," + setWeek.getFunctionId();

@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.json.JSONObject;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -144,7 +145,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String[][] ws;
     private String[] hr;
     private String[] mn;
-    private String weekList;                 // 요일: 0,1,2,3,4,5,6 (일,월,화,수,목,금,토)
+    private JSONObject weekList;                 // 요일: 0,1,2,3,4,5,6 (일,월,화,수,목,금,토)
     private String[] dayWeek;                    // 주간예약 요일별 가동시간
     private String pushToken;                    // 푸시 토큰
     private String startDate;                    // 통계 시작일(YYYYMMDD)
