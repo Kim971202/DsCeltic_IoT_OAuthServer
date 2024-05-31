@@ -351,7 +351,6 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     /** 홈 IoT 컨트롤러 상태 정보 조회  */
-    // TODO: DB쿼리 정보 Return 하는 걸로 수정
     @Override
     public ResponseEntity<?> doDeviceStatusInfo(AuthServerDTO params) throws CustomException{
 
