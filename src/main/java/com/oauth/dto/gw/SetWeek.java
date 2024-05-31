@@ -1,5 +1,6 @@
 package com.oauth.dto.gw;
 
+import com.nimbusds.jose.shaded.json.JSONArray;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +14,7 @@ public class SetWeek {
     private String userId;
     private String deviceId;
     private String controlAuthKey;
-    private List<HashMap<String, Object>> weekList;
+    private String weekList;
     private String onOffFlag;
 
     private String functionId;

@@ -10,18 +10,14 @@ import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.ReservationService;
 import com.oauth.utils.*;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -386,15 +382,16 @@ public class ReservationServiceImpl implements ReservationService{
             setWeek.setFunctionId("7wk");
             setWeek.setUuId(common.getTransactionId());
             setWeek.setOnOffFlag(params.getOnOffFlag());
-            log.info("params.getWeekList(): " + Arrays.deepToString(params.getWeekList()));
-            for(int i = 0 ; i < params.getWeekList().length; ++i){
-                map.put("wk", params.getDayWeek()[i]);
-                map.put("hs", Arrays.asList(params.getWeekList()[i]));
-                weekList.add(map);
-                map = new HashMap<>();
-            }
+            log.info("params.getWeekList(): " + params.getWeekList());
 
-            setWeek.setWeekList(weekList);
+            params.setWeekList("[{\"7wk\":[{\"wk\":\"0\", \"hs\":[\"00\", \"01\", \"02\", \"03\", \"04\", \"05\", \"06\", \"07\", \"08\", \"09\", \"10\", \"11\", \"12\", \"13\", \"14\", \"15\", \"16\", \"17\", \"18\", \"19\", \"20\", \"21\", \"22\", \"23\"]}, {\"wk\":\"1\", \"hs\":[\"00\", \"01\", \"02\", \"03\", \"04\", \"05\", \"07\", \"08\", \"09\", \"10\", \"11\", \"12\", \"13\", \"14\", \"15\", \"17\", \"19\", \"20\", \"21\", \"22\", \"23\"]}, {\"wk\":\"2\", \"hs\":[\"00\", \"01\", \"02\", \"03\", \"04\", \"05\", \"06\", \"07\", \"08\", \"09\", \"10\", \"11\", \"12\", \"13\", \"14\", \"15\", \"16\", \"17\", \"18\", \"19\", \"20\", \"21\", \"22\", \"23\"]}, {\"wk\":\"3\", \"hs\":[\"00\", \"01\", \"02\", \"03\", \"04\", \"05\", \"06\", \"07\", \"08\", \"09\", \"10\", \"11\", \"12\", \"13\", \"14\", \"15\", \"16\", \"17\", \"18\", \"19\", \"20\", \"21\", \"22\", \"23\"]}, {\"wk\":\"4\", \"hs\":[\"00\", \"01\", \"02\", \"03\", \"04\", \"05\", \"06\", \"07\", \"08\", \"09\", \"10\", \"11\", \"12\", \"13\", \"14\", \"15\"]}, {\"wk\":\"5\", \"hs\":[\"00\", \"01\", \"02\", \"03\", \"04\", \"05\", \"06\", \"07\", \"08\", \"09\", \"10\", \"11\", \"12\", \"13\", \"14\", \"15\", \"16\", \"17\", \"18\", \"19\", \"20\", \"21\", \"22\", \"23\"]}, {\"wk\":\"6\", \"hs\":[\"00\", \"01\", \"02\", \"03\", \"04\", \"05\", \"06\", \"07\", \"08\", \"09\", \"10\", \"11\", \"12\", \"13\", \"14\", \"15\", \"16\", \"17\", \"18\", \"19\", \"20\", \"21\", \"22\", \"23\"]}]}]");
+
+            // JSON 파싱
+            JSONArray jsonArray = new JSONArray(params.getWeekList());
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            JSONArray sevenWkArray = jsonObject.getJSONArray("7wk");
+
+            setWeek.setWeekList(String.valueOf(sevenWkArray));
 
             redisValue = userId + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
@@ -437,10 +434,7 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            dbMap.put("hs", params.getHours().toString());
-            dbMap.put("md", params.getType24h());
-
-            deviceInfo.setH24(common.convertToJsonString(JSON.toJson(dbMap)));
+            deviceInfo.setWk7(common.convertToJsonString(String.valueOf(sevenWkArray)));
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
