@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -373,6 +374,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             } else {
                 device = deviceMapper.getDeviceStauts(Collections.singletonList(serialNumber.getSerialNumber()));
+                System.out.println(device);
                 if(device == null) {
                     msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -387,16 +389,28 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("htTp", value.getHtTp());
                         resultMap.put("wtTp", value.getWtTp());
                         resultMap.put("hwTp", value.getHwTp());
-//                        resultMap.put("rsCf", value.getStringRsCf().replaceAll("\"", ""));
                         resultMap.put("ftMd", value.getFtMd());
                         resultMap.put("bCdt", value.getBCdt());
                         resultMap.put("chTp", value.getChTp());
                         resultMap.put("cwTp", value.getCwTp());
                         resultMap.put("mfDt", value.getMfDt());
-//                        resultMap.put("type24h", common.readCon(value.getStringRsCf(), "serviceMd"));
+                        resultMap.put("type24h", common.readCon(value.getH24(), "serviceMd"));
                         resultMap.put("slCd", value.getSlCd());
                         resultMap.put("hwSt", value.getHwSt());
                         resultMap.put("fcLc", value.getFcLc());
+                        ConcurrentHashMap<String, ConcurrentHashMap<String, String>> rscfMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, String>>() {{
+                            // 내부 맵 생성 및 초기화
+                            ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
+                            eleMap.put("24h", value.getH24());
+                            eleMap.put("12h", value.getH12());
+                            eleMap.put("7wk", value.getWk7());
+
+                            if(value.getFwh() == null) eleMap.put("fwt", "null");
+                            else eleMap.put("fwt", value.getFwh());
+                            // 외부 맵에 내부 맵 추가
+                            put("rsCf", eleMap);
+                        }};
+                        resultMap.put("rsCf", JSON.toJson(rscfMap));
                     }
                 }
             }
@@ -1207,6 +1221,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setHomeViewValue(appResponse);
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
+
             if(stringObject.equals("N")) {
                 msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
