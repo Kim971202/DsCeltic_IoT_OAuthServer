@@ -4,6 +4,7 @@ import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.*;
 import com.oauth.mapper.DeviceMapper;
+import com.oauth.mapper.MemberMapper;
 import com.oauth.message.GwMessagingSystem;
 import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.ReservationService;
@@ -22,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -40,6 +42,8 @@ public class ReservationServiceImpl implements ReservationService{
     GwMessagingSystem gwMessagingSystem;
     @Autowired
     DeviceMapper deviceMapper;
+    @Autowired
+    MemberMapper memberMapper;
     @Value("${server.timeout}")
     private long TIME_OUT;
 
@@ -52,22 +56,25 @@ public class ReservationServiceImpl implements ReservationService{
         String stringObject = null;
         String msg;
         String userId = params.getUserId();
+        String deviceId = params.getDeviceId();
         String redisValue;
         MobiusResponse response;
         String responseMessage;
         AuthServerDTO device;
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
+        ConcurrentHashMap<String, String> dbMap = new ConcurrentHashMap<String, String>();
         try {
 
-            device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
 
             set24.setAccessToken(params.getAccessToken());
             set24.setUserId(params.getUserId());
-            set24.setDeviceId(params.getDeviceId());
+            set24.setDeviceId(deviceId);
             set24.setControlAuthKey(params.getControlAuthKey());
             set24.setHours(params.getHours());
             set24.setType24h(params.getType24h());
             set24.setOnOffFlag(params.getOnOffFlag());
-
+            System.out.println(params.getHours());
             set24.setFunctionId("24h");
             set24.setUuId(common.getTransactionId());
 
@@ -109,6 +116,22 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            dbMap.put("hs", params.getHours().toString());
+            dbMap.put("md", params.getType24h());
+
+            deviceInfo.setH24(common.convertToJsonString(JSON.toJson(dbMap)));
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+            params.setFunctionId("Set24");
+            params.setDeviceId(deviceId);
+            params.setUserId(userId);
+            if(memberMapper.insertCommandHistory(params) <= 0) {
+                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             redisCommand.deleteValues(set24.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -127,17 +150,20 @@ public class ReservationServiceImpl implements ReservationService{
         String msg;
 
         String userId = params.getUserId();
+        String deviceId = params.getDeviceId();
         String responseMessage;
         String redisValue;
         MobiusResponse response;
         AuthServerDTO device;
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
+        ConcurrentHashMap<String, String> dbMap = new ConcurrentHashMap<String, String>();
         try {
 
-            device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
 
             set12.setAccessToken(params.getAccessToken());
             set12.setUserId(userId);
-            set12.setDeviceId(params.getDeviceId());
+            set12.setDeviceId(deviceId);
             set12.setControlAuthKey(params.getControlAuthKey());
             set12.setWorkPeriod(params.getWorkPeriod());
             set12.setWorkTime(params.getWorkTime());
@@ -184,6 +210,22 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            dbMap.put("hr", params.getWorkPeriod());
+            dbMap.put("mn", params.getWorkTime());
+            System.out.println(JSON.toJson(dbMap));
+            deviceInfo.setH12(common.convertToJsonString(JSON.toJson(dbMap)));
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+            params.setFunctionId("Set12");
+            params.setDeviceId(deviceId);
+            params.setUserId(userId);
+            if(memberMapper.insertCommandHistory(params) <= 0) {
+                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             redisCommand.deleteValues(set12.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -193,6 +235,7 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
     /** 빠른 온수 예약  */
+    // TODO: 앱에서 보내는 Data 확인 후 구현
     @Override
     public ResponseEntity<?> doAwakeAlarmSet(AuthServerDTO params) throws CustomException {
 
@@ -200,7 +243,7 @@ public class ReservationServiceImpl implements ReservationService{
         String stringObject = null;
         String msg;
         String userId = params.getUserId();
-
+        String deviceId = params.getDeviceId();
         AwakeAlarmSet awakeAlarmSet = new AwakeAlarmSet();
         List<HashMap<String, Object>> awakeList = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map = new HashMap<>();
@@ -209,9 +252,11 @@ public class ReservationServiceImpl implements ReservationService{
         MobiusResponse response;
         String responseMessage;
         AuthServerDTO device;
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
+        ConcurrentHashMap<String, String> dbMap = new ConcurrentHashMap<String, String>();
         try {
 
-            device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
 
             /**
              * “awakeList” :
@@ -226,7 +271,7 @@ public class ReservationServiceImpl implements ReservationService{
              * */
             awakeAlarmSet.setAccessToken(params.getAccessToken());
             awakeAlarmSet.setUuId(params.getUserId());
-            awakeAlarmSet.setDeviceId(params.getDeviceId());
+            awakeAlarmSet.setDeviceId(deviceId);
             awakeAlarmSet.setControlAuthKey(params.getControlAuthKey());
             awakeAlarmSet.setFunctionId("ftMd");
             awakeAlarmSet.setUuId(common.getTransactionId());
@@ -279,6 +324,22 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            dbMap.put("hs", params.getHours().toString());
+            dbMap.put("md", params.getType24h());
+
+            deviceInfo.setH24(common.convertToJsonString(JSON.toJson(dbMap)));
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+            params.setFunctionId("Set24");
+            params.setDeviceId(deviceId);
+            params.setUserId(userId);
+            if(memberMapper.insertCommandHistory(params) <= 0) {
+                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             redisCommand.deleteValues(awakeAlarmSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -288,6 +349,7 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
     /** 주간 예약  */
+    // TODO: 앱에서 보내는 Data 확인 후 구현
     @Override
     public ResponseEntity<?> doSetWeek(AuthServerDTO params) throws CustomException {
 
@@ -297,7 +359,7 @@ public class ReservationServiceImpl implements ReservationService{
         String stringObject = null;
         String msg;
         String userId = params.getUserId();
-
+        String deviceId = params.getDeviceId();
         SetWeek setWeek = new SetWeek();
         List<HashMap<String, Object>> weekList = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map = new HashMap<>();
@@ -306,6 +368,8 @@ public class ReservationServiceImpl implements ReservationService{
         String redisValue;
         MobiusResponse response;
         AuthServerDTO device;
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
+        ConcurrentHashMap<String, String> dbMap = new ConcurrentHashMap<String, String>();
         try {
 
             if(params.getOnOffFlag().equals("of")){
@@ -371,6 +435,22 @@ public class ReservationServiceImpl implements ReservationService{
             else {
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+
+            dbMap.put("hs", params.getHours().toString());
+            dbMap.put("md", params.getType24h());
+
+            deviceInfo.setH24(common.convertToJsonString(JSON.toJson(dbMap)));
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+            params.setFunctionId("Set24");
+            params.setDeviceId(deviceId);
+            params.setUserId(userId);
+            if(memberMapper.insertCommandHistory(params) <= 0) {
+                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
             redisCommand.deleteValues(setWeek.getUuId());

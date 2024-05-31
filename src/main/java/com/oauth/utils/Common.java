@@ -320,7 +320,7 @@ public class Common {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(jsonString);
 
-        JsonNode serviceNode = jsonNode.path("24h").get("md");
+        JsonNode serviceNode = jsonNode.get("md");
         JsonNode baseNode = jsonNode.path("m2m:sgn").path("nev").path("rep").path("m2m:cin");
         JsonNode conNode = baseNode.path("con");
         JsonNode surNode = jsonNode.path("m2m:sgn").path("sur");
