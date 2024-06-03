@@ -1169,13 +1169,14 @@ public class DeviceServiceImpl implements DeviceService {
 
             rKeyList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "controlAuthKey");
             deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
-            System.out.println("deviceNicknameAndDeviceLocNicknameResult: " + deviceNicknameAndDeviceLocNicknameResult);
+            log.info("deviceNicknameAndDeviceLocNicknameResult: " + deviceNicknameAndDeviceLocNicknameResult);
             deviceNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "deviceNickname");
             addrNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "addrNickname");
             serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
             regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
-            System.out.println("addrNicknameList: " + addrNicknameList);
+            log.info("addrNicknameList: " + addrNicknameList);
             devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
+            log.info("devicesStatusInfo: " + devicesStatusInfo);
             if (devicesStatusInfo == null) {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);

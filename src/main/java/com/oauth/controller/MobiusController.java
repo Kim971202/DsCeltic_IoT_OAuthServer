@@ -121,7 +121,7 @@ public class MobiusController {
             dr910WDevice.setH12(common.convertToJsonString(common.readCon(jsonBody, "12h")));
             dr910WDevice.setWk7(common.convertToJsonString(common.readCon(jsonBody, "7wk")));
 //            dr910WDevice.setFwh(common.convertToJsonString(common.readCon(jsonBody, "fwh")));
-
+            dr910WDevice.setFwh("null");
             dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));
             dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
             dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
