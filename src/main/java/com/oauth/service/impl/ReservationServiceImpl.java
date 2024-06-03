@@ -386,12 +386,12 @@ public class ReservationServiceImpl implements ReservationService{
             // JSON 파싱
             JSONObject jsonObject = new JSONObject(params.getWeekList());
             JSONArray sevenWkArray = jsonObject.getJSONArray("7wk");
-            setWeek.setWeekList(String.valueOf(sevenWkArray));
+            setWeek.setWeekList(sevenWkArray);
 
             redisValue = userId + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
 
-            System.out.println(JSON.toJson(setWeek, true));
+            log.info("JSON.toJson(setWeek, true): " + JSON.toJson(setWeek, true));
 
             response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(setWeek));
 
