@@ -384,9 +384,9 @@ public class ReservationServiceImpl implements ReservationService{
             log.info("params.getWeekList(): " + params.getWeekList());
 
             // JSON 파싱
-            JSONObject jsonObject = new JSONObject(params.getWeekList());
-            JSONArray sevenWkArray = jsonObject.getJSONArray("7wk");
-            setWeek.setWeekList(sevenWkArray);
+//            JSONObject jsonObject = new JSONObject(params.getWeekList());
+//            JSONArray sevenWkArray = jsonObject.getJSONArray("7wk");
+            setWeek.setWeekList(params.getWeekList());
 
             redisValue = userId + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
@@ -429,7 +429,7 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            deviceInfo.setWk7(common.convertToJsonString(String.valueOf(sevenWkArray)));
+            deviceInfo.setWk7(params.getWeekList());
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 

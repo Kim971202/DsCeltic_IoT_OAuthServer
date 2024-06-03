@@ -14,7 +14,7 @@ public class SetWeek {
     private String userId;
     private String deviceId;
     private String controlAuthKey;
-    private JSONArray weekList;
+    private String weekList;
     private String onOffFlag;
 
     private String functionId;
