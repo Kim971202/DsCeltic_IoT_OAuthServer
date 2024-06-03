@@ -391,7 +391,7 @@ public class ReservationServiceImpl implements ReservationService{
             redisValue = userId + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
 
-            log.info("JSON.toJson(setWeek, true): " + JSON.toJson(setWeek, true));
+            log.info("JSON.toJson(setWeek, true): " + setWeek);
 
             response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(setWeek));
 
