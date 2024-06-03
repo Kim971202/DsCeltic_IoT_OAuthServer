@@ -384,9 +384,9 @@ public class ReservationServiceImpl implements ReservationService{
             log.info("params.getWeekList(): " + params.getWeekList());
 
             // JSON 파싱
-//            JSONObject jsonObject = new JSONObject(params.getWeekList());
-//            JSONArray sevenWkArray = jsonObject.getJSONArray("7wk");
-            setWeek.setWeekList(params.getWeekList());
+            JSONObject jsonObject = new JSONObject(params.getWeekList());
+            JSONArray sevenWkArray = jsonObject.getJSONArray("7wk");
+            setWeek.setWeekList(sevenWkArray.toString());
 
             redisValue = userId + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
