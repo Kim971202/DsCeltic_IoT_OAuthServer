@@ -63,7 +63,7 @@ public class DeviceStatusInfo {
       private String blCf;
       private String h12;
       private String h24;
-      private List<HashMap<String, Object>> wk7;
+      private String wk7;
       private String fwh;
 
       private String new24h;
