@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ public class DeviceStatusInfo {
       private String blCf;
       private String h12;
       private String h24;
-      private String wk7;
+      private List<HashMap<String, Object>> wk7;
       private String fwh;
 
       private String new24h;

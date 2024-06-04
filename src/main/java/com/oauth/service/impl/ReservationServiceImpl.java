@@ -436,7 +436,7 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            deviceInfo.setWk7(params.getWeekList());
+            deviceInfo.setWk7(weekList);
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
