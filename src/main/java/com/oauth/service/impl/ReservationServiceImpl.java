@@ -385,8 +385,8 @@ public class ReservationServiceImpl implements ReservationService{
             setWeek.setUuId(common.getTransactionId());
             setWeek.setOnOffFlag(params.getOnOffFlag());
 
-            log.info("params.getWeekList(): " + params.getWeekList());
-            JsonNode jsonNode = objectMapper.readTree(params.getWeekList());
+            log.info("params.getWeekList(): " + (common.convertToJsonString(params.getWeekList())));
+            JsonNode jsonNode = objectMapper.readTree(common.convertToJsonString(params.getWeekList()));
 
             for(int i = 0; i < jsonNode.path("7wk").size(); ++i){
                 map.put("wk", jsonNode.path("7wk").get(i).path("wk"));
@@ -394,8 +394,7 @@ public class ReservationServiceImpl implements ReservationService{
                 weekList.add(map);
                 map = new HashMap<>();
             }
-            setWeek.setWeekList(common.convertToJsonString(weekList.toString()));
-
+            setWeek.setWeekList(weekList);
             redisValue = userId + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
 

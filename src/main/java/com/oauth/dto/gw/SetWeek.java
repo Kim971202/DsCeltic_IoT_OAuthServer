@@ -13,7 +13,7 @@ public class SetWeek {
     private String userId;
     private String deviceId;
     private String controlAuthKey;
-    private String weekList;
+    private List<HashMap<String, Object>> weekList;
     private String onOffFlag;
 
     private String functionId;
