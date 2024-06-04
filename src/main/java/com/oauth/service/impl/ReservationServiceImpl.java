@@ -359,8 +359,8 @@ public class ReservationServiceImpl implements ReservationService{
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         SetWeek setWeek = new SetWeek();
-        List<HashMap<String, Object>> weekList = new ArrayList<HashMap<String, Object>>();
-        HashMap<String, Object> map = new HashMap<>();
+        List<HashMap<String, String>> weekList = new ArrayList<HashMap<String, String>>();
+        HashMap<String, String> map = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         String responseMessage;
@@ -389,8 +389,8 @@ public class ReservationServiceImpl implements ReservationService{
             JsonNode jsonNode = objectMapper.readTree(params.getWeekList());
 
             for(int i = 0; i < jsonNode.path("7wk").size(); ++i){
-                map.put("wk", jsonNode.path("7wk").get(i).path("wk"));
-                map.put("hs", jsonNode.path("7wk").get(i).path("hs"));
+                map.put("wk", String.valueOf(jsonNode.path("7wk").get(i).path("wk")));
+                map.put("hs", String.valueOf(jsonNode.path("7wk").get(i).path("hs")));
                 weekList.add(map);
                 map = new HashMap<>();
             }
