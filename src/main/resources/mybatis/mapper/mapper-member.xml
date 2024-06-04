@@ -257,7 +257,13 @@
     </select>
 
     <select id="deleteControllerMapping" parameterType="com.oauth.dto.AuthServerDTO" resultType="String">
-        CALL deleteUserFromService(#{deviceId}, #{userId}, #{controlAuthKey})
+        CALL
+            deleteControllerMapping
+                (
+                    #{deviceId},
+                    #{userId},
+                    #{controlAuthKey}
+                )
     </select>
 
     <select id="getPushInfoList" parameterType="String" resultMap="member">
