@@ -394,7 +394,7 @@ public class ReservationServiceImpl implements ReservationService{
                 weekList.add(map);
                 map = new HashMap<>();
             }
-            setWeek.setWeekList(weekList.toString());
+            setWeek.setWeekList(common.convertToJsonString(weekList.toString()));
 
             redisValue = userId + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
