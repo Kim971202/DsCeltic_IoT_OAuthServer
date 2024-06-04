@@ -1,5 +1,7 @@
 package com.oauth.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.*;
@@ -359,6 +361,7 @@ public class ReservationServiceImpl implements ReservationService{
         SetWeek setWeek = new SetWeek();
         List<HashMap<String, Object>> weekList = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
 
         String responseMessage;
         String redisValue;
@@ -381,12 +384,17 @@ public class ReservationServiceImpl implements ReservationService{
             setWeek.setFunctionId("7wk");
             setWeek.setUuId(common.getTransactionId());
             setWeek.setOnOffFlag(params.getOnOffFlag());
-            log.info("params.getWeekList(): " + params.getWeekList());
 
-            // JSON 파싱
-            JSONObject jsonObject = new JSONObject(params.getWeekList());
-            JSONArray sevenWkArray = jsonObject.getJSONArray("7wk");
-            setWeek.setWeekList(sevenWkArray.toString());
+            log.info("params.getWeekList(): " + params.getWeekList());
+            JsonNode jsonNode = objectMapper.readTree(params.getWeekList());
+
+            for(int i = 0; i < jsonNode.path("7wk").size(); ++i){
+                map.put("wk", jsonNode.path("7wk").get(i).path("wk"));
+                map.put("hs", jsonNode.path("7wk").get(i).path("hs"));
+                weekList.add(map);
+                map = new HashMap<>();
+            }
+            setWeek.setWeekList(weekList);
 
             redisValue = userId + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
