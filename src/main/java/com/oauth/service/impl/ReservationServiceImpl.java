@@ -72,12 +72,12 @@ public class ReservationServiceImpl implements ReservationService{
             set24.setHours(params.getHours());
             set24.setType24h(params.getType24h());
             set24.setOnOffFlag(params.getOnOffFlag());
-            System.out.println(params.getHours());
             set24.setFunctionId("24h");
             set24.setUuId(common.getTransactionId());
 
             redisValue = userId + "," + set24.getFunctionId();
             redisCommand.setValues(set24.getUuId(), redisValue);
+            System.out.println(JSON.toJson(set24));
             response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(set24));
 
             if(!response.getResponseCode().equals("201")){
@@ -114,10 +114,10 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            dbMap.put("hs", params.getHours().toString());
+            dbMap.put("hs", params.getHours());
             dbMap.put("md", params.getType24h());
 
-            deviceInfo.setH24(common.convertToJsonString(JSON.toJson(dbMap)));
+            deviceInfo.setH24(JSON.toJson(dbMap));
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
