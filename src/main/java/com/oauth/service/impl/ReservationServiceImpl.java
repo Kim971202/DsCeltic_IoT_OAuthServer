@@ -116,7 +116,9 @@ public class ReservationServiceImpl implements ReservationService{
             dbMap.put("hs", params.getHours());
             dbMap.put("md", params.getType24h());
 
-            deviceInfo.setH24(common.convertToJsonString(JSON.toJson(dbMap)));
+            JSONObject jsonObject = new JSONObject(dbMap);
+            log.info("jsonObject.toString(): " + jsonObject.toString());
+            deviceInfo.setH24(jsonObject.toString());
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
