@@ -2,6 +2,7 @@ package com.oauth.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.*;
@@ -60,7 +61,7 @@ public class ReservationServiceImpl implements ReservationService{
         String responseMessage;
         AuthServerDTO device;
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
-        ConcurrentHashMap<String, String> dbMap = new ConcurrentHashMap<String, String>();
+        ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<String, Object>();
         try {
 
             device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
@@ -74,6 +75,20 @@ public class ReservationServiceImpl implements ReservationService{
             set24.setOnOffFlag(params.getOnOffFlag());
             set24.setFunctionId("24h");
             set24.setUuId(common.getTransactionId());
+            List<String> ls = new ArrayList<>();
+            ls.add(params.getHours());
+            System.out.println(ls.get(0).getClass());
+            System.out.println(params.getType24h());
+// ArrayList<Integer> list2 = new ArrayList<Integer>(Arrays.asList(1,2,3));//생성시 값추가
+            ArrayList a = new ArrayList();
+            a.add("1");
+            a.add("2");
+            a.add("3");
+            System.out.println(a);
+            map.put("md", params.getType24h());
+            map.put("hs", a);
+
+            System.out.println(JSON.toJson(map));
 
             redisValue = userId + "," + set24.getFunctionId();
             redisCommand.setValues(set24.getUuId(), redisValue);
@@ -99,7 +114,6 @@ public class ReservationServiceImpl implements ReservationService{
                 log.error("", e);
             }
 
-
             if(stringObject.equals("Y")) {
                 msg = "24시간 예약 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -113,12 +127,12 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            dbMap.put("hs", common.convertToJsonString(params.getHours()));
-            dbMap.put("md", params.getType24h());
+//            dbMap.put("hs", common.convertToJsonString(params.getHours().toString()));
+//            dbMap.put("md", params.getType24h());
 
-            JSONObject jsonObject = new JSONObject(dbMap);
-            log.info("jsonObject.toString(): " + jsonObject.toString());
-            deviceInfo.setH24(jsonObject.toString());
+//            JSONObject jsonObject = new JSONObject(dbMap);
+//            log.info("jsonObject.toString(): " + jsonObject);
+//            deviceInfo.setH24(jsonObject.toString());
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
