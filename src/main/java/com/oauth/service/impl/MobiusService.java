@@ -140,7 +140,8 @@ public class MobiusService {
         } catch (Exception e) {
             log.error("send to oneM2M Error : " + e);
         } finally {
-            response.close();
+            if(response != null)
+                response.close();
         }
         return mobiusResponse;
     }
@@ -185,7 +186,8 @@ public class MobiusService {
         } catch (Exception e) {
             log.error("send to oneM2M Error : " + e);
         } finally {
-            response.close();
+            if(response != null)
+                response.close();
         }
         return mobiusResponse;
     }
@@ -228,7 +230,8 @@ public class MobiusService {
             log.error("send to oneM2M Error : " + e);
             return mobiusResponse;
         } finally {
-            response.close();
+            if(response != null)
+                response.close();
         }
         return mobiusResponse;
     }
@@ -290,7 +293,8 @@ public class MobiusService {
         } catch (Exception e) {
             log.error("send to oneM2M Error : " + e);
         } finally {
-            response.close();
+            if(response != null)
+                response.close();
         }
         return mobiusResponse;
     }
