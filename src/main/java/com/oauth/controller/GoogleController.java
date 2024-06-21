@@ -30,7 +30,8 @@ public class GoogleController {
         String[] serialNumber = common.readCon(jsonBody, "sur").split("/");
         String userId = common.readCon(jsonBody, "userId");
 
-
+        System.out.println("common.stringToHex(\"    \" + serialNumber[2]): " + common.stringToHex("    " + serialNumber[2]));
+        System.out.println("userId: " + userId);
 
 //        mobiusService.createCin(common.stringToHex("    " + serialNumber[2]), userId, "");
 
