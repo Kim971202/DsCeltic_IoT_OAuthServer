@@ -1,6 +1,5 @@
 package com.oauth.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
@@ -14,8 +13,6 @@ import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.RedisCommand;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
