@@ -37,30 +37,43 @@ public class GoogleController {
 
         log.info("GOOGLE Received JSON: " + jsonBody);
 
+        String value = common.readCon(jsonBody, "value");
         String userId = common.readCon(jsonBody, "userId");
+        String functionId = common.readCon(jsonBody, "functionId");
         String deviceId = common.readCon(jsonBody, "deviceId");
         String[] deviceArray = deviceId.split("\\.");
-        System.out.println(Arrays.toString(deviceArray));
+       // [0, 2, 481, 1, 1, 2045534365636f313353, 20202020303833413844433645333841] - deviceArray
 
-        String powerStatus = common.readCon(jsonBody, "value");
-        if(!powerStatus.equals("off")) powerStatus = "on";
-
-        System.out.println("userId: " + userId);
+        log.info("userId:{}, functionId:{}, deviceId:{}", userId, functionId, deviceId);
 
         conMap.put("userId", userId);
         conMap.put("deviceId", deviceId);
         conMap.put("controlAuthKey", "0000");
         conMap.put("deviceType", "01");
         conMap.put("modelCode", deviceArray[5]);
-        conMap.put("powerStatus", powerStatus);
-        conMap.put("functionId", "powr");
+        conMap.put("functionId", functionId);
         conMap.put("uuId", common.getTransactionId());
 
         String redisValue = userId + "," + "powr";
         redisCommand.setValues(conMap.get("uuId"), redisValue);
 
-        System.out.println(JSON.toJson(conMap));
-        mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
+        if(functionId.equals("powr")) {
+            if(value.equals("off")) value = "of";
+            conMap.put("powerStatus", value);
+            mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
+            return "OK";
+
+        }
+
+        if(functionId.equals("htTp")) {
+            if(value.equals("heat")) value = "on";
+            mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
+            conMap.put("modeCode", "01");
+            mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
+            conMap.put("temperature", value);
+            mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
+            return "OK";
+        }
 
         return "OK";
     }

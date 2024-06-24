@@ -326,6 +326,8 @@ public class Common {
         JsonNode surNode = jsonNode.path("m2m:sgn").path("sur");
 
         switch (value) {
+            case "functionId":
+                return serializeAndClean(conNode.path("functionId"), objectMapper);
             case "value":
                 return serializeAndClean(conNode.path("value"), objectMapper);
             case "deviceId":
