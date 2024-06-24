@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -37,7 +38,8 @@ public class GoogleController {
 
         String userId = common.readCon(jsonBody, "userId");
         String deviceId = common.readCon(jsonBody, "deviceId");
-        String[] deviceArray = deviceId.split(".");
+        String[] deviceArray = deviceId.split("\\.");
+        System.out.println(Arrays.toString(deviceArray));
         String powerStatus = common.readCon(jsonBody, "value");
         if(!powerStatus.equals("of")) powerStatus = "on";
 
