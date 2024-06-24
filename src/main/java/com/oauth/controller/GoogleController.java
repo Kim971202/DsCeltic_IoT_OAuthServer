@@ -40,6 +40,9 @@ public class GoogleController {
         String deviceId = common.readCon(jsonBody, "deviceId");
         String[] deviceArray = deviceId.split("\\.");
         System.out.println(Arrays.toString(deviceArray));
+        for(int i = 0; i < deviceArray.length; ++i){
+            System.out.println(deviceArray[i]);
+        }
         String powerStatus = common.readCon(jsonBody, "value");
         if(!powerStatus.equals("of")) powerStatus = "on";
 
