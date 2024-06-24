@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -32,7 +33,7 @@ public class GoogleController {
     @ResponseBody
     public String receiveCin(@RequestBody String jsonBody) throws Exception {
 
-        ConcurrentHashMap<String, String> conMap = new ConcurrentHashMap<>();
+        HashMap<String, String> conMap = new HashMap<>();
 
         log.info("GOOGLE Received JSON: " + jsonBody);
 
@@ -42,7 +43,7 @@ public class GoogleController {
         System.out.println(Arrays.toString(deviceArray));
 
         String powerStatus = common.readCon(jsonBody, "value");
-        if(!powerStatus.equals("of")) powerStatus = "on";
+        if(!powerStatus.equals("off")) powerStatus = "on";
 
         System.out.println("userId: " + userId);
 
