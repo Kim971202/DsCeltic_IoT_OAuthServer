@@ -53,34 +53,11 @@ public class GoogleController {
         conMap.put("modelCode", deviceArray[5]);
         conMap.put("functionId", functionId);
         conMap.put("uuId", common.getTransactionId());
+        conMap.put("powerStatus", value);
 
         String redisValue = userId + "," + "powr";
         redisCommand.setValues(conMap.get("uuId"), redisValue);
-
-        if(functionId.equals("powr")) {
-            if(value.equals("off")) {
-                value = "of";
-                conMap.put("powerStatus", value);
-                mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
-            } else if(value.equals("heat")){
-                value = "on";
-                conMap.put("powerStatus", value);
-                mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
-                conMap.remove("powerStatus");
-                conMap.put("modeCode", "01");
-                conMap.replace("functionId", "opMd");
-                mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
-            }
-
-            return "OK";
-
-        }
-
-        if(functionId.equals("htTp")) {
-            conMap.put("temperature", value);
-            mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
-            return "OK";
-        }
+        mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
 
         return "OK";
     }
