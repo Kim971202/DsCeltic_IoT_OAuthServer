@@ -35,21 +35,20 @@ public class GoogleController {
 
         log.info("GOOGLE Received JSON: " + jsonBody);
 
-        String[] serialNumber = common.readCon(jsonBody, "sur").split("/");
         String userId = common.readCon(jsonBody, "userId");
         String deviceId = common.readCon(jsonBody, "deviceId");
-
+        String[] deviceArray = deviceId.split(".");
         String powerStatus = common.readCon(jsonBody, "value");
         if(!powerStatus.equals("of")) powerStatus = "on";
 
-        System.out.println("common.stringToHex(\"    \" + serialNumber[2]): " + common.stringToHex("    " + serialNumber[2]));
+        System.out.println("common.stringToHex(\"    \" + serialNumber[2]): " + common.stringToHex("    " + deviceArray[6]));
         System.out.println("userId: " + userId);
 
         conMap.put("userId", userId);
         conMap.put("deviceId", deviceId);
         conMap.put("controlAuthKey", "0000");
         conMap.put("deviceType", "01");
-        conMap.put("modelCode", serialNumber[1]);
+        conMap.put("modelCode", deviceArray[5]);
         conMap.put("powerStatus", powerStatus);
         conMap.put("functionId", "powr");
         conMap.put("uuId", common.getTransactionId());
@@ -58,7 +57,7 @@ public class GoogleController {
         redisCommand.setValues(conMap.get("uuId"), redisValue);
 
         System.out.println(JSON.toJson(conMap));
-        mobiusService.createCin(common.stringToHex("    " + serialNumber[2]), userId, JSON.toJson(conMap));
+        mobiusService.createCin(common.stringToHex("    " + deviceArray[6]), userId, JSON.toJson(conMap));
 
         return "OK";
     }
