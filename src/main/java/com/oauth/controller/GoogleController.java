@@ -59,17 +59,16 @@ public class GoogleController {
 
         if(functionId.equals("powr")) {
             if(value.equals("off")) value = "of";
+            else if(value.equals("heat")) value = "on";
             conMap.put("powerStatus", value);
+            mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
+            conMap.put("modeCode", "01");
             mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
             return "OK";
 
         }
 
         if(functionId.equals("htTp")) {
-            if(value.equals("heat")) value = "on";
-            mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
-            conMap.put("modeCode", "01");
-            mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
             conMap.put("temperature", value);
             mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
             return "OK";
