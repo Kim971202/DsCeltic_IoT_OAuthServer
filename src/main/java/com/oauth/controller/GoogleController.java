@@ -39,7 +39,7 @@ public class GoogleController {
         String userId = common.readCon(jsonBody, "userId");
         String deviceId = common.readCon(jsonBody, "deviceId");
 
-        String powerStatus = common.readCon(jsonBody, "powr");
+        String powerStatus = common.readCon(jsonBody, "value");
         if(!powerStatus.equals("of")) powerStatus = "on";
 
         System.out.println("common.stringToHex(\"    \" + serialNumber[2]): " + common.stringToHex("    " + serialNumber[2]));
