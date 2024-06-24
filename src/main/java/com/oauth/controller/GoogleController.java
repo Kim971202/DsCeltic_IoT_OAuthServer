@@ -40,13 +40,10 @@ public class GoogleController {
         String deviceId = common.readCon(jsonBody, "deviceId");
         String[] deviceArray = deviceId.split("\\.");
         System.out.println(Arrays.toString(deviceArray));
-        for(int i = 0; i < deviceArray.length; ++i){
-            System.out.println(deviceArray[i]);
-        }
+
         String powerStatus = common.readCon(jsonBody, "value");
         if(!powerStatus.equals("of")) powerStatus = "on";
 
-        System.out.println("common.stringToHex(\"    \" + serialNumber[2]): " + common.stringToHex("    " + deviceArray[6]));
         System.out.println("userId: " + userId);
 
         conMap.put("userId", userId);
@@ -62,7 +59,7 @@ public class GoogleController {
         redisCommand.setValues(conMap.get("uuId"), redisValue);
 
         System.out.println(JSON.toJson(conMap));
-        mobiusService.createCin(common.stringToHex("    " + deviceArray[6]), userId, JSON.toJson(conMap));
+        mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
 
         return "OK";
     }
