@@ -62,7 +62,9 @@ public class GoogleController {
             else if(value.equals("heat")) value = "on";
             conMap.put("powerStatus", value);
             mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
+            conMap.remove("powerStatus");
             conMap.put("modeCode", "01");
+            conMap.replace("functionId", "opMd");
             mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
             return "OK";
 
