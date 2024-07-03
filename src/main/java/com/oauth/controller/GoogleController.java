@@ -37,8 +37,6 @@ public class GoogleController {
 
         log.info("GOOGLE Received JSON: " + jsonBody);
 
-        String functionCode = null;
-
         String value = common.readCon(jsonBody, "value");
         String userId = common.readCon(jsonBody, "userId");
         String functionId = common.readCon(jsonBody, "functionId");
@@ -48,7 +46,11 @@ public class GoogleController {
 
         log.info("userId:{}, functionId:{}, deviceId:{}, ", userId, functionId, deviceId);
 
-        if(functionId.equals("powr")) functionCode = "powerStatus";
+        if(functionId.equals("powr")) {
+            conMap.put("powerStatus", value);
+        }
+
+        conMap.put(functionId, value);
 
         conMap.put("userId", userId);
         conMap.put("deviceId", deviceId);
@@ -58,9 +60,8 @@ public class GoogleController {
         conMap.put("functionId", functionId);
         conMap.put("uuId", common.getTransactionId());
 
-        conMap.put(functionCode, value);
 
-        System.out.println("JSON.toJson(conMap): " + JSON.toJson(conMap));
+        System.out.println("JSON.toJson(conMap): " + JSON.toJson(conMap, true));
 
         String redisValue = userId + "," + "functionCode";
         redisCommand.setValues(conMap.get("uuId"), redisValue);
