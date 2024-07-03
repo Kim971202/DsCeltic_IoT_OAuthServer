@@ -48,6 +48,8 @@ public class GoogleController {
 
         log.info("userId:{}, functionId:{}, deviceId:{}, ", userId, functionId, deviceId);
 
+        if(functionId.equals("powr")) functionCode = "powerStatus";
+
         conMap.put("userId", userId);
         conMap.put("deviceId", deviceId);
         conMap.put("controlAuthKey", "0000");
@@ -55,9 +57,6 @@ public class GoogleController {
         conMap.put("modelCode", deviceArray[5]);
         conMap.put("functionId", functionId);
         conMap.put("uuId", common.getTransactionId());
-
-        if(functionId.equals("powr")) functionCode = "powerStatus";
-        if(functionId.equals("mode")) functionCode = "opMd";
 
         conMap.put(functionCode, value);
 

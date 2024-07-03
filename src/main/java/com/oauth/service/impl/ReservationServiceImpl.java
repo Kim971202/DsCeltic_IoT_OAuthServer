@@ -13,8 +13,6 @@ import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.ReservationService;
 import com.oauth.utils.*;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
