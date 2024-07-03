@@ -56,7 +56,7 @@ public class GoogleController {
         conMap.put("functionId", functionId);
         conMap.put("uuId", common.getTransactionId());
 
-        if(functionId.equals("powr")) functionCode = "powr";
+        if(functionId.equals("powr")) functionCode = "powerStatus";
         if(functionId.equals("mode")) functionCode = "opMd";
 
         conMap.put(functionCode, value);
