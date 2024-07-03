@@ -50,7 +50,9 @@ public class GoogleController {
             conMap.put("powerStatus", value);
         }
 
-        conMap.put(functionId, value);
+        if(functionId.equals("opMd")) {
+            conMap.put("modeCode", value);
+        }
 
         conMap.put("userId", userId);
         conMap.put("deviceId", deviceId);
