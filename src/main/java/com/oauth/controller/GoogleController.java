@@ -37,6 +37,8 @@ public class GoogleController {
 
         log.info("GOOGLE Received JSON: " + jsonBody);
 
+        String functionCode = null;
+
         String value = common.readCon(jsonBody, "value");
         String userId = common.readCon(jsonBody, "userId");
         String functionId = common.readCon(jsonBody, "functionId");
@@ -44,7 +46,7 @@ public class GoogleController {
         String[] deviceArray = deviceId.split("\\.");
        // [0, 2, 481, 1, 1, 2045534365636f313353, 20202020303833413844433645333841] - deviceArray
 
-        log.info("userId:{}, functionId:{}, deviceId:{}", userId, functionId, deviceId);
+        log.info("userId:{}, functionId:{}, deviceId:{}, ", userId, functionId, deviceId);
 
         conMap.put("userId", userId);
         conMap.put("deviceId", deviceId);
@@ -53,9 +55,15 @@ public class GoogleController {
         conMap.put("modelCode", deviceArray[5]);
         conMap.put("functionId", functionId);
         conMap.put("uuId", common.getTransactionId());
-        conMap.put("powerStatus", value);
 
-        String redisValue = userId + "," + "powr";
+        if(functionId.equals("powr")) functionCode = "powr";
+        if(functionId.equals("mode")) functionCode = "opMd";
+
+        conMap.put(functionCode, value);
+
+        System.out.println("JSON.toJson(conMap): " + JSON.toJson(conMap));
+
+        String redisValue = userId + "," + "functionCode";
         redisCommand.setValues(conMap.get("uuId"), redisValue);
         mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
 
