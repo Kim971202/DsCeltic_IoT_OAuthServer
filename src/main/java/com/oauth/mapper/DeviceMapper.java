@@ -10,6 +10,7 @@ import java.util.List;
 @Mapper
 public interface DeviceMapper {
 
+    public DeviceStatusInfo.Device getSingleDeviceStauts(String deviceId);
     public AuthServerDTO getSingleSerialNumberBydeviceId(String deviceId);
     public List<AuthServerDTO> getMultiSerialNumberBydeviceId(List<AuthServerDTO> deviceId);
     public List<AuthServerDTO> deviceAuthCheck(List<AuthServerDTO> device);

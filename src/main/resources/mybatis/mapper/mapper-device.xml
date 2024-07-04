@@ -427,6 +427,34 @@
         </foreach>
     </select>
 
+    <select id="getSingleDeviceStauts" parameterType="java.util.List" resultMap="dr910w">
+        SELECT
+            DEVC_ID AS deviceId,
+            SERIAL_NO AS serialNumber,
+            R_KEY AS rKey,
+            POWR AS powr,
+            OPMD AS opMd,
+            HTTP AS htTp,
+            WTTP AS wtTp,
+            HWTP AS hwTp,
+            FTMD AS ftMd,
+            CHTP AS chTp,
+            12H AS h12,
+            24H AS h24,
+            7WK AS wk7,
+            FWH AS fwh,
+            HWST AS hwSt,
+            FCLC AS fcLc,
+            MFDT AS mfDt,
+            SLCD AS slCd,
+            BCDT AS bCdt,
+            CWTP AS cwTp
+        FROM
+            TBR_OPR_DEVICE_STATUS
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
     <insert id="insertErrorInfo" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO
             TBR_IOT_ERROR_COLEC

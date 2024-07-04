@@ -1,5 +1,9 @@
 package com.oauth.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oauth.dto.AuthServerDTO;
+import com.oauth.dto.gw.DeviceStatusInfo;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.service.impl.MobiusService;
 import com.oauth.utils.Common;
@@ -37,6 +41,12 @@ public class GoogleController {
 
         log.info("GOOGLE Received JSON: " + jsonBody);
 
+        // 12시간 예약: 시간
+        String workPeriod = "";
+
+        // 12시간 예약: 분
+        String workTime = "";
+
         String value = common.readCon(jsonBody, "value");
         String userId = common.readCon(jsonBody, "userId");
         String functionId = common.readCon(jsonBody, "functionId");
@@ -70,7 +80,31 @@ public class GoogleController {
                 conMap.replace("modeCode", "06");
                 conMap.put("sleepCode", slCd);
             }
+
+            if(value.equals("11")){
+                DeviceStatusInfo.Device deviceInfo = deviceMapper.getSingleDeviceStauts(deviceId);
+
+                // ObjectMapper 인스턴스 생성
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                try {
+                    JsonNode jsonNode = objectMapper.readTree(deviceInfo.getH12());
+
+                    workPeriod = jsonNode.get("hr").asText();
+                    workTime = jsonNode.get("mn").asText();
+
+                } catch (Exception e){
+                    log.error("", e);
+                }
+                conMap.put("functionId", "12h");
+                conMap.put("workPeriod", workPeriod);
+                conMap.put("workTime", workTime);
+                mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
+            }
+
         }
+
+
 
         conMap.put("userId", userId);
         conMap.put("deviceId", deviceId);
@@ -84,10 +118,9 @@ public class GoogleController {
         System.out.println("JSON.toJson(conMap): " + JSON.toJson(conMap, true));
 
         String redisValue = userId + "," + "functionCode";
-        redisCommand.setValues(conMap.get("uuId"), redisValue);
+        // redisCommand.setValues(conMap.get("uuId"), redisValue);
         mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
 
         return "OK";
     }
-
 }
