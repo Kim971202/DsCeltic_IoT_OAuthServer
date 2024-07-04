@@ -64,8 +64,12 @@ public class GoogleController {
             if(value.equals("061")) slCd = "01";
             else if(value.equals("062")) slCd = "02";
             else if(value.equals("063")) slCd = "03";
-            
-            if(!slCd.isEmpty()) conMap.put("sleepCode", slCd);
+
+            // Google Smarthome 서버에서 받은 061 코드를 GW서버에서 받을수 있게 06으로 Replace
+            if(!slCd.isEmpty()) {
+                conMap.replace("modeCode", "06");
+                conMap.put("sleepCode", slCd);
+            }
         }
 
         conMap.put("userId", userId);
