@@ -50,8 +50,22 @@ public class GoogleController {
             conMap.put("powerStatus", value);
         }
 
+        /*
+        * Sleep 코드 정의
+        * 061 : 취침1 - 01 = Comfort
+        * 062 : 취침2 - 02 = Normal
+        * 063 : 취침3 - 03 = Warm
+        * */
         if(functionId.equals("opMd")) {
             conMap.put("modeCode", value);
+
+            // Sleep Code 지정 변수
+            String slCd = "";
+            if(value.equals("061")) slCd = "01";
+            else if(value.equals("062")) slCd = "02";
+            else if(value.equals("063")) slCd = "03";
+            
+            if(!slCd.isEmpty()) conMap.put("sleepCode", slCd);
         }
 
         conMap.put("userId", userId);
