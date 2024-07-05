@@ -22,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -207,6 +206,7 @@ public class UserServiceImpl implements UserService {
         String msg;
         String token;
         String userId = params.getUserId();
+
         try {
 
             userPassword = encoder.encode(userPassword);

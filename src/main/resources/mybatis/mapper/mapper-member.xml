@@ -22,8 +22,25 @@
     </insert>
 
     <insert id="insertAccount" parameterType="com.oauth.dto.AuthServerDTO">
-        INSERT INTO TBR_OPR_ACCOUNT (USER_ID, PW, REG_DATM, PUSH_TOKEN)
-        VALUES (#{userId}, #{userPassword}, now(), #{pushToken})
+        INSERT INTO
+            TBR_OPR_ACCOUNT
+        (
+            USER_ID,
+            PW,
+            REG_DATM,
+            PUSH_TOKEN,
+            REGIST_USER_TYPE,
+            GOOGLE_HOME_STATUS
+        )
+        VALUES
+        (
+            #{userId},
+            #{userPassword},
+            now(),
+            #{pushToken},
+            #{registUserType},
+            '01'
+        )
     </insert>
 
     <select id="getUserByHp" parameterType="String" resultMap="member">

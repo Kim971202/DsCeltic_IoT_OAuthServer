@@ -152,6 +152,8 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String functionId;                   // Command ID
     private String newDeviceLocNickname;
 
+    private String registUserType;
+
     private String errorCode;
     private String errorMessage;
     private String errorDateTime;
