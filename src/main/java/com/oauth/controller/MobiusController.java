@@ -136,7 +136,7 @@ public class MobiusController {
 
                 System.out.println("THIS IS ESCeco13S");
 
-            }else if(common.hexToString(modelCode[5]).equals(modelCodeMap.get("newModel"))){
+            }else if(common.hexToString(modelCode[5].replace(" ", "")).equals(modelCodeMap.get("newModel"))){
             // 신형 보일러 RC
                 System.out.println("THIS IS DCR-91/WT");
 
