@@ -124,7 +124,8 @@ public class MobiusController {
             String[] modelCode = deviceId.split("\\.");
 
             System.out.println("modelCode: " + Arrays.toString(modelCode));
-
+            System.out.println("modelCode[5]: " + modelCode[5]);
+            System.out.println("common.hexToString(modelCode[5]): " + common.hexToString(modelCode[5]));
             // 구형 보일러 RC
             if(common.hexToString(modelCode[5]).equals(" ESCeco13S")){
 
