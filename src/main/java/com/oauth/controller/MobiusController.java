@@ -116,6 +116,26 @@ public class MobiusController {
 
             DeviceStatusInfo.Device dr910WDevice = new DeviceStatusInfo.Device();
 
+            // DeviceId로 ModelCode 확인
+            String deviceId = common.readCon(jsonBody, "deviceId");
+
+            System.out.println("deviceId: " + deviceId);
+
+            String[] modelCode = deviceId.split("\\.");
+
+            System.out.println("modelCode: " + Arrays.toString(modelCode));
+
+            // 구형 보일러 RC
+            if(common.hexToString(modelCode[5]).equals(" ESCeco13S")){
+
+                System.out.println("THIS IS ESCeco13S");
+
+            }else if(common.hexToString(modelCode[5]).equals(" DCR-91/WT")){
+            // 신형 보일러 RC
+                System.out.println("THIS IS DCR-91/WT");
+
+            }
+
             dr910WDevice.setH24(common.convertToJsonString(common.readCon(jsonBody, "24h")));
             dr910WDevice.setH12(common.convertToJsonString(common.readCon(jsonBody, "12h")));
             dr910WDevice.setWk7(common.convertToJsonString(common.readCon(jsonBody, "7wk")));
