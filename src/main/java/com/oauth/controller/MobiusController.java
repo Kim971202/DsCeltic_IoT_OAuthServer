@@ -131,37 +131,53 @@ public class MobiusController {
             System.out.println("modelCode: " + Arrays.toString(modelCode));
             System.out.println("modelCode[5]: " + modelCode[5]);
             System.out.println("common.hexToString(modelCode[5]): " + common.hexToString(modelCode[5]));
-            // 구형 보일러 RC
-            if(common.hexToString(modelCode[5]).equals(modelCodeMap.get("oldModel"))){
 
-                System.out.println("THIS IS ESCeco13S");
-
-            }else if(common.hexToString(modelCode[5].replace(" ", "")).equals(modelCodeMap.get("newModel"))){
             // 신형 보일러 RC
-                System.out.println("THIS IS DCR-91/WT");
+            if(common.hexToString(modelCode[5]).equals(modelCodeMap.get("newModel"))){
+
+                dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));
+                dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
+                dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
+
+                dr910WDevice.setH12(common.convertToJsonString(common.readCon(jsonBody, "12h"))); // 12시간 예약
+                dr910WDevice.setWk7(common.convertToJsonString(common.readCon(jsonBody, "7wk"))); // 주간 예약
+                dr910WDevice.setFwh(common.convertToJsonString(common.readCon(jsonBody, "fwh"))); // 빠른온수 예약
+                dr910WDevice.setPowr(common.readCon(jsonBody, "powr")); // 전원 ON/OF
+                dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd")); // 홈 IoT 모드
+                dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp")); // 실내온도 설정
+                dr910WDevice.setWtTp(common.readCon(jsonBody, "wtTp")); // 난방수온도 설정
+                dr910WDevice.setHwTp(common.readCon(jsonBody, "hwTp")); // 온수온도 설정
+                dr910WDevice.setFtMd(common.readCon(jsonBody, "ftMd")); // 빠른온수 설정
+                dr910WDevice.setBCdt(common.readCon(jsonBody, "bCdt")); // 보일러연소 상태
+                dr910WDevice.setChTp(common.readCon(jsonBody, "chTp")); // 현재실내 온도
+                dr910WDevice.setCwTp(common.readCon(jsonBody, "cwTp")); // 현재난방수 온도
+                dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt")); // 온수사용상태 정보
+                dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt")); // 변경 시간
+
+            // 구형 보일러 RC
+            }else if(common.hexToString(modelCode[5]).equals(modelCodeMap.get("oldModel"))){
+
+                dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));
+                dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
+                dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
+
+                dr910WDevice.setH24(common.convertToJsonString(common.readCon(jsonBody, "24h"))); // 24시간 예약
+                dr910WDevice.setH12(common.convertToJsonString(common.readCon(jsonBody, "12h"))); // 12시간 예약
+                dr910WDevice.setWk7(common.convertToJsonString(common.readCon(jsonBody, "7wk"))); // 주간 예약
+                dr910WDevice.setPowr(common.readCon(jsonBody, "powr")); // 전원 ON/OF
+                dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd")); // 홈 IoT 모드
+                dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp")); // 실내온도 설정
+                dr910WDevice.setWtTp(common.readCon(jsonBody, "wtTp")); // 난방수온도 설정
+                dr910WDevice.setHwTp(common.readCon(jsonBody, "hwTp")); // 온수온도 설정
+                dr910WDevice.setFtMd(common.readCon(jsonBody, "ftMd")); // 빠른온수 설정
+                dr910WDevice.setBCdt(common.readCon(jsonBody, "bCdt")); // 보일러연소 상태
+                dr910WDevice.setChTp(common.readCon(jsonBody, "chTp")); // 현재실내 온도
+                dr910WDevice.setCwTp(common.readCon(jsonBody, "cwTp")); // 현재난방수 온도
+                dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt")); // 온수사용상태 정보
+                dr910WDevice.setSlCd(common.readCon(jsonBody, "slCd")); // 취침모드 코드
+                dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt")); // 변경 시간
 
             }
-
-            dr910WDevice.setH24(common.convertToJsonString(common.readCon(jsonBody, "24h")));
-            dr910WDevice.setH12(common.convertToJsonString(common.readCon(jsonBody, "12h")));
-            dr910WDevice.setWk7(common.convertToJsonString(common.readCon(jsonBody, "7wk")));
-//            dr910WDevice.setFwh(common.convertToJsonString(common.readCon(jsonBody, "fwh")));
-            dr910WDevice.setFwh("null");
-            dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));
-            dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
-            dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
-            dr910WDevice.setPowr(common.readCon(jsonBody, "powr"));
-            dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd"));
-            dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp"));
-            dr910WDevice.setWtTp(common.readCon(jsonBody, "wtTp"));
-            dr910WDevice.setHwTp(common.readCon(jsonBody, "hwTp"));
-            dr910WDevice.setFtMd(common.readCon(jsonBody, "ftMd"));
-            dr910WDevice.setBCdt(common.readCon(jsonBody, "bCdt"));
-            dr910WDevice.setChTp(common.readCon(jsonBody, "chTp"));
-            dr910WDevice.setCwTp(common.readCon(jsonBody, "cwTp"));
-            dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt"));
-            dr910WDevice.setSlCd(common.readCon(jsonBody, "slCd"));
-            dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt"));
             mobiusService.rtstHandler(dr910WDevice);
         } else {
             return "0x0106-Devices 상태 보고 요청";
