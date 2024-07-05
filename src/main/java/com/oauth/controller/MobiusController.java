@@ -13,6 +13,7 @@ import com.oauth.utils.RedisCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,10 @@ public class MobiusController {
     GwMessagingSystem gwMessagingSystem;
     @Autowired
     PushService pushService;
+
+    @Value("#{${device.model.code}}")
+    Map<String, String> modelCodeMap;
+
     @PostMapping(value = "/GatewayToAppServer")
     @ResponseBody
     public String receiveCin(@RequestBody String jsonBody) throws Exception {
@@ -127,11 +132,11 @@ public class MobiusController {
             System.out.println("modelCode[5]: " + modelCode[5]);
             System.out.println("common.hexToString(modelCode[5]): " + common.hexToString(modelCode[5]));
             // 구형 보일러 RC
-            if(common.hexToString(modelCode[5]).equals(" ESCeco13S")){
+            if(common.hexToString(modelCode[5]).equals(modelCodeMap.get("oldModel"))){
 
                 System.out.println("THIS IS ESCeco13S");
 
-            }else if(common.hexToString(modelCode[5]).equals(" DCR-91/WT")){
+            }else if(common.hexToString(modelCode[5]).equals(modelCodeMap.get("newModel"))){
             // 신형 보일러 RC
                 System.out.println("THIS IS DCR-91/WT");
 
