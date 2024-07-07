@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oauth.mapper.DeviceMapper">
+
+    <resultMap id="device" type="com.oauth.dto.AuthServerDTO"> </resultMap>
+    <resultMap id="dr910w" type="com.oauth.dto.gw.DeviceStatusInfo$Device"> </resultMap>
+
+    <select id="getSingleSerialNumberBydeviceId" parameterType="String" resultMap="device">
+        SELECT
+            SERIAL_NO AS serialNumber
+        FROM
+            TBR_IOT_DEVICE
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
+    <select id="getMultiSerialNumberBydeviceId" parameterType="hashmap" resultMap="device">
+        SELECT
+            SERIAL_NO AS serialNumber
+        FROM
+            TBR_IOT_DEVICE
+        WHERE
+            DEVC_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.deviceId}
+        </foreach>
+    </select>
+
+    <select id="getDeviceAuthCheckValuesByUserId" parameterType="String" resultMap="device">
+        SELECT
+            DEVC_ID AS deviceId,
+            DEVC_CTRL_KEY AS controlAuthKey
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
+    <select id="deviceAuthCheck" parameterType="hashmap" resultMap="device">
+        SELECT
+            DEVC_ID AS deviceId,
+            DEVC_CTRL_KEY AS controlAuthKey,
+            DEVC_NICK AS deviceNickname
+        FROM
+            TBR_OPR_DEVICE_DETAIL
+        WHERE
+            <foreach collection="list" item="item" separator=" OR " open="(" close=")">
+                DEVC_ID = #{item.deviceId} AND DEVC_CTRL_KEY = #{item.controlAuthKey}
+            </foreach>
+    </select>
+
+    <select id="deviceTempAuthCheck" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        SELECT
+            *
+        FROM
+            TBR_OPR_DEVICE_DETAIL
+        WHERE
+            TEMP_DEVC_REG_KEY = #{controlAuthKey}
+        AND
+            DEVC_ID = #{deviceId}
+        AND
+            HP = #{hp}
+        AND
+            USER_ID = #{userId}
+    </select>
+
+    <update id="changeDeviceNickname" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_DEVICE_DETAIL
+        SET
+            DEVC_NICK = #{newDeviceNickname}
+        WHERE
+            DEVC_ID = #{deviceId}
+    </update>
+
+    <insert id="insertDeviceModelCode" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO TBD_IOT_DEVICE_MODL_CD
+            (
+                DEVC_MODL_CD,
+                DEVC_MODL_NM,
+                MENUFACTORY_NM,
+                DEVC_TYPE_CD,
+                REG_DATM,
+                MENUFACTORY_CD
+            )
+        VALUES
+            (
+                #{modelCode},
+                'BOILER',
+                'DSCeltic',
+                #{deviceType},
+                now(),
+                'DS'
+            )
+    </insert>
+
+    <insert id="insertDevice" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO TBR_IOT_DEVICE
+            (
+                DEVC_ID,
+                DEVC_MODL_CD,
+                SERIAL_NO,
+                ATTC_ID,
+                DEVC_LAT,
+                DEVC_LON,
+                DEVC_STAT_CD,
+                REG_DATAM,
+                LAST_CONN_DATM,
+                LSAT_FAULT_DATM
+            )
+        VALUES
+            (
+                #{deviceId},
+                #{modelCode},
+                #{serialNumber},
+                #{controlAuthKey},
+                #{latitude},
+                #{longitude},
+                '01',
+                now(),
+                now(),
+                now()
+            )
+    </insert>
+
+    <insert id="insertDeviceRegist" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO TBT_OPR_DEVICE_REGIST
+            (
+                TEMP_DEVC_REG_KEY,
+                DEVC_ID,
+                HP,
+                USER_ID,
+                ZIP,
+                OLD_ADDR,
+                NEW_ADDR,
+                DTAIL_ADDR,
+                LAT,
+                LON,
+                DEVC_NICK,
+                REG_DATM
+            )
+        VALUES
+            (
+                #{tmpRegistKey},
+                #{deviceId},
+                #{hp},
+                #{userId},
+                #{zipCode},
+                #{oldAddr},
+                #{newAddr},
+                #{addrDetail},
+                #{latitude},
+                #{longitude},
+                #{deviceNickname},
+                now()
+            )
+    </insert>
+
+    <insert id="insertDeviceDetail" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO TBR_OPR_DEVICE_DETAIL
+            (
+                DEVC_ID,
+                DEVC_CTRL_KEY,
+                ZIP,
+                OLD_ADDR,
+                NEW_ADDR,
+                DTAIL_ADDR,
+                DEVC_STAT_JSON,
+                DEVC_NICK,
+                DEVC_REG_DATM
+            )
+        VALUES
+            (
+                #{deviceId},
+                #{controlAuthKey},
+                #{zipCode},
+                #{oldAddr},
+                #{newAddr},
+                #{addrDetail},
+                'empty',
+                #{deviceNickname},
+                now()
+            )
+    </insert>
+
+    <update id="updateDeviceRegistLocation" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBT_OPR_DEVICE_REGIST
+        SET
+            LAT = #{latitude},
+            LON = #{longitude}
+        WHERE
+            TEMP_DEVC_REG_KEY = #{tmpRegistKey}
+        AND
+            DEVC_ID = #{deviceId}
+    </update>
+
+    <update id="updateDeviceDetailLocation" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_DEVICE_DETAIL
+        SET
+            OLD_ADDR = #{oldAddr},
+            NEW_ADDR = #{newAddr},
+            DTAIL_ADDR = #{addrDetail}
+        WHERE
+            DEVC_ID = #{deviceId}
+    </update>
+
+    <select id="getControlAuthKeyByUserId" parameterType="String" resultMap="device">
+        SELECT
+            DEVC_CTRL_KEY AS controlAuthKey,
+            DEVC_ID AS deviceId
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <select id="getDeviceNicknameAndDeviceLocNickname" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        SELECT
+            DEVC_NICK AS deviceNickname,
+            ADDR_NICK AS addrNickname,
+            ROW_NUMBER() OVER () AS regSort
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            DEVC_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.deviceId}
+        </foreach>
+    </select>
+
+    <select id="getDeviceInfoSearch" parameterType="String" resultMap="device">
+        SELECT
+            device.DEVC_MODL_CD AS modelCode,
+            regist.DEVC_NICK AS deviceNickname,
+            regist.ADDR_NICK AS addrNickname,
+            regist.ZIP AS zipCode,
+            regist.OLD_ADDR AS oldAddr,
+            regist.NEW_ADDR AS newAddr,
+            regist.DTAIL_ADDR AS addrDetail,
+            regist.LAT AS latitude,
+            regist.LON AS longitude
+        FROM
+            TBR_IOT_DEVICE AS device
+        INNER JOIN
+            TBT_OPR_DEVICE_REGIST AS regist
+        ON
+            device.DEVC_ID = regist.DEVC_ID
+        WHERE
+            device.DEVC_ID = #{deviceId};
+    </select>
+
+    <insert id="insertDeviceStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        INSERT INTO
+            TBR_OPR_DEVICE_STATUS
+        (
+            DEVC_ID,
+            SERIAL_NO,
+            R_KEY,
+            POWR,
+            OPMD,
+            HTTP,
+            WTTP,
+            HWTP,
+            FTMD,
+            BCDT,
+            CHTP,
+            CWTP,
+            HWST,
+            RSCF,
+            SLCD,
+            MFDT
+        )
+            VALUES
+        (
+            #{deviceId},
+            #{serialNumber},
+            #{rKey},
+            #{powr},
+            #{opMd},
+            #{htTp},
+            #{wtTp},
+            #{hwTp},
+            #{ftMd},
+            #{bCdt},
+            #{chTp},
+            #{cwTp},
+            #{hwSt},
+            #{stringRsCf},
+            #{slCd},
+            #{mfDt}
+        )
+    </insert>
+
+    <update id="updateDeviceStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE
+            TBR_OPR_DEVICE_STATUS
+                SET
+                    SERIAL_NO = #{serialNumber},
+                    R_KEY = #{rKey},
+                    POWR = #{powr},
+                    OPMD = #{opMd} ,
+                    HTTP = #{htTp},
+                    WTTP = #{wtTp},
+                    HWTP = #{hwTp},
+                    FTMD = #{ftMd},
+                    BCDT = #{bCdt},
+                    CHTP = #{chTp},
+                    CWTP = #{cwTp},
+                    HWST = #{hwSt},
+                    RSCF = #{stringRsCf},
+                    SLCD = #{slCd},
+                    MFDT = #{mfDt}
+        WHERE
+            DEVC_ID = #{deviceId}
+    </update>
+
+    <select id="getDeviceStautsByDeviceId" parameterType="String" resultMap="dr910w">
+        SELECT
+            DEVC_ID AS deviceId
+        FROM
+            TBR_OPR_DEVICE_STATUS
+        WHERE
+            DEVC_ID = #{deviceId};
+    </select>
+
+    <insert id="insertUserDevice" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        INSERT INTO
+            TBR_OPR_USER_DEVICE
+        (
+            USER_ID,
+            DEVC_ID,
+            DEVC_CTRL_KEY,
+            ATTC_DATM,
+            REG_DATM,
+            HOUSE_HOLDER
+        )
+            VALUES
+        (
+            #{userId},
+            #{deviceId},
+            #{controlAuthKey},
+            now(),
+            now(),
+            'N'
+        )
+    </insert>
+
+    <select id="getPushinfoByDeviceId" parameterType="String" resultMap="device">
+        SELECT
+            a.USER_ID AS userId,
+            a.PUSH_TOKEN AS pushToken,
+            b.DEVC_ID AS deviceId
+        FROM
+            TBR_OPR_ACCOUNT a
+        INNER JOIN
+            TBR_OPR_USER_DEVICE b
+        WHERE
+            a.USER_ID = b.USER_ID AND DEVC_ID = #{deviceId}
+        LIMIT 1
+    </select>
+
+    <select id="getDeviceStauts" parameterType="java.util.List" resultMap="dr910w">
+        SELECT
+            DEVC_ID AS deviceId,
+            SERIAL_NO AS serialNumber,
+            R_KEY AS rKey,
+            POWR AS powr,
+            OPMD AS opMd,
+            HTTP AS htTp,
+            WTTP AS wtTp,
+            HWTP AS hwTp,
+            FTMD AS ftMd,
+            CHTP AS chTp,
+            RSCF AS stringRsCf,
+            HWST AS hwSt,
+            FCLC AS fcLc,
+            MFDT AS mfDt,
+            SLCD AS slCd,
+            BCDT AS bCdt,
+            CWTP AS cwTp
+        FROM
+            TBR_OPR_DEVICE_STATUS
+        WHERE
+            SERIAL_NO IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <insert id="insertErrorInfo" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_IOT_ERROR_COLEC
+        (
+            ERROR_NM,
+            ERROR_CODE,
+            REG_DATM,
+            KEEP_CYCLE,
+            SERIAL_NO,
+            LAST_ERROR_DATM
+        )
+        VALUES
+        (
+            #{errorMessage},
+            #{errorCode},
+            now(),
+            6,
+            #{serialNumber},
+            #{errorDateTime}
+        )
+    </insert>
+
+    <select id="getDeviceErroInfo" parameterType="String" resultMap="device">
+        SELECT
+            ERROR_NM AS errorMessage,
+            ERROR_CODE AS errorCode,
+            LAST_ERROR_DATM AS errorDateTime,
+            SERIAL_NO AS serialNumber
+        FROM
+            TBR_IOT_ERROR_COLEC
+        WHERE
+            SERIAL_NO = #{serialNumber}
+    </select>
+
+
+</mapper>
