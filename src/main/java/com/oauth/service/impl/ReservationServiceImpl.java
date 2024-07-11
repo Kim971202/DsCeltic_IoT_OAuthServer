@@ -97,7 +97,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             redisValue = userId + "," + set24.getFunctionId();
             redisCommand.setValues(set24.getUuId(), redisValue);
-            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, String.valueOf(set24));
+            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(set24));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
