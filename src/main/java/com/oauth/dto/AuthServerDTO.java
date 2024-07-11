@@ -135,7 +135,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String sleepCode;                    // 01: Comfort 02: Normal 03: Warm
     private String temperture;                   // 온도 [10.0 ~ 40.0 (°C)], 소수점 1자리
     private String lockSet;                      // 잠금 모드: on/of
-    private String hours;                  // 예약 시간 리스트 (00시~23시, 총 24건)
+    private String hours;                        // 예약 시간 리스트 (00시~23시, 총 24건)
     private String type24h;                      // 01: 표준형 02: 맞벌이형 03: 절약형 04: 맞춤형1 05: 맞춤형2
     private String onOffFlag;                    // on: 단말 제어 of: 시간정보만 서버저장
     private String workPeriod;                   // 가동주기(시), "00"~"12"
