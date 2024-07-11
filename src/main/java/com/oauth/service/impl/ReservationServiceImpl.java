@@ -54,6 +54,7 @@ public class ReservationServiceImpl implements ReservationService{
         String msg;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
+        String hoursString = params.getHours();
         String redisValue;
         MobiusResponse response;
         String responseMessage;
@@ -77,14 +78,24 @@ public class ReservationServiceImpl implements ReservationService{
             ls.add(params.getHours());
             System.out.println(ls.get(0).getClass());
             System.out.println(params.getType24h());
-// ArrayList<Integer> list2 = new ArrayList<Integer>(Arrays.asList(1,2,3));//생성시 값추가
-            ArrayList a = new ArrayList();
-            a.add("1");
-            a.add("2");
-            a.add("3");
-            System.out.println(a);
-            map.put("md", params.getType24h());
-            map.put("hs", a);
+
+            // 문자열을 리스트로 변환
+            hoursString = hoursString.replace("[", "").replace("]", "").replace("\"", "");
+            String[] hoursList = hoursString.split(",");
+
+            // ArrayList에 숫자값 추가
+            ArrayList<String> hourArray = new ArrayList<>(Arrays.asList(hoursList));
+
+            // 결과 출력
+            System.out.println(hourArray);
+
+            // Map에 데이터 추가
+            Map<String, Object> hourMap = new HashMap<>();
+            map.put("md", "01"); // 예시로 "01"을 사용
+            map.put("hs", hourArray);
+
+            // 결과 출력
+            System.out.println(map);
 
             System.out.println(JSON.toJson(map));
 
