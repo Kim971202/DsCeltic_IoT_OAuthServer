@@ -44,6 +44,13 @@ public class ReservationController {
             throw new CustomException("404", "24시간 예약 값 오류");
         }
 
+        log.info("params.getUserId(): " + params.getUserId());
+        log.info("params.getDeviceId(): " + params.getDeviceId());
+        log.info("params.getControlAuthKey(): " + params.getControlAuthKey());
+        log.info("params.getType24h(): " + params.getType24h());
+        log.info("params.getOnOffFlag(): " + params.getOnOffFlag());
+        log.info("params.getHours(): " + params.getHours());
+
         return reservationService.doSet24(params);
     }
 
