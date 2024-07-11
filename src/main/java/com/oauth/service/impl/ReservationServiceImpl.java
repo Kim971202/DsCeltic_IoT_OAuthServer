@@ -86,22 +86,18 @@ public class ReservationServiceImpl implements ReservationService{
             // ArrayList에 숫자값 추가
             ArrayList<String> hourArray = new ArrayList<>(Arrays.asList(hoursList));
 
-            // 결과 출력
-            System.out.println(hourArray);
-
             // Map에 데이터 추가
             Map<String, Object> hourMap = new HashMap<>();
             map.put("md", "01"); // 예시로 "01"을 사용
             map.put("hs", hourArray);
 
             // 결과 출력
+            System.out.println("결과 출력");
             System.out.println(map);
-
-            System.out.println(JSON.toJson(map));
 
             redisValue = userId + "," + set24.getFunctionId();
             redisCommand.setValues(set24.getUuId(), redisValue);
-            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(set24));
+            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, String.valueOf(set24));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
