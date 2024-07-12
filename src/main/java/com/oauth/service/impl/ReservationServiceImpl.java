@@ -132,14 +132,10 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-//            dbMap.put("hs", common.convertToJsonString(params.getHours().toString()));
-//            dbMap.put("md", params.getType24h());
-
-//            JSONObject jsonObject = new JSONObject(dbMap);
-//            log.info("jsonObject.toString(): " + jsonObject);
-//            deviceInfo.setH24(jsonObject.toString());
-
+            deviceInfo.setH24(JSON.toJson(map));
             deviceInfo.setDeviceId(deviceId);
+            log.info("setH24: " + JSON.toJson(map));
+            log.info("deviceId: " + deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
             params.setFunctionId("Set24");
