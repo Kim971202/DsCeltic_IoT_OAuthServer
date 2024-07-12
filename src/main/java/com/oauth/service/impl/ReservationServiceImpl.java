@@ -93,6 +93,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             // 결과 출력
             System.out.println("결과 출력");
+            System.out.println(hourMap);
             System.out.println(map);
 
             redisValue = userId + "," + set24.getFunctionId();
@@ -138,6 +139,7 @@ public class ReservationServiceImpl implements ReservationService{
 //            JSONObject jsonObject = new JSONObject(dbMap);
 //            log.info("jsonObject.toString(): " + jsonObject);
 //            deviceInfo.setH24(jsonObject.toString());
+
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
