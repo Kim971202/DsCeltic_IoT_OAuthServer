@@ -87,14 +87,13 @@ public class ReservationServiceImpl implements ReservationService{
             ArrayList<String> hourArray = new ArrayList<>(Arrays.asList(hoursList));
 
             // Map에 데이터 추가
-            Map<String, Object> hourMap = new HashMap<>();
             map.put("md", "01"); // 예시로 "01"을 사용
             map.put("hs", hourArray);
 
             // 결과 출력
             System.out.println("결과 출력");
-            System.out.println(hourMap);
             System.out.println(map);
+            System.out.println(JSON.toJson(map));
 
             redisValue = userId + "," + set24.getFunctionId();
             redisCommand.setValues(set24.getUuId(), redisValue);
