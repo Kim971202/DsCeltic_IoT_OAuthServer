@@ -5,15 +5,27 @@
     <resultMap id="member" type="com.oauth.dto.AuthServerDTO"> </resultMap>
 
     <select id="getUserByUserId" parameterType="String" resultMap="member">
-        SELECT HP AS hp, USER_ID AS userId, USER_NICK AS userNickname, API_ATTC_KEY AS accessToken
-        FROM TBR_OPR_USER
-        WHERE USER_ID = #{userId}
+        SELECT
+            HP AS hp,
+            USER_ID AS userId,
+            USER_NICK AS userNickname,
+            API_ATTC_KEY AS accessToken,
+            HOUSE_HOLDER AS  householder
+        FROM
+            TBR_OPR_USER
+        WHERE
+            USER_ID = #{userId}
     </select>
 
     <select id="getAccountByUserId" parameterType="String" resultMap="member">
-        SELECT USER_ID AS userId, PW as userPassword
-        FROM TBR_OPR_ACCOUNT
-        WHERE USER_ID = #{value}
+        SELECT
+            USER_ID AS userId,
+            PW AS userPassword,
+            REGIST_USER_TYPE AS registUserType
+        FROM
+            TBR_OPR_ACCOUNT
+        WHERE
+            USER_ID = #{value}
     </select>
 
     <insert id="insertMember" parameterType="com.oauth.dto.AuthServerDTO">

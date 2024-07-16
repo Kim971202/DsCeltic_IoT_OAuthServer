@@ -56,6 +56,7 @@ public class UserServiceImpl implements UserService {
 
         String userNickname;
         String password;
+        String registUserType;
         ApiResponse.Data result = new ApiResponse.Data();
 
         // Device Set 생성
@@ -85,6 +86,7 @@ public class UserServiceImpl implements UserService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
+                registUserType = account.getRegistUserType();
                 password = account.getUserPassword();
                 if(!encoder.matches(userPassword, password)){
                     msg = "PW 에러";
@@ -153,6 +155,7 @@ public class UserServiceImpl implements UserService {
 
             token = common.createJwtToken(userId, "NORMAL", "Login");
             log.info("Token: " + token);
+            result.setRegistUserType(registUserType);
             result.setAccessToken(token);
             result.setUserNickname(userNickname);
             result.setDevice(data);
@@ -453,6 +456,7 @@ public class UserServiceImpl implements UserService {
                 data.setUserId(member.getUserId());
                 data.setUserNickname(member.getUserNickname());
                 data.setHp(member.getHp());
+                data.setHouseholder(member.getHouseholder());
                 msg = "사용자정보 조회 성공";
             }
 

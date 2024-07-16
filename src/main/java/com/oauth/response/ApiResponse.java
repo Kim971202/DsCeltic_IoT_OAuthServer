@@ -79,7 +79,8 @@ public class ApiResponse {
         private String tmpRegistKey;
         private String duplicationYn;
         private Object homeViewValue;
-
+        private String householder;
+        private String registUserType;
         // GW에서 받은 값을 던지는 시험용 변수
         private Object testVariable;
 
