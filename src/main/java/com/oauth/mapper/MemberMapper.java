@@ -32,7 +32,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getInvitationList (String requestUserId);
     public int delHouseMember(String userId);
     public int changeHouseholdStatus(AuthServerDTO member);
-    public int updatePushCodeStatus(List<HashMap<String, String>> member);
+    public int updatePushCodeStatus(AuthServerDTO params);
     public int insertInitPushCode(AuthServerDTO member); // Device 등록 시 사용
     public AuthServerDTO getPushCodeStatus(AuthServerDTO member);
     public AuthServerDTO getNextHouseholderUserId(AuthServerDTO member);

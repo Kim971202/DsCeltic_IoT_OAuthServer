@@ -23,6 +23,8 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-oauth2:2.2.5.RELEASE'
 	implementation 'org.springframework.cloud:spring-cloud-starter-security:2.2.5.RELEASE'
 
+	implementation 'org.springframework.security:spring-security-core:5.8.5'
+
 	// Oauth2 소셜 로그인 관련
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 

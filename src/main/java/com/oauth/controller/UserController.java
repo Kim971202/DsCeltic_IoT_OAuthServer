@@ -316,15 +316,13 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
-                Validator.isNullOrEmpty(params.getModelCode())){
+                Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getPushCd()) ||
+                Validator.isNullOrEmpty(params.getPushYn())){
             throw new CustomException("404", "홈 IoT 컨트롤러 알림 설정 값 오류");
         }
-        HashMap<String, String> memberMap = new HashMap<String, String>();
 
-        for(int i = 0; i < params.getPushCd().size(); i++){
-            memberMap.put(params.getPushCd().get(i), params.getPushYn().get(i));
-        }
-        return userService.doPushSet(params, memberMap);
+        return userService.doPushSet(params);
     }
 
     /**
