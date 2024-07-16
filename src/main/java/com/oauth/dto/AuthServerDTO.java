@@ -84,8 +84,8 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String responseHp;                   // 응답 회원 전화번호
     private String authenticationDatetime;       // 기기 인증 일시
     private String responseNickname;             // 응답 회원 별칭
-    private List<String> pushCd;
-    private List<String> pushYn;
+    private String pushCd;
+    private String pushYn;
     private String fPushYn;                      // 상태변경 알림 수신
     private String sPushYn;                      // 에러 알림 수신
     private String tPushYn;                      // 맞춤 알림 수신

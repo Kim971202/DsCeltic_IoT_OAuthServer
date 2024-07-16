@@ -14,11 +14,10 @@ import com.oauth.utils.CustomException;
 import com.oauth.utils.RedisCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -957,26 +956,17 @@ public class UserServiceImpl implements UserService {
 
     /** 홈 IoT 컨트롤러 알림 설정 */
     @Override
-    public ResponseEntity<?> doPushSet(AuthServerDTO params, HashMap<String, String> controlMap)
+    public ResponseEntity<?> doPushSet(AuthServerDTO params)
             throws CustomException{
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg ;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
-        List<HashMap<String, String>> memberList = new ArrayList<>();
-        HashMap<String, String> memberMap = new HashMap<String, String>();
 
             try{
-                memberMap.put("fPushYn", controlMap.get("01"));
-                memberMap.put("sPshYn", controlMap.get("02"));
-                memberMap.put("tPushYn", controlMap.get("03"));
-                memberMap.put("userId", userId);
-                memberMap.put("deviceId", deviceId);
 
-                memberList.add(memberMap);
-
-                if(memberMapper.updatePushCodeStatus(memberList) <= 0){
+                if(memberMapper.updatePushCodeStatus(params) <= 0){
                     msg = "홈 IoT 컨트롤러 알림 설정 실패";
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);

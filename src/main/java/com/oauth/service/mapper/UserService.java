@@ -52,7 +52,7 @@ public interface UserService {
     ResponseEntity<?> doDelHouseholdMembers(AuthServerDTO params) throws CustomException;
 
     /** 홈 IoT 컨트롤러 알림 설정 */
-    ResponseEntity<?> doPushSet(AuthServerDTO params, HashMap<String, String> controlMap) throws CustomException;
+    ResponseEntity<?> doPushSet(AuthServerDTO params) throws CustomException;
 
     /** 홈 IoT 컨트롤러 알림 정보 조회 */
     HashMap<String, Object> doSearchPushSet(AuthServerDTO params) throws CustomException;
