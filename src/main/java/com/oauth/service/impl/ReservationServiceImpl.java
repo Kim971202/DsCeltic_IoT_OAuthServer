@@ -87,7 +87,7 @@ public class ReservationServiceImpl implements ReservationService{
             ArrayList<String> hourArray = new ArrayList<>(Arrays.asList(hoursList));
 
             // Map에 데이터 추가
-            map.put("md", "01"); // 예시로 "01"을 사용
+            map.put("md", params.getType24h());
             map.put("hs", hourArray);
 
             // 결과 출력
