@@ -1154,11 +1154,13 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             deviceNicknameAndDeviceLocNicknameResult = deviceMapper.getDeviceNicknameAndDeviceLocNickname(controlAuthKeyByUserIdResult);
+
             if (deviceNicknameAndDeviceLocNicknameResult == null) {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+            log.info("deviceNicknameAndDeviceLocNicknameResult: " + deviceNicknameAndDeviceLocNicknameResult);
 
             multiSerialNumberBydeviceIdResult = deviceMapper.getMultiSerialNumberBydeviceId(controlAuthKeyByUserIdResult);
             if (multiSerialNumberBydeviceIdResult == null) {
@@ -1166,22 +1168,33 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+            log.info("multiSerialNumberBydeviceIdResult: " + multiSerialNumberBydeviceIdResult);
 
             rKeyList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "controlAuthKey");
+            log.info("rKeyList: " + rKeyList);
+
             deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
-            log.info("deviceNicknameAndDeviceLocNicknameResult: " + deviceNicknameAndDeviceLocNicknameResult);
+            log.info("deviceIdList: " + deviceIdList);
+
             deviceNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "deviceNickname");
+            log.info("deviceNicknameList: " + deviceNicknameList);
+
             addrNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "addrNickname");
-            serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
-            regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
             log.info("addrNicknameList: " + addrNicknameList);
+
+            serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
+            log.info("serialNumberList: " + serialNumberList);
+
+            regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
+            log.info("regSortList: " + regSortList);
+
             devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
-            log.info("devicesStatusInfo: " + devicesStatusInfo);
             if (devicesStatusInfo == null) {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+            log.info("devicesStatusInfo: " + devicesStatusInfo);
 
             if(rKeyList == null || deviceIdList == null){
                 msg = "등록된 R/C가 없습니다";
