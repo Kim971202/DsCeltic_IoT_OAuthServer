@@ -295,7 +295,7 @@
             <if test="chTp != null">CHTP,</if>
             <if test="cwTp != null">CWTP,</if>
             <if test="hwSt != null">HWST,</if>
-<!--            <if test="slCd != null">SLCD,</if>-->
+            <if test="slCd != null">SLCD,</if>
             <if test="mfDt != null">MFDT,</if>
             <if test="h12 != null">12H,</if>
             <if test="h24 != null">24H,</if>
@@ -317,7 +317,7 @@
             <if test="chTp != null">#{chTp},</if>
             <if test="cwTp != null">#{cwTp},</if>
             <if test="hwSt != null">#{hwSt},</if>
-<!--            <if test="slCd != null">#{slCd},</if>-->
+            <if test="slCd != null">#{slCd},</if>
             <if test="mfDt != null">#{mfDt},</if>
             <if test="h12 != null">#{h12},</if>
             <if test="h24 != null">#{h24},</if>
