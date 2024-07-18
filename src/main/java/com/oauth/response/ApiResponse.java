@@ -97,6 +97,23 @@ public class ApiResponse {
 
         @Getter
         @Setter
+        public static class DeviceInfoSearchList {
+            private String modelCode;
+            private String deviceNickname;
+            private String addrNickname;
+            private String zipCode;
+            private String oldAddr;
+            private String newAddr;
+            private String addrDetail;
+            private String latitude;
+            private String longitude;
+            private String regSort;
+            private String deviceId;
+            private String controlAuthKey;
+        }
+
+        @Getter
+        @Setter
         public static class Device {
             private String deviceId;
             private String controlAuthKey;
