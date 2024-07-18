@@ -67,6 +67,15 @@
         WHERE DEVC_ID = #{value}
     </select>
 
+    <select id="getDeviceIdListByUserId" parameterType="String" resultMap="member">
+        SELECT
+            DEVC_ID AS deviceId
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
     <select id="getUserByUserIdAndHp" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT *
         FROM TBR_OPR_USER

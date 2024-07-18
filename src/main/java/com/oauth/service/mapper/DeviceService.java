@@ -44,5 +44,7 @@ public interface DeviceService {
 
     /**	홈 IoT 컨트롤러 에러 정보 조회  */
     public ResponseEntity<?> doDeviceErrorInfo(AuthServerDTO params) throws Exception;
+    /**	홈 IoT 정보 조회 - 리스트  */
+    ResponseEntity<?> doDeviceInfoSearchList(AuthServerDTO params) throws CustomException;
 
 }

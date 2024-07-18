@@ -5,6 +5,33 @@
     <resultMap id="device" type="com.oauth.dto.AuthServerDTO"> </resultMap>
     <resultMap id="dr910w" type="com.oauth.dto.gw.DeviceStatusInfo$Device"> </resultMap>
 
+    <select id="getDeviceInfoSearchList" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        SELECT
+            device.DEVC_MODL_CD AS modelCode,
+            device.ATTC_ID AS controlAuthKey,
+            device.DEVC_ID AS deviceId,
+            regist.DEVC_NICK AS deviceNickname,
+            regist.ADDR_NICK AS addrNickname,
+            regist.ZIP AS zipCode,
+            regist.OLD_ADDR AS oldAddr,
+            regist.NEW_ADDR AS newAddr,
+            regist.DTAIL_ADDR AS addrDetail,
+            regist.LAT AS latitude,
+            regist.LON AS longitude,
+            ROW_NUMBER() OVER () AS regSort
+        FROM
+            TBR_IOT_DEVICE AS device
+        INNER JOIN
+            TBT_OPR_DEVICE_REGIST AS regist
+        ON
+            device.DEVC_ID = regist.DEVC_ID
+        WHERE
+            device.DEVC_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.deviceId}
+        </foreach>
+    </select>
+
     <select id="getSingleSerialNumberBydeviceId" parameterType="String" resultMap="device">
         SELECT
             SERIAL_NO AS serialNumber

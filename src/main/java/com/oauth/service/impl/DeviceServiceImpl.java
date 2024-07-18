@@ -1362,4 +1362,66 @@ public class DeviceServiceImpl implements DeviceService {
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
+
+    /**	홈 IoT 정보 조회 - 리스트  */
+    @Override
+    public ResponseEntity<?> doDeviceInfoSearchList(AuthServerDTO params) throws CustomException {
+
+        /*
+        * 1. UserId 로 DeviceId 취득 getUserByDeviceId (등록된 모든 Device ID)
+        * 2. DeviceId로 필요한 Data를 쿼리 (TBT_OPR_DEVICE_REGIST, TBR_IOT_DEVICE)
+        * */
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        String stringObject = "N";
+        String msg = null;
+
+        List<Map<String, String>> appResponse = new ArrayList<>();
+
+        String userId = params.getUserId();
+
+        List<AuthServerDTO> deviceIdList;
+        List<AuthServerDTO> deviceInfoList;
+
+        try {
+            deviceIdList = memberMapper.getDeviceIdListByUserId(userId);
+
+            if(!deviceIdList.isEmpty()){
+                deviceInfoList = deviceMapper.getDeviceInfoSearchList(deviceIdList);
+                for(int i = 0; i < deviceIdList.size(); ++i){
+                    Map<String, String> data = new HashMap<>();
+                    data.put("modelCode", deviceInfoList.get(i).getModelCode());
+                    data.put("deviceNickname", deviceInfoList.get(i).getDeviceNickname());
+                    data.put("addrNickname", deviceInfoList.get(i).getAddrNickname());
+                    data.put("zipCode", deviceInfoList.get(i).getZipCode());
+                    data.put("oldAddr", deviceInfoList.get(i).getOldAddr());
+                    data.put("newAddr", deviceInfoList.get(i).getNewAddr());
+                    data.put("addrDetail", deviceInfoList.get(i).getAddrDetail());
+                    data.put("latitude", deviceInfoList.get(i).getLatitude());
+                    data.put("longitude", deviceInfoList.get(i).getLongitude());
+                    data.put("regSort", deviceInfoList.get(i).getRegSort());
+                    data.put("deviceId", deviceInfoList.get(i).getDeviceId());
+                    data.put("controlAuthKey", deviceInfoList.get(i).getControlAuthKey());
+                    appResponse.add(data);
+                }
+                stringObject = "Y";
+            }
+
+            if(stringObject.equals("Y")) {
+                msg = "홈 IoT 정보 조회 리스트 - 조회 성공";
+                result.setHomeViewValue(appResponse);
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+
+            if(stringObject.equals("N")) {
+                msg = "홈 IoT 정보 조회 리스트 - 조회 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

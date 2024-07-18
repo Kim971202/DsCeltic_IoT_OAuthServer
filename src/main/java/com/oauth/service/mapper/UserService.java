@@ -92,4 +92,5 @@ public interface UserService {
 
     /** 임시 저장키 생성 */
     ResponseEntity<?> dogenerateTempKey(String userId) throws Exception;
+
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 @Slf4j
@@ -49,7 +48,6 @@ public class DeviceController {
         return deviceService.doDeviceStatusInfo(params);
     }
 
-    // 아래 실제 기기 제어 호출 부분
     /** 전원 On/Off */
     @PostMapping(value = "/powerOnOff")
     @ResponseBody
@@ -258,6 +256,21 @@ public class DeviceController {
             throw new CustomException("404", "홈 IoT 컨트롤러 에러 정보 조회 값 오류");
         }
         return deviceService.doDeviceErrorInfo(params);
+    }
+
+    /**	홈 IoT 정보 조회 - 리스트  */
+    @PostMapping(value = "/deviceInfoSearchList")
+    @ResponseBody
+    public ResponseEntity<?> doDeviceInfoSearchList(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws Exception {
+
+        String logStep = "[홈 IoT 정보 조회 - 리스트]";
+        log.info("[홈 IoT 정보 조회 - 리스트]");
+
+        if(Validator.isNullOrEmpty(params.getUserId())){
+            throw new CustomException("404", "홈 IoT 정보 조회 - 리스트 값 오류");
+        }
+        return deviceService.doDeviceInfoSearchList(params);
     }
 
 }
