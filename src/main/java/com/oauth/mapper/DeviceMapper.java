@@ -21,6 +21,10 @@ public interface DeviceMapper {
     public DeviceStatusInfo.Device getSingleDeviceStauts(String deviceId);
     public AuthServerDTO getSingleSerialNumberBydeviceId(String deviceId);
     public AuthServerDTO deviceTempAuthCheck(List<AuthServerDTO> device);
+    public AuthServerDTO getDeviceInfoSearch(String userId);
+    public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
+    public AuthServerDTO getPushinfoByDeviceId(String deviceId);
+    public AuthServerDTO getDeviceRegistStatus(String serialNumber);
     public int changeDeviceNickname(AuthServerDTO device);
     public int insertDeviceModelCode(AuthServerDTO device);
     public int insertDevice(AuthServerDTO device);
@@ -28,15 +32,13 @@ public interface DeviceMapper {
     public int insertDeviceDetail(AuthServerDTO device);
     public int updateDeviceRegistLocation(AuthServerDTO device);
     public int updateDeviceDetailLocation(AuthServerDTO device);
-    public AuthServerDTO getDeviceInfoSearch(String userId);
     public int insertDeviceStatus(DeviceStatusInfo.Device device);
     public int updateDeviceStatus(DeviceStatusInfo.Device device);
-    public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public int insertUserDevice(AuthServerDTO device);
-    public AuthServerDTO getPushinfoByDeviceId(String deviceId);
     public int insertErrorInfo(AuthServerDTO device);
     public int updateDeviceStatusFromApplication(DeviceStatusInfo.Device device);
     public int insertJson(String jsonBody);
+
 
 
 }

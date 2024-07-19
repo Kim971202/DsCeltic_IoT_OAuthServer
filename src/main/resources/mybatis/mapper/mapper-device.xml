@@ -527,4 +527,21 @@
         )
     </insert>
 
+    <select id="getDeviceRegistStatus" parameterType="String" resultMap="device">
+        SELECT
+            COALESCE(DEVC_ID, 'EMPTY') AS deviceId
+        FROM
+            TBR_IOT_DEVICE
+        WHERE
+            SERIAL_NO = #{serialNumber}
+
+        UNION ALL
+
+        SELECT
+            'EMPTY' AS deviceId
+        WHERE
+            NOT EXISTS
+            (SELECT 1 FROM TBR_IOT_DEVICE WHERE SERIAL_NO = #{serialNumber});
+    </select>
+
 </mapper>

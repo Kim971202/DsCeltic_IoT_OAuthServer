@@ -109,9 +109,15 @@
     </update>
 
     <select id="accessTokenCheck" parameterType="String" resultMap="member">
-        SELECT USER_ID AS userId, API_ATTC_KEY AS accessToken
-        FROM TBR_OPR_USER
-        WHERE USER_ID = #{userId} AND API_ATTC_KEY = #{accessToken};
+        SELECT
+            USER_ID AS userId,
+            API_ATTC_KEY AS accessToken
+        FROM
+            TBR_OPR_USER
+        WHERE
+            USER_ID = #{userId}
+        AND
+            API_ATTC_KEY = #{accessToken};
     </select>
 
     <select id="getHouseMembersByUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
