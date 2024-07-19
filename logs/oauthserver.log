@@ -1,0 +1,81 @@
+2024-07-19 14:11:46 - Starting OAuthServerApplication using Java 11.0.17 on DESKTOP-33SVC3J with PID 26896 (C:\Users\dsct\Documents\OAuthServer\out\production\classes started by dsct in C:\Users\dsct\Documents\OAuthServer)
+2024-07-19 14:11:46 - No active profile set, falling back to 1 default profile: "default"
+2024-07-19 14:11:46 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-core\2.3.0.1\23574ca124d0a694721ce3ef13cd720095f18fdd\jaxb-core-2.3.0.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-core/2.3.0.1/23574ca124d0a694721ce3ef13cd720095f18fdd/jaxb-api.jar
+2024-07-19 14:11:46 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-impl\2.3.1\a1a12b85ba1435b4189e065f7dafcc3fb9410d38\jaxb-impl-2.3.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/jaxb-runtime-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/txw2-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/istack-commons-runtime-3.0.7.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/stax-ex-1.8.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/FastInfoset-1.2.15.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/javax.activation-api-1.2.0.jar
+2024-07-19 14:11:46 - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-07-19 14:11:46 - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-07-19 14:11:48 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-19 14:11:48 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-19 14:11:48 - Finished Spring Data repository scanning in 6 ms. Found 0 Redis repository interfaces.
+2024-07-19 14:11:48 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-19 14:11:48 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-19 14:11:48 - Finished Spring Data repository scanning in 30 ms. Found 0 Redis repository interfaces.
+2024-07-19 14:11:49 - BeanFactory id=ca6bf4af-bdb8-340f-aaba-da46a6a563bf
+2024-07-19 14:11:51 - Tomcat initialized with port(s): 8080 (http)
+2024-07-19 14:11:51 - Initializing ProtocolHandler ["http-nio-8080"]
+2024-07-19 14:11:51 - Starting service [Tomcat]
+2024-07-19 14:11:51 - Starting Servlet engine: [Apache Tomcat/9.0.64]
+2024-07-19 14:11:51 - Initializing Spring embedded WebApplicationContext
+2024-07-19 14:11:51 - Root WebApplicationContext: initialization completed in 4739 ms
+2024-07-19 14:11:51 - Driver class com.mysql.cj.jdbc.Driver found in Thread context class loader TomcatEmbeddedWebappClassLoader
+  context: ROOT
+  delegate: true
+----------> Parent Classloader:
+org.springframework.boot.devtools.restart.classloader.RestartClassLoader@58f722f
+
+2024-07-19 14:11:51 - KeyStoreUtils -> readPublicKey(String path) :apikeys/public-key
+2024-07-19 14:11:51 - path: apikeys/public-key
+2024-07-19 14:11:51 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-19 14:11:51 - Path: apikeys/public-key
+2024-07-19 14:11:51 - KeyStoreUtils -> readPrivateKey(String path)
+2024-07-19 14:11:51 - path: apikeys/private-key
+2024-07-19 14:11:51 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-19 14:11:51 - Path: apikeys/private-key
+2024-07-19 14:11:51 - privateKeyPEM: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCH/Gc75PfBVX62U9U7IOx8QHV5iM9au6pTh2G7N5MmUYgSN3dBidvEAHqXxlZP348g4WuhZP0Ti2Cq6tKBkLUnx7BUnDfUk+fTzqKKpcm57NINwBSEqG2RUqSfrweO5OS/XPquiTzFVlXP3D0a63vZ83yu40VzPAG4uJwJIKOxayiu6fyDh3uBSeWuo+aeoLiDZUL7q5HTrWeek0d/CrFiN/5EOkzQQj84wBNgQsPGbiXuf9X43tSPFp3ZvJsF1BtAT/X+Dn4AbpJ3SSVB8iph2HVhp8kTmt/p+/Y3+Gkv9CqlA31vFtmvxGTeJ/HjuvKxFlCcK5PXz5jwAjj+A92hAgMBAAECggEAExGb0FRNQbkhaaPb1MzLHKlVT9OVcB28xrXHSJ+EbO0l7ZgFixUv0g5XIo1XcR/iTDQQCbPFoUX8Kjt/hVerb4aa/WJimdabvaHOPS7+WKoS0obK2cdchfJWz2WV473JLeR16p+n++wdYGZ70xiOZ4OzSjrodD5H54VLrCP9kFVGy7e6H4vZYVtSMFw5k72avXVIsKnJhsdB80B8E0wWvscwQsAihoCXDCm+lehG5gE+mcyjOVFjVtv0WnbATGwXzX4Co2oOXRdnWtTiAOHghZdWQ1hjj/HNwpAS9fys2r8IT73AsX8PsmCfVoyTvrgtpQSCxVvG24Q6ZKXKxqutGQKBgQDqp2iy2yc6iBHoHkjz+XiiT9fsnpJV5/D/IboXn8oSjMWwMR+rH+n98pZ0Hj+5blenQmXn+nCFSYroSNhmn/wp/zlXb7U7GVqCIjIYd0z40xqVvwFVeg7Z8pOgX59MUQLroziBV7jANJrNxujAqHMYMnLo20JFpd7svEvO6A0hzwKBgQCUWzoJG14qp6K/rQkpzTyhnujsyh12g89Uh0EqaxY4zLOSRMnsjIvNQloghWZ3FmYJJSFsIPSrovCgfrLEKOIFJ76IrU48hPmIODlmxjEMlELdKjygt8LMEhk8jMGM+yLbULxufY0zA18G0WKsUhG/DPrhUod3xsY42i1SSJgVjwKBgCT3AlNKmr9puAhs3OkyH4LSOR2ZTUwjIZ/PXFVkYpzReELtOiPm/yF2GaVpLniznTNIDm2g0iDtGOjGsPBZu4uSHSJdApuwvsVJRcL86C86cjGsyTUB6V0EDaVx6tJG4MLmD3ywqPX+U3SfJQNUhe0F5XwxLhtyqc95Sifp/keZAoGAFG6kBZERXQqNbZylQG6VxSSfq80CVco9icS/AtqQyu3WZXS34q5QqspSo1v8Cra5AtVsTvoS+HiOb2xDrqR6zH72zNghiFBAFbS4oyD0rGjW9KLWisQEPhrYAvDXz1TfLhlmekksYzQ5qDS6REVhUFC3VMULB0IHFtllmImK+J0CgYEAtHqTrp7KD2WZryQzmI4KnoNaJbRNuIerXFq7HozhNIDHaoK7nX0C1QffIVZ2q+CbsbT+p0A0xUjYwSX6tY7A+hV8Tll8aZiKhmOK5Jp56Amo81YVqIoMPlgczObkfi4dcS1uWkh//9OuiwuNcjJU/+aUphS8isQXU2ZxLGcUBD0=
+2024-07-19 14:11:51 - KeyStoreUtils -> getAesEncryptKey(String path)
+2024-07-19 14:11:51 - path: apikeys/encrypt-key
+2024-07-19 14:11:51 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-19 14:11:51 - Path: apikeys/encrypt-key
+2024-07-19 14:11:51 - setJwsVerifierApp CALLED
+2024-07-19 14:11:51 - KeyStoreUtils -> readPublicKey(String path) :apikeys/app-public-key
+2024-07-19 14:11:51 - path: apikeys/app-public-key
+2024-07-19 14:11:51 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-19 14:11:51 - Path: apikeys/app-public-key
+2024-07-19 14:11:54 - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@33424faa, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4c13534c, org.springframework.security.web.context.SecurityContextPersistenceFilter@129befb9, org.springframework.security.web.header.HeaderWriterFilter@fc8b46d, org.springframework.security.web.authentication.logout.LogoutFilter@533b85a, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@1b001b08, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@ff42a, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@1246a7, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@7b992063, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@5a97f01a, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4b51aff2, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3ad931ed, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7cffa4b0, org.springframework.security.web.session.SessionManagementFilter@b0c819f, org.springframework.security.web.access.ExceptionTranslationFilter@5b03aca7, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@2a650300]
+2024-07-19 14:11:54 - WebSecurityConfig configure(WebSecurity web) CALLED
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/www/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/www/**']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/*.html']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.html']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.css']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.css']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.js']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.js']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.png']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.png']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.jpg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.jpg']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.gif']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.gif']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.svg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.svg']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.ico']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.ico']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.ttf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.ttf']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.woff']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.woff']
+2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.otf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.otf']
+2024-07-19 14:11:59 - LiveReload server is running on port 35729
+2024-07-19 14:12:00 - All Spring Cloud Security modules and starters are deprecated. They will be moved to individual projects in the next major release.
+2024-07-19 14:12:00 - Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-07-19 14:12:00 - Starting ProtocolHandler ["http-nio-8080"]
+2024-07-19 14:12:00 - Tomcat started on port(s): 8080 (http) with context path ''
+2024-07-19 14:12:02 - Started OAuthServerApplication in 18.081 seconds (JVM running for 19.198)
+2024-07-19 14:12:02 - Flushing all data from Redis on application startup...
+2024-07-19 14:12:03 - Flush complete.
