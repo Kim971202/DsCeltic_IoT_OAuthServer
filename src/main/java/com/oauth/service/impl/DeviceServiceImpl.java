@@ -55,19 +55,23 @@ public class DeviceServiceImpl implements DeviceService {
     public ResponseEntity<?> doPowerOnOff(AuthServerDTO params) throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();
+        PowerOnOff powerOnOff = new PowerOnOff();
+
         String stringObject;
         String msg;
-        PowerOnOff powerOnOff = new PowerOnOff();
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String redisValue;
         String serialNumber;
         String responseMessage = null;
+
         MobiusResponse response;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
+
         try {
             powerOnOff.setUserId(params.getUserId());
             powerOnOff.setDeviceId(params.getDeviceId());

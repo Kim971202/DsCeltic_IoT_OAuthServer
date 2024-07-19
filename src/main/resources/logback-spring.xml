@@ -1,25 +1,28 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-
 <configuration>
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <property name="LOG_PATH" value="logs"/>
+
+    <!-- Console Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <Pattern>
-                [%d{yyyy-MM-dd HH:mm:ss}:%-3relative] [%thread] %-5level %logger{36} - %msg%n
-            </Pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <logger name="com.oauth" level="debug" />
+    <!-- File Appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/oauthserver.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/oauthserver.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+        </encoder>
+    </appender>
 
-<!--    <logger name="jdbc" level="OFF" />-->
-<!--    <logger name="jdbc.sqlonly" level="DEBUG" />-->
-<!--    <logger name="jdbc.sqltiming" level="OFF" />-->
-<!--    <logger name="jdbc.resultset" level="DEBUG" />-->
-<!--    <logger name="jdbc.resultsettable" level="DEBUG" />-->
-<!--    <logger name="jdbc.connection" level="OFF" />-->
-
+    <!-- Root Logger -->
     <root level="info">
-        <appender-ref ref="console" />
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
     </root>
-
 </configuration>
