@@ -1,0 +1,64 @@
+# Spring MVC
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+
+  datasource:
+    url: jdbc:mysql://3.37.23.88:3306/dsiot?characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
+    username: dsiotAppServer
+    password: bZGPt9zQZ7aAtv+T]6}(*EfDONfO.R
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 200
+      connection-timeout: 11000
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1093285216231-8c6odcqlbklnn05a31q7lvbqu2gcq14r.apps.googleusercontent.com
+            client-secret: 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
+            scope: profile, email
+
+# Mybatis
+mybatis:
+  config-location: classpath:mybatis-config.xml
+
+# Redis
+redis:
+  host: localhost
+  port: 6379
+
+# TIME OUT
+server:
+  timeout: 5
+
+# \uAE30\uAE30 Model Code (\uAD6C\uD615, \uC2E0\uD615)
+device:
+  model:
+    code: "{oldModel: ' ESCeco13S', newModel: ' DCR-91/WF' }"
+
+# Server Token
+app:
+  token:
+    path_app_public_key: apikeys/app-public-key
+    path_app_private_key: apikeys/app-private-key
+  server: # Server Address
+    address:
+      short:
+        gw: 3.37.23.88:7579
+      long:
+        gw: http://172.31.50.223:10010/AppToGwServer
+      push: http://172.31.50.223:8082/AppServerToPushServer
+
+# Logging
+logging:
+  level:
+    com.zaxxer.hikari.HikariConfig: INFO
+    com.zaxxer.hikari: TRACE
+  file:
+    path: logs
+    name: oauthserver.log

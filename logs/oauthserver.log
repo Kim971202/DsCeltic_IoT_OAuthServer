@@ -1,81 +1,190 @@
-2024-07-19 14:11:46 - Starting OAuthServerApplication using Java 11.0.17 on DESKTOP-33SVC3J with PID 26896 (C:\Users\dsct\Documents\OAuthServer\out\production\classes started by dsct in C:\Users\dsct\Documents\OAuthServer)
-2024-07-19 14:11:46 - No active profile set, falling back to 1 default profile: "default"
-2024-07-19 14:11:46 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-core\2.3.0.1\23574ca124d0a694721ce3ef13cd720095f18fdd\jaxb-core-2.3.0.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-core/2.3.0.1/23574ca124d0a694721ce3ef13cd720095f18fdd/jaxb-api.jar
-2024-07-19 14:11:46 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-impl\2.3.1\a1a12b85ba1435b4189e065f7dafcc3fb9410d38\jaxb-impl-2.3.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/jaxb-runtime-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/txw2-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/istack-commons-runtime-3.0.7.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/stax-ex-1.8.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/FastInfoset-1.2.15.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/javax.activation-api-1.2.0.jar
-2024-07-19 14:11:46 - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2024-07-19 14:11:46 - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2024-07-19 14:11:48 - Multiple Spring Data modules found, entering strict repository configuration mode
-2024-07-19 14:11:48 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2024-07-19 14:11:48 - Finished Spring Data repository scanning in 6 ms. Found 0 Redis repository interfaces.
-2024-07-19 14:11:48 - Multiple Spring Data modules found, entering strict repository configuration mode
-2024-07-19 14:11:48 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2024-07-19 14:11:48 - Finished Spring Data repository scanning in 30 ms. Found 0 Redis repository interfaces.
-2024-07-19 14:11:49 - BeanFactory id=ca6bf4af-bdb8-340f-aaba-da46a6a563bf
-2024-07-19 14:11:51 - Tomcat initialized with port(s): 8080 (http)
-2024-07-19 14:11:51 - Initializing ProtocolHandler ["http-nio-8080"]
-2024-07-19 14:11:51 - Starting service [Tomcat]
-2024-07-19 14:11:51 - Starting Servlet engine: [Apache Tomcat/9.0.64]
-2024-07-19 14:11:51 - Initializing Spring embedded WebApplicationContext
-2024-07-19 14:11:51 - Root WebApplicationContext: initialization completed in 4739 ms
-2024-07-19 14:11:51 - Driver class com.mysql.cj.jdbc.Driver found in Thread context class loader TomcatEmbeddedWebappClassLoader
-  context: ROOT
-  delegate: true
-----------> Parent Classloader:
-org.springframework.boot.devtools.restart.classloader.RestartClassLoader@58f722f
+2024-07-19 14:26:58 - Starting OAuthServerApplication using Java 11.0.17 on DESKTOP-33SVC3J with PID 28332 (C:\Users\dsct\Documents\OAuthServer\out\production\classes started by dsct in C:\Users\dsct\Documents\OAuthServer)
+2024-07-19 14:26:58 - No active profile set, falling back to 1 default profile: "default"
+2024-07-19 14:26:58 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-core\2.3.0.1\23574ca124d0a694721ce3ef13cd720095f18fdd\jaxb-core-2.3.0.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-core/2.3.0.1/23574ca124d0a694721ce3ef13cd720095f18fdd/jaxb-api.jar
+2024-07-19 14:26:58 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-impl\2.3.1\a1a12b85ba1435b4189e065f7dafcc3fb9410d38\jaxb-impl-2.3.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/jaxb-runtime-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/txw2-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/istack-commons-runtime-3.0.7.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/stax-ex-1.8.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/FastInfoset-1.2.15.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/javax.activation-api-1.2.0.jar
+2024-07-19 14:26:58 - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-07-19 14:26:58 - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-07-19 14:27:00 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-19 14:27:00 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-19 14:27:00 - Finished Spring Data repository scanning in 8 ms. Found 0 Redis repository interfaces.
+2024-07-19 14:27:00 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-19 14:27:00 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-19 14:27:01 - Finished Spring Data repository scanning in 56 ms. Found 0 Redis repository interfaces.
+2024-07-19 14:27:01 - BeanFactory id=ca6bf4af-bdb8-340f-aaba-da46a6a563bf
+2024-07-19 14:27:03 - Tomcat initialized with port(s): 8080 (http)
+2024-07-19 14:27:03 - Initializing ProtocolHandler ["http-nio-8080"]
+2024-07-19 14:27:03 - Starting service [Tomcat]
+2024-07-19 14:27:03 - Starting Servlet engine: [Apache Tomcat/9.0.64]
+2024-07-19 14:27:03 - Initializing Spring embedded WebApplicationContext
+2024-07-19 14:27:03 - Root WebApplicationContext: initialization completed in 5123 ms
+2024-07-19 14:27:04 - KeyStoreUtils -> readPublicKey(String path) :apikeys/public-key
+2024-07-19 14:27:04 - path: apikeys/public-key
+2024-07-19 14:27:04 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-19 14:27:04 - Path: apikeys/public-key
+2024-07-19 14:27:04 - KeyStoreUtils -> readPrivateKey(String path)
+2024-07-19 14:27:04 - path: apikeys/private-key
+2024-07-19 14:27:04 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-19 14:27:04 - Path: apikeys/private-key
+2024-07-19 14:27:04 - privateKeyPEM: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCH/Gc75PfBVX62U9U7IOx8QHV5iM9au6pTh2G7N5MmUYgSN3dBidvEAHqXxlZP348g4WuhZP0Ti2Cq6tKBkLUnx7BUnDfUk+fTzqKKpcm57NINwBSEqG2RUqSfrweO5OS/XPquiTzFVlXP3D0a63vZ83yu40VzPAG4uJwJIKOxayiu6fyDh3uBSeWuo+aeoLiDZUL7q5HTrWeek0d/CrFiN/5EOkzQQj84wBNgQsPGbiXuf9X43tSPFp3ZvJsF1BtAT/X+Dn4AbpJ3SSVB8iph2HVhp8kTmt/p+/Y3+Gkv9CqlA31vFtmvxGTeJ/HjuvKxFlCcK5PXz5jwAjj+A92hAgMBAAECggEAExGb0FRNQbkhaaPb1MzLHKlVT9OVcB28xrXHSJ+EbO0l7ZgFixUv0g5XIo1XcR/iTDQQCbPFoUX8Kjt/hVerb4aa/WJimdabvaHOPS7+WKoS0obK2cdchfJWz2WV473JLeR16p+n++wdYGZ70xiOZ4OzSjrodD5H54VLrCP9kFVGy7e6H4vZYVtSMFw5k72avXVIsKnJhsdB80B8E0wWvscwQsAihoCXDCm+lehG5gE+mcyjOVFjVtv0WnbATGwXzX4Co2oOXRdnWtTiAOHghZdWQ1hjj/HNwpAS9fys2r8IT73AsX8PsmCfVoyTvrgtpQSCxVvG24Q6ZKXKxqutGQKBgQDqp2iy2yc6iBHoHkjz+XiiT9fsnpJV5/D/IboXn8oSjMWwMR+rH+n98pZ0Hj+5blenQmXn+nCFSYroSNhmn/wp/zlXb7U7GVqCIjIYd0z40xqVvwFVeg7Z8pOgX59MUQLroziBV7jANJrNxujAqHMYMnLo20JFpd7svEvO6A0hzwKBgQCUWzoJG14qp6K/rQkpzTyhnujsyh12g89Uh0EqaxY4zLOSRMnsjIvNQloghWZ3FmYJJSFsIPSrovCgfrLEKOIFJ76IrU48hPmIODlmxjEMlELdKjygt8LMEhk8jMGM+yLbULxufY0zA18G0WKsUhG/DPrhUod3xsY42i1SSJgVjwKBgCT3AlNKmr9puAhs3OkyH4LSOR2ZTUwjIZ/PXFVkYpzReELtOiPm/yF2GaVpLniznTNIDm2g0iDtGOjGsPBZu4uSHSJdApuwvsVJRcL86C86cjGsyTUB6V0EDaVx6tJG4MLmD3ywqPX+U3SfJQNUhe0F5XwxLhtyqc95Sifp/keZAoGAFG6kBZERXQqNbZylQG6VxSSfq80CVco9icS/AtqQyu3WZXS34q5QqspSo1v8Cra5AtVsTvoS+HiOb2xDrqR6zH72zNghiFBAFbS4oyD0rGjW9KLWisQEPhrYAvDXz1TfLhlmekksYzQ5qDS6REVhUFC3VMULB0IHFtllmImK+J0CgYEAtHqTrp7KD2WZryQzmI4KnoNaJbRNuIerXFq7HozhNIDHaoK7nX0C1QffIVZ2q+CbsbT+p0A0xUjYwSX6tY7A+hV8Tll8aZiKhmOK5Jp56Amo81YVqIoMPlgczObkfi4dcS1uWkh//9OuiwuNcjJU/+aUphS8isQXU2ZxLGcUBD0=
+2024-07-19 14:27:04 - KeyStoreUtils -> getAesEncryptKey(String path)
+2024-07-19 14:27:04 - path: apikeys/encrypt-key
+2024-07-19 14:27:04 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-19 14:27:04 - Path: apikeys/encrypt-key
+2024-07-19 14:27:04 - setJwsVerifierApp CALLED
+2024-07-19 14:27:04 - KeyStoreUtils -> readPublicKey(String path) :apikeys/app-public-key
+2024-07-19 14:27:04 - path: apikeys/app-public-key
+2024-07-19 14:27:04 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-19 14:27:04 - Path: apikeys/app-public-key
+2024-07-19 14:27:04 - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'deviceController': Unsatisfied dependency expressed through field 'deviceService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'deviceServiceImpl': Unsatisfied dependency expressed through field 'mobiusService'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mobiusService': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'app.server.address.push' in value "${app.server.address.push}"
+2024-07-19 14:27:04 - Stopping service [Tomcat]
+2024-07-19 14:27:05 - 
 
-2024-07-19 14:11:51 - KeyStoreUtils -> readPublicKey(String path) :apikeys/public-key
-2024-07-19 14:11:51 - path: apikeys/public-key
-2024-07-19 14:11:51 - KeyStoreUtils -> resourceFileToString(String path)
-2024-07-19 14:11:51 - Path: apikeys/public-key
-2024-07-19 14:11:51 - KeyStoreUtils -> readPrivateKey(String path)
-2024-07-19 14:11:51 - path: apikeys/private-key
-2024-07-19 14:11:51 - KeyStoreUtils -> resourceFileToString(String path)
-2024-07-19 14:11:51 - Path: apikeys/private-key
-2024-07-19 14:11:51 - privateKeyPEM: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCH/Gc75PfBVX62U9U7IOx8QHV5iM9au6pTh2G7N5MmUYgSN3dBidvEAHqXxlZP348g4WuhZP0Ti2Cq6tKBkLUnx7BUnDfUk+fTzqKKpcm57NINwBSEqG2RUqSfrweO5OS/XPquiTzFVlXP3D0a63vZ83yu40VzPAG4uJwJIKOxayiu6fyDh3uBSeWuo+aeoLiDZUL7q5HTrWeek0d/CrFiN/5EOkzQQj84wBNgQsPGbiXuf9X43tSPFp3ZvJsF1BtAT/X+Dn4AbpJ3SSVB8iph2HVhp8kTmt/p+/Y3+Gkv9CqlA31vFtmvxGTeJ/HjuvKxFlCcK5PXz5jwAjj+A92hAgMBAAECggEAExGb0FRNQbkhaaPb1MzLHKlVT9OVcB28xrXHSJ+EbO0l7ZgFixUv0g5XIo1XcR/iTDQQCbPFoUX8Kjt/hVerb4aa/WJimdabvaHOPS7+WKoS0obK2cdchfJWz2WV473JLeR16p+n++wdYGZ70xiOZ4OzSjrodD5H54VLrCP9kFVGy7e6H4vZYVtSMFw5k72avXVIsKnJhsdB80B8E0wWvscwQsAihoCXDCm+lehG5gE+mcyjOVFjVtv0WnbATGwXzX4Co2oOXRdnWtTiAOHghZdWQ1hjj/HNwpAS9fys2r8IT73AsX8PsmCfVoyTvrgtpQSCxVvG24Q6ZKXKxqutGQKBgQDqp2iy2yc6iBHoHkjz+XiiT9fsnpJV5/D/IboXn8oSjMWwMR+rH+n98pZ0Hj+5blenQmXn+nCFSYroSNhmn/wp/zlXb7U7GVqCIjIYd0z40xqVvwFVeg7Z8pOgX59MUQLroziBV7jANJrNxujAqHMYMnLo20JFpd7svEvO6A0hzwKBgQCUWzoJG14qp6K/rQkpzTyhnujsyh12g89Uh0EqaxY4zLOSRMnsjIvNQloghWZ3FmYJJSFsIPSrovCgfrLEKOIFJ76IrU48hPmIODlmxjEMlELdKjygt8LMEhk8jMGM+yLbULxufY0zA18G0WKsUhG/DPrhUod3xsY42i1SSJgVjwKBgCT3AlNKmr9puAhs3OkyH4LSOR2ZTUwjIZ/PXFVkYpzReELtOiPm/yF2GaVpLniznTNIDm2g0iDtGOjGsPBZu4uSHSJdApuwvsVJRcL86C86cjGsyTUB6V0EDaVx6tJG4MLmD3ywqPX+U3SfJQNUhe0F5XwxLhtyqc95Sifp/keZAoGAFG6kBZERXQqNbZylQG6VxSSfq80CVco9icS/AtqQyu3WZXS34q5QqspSo1v8Cra5AtVsTvoS+HiOb2xDrqR6zH72zNghiFBAFbS4oyD0rGjW9KLWisQEPhrYAvDXz1TfLhlmekksYzQ5qDS6REVhUFC3VMULB0IHFtllmImK+J0CgYEAtHqTrp7KD2WZryQzmI4KnoNaJbRNuIerXFq7HozhNIDHaoK7nX0C1QffIVZ2q+CbsbT+p0A0xUjYwSX6tY7A+hV8Tll8aZiKhmOK5Jp56Amo81YVqIoMPlgczObkfi4dcS1uWkh//9OuiwuNcjJU/+aUphS8isQXU2ZxLGcUBD0=
-2024-07-19 14:11:51 - KeyStoreUtils -> getAesEncryptKey(String path)
-2024-07-19 14:11:51 - path: apikeys/encrypt-key
-2024-07-19 14:11:51 - KeyStoreUtils -> resourceFileToString(String path)
-2024-07-19 14:11:51 - Path: apikeys/encrypt-key
-2024-07-19 14:11:51 - setJwsVerifierApp CALLED
-2024-07-19 14:11:51 - KeyStoreUtils -> readPublicKey(String path) :apikeys/app-public-key
-2024-07-19 14:11:51 - path: apikeys/app-public-key
-2024-07-19 14:11:51 - KeyStoreUtils -> resourceFileToString(String path)
-2024-07-19 14:11:51 - Path: apikeys/app-public-key
-2024-07-19 14:11:54 - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@33424faa, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4c13534c, org.springframework.security.web.context.SecurityContextPersistenceFilter@129befb9, org.springframework.security.web.header.HeaderWriterFilter@fc8b46d, org.springframework.security.web.authentication.logout.LogoutFilter@533b85a, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@1b001b08, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@ff42a, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@1246a7, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@7b992063, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@5a97f01a, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4b51aff2, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3ad931ed, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7cffa4b0, org.springframework.security.web.session.SessionManagementFilter@b0c819f, org.springframework.security.web.access.ExceptionTranslationFilter@5b03aca7, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@2a650300]
-2024-07-19 14:11:54 - WebSecurityConfig configure(WebSecurity web) CALLED
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/www/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/www/**']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/*.html']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.html']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.css']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.css']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.js']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.js']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.png']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.png']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.jpg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.jpg']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.gif']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.gif']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.svg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.svg']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.ico']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.ico']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.ttf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.ttf']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.woff']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.woff']
-2024-07-19 14:11:54 - You are asking Spring Security to ignore Ant [pattern='/**/*.otf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-07-19 14:11:54 - Will not secure Ant [pattern='/**/*.otf']
-2024-07-19 14:11:59 - LiveReload server is running on port 35729
-2024-07-19 14:12:00 - All Spring Cloud Security modules and starters are deprecated. They will be moved to individual projects in the next major release.
-2024-07-19 14:12:00 - Exposing 1 endpoint(s) beneath base path '/actuator'
-2024-07-19 14:12:00 - Starting ProtocolHandler ["http-nio-8080"]
-2024-07-19 14:12:00 - Tomcat started on port(s): 8080 (http) with context path ''
-2024-07-19 14:12:02 - Started OAuthServerApplication in 18.081 seconds (JVM running for 19.198)
-2024-07-19 14:12:02 - Flushing all data from Redis on application startup...
-2024-07-19 14:12:03 - Flush complete.
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2024-07-19 14:27:05 - Application run failed
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'deviceController': Unsatisfied dependency expressed through field 'deviceService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'deviceServiceImpl': Unsatisfied dependency expressed through field 'mobiusService'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mobiusService': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'app.server.address.push' in value "${app.server.address.push}"
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:659)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:639)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:119)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:399)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1431)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:619)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:955)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:918)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:734)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:308)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1306)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1295)
+	at com.oauth.OAuthServerApplication.main(OAuthServerApplication.java:10)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49)
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'deviceServiceImpl': Unsatisfied dependency expressed through field 'mobiusService'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mobiusService': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'app.server.address.push' in value "${app.server.address.push}"
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:659)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:639)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:119)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:399)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1431)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:619)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1391)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1311)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:656)
+	... 25 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mobiusService': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'app.server.address.push' in value "${app.server.address.push}"
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:405)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1431)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:619)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1391)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1311)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:656)
+	... 39 common frames omitted
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'app.server.address.push' in value "${app.server.address.push}"
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:180)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:239)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer.lambda$processProperties$0(PropertySourcesPlaceholderConfigurer.java:191)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:936)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1332)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1311)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:656)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:639)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:119)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:399)
+	... 50 common frames omitted
+2024-07-19 14:31:13 - Starting OAuthServerApplication using Java 11.0.17 on DESKTOP-33SVC3J with PID 14424 (C:\Users\dsct\Documents\OAuthServer\out\production\classes started by dsct in C:\Users\dsct\Documents\OAuthServer)
+2024-07-19 14:31:13 - No active profile set, falling back to 1 default profile: "default"
+2024-07-19 14:31:14 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-core\2.3.0.1\23574ca124d0a694721ce3ef13cd720095f18fdd\jaxb-core-2.3.0.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-core/2.3.0.1/23574ca124d0a694721ce3ef13cd720095f18fdd/jaxb-api.jar
+2024-07-19 14:31:14 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-impl\2.3.1\a1a12b85ba1435b4189e065f7dafcc3fb9410d38\jaxb-impl-2.3.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/jaxb-runtime-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/txw2-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/istack-commons-runtime-3.0.7.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/stax-ex-1.8.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/FastInfoset-1.2.15.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/javax.activation-api-1.2.0.jar
+2024-07-19 14:31:14 - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-07-19 14:31:14 - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-07-19 14:31:26 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-19 14:31:26 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-19 14:31:26 - Finished Spring Data repository scanning in 29 ms. Found 0 Redis repository interfaces.
+2024-07-19 14:31:29 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-19 14:31:29 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-19 14:31:30 - Finished Spring Data repository scanning in 372 ms. Found 0 Redis repository interfaces.
+2024-07-19 14:31:32 - BeanFactory id=ca6bf4af-bdb8-340f-aaba-da46a6a563bf
+2024-07-19 14:31:48 - Tomcat initialized with port(s): 8080 (http)
+2024-07-19 14:31:48 - Initializing ProtocolHandler ["http-nio-8080"]
+2024-07-19 14:31:48 - Starting service [Tomcat]
+2024-07-19 14:31:48 - Starting Servlet engine: [Apache Tomcat/9.0.64]
+2024-07-19 14:31:52 - Initializing Spring embedded WebApplicationContext
+2024-07-19 14:31:52 - Root WebApplicationContext: initialization completed in 37347 ms
+2024-07-19 14:31:55 - KeyStoreUtils -> readPublicKey(String path) :apikeys/public-key
+2024-07-19 14:31:55 - path: apikeys/public-key
+2024-07-19 14:31:55 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-19 14:31:55 - Path: apikeys/public-key
+2024-07-19 14:31:56 - KeyStoreUtils -> readPrivateKey(String path)
+2024-07-19 14:31:56 - path: apikeys/private-key
+2024-07-19 14:31:56 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-19 14:31:56 - Path: apikeys/private-key
+2024-07-19 14:31:56 - privateKeyPEM: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCH/Gc75PfBVX62U9U7IOx8QHV5iM9au6pTh2G7N5MmUYgSN3dBidvEAHqXxlZP348g4WuhZP0Ti2Cq6tKBkLUnx7BUnDfUk+fTzqKKpcm57NINwBSEqG2RUqSfrweO5OS/XPquiTzFVlXP3D0a63vZ83yu40VzPAG4uJwJIKOxayiu6fyDh3uBSeWuo+aeoLiDZUL7q5HTrWeek0d/CrFiN/5EOkzQQj84wBNgQsPGbiXuf9X43tSPFp3ZvJsF1BtAT/X+Dn4AbpJ3SSVB8iph2HVhp8kTmt/p+/Y3+Gkv9CqlA31vFtmvxGTeJ/HjuvKxFlCcK5PXz5jwAjj+A92hAgMBAAECggEAExGb0FRNQbkhaaPb1MzLHKlVT9OVcB28xrXHSJ+EbO0l7ZgFixUv0g5XIo1XcR/iTDQQCbPFoUX8Kjt/hVerb4aa/WJimdabvaHOPS7+WKoS0obK2cdchfJWz2WV473JLeR16p+n++wdYGZ70xiOZ4OzSjrodD5H54VLrCP9kFVGy7e6H4vZYVtSMFw5k72avXVIsKnJhsdB80B8E0wWvscwQsAihoCXDCm+lehG5gE+mcyjOVFjVtv0WnbATGwXzX4Co2oOXRdnWtTiAOHghZdWQ1hjj/HNwpAS9fys2r8IT73AsX8PsmCfVoyTvrgtpQSCxVvG24Q6ZKXKxqutGQKBgQDqp2iy2yc6iBHoHkjz+XiiT9fsnpJV5/D/IboXn8oSjMWwMR+rH+n98pZ0Hj+5blenQmXn+nCFSYroSNhmn/wp/zlXb7U7GVqCIjIYd0z40xqVvwFVeg7Z8pOgX59MUQLroziBV7jANJrNxujAqHMYMnLo20JFpd7svEvO6A0hzwKBgQCUWzoJG14qp6K/rQkpzTyhnujsyh12g89Uh0EqaxY4zLOSRMnsjIvNQloghWZ3FmYJJSFsIPSrovCgfrLEKOIFJ76IrU48hPmIODlmxjEMlELdKjygt8LMEhk8jMGM+yLbULxufY0zA18G0WKsUhG/DPrhUod3xsY42i1SSJgVjwKBgCT3AlNKmr9puAhs3OkyH4LSOR2ZTUwjIZ/PXFVkYpzReELtOiPm/yF2GaVpLniznTNIDm2g0iDtGOjGsPBZu4uSHSJdApuwvsVJRcL86C86cjGsyTUB6V0EDaVx6tJG4MLmD3ywqPX+U3SfJQNUhe0F5XwxLhtyqc95Sifp/keZAoGAFG6kBZERXQqNbZylQG6VxSSfq80CVco9icS/AtqQyu3WZXS34q5QqspSo1v8Cra5AtVsTvoS+HiOb2xDrqR6zH72zNghiFBAFbS4oyD0rGjW9KLWisQEPhrYAvDXz1TfLhlmekksYzQ5qDS6REVhUFC3VMULB0IHFtllmImK+J0CgYEAtHqTrp7KD2WZryQzmI4KnoNaJbRNuIerXFq7HozhNIDHaoK7nX0C1QffIVZ2q+CbsbT+p0A0xUjYwSX6tY7A+hV8Tll8aZiKhmOK5Jp56Amo81YVqIoMPlgczObkfi4dcS1uWkh//9OuiwuNcjJU/+aUphS8isQXU2ZxLGcUBD0=
+2024-07-19 14:31:56 - KeyStoreUtils -> getAesEncryptKey(String path)
+2024-07-19 14:31:56 - path: apikeys/encrypt-key
+2024-07-19 14:31:56 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-19 14:31:56 - Path: apikeys/encrypt-key
+2024-07-19 14:31:56 - setJwsVerifierApp CALLED
+2024-07-19 14:31:56 - KeyStoreUtils -> readPublicKey(String path) :apikeys/app-public-key
+2024-07-19 14:31:56 - path: apikeys/app-public-key
+2024-07-19 14:31:56 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-19 14:31:56 - Path: apikeys/app-public-key
+2024-07-19 14:32:22 - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@50745d27, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@75879790, org.springframework.security.web.context.SecurityContextPersistenceFilter@38cd9773, org.springframework.security.web.header.HeaderWriterFilter@486804ee, org.springframework.security.web.authentication.logout.LogoutFilter@11473272, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@67d95b3, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@1ea77e3f, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@7ab817c1, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@637fc990, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@27e179fb, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5bb966ea, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4e1171ab, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@695f8a50, org.springframework.security.web.session.SessionManagementFilter@6f1516a0, org.springframework.security.web.access.ExceptionTranslationFilter@3524a74e, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@50798697]
+2024-07-19 14:32:22 - WebSecurityConfig configure(WebSecurity web) CALLED
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/www/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/www/**']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/*.html']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/**/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/**/*.html']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/**/*.css']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/**/*.css']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/**/*.js']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/**/*.js']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/**/*.png']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/**/*.png']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/**/*.jpg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/**/*.jpg']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/**/*.gif']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/**/*.gif']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/**/*.svg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/**/*.svg']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/**/*.ico']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/**/*.ico']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/**/*.ttf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/**/*.ttf']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/**/*.woff']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/**/*.woff']
+2024-07-19 14:32:22 - You are asking Spring Security to ignore Ant [pattern='/**/*.otf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-19 14:32:22 - Will not secure Ant [pattern='/**/*.otf']
+2024-07-19 14:32:35 - LiveReload server is running on port 35729
+2024-07-19 14:32:43 - All Spring Cloud Security modules and starters are deprecated. They will be moved to individual projects in the next major release.
+2024-07-19 14:32:43 - Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-07-19 14:32:43 - Starting ProtocolHandler ["http-nio-8080"]
+2024-07-19 14:32:43 - Tomcat started on port(s): 8080 (http) with context path ''
+2024-07-19 14:32:49 - Started OAuthServerApplication in 115.138 seconds (JVM running for 121.824)
+2024-07-19 14:32:49 - Flushing all data from Redis on application startup...
+2024-07-19 14:32:53 - Flush complete.
