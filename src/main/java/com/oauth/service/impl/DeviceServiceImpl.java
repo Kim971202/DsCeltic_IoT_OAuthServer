@@ -185,6 +185,12 @@ public class DeviceServiceImpl implements DeviceService {
         String responseMessage;
         String redisValue;
 
+        log.info("userId: " + userId);
+        log.info("deviceId: " + deviceId);
+        log.info("serialNumber: " + serialNumber);
+        log.info("controlAuthKey: " + controlAuthKey);
+        log.info("registYn: " + registYn);
+
         MobiusResponse response;
 
         Map<String, String> conMap = new HashMap<>();
