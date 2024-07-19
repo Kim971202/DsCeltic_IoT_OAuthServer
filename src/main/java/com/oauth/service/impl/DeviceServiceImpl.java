@@ -169,9 +169,10 @@ public class DeviceServiceImpl implements DeviceService {
     public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws Exception {
 
         ApiResponse.Data result = new ApiResponse.Data();
+        DeviceInfoUpsert deviceInfoUpsert = new DeviceInfoUpsert();
+
         String stringObject;
         String msg;
-        DeviceInfoUpsert deviceInfoUpsert = new DeviceInfoUpsert();
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String serialNumber = params.getSerialNumber();
@@ -184,6 +185,8 @@ public class DeviceServiceImpl implements DeviceService {
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+
+        AuthServerDTO deviceRegistStatus;
 
         try {
 
@@ -260,6 +263,14 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             } else {
 
+                // 등록전 SerialNumber로 등록된 기기인지 확인
+                deviceRegistStatus = deviceMapper.getDeviceRegistStatus(serialNumber);
+                if(!deviceRegistStatus.getDeviceId().equals("EMPTY")){
+                    // 이미 등록된 SerialNumber
+                    msg = "중복 SerialNumber.";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
                 /* *
                  * IoT 디바이스 등록 INSERT 순서
                  * 1. TBR_IOT_DEVICE - 디바이스
