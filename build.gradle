@@ -22,70 +22,37 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-devtools'
 	implementation 'org.springframework.cloud:spring-cloud-starter-oauth2:2.2.5.RELEASE'
 	implementation 'org.springframework.cloud:spring-cloud-starter-security:2.2.5.RELEASE'
-
 	implementation 'org.springframework.security:spring-security-core:5.8.5'
 
-	// Oauth2 소셜 로그인 관련
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-	/**
-	 * JDK 11에서 java.xml.bind 관련 에러 발생하는 경우
-	 * https://luvstudy.tistory.com/61
-	 */
 	implementation 'org.glassfish.jaxb:jaxb-runtime'
-
-	// JAVA11 springSecurityFilterChain 에러 해결을 위한 의존성 추가
 	implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 	implementation 'com.sun.xml.bind:jaxb-impl:2.3.1'
 
-	// httpclient
-	implementation 'org.apache.httpcomponents:httpclient:4.5.13' // Apache HttpClient
-
-	// Gson 라이브러리
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
 	implementation 'com.google.code.gson:gson'
-	implementation"com.googlecode.json-simple:json-simple:1.1.1"
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 
-	// Lombok 라이브러리
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	// Mysql 라이브러리
 	implementation 'mysql:mysql-connector-java'
-
-	// Mybatis 라이브러리
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.2'
 	runtimeOnly 'mysql:mysql-connector-java:8.0.25'
 
-	// JWT 라이브러리
 	implementation 'com.nimbusds:nimbus-jose-jwt:9.23'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
-
-	// WebClient 비동기 통신 모듈
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-	// 스프링부트 버전 마이그레이션 모듈 - https://shanepark.tistory.com/341
 	implementation 'org.springframework.boot:spring-boot-properties-migrator'
-
-	// import a BOM
 	implementation platform('org.springframework.cloud:spring-cloud-dependencies:2021.0.3')
 
-//	implementation 'org.yaml:snakeyaml:1.28' // snakeyaml 버전은 필요에 따라 조정
-
-	// Connection
 	implementation 'org.springframework:spring-webflux:5.3.21'
-//	implementation group: 'io.netty', name: 'netty-all', version: '4.1.90.Final'
 
-	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-	// JSON
 	implementation 'org.json:json:20210307'
 
-	/**
-	 * Macbook M1 - netty netty_resolver_dns_native_macos_aarch_64 link 에러 처리
-	 * https://stackoverflow.com/questions/65954571/spring-boot-2-4-2-dns-resolution-problem-at-start-on-apple-m1/71348963#71348963
-	 */
 	if (osdetector.arch.equals("aarch_64")) {
 		implementation 'io.netty:netty-resolver-dns-native-macos:4.1.94.Final:osx-aarch_64'
 	}

@@ -261,10 +261,24 @@
             USER_ID = #{userId} AND DEVC_ID = #{deviceId}
     </update>
 
-    <select id="getPushCodeStatus" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
-        SELECT PUSH_YN_01 AS fPushYn, PUSH_YN_02 AS sPushYn, PUSH_YN_03 AS tPushYn
-        FROM TBR_OPR_USER_DEVICE_PUSH
-        WHERE USER_ID = #{userId} AND DEVC_ID = #{deviceId};
+    <select id="getPushCodeStatus" parameterType="map" resultMap="member">
+        SELECT
+            push.PUSH_YN_01 AS fPushYn,
+            push.PUSH_YN_02 AS sPushYn,
+            push.PUSH_YN_03 AS tPushYn,
+            push.DEVC_ID AS deviceId,
+            device.ATTC_ID AS controlAuthKey,
+            device.DEVC_MODL_CD AS modelCode
+        FROM
+            TBR_OPR_USER_DEVICE_PUSH AS push
+        INNER JOIN
+            TBR_IOT_DEVICE AS device
+        ON
+            push.DEVC_ID = device.DEVC_ID
+        WHERE
+            push.USER_ID = #{userId}
+        AND
+            push.DEVC_ID IN (${deviceIds})
     </select>
 
     <delete id="delHouseMember" parameterType="com.oauth.dto.AuthServerDTO" >

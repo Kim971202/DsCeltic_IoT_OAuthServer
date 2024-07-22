@@ -1002,39 +1002,61 @@ public class UserServiceImpl implements UserService {
 
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
+        String searchFlag = params.getSearchFlag();
         HashMap<String, Object> resultMap = new LinkedHashMap<String, Object>();
+
+        List<AuthServerDTO> deviceIdList;
 
         // "push" 부분을 표현하는 List 생성
         List<Map<String, String>> pushList = new ArrayList<>();
         try{
 
-            resultMap.put("resultCode", "200");
-            resultMap.put("resultMsg", "홈 IoT 컨트롤러 알림 정보 조회 성공");
+            deviceIdList = memberMapper.getDeviceIdByUserId(userId);
 
-            AuthServerDTO pushCodeInfo = memberMapper.getPushCodeStatus(params);
+            // deviceIds를 쉼표로 구분된 String으로 변환
+            String deviceIds = deviceIdList.stream()
+                    .map(AuthServerDTO::getDeviceId)
+                    .collect(Collectors.joining("','", "'", "'"));
+
+            List<AuthServerDTO> pushCodeInfo = memberMapper.getPushCodeStatus(params.getUserId(), deviceIds);
             if (pushCodeInfo == null) {
                 resultMap.put("resultCode", "200");
                 resultMap.put("resultMsg", "홈 IoT 컨트롤러 알림 정보 조회 실패");
                 return resultMap;
             }
+            System.out.println(pushCodeInfo);
+            // 사용자가 가진 DeviceId 리스트 개수 만큼 생성
+            for(int i = 0; deviceIdList.size() > i; ++i){
+                // 각각의 "pushCd"와 "pushYn"을 가지는 Map을 생성하여 리스트에 추가
+                Map<String, String> push1 = new LinkedHashMap<>();
+                push1.put("pushCd", "01");
+                push1.put("pushYn", pushCodeInfo.get(i).getFPushYn());
+                push1.put("deviceId", pushCodeInfo.get(i).getDeviceId());
+                push1.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
+                push1.put("modelCode", pushCodeInfo.get(i).getModelCode());
+                pushList.add(push1);
 
-            // 각각의 "pushCd"와 "pushYn"을 가지는 Map을 생성하여 리스트에 추가
-            Map<String, String> push1 = new LinkedHashMap<>();
-            push1.put("pushCd", "01");
-            push1.put("pushYn", pushCodeInfo.getFPushYn());
-            pushList.add(push1);
+                Map<String, String> push2 = new LinkedHashMap<>();
+                push2.put("pushCd", "02");
+                push1.put("pushYn", pushCodeInfo.get(i).getSPushYn());
+                push2.put("deviceId", pushCodeInfo.get(i).getDeviceId());
+                push2.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
+                push2.put("modelCode", pushCodeInfo.get(i).getModelCode());
+                pushList.add(push2);
 
-            Map<String, String> push2 = new LinkedHashMap<>();
-            push2.put("pushCd", "02");
-            push2.put("pushYn", pushCodeInfo.getSPushYn());
-            pushList.add(push2);
-
-            Map<String, String> push3 = new LinkedHashMap<>();
-            push3.put("pushCd", "03");
-            push3.put("pushYn", pushCodeInfo.getTPushYn());
-            pushList.add(push3);
+                Map<String, String> push3 = new LinkedHashMap<>();
+                push3.put("pushCd", "03");
+                push3.put("pushYn", pushCodeInfo.get(i).getTPushYn());
+                push3.put("deviceId", pushCodeInfo.get(i).getDeviceId());
+                push3.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
+                push3.put("modelCode", pushCodeInfo.get(i).getModelCode());
+                pushList.add(push3);
+            }
 
             resultMap.put("push", pushList);
+
+            resultMap.put("resultCode", "200");
+            resultMap.put("resultMsg", "홈 IoT 컨트롤러 알림 정보 조회 성공");
 
             params.setFunctionId("SearchPushSet");
             params.setDeviceId(deviceId);
