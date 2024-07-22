@@ -21,13 +21,14 @@ public interface MemberMapper {
     public List<AuthServerDTO> getInvitationList (String requestUserId);
     public List<AuthServerDTO> getPushInfoList(String userId);
     public List<AuthServerDTO> getNoticeList();
+    public List<AuthServerDTO> getPushCodeStatus(@Param("userId") String params, @Param("deviceIds") String deviceIds);
+    public List<AuthServerDTO> getWorkTime(AuthServerDTO param);
     public AuthServerDTO getUserByUserId(String userId);
     public AuthServerDTO getAccountByUserId(String userId);
     public AuthServerDTO getUserByUserIdAndHp(AuthServerDTO member);
     public AuthServerDTO getUserByUserIdAndHpAndDeviceId(AuthServerDTO member);
     public AuthServerDTO getPasswordByUserId(String userId);
     public AuthServerDTO accessTokenCheck(AuthServerDTO member);
-    public List<AuthServerDTO> getPushCodeStatus(@Param("userId") String params, @Param("deviceIds") String deviceIds);
     public AuthServerDTO getNextHouseholderUserId(AuthServerDTO member);
     public AuthServerDTO identifyRKey(String deviceId);
     public AuthServerDTO getHpByUserId(String userId);

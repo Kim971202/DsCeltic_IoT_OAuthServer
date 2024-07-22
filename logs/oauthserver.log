@@ -5594,3 +5594,710 @@ org.apache.ibatis.builder.BuilderException: Error evaluating expression 'list'. 
 2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@6255b70a: (connection evicted)
 2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2a012a73: (connection evicted)
 2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@743d491b: (connection evicted)
+2024-07-22 16:04:29 - Starting OAuthServerApplication using Java 11.0.17 on DESKTOP-33SVC3J with PID 26592 (C:\Users\dsct\Documents\OAuthServer\out\production\classes started by dsct in C:\Users\dsct\Documents\OAuthServer)
+2024-07-22 16:04:29 - No active profile set, falling back to 1 default profile: "default"
+2024-07-22 16:04:29 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-core\2.3.0.1\23574ca124d0a694721ce3ef13cd720095f18fdd\jaxb-core-2.3.0.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-core/2.3.0.1/23574ca124d0a694721ce3ef13cd720095f18fdd/jaxb-api.jar
+2024-07-22 16:04:29 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-impl\2.3.1\a1a12b85ba1435b4189e065f7dafcc3fb9410d38\jaxb-impl-2.3.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/jaxb-runtime-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/txw2-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/istack-commons-runtime-3.0.7.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/stax-ex-1.8.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/FastInfoset-1.2.15.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/javax.activation-api-1.2.0.jar
+2024-07-22 16:04:29 - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-07-22 16:04:29 - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-07-22 16:04:31 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-22 16:04:31 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-22 16:04:31 - Finished Spring Data repository scanning in 8 ms. Found 0 Redis repository interfaces.
+2024-07-22 16:04:32 - Searching for mappers annotated with @Mapper
+2024-07-22 16:04:32 - Using auto-configuration base package 'com.oauth'
+2024-07-22 16:04:32 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-22 16:04:32 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-22 16:04:32 - Finished Spring Data repository scanning in 33 ms. Found 0 Redis repository interfaces.
+2024-07-22 16:04:32 - Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
+2024-07-22 16:04:32 - Identified candidate component class: file [C:\Users\dsct\Documents\OAuthServer\out\production\classes\com\oauth\mapper\DeviceMapper.class]
+2024-07-22 16:04:32 - Identified candidate component class: file [C:\Users\dsct\Documents\OAuthServer\out\production\classes\com\oauth\mapper\MemberMapper.class]
+2024-07-22 16:04:32 - Creating MapperFactoryBean with name 'deviceMapper' and 'com.oauth.mapper.DeviceMapper' mapperInterface
+2024-07-22 16:04:32 - Enabling autowire by type for MapperFactoryBean with name 'deviceMapper'.
+2024-07-22 16:04:32 - Creating MapperFactoryBean with name 'memberMapper' and 'com.oauth.mapper.MemberMapper' mapperInterface
+2024-07-22 16:04:32 - Enabling autowire by type for MapperFactoryBean with name 'memberMapper'.
+2024-07-22 16:04:32 - BeanFactory id=ca6bf4af-bdb8-340f-aaba-da46a6a563bf
+2024-07-22 16:04:35 - Tomcat initialized with port(s): 8080 (http)
+2024-07-22 16:04:35 - Initializing ProtocolHandler ["http-nio-8080"]
+2024-07-22 16:04:35 - Starting service [Tomcat]
+2024-07-22 16:04:35 - Starting Servlet engine: [Apache Tomcat/9.0.64]
+2024-07-22 16:04:35 - Initializing Spring embedded WebApplicationContext
+2024-07-22 16:04:35 - Root WebApplicationContext: initialization completed in 5592 ms
+2024-07-22 16:04:35 - KeyStoreUtils -> readPublicKey(String path) :apikeys/public-key
+2024-07-22 16:04:35 - path: apikeys/public-key
+2024-07-22 16:04:35 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 16:04:35 - Path: apikeys/public-key
+2024-07-22 16:04:35 - KeyStoreUtils -> readPrivateKey(String path)
+2024-07-22 16:04:35 - path: apikeys/private-key
+2024-07-22 16:04:35 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 16:04:35 - Path: apikeys/private-key
+2024-07-22 16:04:35 - privateKeyPEM: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCH/Gc75PfBVX62U9U7IOx8QHV5iM9au6pTh2G7N5MmUYgSN3dBidvEAHqXxlZP348g4WuhZP0Ti2Cq6tKBkLUnx7BUnDfUk+fTzqKKpcm57NINwBSEqG2RUqSfrweO5OS/XPquiTzFVlXP3D0a63vZ83yu40VzPAG4uJwJIKOxayiu6fyDh3uBSeWuo+aeoLiDZUL7q5HTrWeek0d/CrFiN/5EOkzQQj84wBNgQsPGbiXuf9X43tSPFp3ZvJsF1BtAT/X+Dn4AbpJ3SSVB8iph2HVhp8kTmt/p+/Y3+Gkv9CqlA31vFtmvxGTeJ/HjuvKxFlCcK5PXz5jwAjj+A92hAgMBAAECggEAExGb0FRNQbkhaaPb1MzLHKlVT9OVcB28xrXHSJ+EbO0l7ZgFixUv0g5XIo1XcR/iTDQQCbPFoUX8Kjt/hVerb4aa/WJimdabvaHOPS7+WKoS0obK2cdchfJWz2WV473JLeR16p+n++wdYGZ70xiOZ4OzSjrodD5H54VLrCP9kFVGy7e6H4vZYVtSMFw5k72avXVIsKnJhsdB80B8E0wWvscwQsAihoCXDCm+lehG5gE+mcyjOVFjVtv0WnbATGwXzX4Co2oOXRdnWtTiAOHghZdWQ1hjj/HNwpAS9fys2r8IT73AsX8PsmCfVoyTvrgtpQSCxVvG24Q6ZKXKxqutGQKBgQDqp2iy2yc6iBHoHkjz+XiiT9fsnpJV5/D/IboXn8oSjMWwMR+rH+n98pZ0Hj+5blenQmXn+nCFSYroSNhmn/wp/zlXb7U7GVqCIjIYd0z40xqVvwFVeg7Z8pOgX59MUQLroziBV7jANJrNxujAqHMYMnLo20JFpd7svEvO6A0hzwKBgQCUWzoJG14qp6K/rQkpzTyhnujsyh12g89Uh0EqaxY4zLOSRMnsjIvNQloghWZ3FmYJJSFsIPSrovCgfrLEKOIFJ76IrU48hPmIODlmxjEMlELdKjygt8LMEhk8jMGM+yLbULxufY0zA18G0WKsUhG/DPrhUod3xsY42i1SSJgVjwKBgCT3AlNKmr9puAhs3OkyH4LSOR2ZTUwjIZ/PXFVkYpzReELtOiPm/yF2GaVpLniznTNIDm2g0iDtGOjGsPBZu4uSHSJdApuwvsVJRcL86C86cjGsyTUB6V0EDaVx6tJG4MLmD3ywqPX+U3SfJQNUhe0F5XwxLhtyqc95Sifp/keZAoGAFG6kBZERXQqNbZylQG6VxSSfq80CVco9icS/AtqQyu3WZXS34q5QqspSo1v8Cra5AtVsTvoS+HiOb2xDrqR6zH72zNghiFBAFbS4oyD0rGjW9KLWisQEPhrYAvDXz1TfLhlmekksYzQ5qDS6REVhUFC3VMULB0IHFtllmImK+J0CgYEAtHqTrp7KD2WZryQzmI4KnoNaJbRNuIerXFq7HozhNIDHaoK7nX0C1QffIVZ2q+CbsbT+p0A0xUjYwSX6tY7A+hV8Tll8aZiKhmOK5Jp56Amo81YVqIoMPlgczObkfi4dcS1uWkh//9OuiwuNcjJU/+aUphS8isQXU2ZxLGcUBD0=
+2024-07-22 16:04:35 - KeyStoreUtils -> getAesEncryptKey(String path)
+2024-07-22 16:04:35 - path: apikeys/encrypt-key
+2024-07-22 16:04:35 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 16:04:35 - Path: apikeys/encrypt-key
+2024-07-22 16:04:35 - setJwsVerifierApp CALLED
+2024-07-22 16:04:35 - KeyStoreUtils -> readPublicKey(String path) :apikeys/app-public-key
+2024-07-22 16:04:35 - path: apikeys/app-public-key
+2024-07-22 16:04:35 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 16:04:35 - Path: apikeys/app-public-key
+2024-07-22 16:04:36 - Using VFS adapter org.mybatis.spring.boot.autoconfigure.SpringBootVFS
+2024-07-22 16:04:36 - Parsed configuration file: 'class path resource [mybatis-config.xml]'
+2024-07-22 16:04:36 - Property 'mapperLocations' was not specified.
+2024-07-22 16:04:39 - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@5d32f93d, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3343f3b1, org.springframework.security.web.context.SecurityContextPersistenceFilter@6c48309a, org.springframework.security.web.header.HeaderWriterFilter@6066ab47, org.springframework.security.web.authentication.logout.LogoutFilter@2e38aef, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@6e977df5, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@1f6e2e24, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@14d81429, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@74df3c2e, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@3e4e592, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@448da4c9, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5ddd8bc5, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@71a16745, org.springframework.security.web.session.SessionManagementFilter@5bde5eda, org.springframework.security.web.access.ExceptionTranslationFilter@144236c0, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@76e66be0]
+2024-07-22 16:04:39 - WebSecurityConfig configure(WebSecurity web) CALLED
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/www/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/www/**']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/*.html']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/**/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/**/*.html']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/**/*.css']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/**/*.css']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/**/*.js']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/**/*.js']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/**/*.png']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/**/*.png']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/**/*.jpg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/**/*.jpg']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/**/*.gif']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/**/*.gif']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/**/*.svg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/**/*.svg']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/**/*.ico']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/**/*.ico']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/**/*.ttf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/**/*.ttf']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/**/*.woff']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/**/*.woff']
+2024-07-22 16:04:39 - You are asking Spring Security to ignore Ant [pattern='/**/*.otf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:04:39 - Will not secure Ant [pattern='/**/*.otf']
+2024-07-22 16:04:40 - Not found configuration for registering mapper bean using @MapperScan, MapperFactoryBean and MapperScannerConfigurer.
+2024-07-22 16:04:42 - LiveReload server is running on port 35729
+2024-07-22 16:04:43 - All Spring Cloud Security modules and starters are deprecated. They will be moved to individual projects in the next major release.
+2024-07-22 16:04:43 - Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-07-22 16:04:43 - Starting ProtocolHandler ["http-nio-8080"]
+2024-07-22 16:04:43 - Tomcat started on port(s): 8080 (http) with context path ''
+2024-07-22 16:04:46 - Started OAuthServerApplication in 19.159 seconds (JVM running for 20.741)
+2024-07-22 16:04:46 - Flushing all data from Redis on application startup...
+2024-07-22 16:04:47 - Flush complete.
+2024-07-22 16:05:30 - Starting OAuthServerApplication using Java 11.0.17 on DESKTOP-33SVC3J with PID 18204 (C:\Users\dsct\Documents\OAuthServer\out\production\classes started by dsct in C:\Users\dsct\Documents\OAuthServer)
+2024-07-22 16:05:30 - No active profile set, falling back to 1 default profile: "default"
+2024-07-22 16:05:30 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-core\2.3.0.1\23574ca124d0a694721ce3ef13cd720095f18fdd\jaxb-core-2.3.0.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-core/2.3.0.1/23574ca124d0a694721ce3ef13cd720095f18fdd/jaxb-api.jar
+2024-07-22 16:05:30 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-impl\2.3.1\a1a12b85ba1435b4189e065f7dafcc3fb9410d38\jaxb-impl-2.3.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/jaxb-runtime-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/txw2-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/istack-commons-runtime-3.0.7.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/stax-ex-1.8.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/FastInfoset-1.2.15.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/javax.activation-api-1.2.0.jar
+2024-07-22 16:05:30 - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-07-22 16:05:30 - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-07-22 16:05:32 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-22 16:05:32 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-22 16:05:32 - Finished Spring Data repository scanning in 9 ms. Found 0 Redis repository interfaces.
+2024-07-22 16:05:32 - Searching for mappers annotated with @Mapper
+2024-07-22 16:05:32 - Using auto-configuration base package 'com.oauth'
+2024-07-22 16:05:33 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-22 16:05:33 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-22 16:05:33 - Finished Spring Data repository scanning in 45 ms. Found 0 Redis repository interfaces.
+2024-07-22 16:05:33 - Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
+2024-07-22 16:05:33 - Identified candidate component class: file [C:\Users\dsct\Documents\OAuthServer\out\production\classes\com\oauth\mapper\DeviceMapper.class]
+2024-07-22 16:05:33 - Identified candidate component class: file [C:\Users\dsct\Documents\OAuthServer\out\production\classes\com\oauth\mapper\MemberMapper.class]
+2024-07-22 16:05:33 - Creating MapperFactoryBean with name 'deviceMapper' and 'com.oauth.mapper.DeviceMapper' mapperInterface
+2024-07-22 16:05:33 - Enabling autowire by type for MapperFactoryBean with name 'deviceMapper'.
+2024-07-22 16:05:33 - Creating MapperFactoryBean with name 'memberMapper' and 'com.oauth.mapper.MemberMapper' mapperInterface
+2024-07-22 16:05:33 - Enabling autowire by type for MapperFactoryBean with name 'memberMapper'.
+2024-07-22 16:05:33 - BeanFactory id=ca6bf4af-bdb8-340f-aaba-da46a6a563bf
+2024-07-22 16:05:36 - Tomcat initialized with port(s): 8080 (http)
+2024-07-22 16:05:36 - Initializing ProtocolHandler ["http-nio-8080"]
+2024-07-22 16:05:36 - Starting service [Tomcat]
+2024-07-22 16:05:36 - Starting Servlet engine: [Apache Tomcat/9.0.64]
+2024-07-22 16:05:36 - Initializing Spring embedded WebApplicationContext
+2024-07-22 16:05:36 - Root WebApplicationContext: initialization completed in 6058 ms
+2024-07-22 16:05:37 - KeyStoreUtils -> readPublicKey(String path) :apikeys/public-key
+2024-07-22 16:05:37 - path: apikeys/public-key
+2024-07-22 16:05:37 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 16:05:37 - Path: apikeys/public-key
+2024-07-22 16:05:37 - KeyStoreUtils -> readPrivateKey(String path)
+2024-07-22 16:05:37 - path: apikeys/private-key
+2024-07-22 16:05:37 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 16:05:37 - Path: apikeys/private-key
+2024-07-22 16:05:37 - privateKeyPEM: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCH/Gc75PfBVX62U9U7IOx8QHV5iM9au6pTh2G7N5MmUYgSN3dBidvEAHqXxlZP348g4WuhZP0Ti2Cq6tKBkLUnx7BUnDfUk+fTzqKKpcm57NINwBSEqG2RUqSfrweO5OS/XPquiTzFVlXP3D0a63vZ83yu40VzPAG4uJwJIKOxayiu6fyDh3uBSeWuo+aeoLiDZUL7q5HTrWeek0d/CrFiN/5EOkzQQj84wBNgQsPGbiXuf9X43tSPFp3ZvJsF1BtAT/X+Dn4AbpJ3SSVB8iph2HVhp8kTmt/p+/Y3+Gkv9CqlA31vFtmvxGTeJ/HjuvKxFlCcK5PXz5jwAjj+A92hAgMBAAECggEAExGb0FRNQbkhaaPb1MzLHKlVT9OVcB28xrXHSJ+EbO0l7ZgFixUv0g5XIo1XcR/iTDQQCbPFoUX8Kjt/hVerb4aa/WJimdabvaHOPS7+WKoS0obK2cdchfJWz2WV473JLeR16p+n++wdYGZ70xiOZ4OzSjrodD5H54VLrCP9kFVGy7e6H4vZYVtSMFw5k72avXVIsKnJhsdB80B8E0wWvscwQsAihoCXDCm+lehG5gE+mcyjOVFjVtv0WnbATGwXzX4Co2oOXRdnWtTiAOHghZdWQ1hjj/HNwpAS9fys2r8IT73AsX8PsmCfVoyTvrgtpQSCxVvG24Q6ZKXKxqutGQKBgQDqp2iy2yc6iBHoHkjz+XiiT9fsnpJV5/D/IboXn8oSjMWwMR+rH+n98pZ0Hj+5blenQmXn+nCFSYroSNhmn/wp/zlXb7U7GVqCIjIYd0z40xqVvwFVeg7Z8pOgX59MUQLroziBV7jANJrNxujAqHMYMnLo20JFpd7svEvO6A0hzwKBgQCUWzoJG14qp6K/rQkpzTyhnujsyh12g89Uh0EqaxY4zLOSRMnsjIvNQloghWZ3FmYJJSFsIPSrovCgfrLEKOIFJ76IrU48hPmIODlmxjEMlELdKjygt8LMEhk8jMGM+yLbULxufY0zA18G0WKsUhG/DPrhUod3xsY42i1SSJgVjwKBgCT3AlNKmr9puAhs3OkyH4LSOR2ZTUwjIZ/PXFVkYpzReELtOiPm/yF2GaVpLniznTNIDm2g0iDtGOjGsPBZu4uSHSJdApuwvsVJRcL86C86cjGsyTUB6V0EDaVx6tJG4MLmD3ywqPX+U3SfJQNUhe0F5XwxLhtyqc95Sifp/keZAoGAFG6kBZERXQqNbZylQG6VxSSfq80CVco9icS/AtqQyu3WZXS34q5QqspSo1v8Cra5AtVsTvoS+HiOb2xDrqR6zH72zNghiFBAFbS4oyD0rGjW9KLWisQEPhrYAvDXz1TfLhlmekksYzQ5qDS6REVhUFC3VMULB0IHFtllmImK+J0CgYEAtHqTrp7KD2WZryQzmI4KnoNaJbRNuIerXFq7HozhNIDHaoK7nX0C1QffIVZ2q+CbsbT+p0A0xUjYwSX6tY7A+hV8Tll8aZiKhmOK5Jp56Amo81YVqIoMPlgczObkfi4dcS1uWkh//9OuiwuNcjJU/+aUphS8isQXU2ZxLGcUBD0=
+2024-07-22 16:05:37 - KeyStoreUtils -> getAesEncryptKey(String path)
+2024-07-22 16:05:37 - path: apikeys/encrypt-key
+2024-07-22 16:05:37 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 16:05:37 - Path: apikeys/encrypt-key
+2024-07-22 16:05:37 - setJwsVerifierApp CALLED
+2024-07-22 16:05:37 - KeyStoreUtils -> readPublicKey(String path) :apikeys/app-public-key
+2024-07-22 16:05:37 - path: apikeys/app-public-key
+2024-07-22 16:05:37 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 16:05:37 - Path: apikeys/app-public-key
+2024-07-22 16:05:37 - Using VFS adapter org.mybatis.spring.boot.autoconfigure.SpringBootVFS
+2024-07-22 16:05:37 - Parsed configuration file: 'class path resource [mybatis-config.xml]'
+2024-07-22 16:05:37 - Property 'mapperLocations' was not specified.
+2024-07-22 16:05:41 - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@38d4f2f7, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4b66abe7, org.springframework.security.web.context.SecurityContextPersistenceFilter@31316000, org.springframework.security.web.header.HeaderWriterFilter@6705821a, org.springframework.security.web.authentication.logout.LogoutFilter@3f79ecc2, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@1c36dc52, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@1a7d3795, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@13203ab2, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@12b98831, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@45b91cf, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@36633aa, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@12ba5fb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@45f57660, org.springframework.security.web.session.SessionManagementFilter@1b02444f, org.springframework.security.web.access.ExceptionTranslationFilter@7d38b89f, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@32f7c5e2]
+2024-07-22 16:05:41 - WebSecurityConfig configure(WebSecurity web) CALLED
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/www/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/www/**']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/*.html']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/**/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/**/*.html']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/**/*.css']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/**/*.css']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/**/*.js']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/**/*.js']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/**/*.png']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/**/*.png']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/**/*.jpg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/**/*.jpg']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/**/*.gif']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/**/*.gif']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/**/*.svg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/**/*.svg']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/**/*.ico']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/**/*.ico']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/**/*.ttf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/**/*.ttf']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/**/*.woff']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/**/*.woff']
+2024-07-22 16:05:41 - You are asking Spring Security to ignore Ant [pattern='/**/*.otf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 16:05:41 - Will not secure Ant [pattern='/**/*.otf']
+2024-07-22 16:05:42 - Not found configuration for registering mapper bean using @MapperScan, MapperFactoryBean and MapperScannerConfigurer.
+2024-07-22 16:05:44 - LiveReload server is running on port 35729
+2024-07-22 16:05:46 - All Spring Cloud Security modules and starters are deprecated. They will be moved to individual projects in the next major release.
+2024-07-22 16:05:46 - Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-07-22 16:05:46 - Starting ProtocolHandler ["http-nio-8080"]
+2024-07-22 16:05:46 - Tomcat started on port(s): 8080 (http) with context path ''
+2024-07-22 16:05:49 - Started OAuthServerApplication in 21.942 seconds (JVM running for 23.415)
+2024-07-22 16:05:49 - Flushing all data from Redis on application startup...
+2024-07-22 16:05:50 - Flush complete.
+2024-07-22 16:06:57 - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-07-22 16:06:57 - Initializing Servlet 'dispatcherServlet'
+2024-07-22 16:06:57 - Completed initialization in 1 ms
+2024-07-22 16:06:58 - Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [770] milliseconds.
+2024-07-22 16:06:58 - [홈 IoT가동시간 통계조회]
+2024-07-22 16:06:58 - HikariPool-1 - Starting...
+2024-07-22 16:06:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4889c51a
+2024-07-22 16:06:58 - HikariPool-1 - Start completed.
+2024-07-22 16:06:58 - HikariPool-1 - Pool stats (total=1, active=1, idle=0, waiting=0)
+2024-07-22 16:06:58 - 
+org.mybatis.spring.MyBatisSystemException: nested exception is org.apache.ibatis.exceptions.TooManyResultsException: Expected one result (or null) to be returned by selectOne(), but found: 20
+	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:92)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:440)
+	at com.sun.proxy.$Proxy96.selectOne(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate.selectOne(SqlSessionTemplate.java:159)
+	at org.apache.ibatis.binding.MapperMethod.execute(MapperMethod.java:87)
+	at org.apache.ibatis.binding.MapperProxy$PlainMethodInvoker.invoke(MapperProxy.java:144)
+	at org.apache.ibatis.binding.MapperProxy.invoke(MapperProxy.java:85)
+	at com.sun.proxy.$Proxy98.getWorkTime(Unknown Source)
+	at com.oauth.service.impl.StatisticServiceImpl.doInfoDaily(StatisticServiceImpl.java:45)
+	at com.oauth.controller.StatisticController.doInfoDaily(StatisticController.java:46)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:150)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1067)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:681)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:764)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:327)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:115)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:122)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:126)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:81)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:109)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:149)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter.doFilterInternal(DefaultLogoutPageGeneratingFilter.java:58)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter.doFilter(DefaultLoginPageGeneratingFilter.java:237)
+	at org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter.doFilter(DefaultLoginPageGeneratingFilter.java:223)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:223)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:217)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:223)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:217)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter.doFilterInternal(OAuth2AuthorizationRequestRedirectFilter.java:178)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:103)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:89)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:112)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:82)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:55)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:336)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:211)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:183)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:354)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:267)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.doFilterInternal(WebMvcMetricsFilter.java:96)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:197)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:541)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:135)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:360)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:890)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1787)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+Caused by: org.apache.ibatis.exceptions.TooManyResultsException: Expected one result (or null) to be returned by selectOne(), but found: 20
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectOne(DefaultSqlSession.java:80)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:426)
+	... 115 common frames omitted
+2024-07-22 16:06:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7cc936bf
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3df43c84
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@c83825a
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5ddbc3cb
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@25c05865
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@59957ab1
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7678e784
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@72a0e3a2
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@15e3afdc
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@373528bf
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2ae37ec9
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1d2ca5d5
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3b292ad2
+2024-07-22 16:06:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@502cdea2
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6809141e
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@74010501
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3ac51e64
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@54b9d1a9
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3eaf74ca
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6ba70986
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@59df187e
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@36868248
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@129d63ce
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7c0a731
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@49a4e9d2
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@79338e69
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@54527c65
+2024-07-22 16:07:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@83e2a5a
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@42570414
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@be30477
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7b4992fb
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2e4e3037
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3acbb651
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@324b1ff0
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@49f1e0cc
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@146cdcca
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1728fcf
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1a9205b9
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@57139dd1
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@65036b4d
+2024-07-22 16:07:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3fdb50b2
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1e336da6
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@62cbc4e9
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@269affa2
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1fecdee4
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@42d623ed
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7d99bfde
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@383bf81e
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@569be018
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@71d8377e
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@78a4a6df
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7836b308
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@641054ee
+2024-07-22 16:07:02 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@498363c0
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6ab272cd
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3d6d1ffd
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@57447c67
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7a3c6dec
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6a296ffb
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@48779aa
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6fb8b41f
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@24d30759
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3a7e720f
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2e185da6
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@162055d9
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@346f5e5
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7568e601
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@557851bd
+2024-07-22 16:07:03 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@11dde151
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4c9d2dc1
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2b843a84
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2ed86871
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1de63e1c
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@e9f2427
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@565e2351
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@8c9f881
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7235429b
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@48281f9f
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@70d9afab
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@606716ae
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@75fb0cbd
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1cbdf32d
+2024-07-22 16:07:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6b81e9e6
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6664d2a2
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@50f565f0
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1e84f605
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2a17f9f6
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@63aa9b4e
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@11d0a2a6
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4707b682
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3e3a9ee2
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@35db8717
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2b07d1fb
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@191ac9f3
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@49373716
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7693b029
+2024-07-22 16:07:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@fa4cdd5
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@103d5e51
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@18715949
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3c01ab95
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@81a29e8
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5a7713c0
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c93b51
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@56e9a57a
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6e65e006
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5331898c
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@62fa61b8
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@340567af
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@50488d7a
+2024-07-22 16:07:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1b697cea
+2024-07-22 17:28:50 - Starting OAuthServerApplication using Java 11.0.17 on DESKTOP-33SVC3J with PID 16684 (C:\Users\dsct\Documents\OAuthServer\out\production\classes started by dsct in C:\Users\dsct\Documents\OAuthServer)
+2024-07-22 17:28:50 - No active profile set, falling back to 1 default profile: "default"
+2024-07-22 17:28:50 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-core\2.3.0.1\23574ca124d0a694721ce3ef13cd720095f18fdd\jaxb-core-2.3.0.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-core/2.3.0.1/23574ca124d0a694721ce3ef13cd720095f18fdd/jaxb-api.jar
+2024-07-22 17:28:50 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-impl\2.3.1\a1a12b85ba1435b4189e065f7dafcc3fb9410d38\jaxb-impl-2.3.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/jaxb-runtime-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/txw2-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/istack-commons-runtime-3.0.7.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/stax-ex-1.8.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/FastInfoset-1.2.15.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/javax.activation-api-1.2.0.jar
+2024-07-22 17:28:50 - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-07-22 17:28:50 - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-07-22 17:28:52 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-22 17:28:52 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-22 17:28:52 - Finished Spring Data repository scanning in 9 ms. Found 0 Redis repository interfaces.
+2024-07-22 17:28:52 - Searching for mappers annotated with @Mapper
+2024-07-22 17:28:52 - Using auto-configuration base package 'com.oauth'
+2024-07-22 17:28:53 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-22 17:28:53 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-22 17:28:53 - Finished Spring Data repository scanning in 31 ms. Found 0 Redis repository interfaces.
+2024-07-22 17:28:53 - Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
+2024-07-22 17:28:53 - Identified candidate component class: file [C:\Users\dsct\Documents\OAuthServer\out\production\classes\com\oauth\mapper\DeviceMapper.class]
+2024-07-22 17:28:53 - Identified candidate component class: file [C:\Users\dsct\Documents\OAuthServer\out\production\classes\com\oauth\mapper\MemberMapper.class]
+2024-07-22 17:28:53 - Creating MapperFactoryBean with name 'deviceMapper' and 'com.oauth.mapper.DeviceMapper' mapperInterface
+2024-07-22 17:28:53 - Enabling autowire by type for MapperFactoryBean with name 'deviceMapper'.
+2024-07-22 17:28:53 - Creating MapperFactoryBean with name 'memberMapper' and 'com.oauth.mapper.MemberMapper' mapperInterface
+2024-07-22 17:28:53 - Enabling autowire by type for MapperFactoryBean with name 'memberMapper'.
+2024-07-22 17:28:53 - BeanFactory id=ca6bf4af-bdb8-340f-aaba-da46a6a563bf
+2024-07-22 17:28:55 - Tomcat initialized with port(s): 8080 (http)
+2024-07-22 17:28:55 - Initializing ProtocolHandler ["http-nio-8080"]
+2024-07-22 17:28:55 - Starting service [Tomcat]
+2024-07-22 17:28:55 - Starting Servlet engine: [Apache Tomcat/9.0.64]
+2024-07-22 17:28:55 - Initializing Spring embedded WebApplicationContext
+2024-07-22 17:28:55 - Root WebApplicationContext: initialization completed in 4961 ms
+2024-07-22 17:28:56 - KeyStoreUtils -> readPublicKey(String path) :apikeys/public-key
+2024-07-22 17:28:56 - path: apikeys/public-key
+2024-07-22 17:28:56 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 17:28:56 - Path: apikeys/public-key
+2024-07-22 17:28:56 - KeyStoreUtils -> readPrivateKey(String path)
+2024-07-22 17:28:56 - path: apikeys/private-key
+2024-07-22 17:28:56 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 17:28:56 - Path: apikeys/private-key
+2024-07-22 17:28:56 - privateKeyPEM: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCH/Gc75PfBVX62U9U7IOx8QHV5iM9au6pTh2G7N5MmUYgSN3dBidvEAHqXxlZP348g4WuhZP0Ti2Cq6tKBkLUnx7BUnDfUk+fTzqKKpcm57NINwBSEqG2RUqSfrweO5OS/XPquiTzFVlXP3D0a63vZ83yu40VzPAG4uJwJIKOxayiu6fyDh3uBSeWuo+aeoLiDZUL7q5HTrWeek0d/CrFiN/5EOkzQQj84wBNgQsPGbiXuf9X43tSPFp3ZvJsF1BtAT/X+Dn4AbpJ3SSVB8iph2HVhp8kTmt/p+/Y3+Gkv9CqlA31vFtmvxGTeJ/HjuvKxFlCcK5PXz5jwAjj+A92hAgMBAAECggEAExGb0FRNQbkhaaPb1MzLHKlVT9OVcB28xrXHSJ+EbO0l7ZgFixUv0g5XIo1XcR/iTDQQCbPFoUX8Kjt/hVerb4aa/WJimdabvaHOPS7+WKoS0obK2cdchfJWz2WV473JLeR16p+n++wdYGZ70xiOZ4OzSjrodD5H54VLrCP9kFVGy7e6H4vZYVtSMFw5k72avXVIsKnJhsdB80B8E0wWvscwQsAihoCXDCm+lehG5gE+mcyjOVFjVtv0WnbATGwXzX4Co2oOXRdnWtTiAOHghZdWQ1hjj/HNwpAS9fys2r8IT73AsX8PsmCfVoyTvrgtpQSCxVvG24Q6ZKXKxqutGQKBgQDqp2iy2yc6iBHoHkjz+XiiT9fsnpJV5/D/IboXn8oSjMWwMR+rH+n98pZ0Hj+5blenQmXn+nCFSYroSNhmn/wp/zlXb7U7GVqCIjIYd0z40xqVvwFVeg7Z8pOgX59MUQLroziBV7jANJrNxujAqHMYMnLo20JFpd7svEvO6A0hzwKBgQCUWzoJG14qp6K/rQkpzTyhnujsyh12g89Uh0EqaxY4zLOSRMnsjIvNQloghWZ3FmYJJSFsIPSrovCgfrLEKOIFJ76IrU48hPmIODlmxjEMlELdKjygt8LMEhk8jMGM+yLbULxufY0zA18G0WKsUhG/DPrhUod3xsY42i1SSJgVjwKBgCT3AlNKmr9puAhs3OkyH4LSOR2ZTUwjIZ/PXFVkYpzReELtOiPm/yF2GaVpLniznTNIDm2g0iDtGOjGsPBZu4uSHSJdApuwvsVJRcL86C86cjGsyTUB6V0EDaVx6tJG4MLmD3ywqPX+U3SfJQNUhe0F5XwxLhtyqc95Sifp/keZAoGAFG6kBZERXQqNbZylQG6VxSSfq80CVco9icS/AtqQyu3WZXS34q5QqspSo1v8Cra5AtVsTvoS+HiOb2xDrqR6zH72zNghiFBAFbS4oyD0rGjW9KLWisQEPhrYAvDXz1TfLhlmekksYzQ5qDS6REVhUFC3VMULB0IHFtllmImK+J0CgYEAtHqTrp7KD2WZryQzmI4KnoNaJbRNuIerXFq7HozhNIDHaoK7nX0C1QffIVZ2q+CbsbT+p0A0xUjYwSX6tY7A+hV8Tll8aZiKhmOK5Jp56Amo81YVqIoMPlgczObkfi4dcS1uWkh//9OuiwuNcjJU/+aUphS8isQXU2ZxLGcUBD0=
+2024-07-22 17:28:56 - KeyStoreUtils -> getAesEncryptKey(String path)
+2024-07-22 17:28:56 - path: apikeys/encrypt-key
+2024-07-22 17:28:56 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 17:28:56 - Path: apikeys/encrypt-key
+2024-07-22 17:28:56 - setJwsVerifierApp CALLED
+2024-07-22 17:28:56 - KeyStoreUtils -> readPublicKey(String path) :apikeys/app-public-key
+2024-07-22 17:28:56 - path: apikeys/app-public-key
+2024-07-22 17:28:56 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 17:28:56 - Path: apikeys/app-public-key
+2024-07-22 17:28:56 - Using VFS adapter org.mybatis.spring.boot.autoconfigure.SpringBootVFS
+2024-07-22 17:28:56 - Parsed configuration file: 'class path resource [mybatis-config.xml]'
+2024-07-22 17:28:56 - Property 'mapperLocations' was not specified.
+2024-07-22 17:28:59 - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@2bacb37a, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6276449a, org.springframework.security.web.context.SecurityContextPersistenceFilter@6662b4b7, org.springframework.security.web.header.HeaderWriterFilter@5c0d483a, org.springframework.security.web.authentication.logout.LogoutFilter@237177a5, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@54ed96e8, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@b184174, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@5137e475, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@7fbf4112, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@27a2e53b, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@459df4b0, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@2f754f37, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@45e70327, org.springframework.security.web.session.SessionManagementFilter@5a5958b, org.springframework.security.web.access.ExceptionTranslationFilter@4ec72e08, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@32cb1d63]
+2024-07-22 17:28:59 - WebSecurityConfig configure(WebSecurity web) CALLED
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/www/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/www/**']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/*.html']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/**/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/**/*.html']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/**/*.css']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/**/*.css']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/**/*.js']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/**/*.js']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/**/*.png']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/**/*.png']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/**/*.jpg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/**/*.jpg']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/**/*.gif']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/**/*.gif']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/**/*.svg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/**/*.svg']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/**/*.ico']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/**/*.ico']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/**/*.ttf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/**/*.ttf']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/**/*.woff']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/**/*.woff']
+2024-07-22 17:28:59 - You are asking Spring Security to ignore Ant [pattern='/**/*.otf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 17:28:59 - Will not secure Ant [pattern='/**/*.otf']
+2024-07-22 17:29:00 - Not found configuration for registering mapper bean using @MapperScan, MapperFactoryBean and MapperScannerConfigurer.
+2024-07-22 17:29:01 - LiveReload server is running on port 35729
+2024-07-22 17:29:02 - All Spring Cloud Security modules and starters are deprecated. They will be moved to individual projects in the next major release.
+2024-07-22 17:29:02 - Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-07-22 17:29:02 - Starting ProtocolHandler ["http-nio-8080"]
+2024-07-22 17:29:02 - Tomcat started on port(s): 8080 (http) with context path ''
+2024-07-22 17:29:04 - Started OAuthServerApplication in 16.501 seconds (JVM running for 17.66)
+2024-07-22 17:29:04 - Flushing all data from Redis on application startup...
+2024-07-22 17:29:06 - Flush complete.
+2024-07-22 17:29:13 - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-07-22 17:29:13 - Initializing Servlet 'dispatcherServlet'
+2024-07-22 17:29:13 - Completed initialization in 1 ms
+2024-07-22 17:29:13 - [홈 IoT가동시간 통계조회]
+2024-07-22 17:29:13 - HikariPool-1 - Starting...
+2024-07-22 17:29:14 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5a56715e
+2024-07-22 17:29:14 - HikariPool-1 - Start completed.
+2024-07-22 17:29:14 - HikariPool-1 - Pool stats (total=1, active=0, idle=1, waiting=0)
+2024-07-22 17:29:14 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2c2fe834
+2024-07-22 17:29:14 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6d12e20f
+2024-07-22 17:29:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c35eae3
+2024-07-22 17:29:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@d3d1d40
+2024-07-22 17:29:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@37065a27
+2024-07-22 17:29:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@973e4cc
+2024-07-22 17:29:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@526419d
+2024-07-22 17:29:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@153dd443
+2024-07-22 17:29:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1d6f7afd
+2024-07-22 17:29:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1265ab41
+2024-07-22 17:29:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4990c4c8
+2024-07-22 17:29:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1058ff08
+2024-07-22 17:29:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@76d4998
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3c1ecd40
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@55b59f96
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5d66834a
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@62b4bc20
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@492a6c93
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@33ce5859
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@774351c7
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@27393639
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@186c59bd
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@350ca4f2
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5d14c42f
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@42631d
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@229ca876
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2ac17348
+2024-07-22 17:29:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@25157bb2
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7834e6f0
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7974159c
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@be68394
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@347261bc
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@8ea3231
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@583d331f
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@49134a83
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2925ef0f
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@66546935
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@74bc7c9c
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@740aefa
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5f65be27
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c1b3fd5
+2024-07-22 17:29:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@35d57e50
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1d5a16e6
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5fac9b8a
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@59c031ef
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@92528b7
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4204e934
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@24411f25
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@449912da
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@637b1e5b
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@467479f9
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4edfa21b
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c6c69c4
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@757e10f8
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@60decd2c
+2024-07-22 17:29:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@369963cf
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@62d33dbf
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@63137c7
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@182e469f
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@31e0de10
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@65c9eb83
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6efa7322
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1cba0d0
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@c4ad743
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5dbc7262
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@109c93ee
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4330a459
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4827c189
+2024-07-22 17:29:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7c97a983
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@37172a60
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@526da090
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@497acce0
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5bb08997
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6126879
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@b60b83a
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@27b1b0d
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@43a0bfea
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@714f7cc5
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1978ab6
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@15d2dd77
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1e871d5e
+2024-07-22 17:29:20 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@bc259f8
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4918b9ed
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@181b4757
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@62403d0b
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5f4b10a2
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@b1bf1cd
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@57ccc416
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6ab9f124
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@239c464d
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7fdd973f
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@220c52c8
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@28461bd9
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@15746f0f
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3ec9d3e2
+2024-07-22 17:29:21 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2a1464bb
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@30704067
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5668437e
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@12e357d9
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5fa12dfe
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@65a245e8
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4fa2012f
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@69aebee6
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7fa00f6d
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5ca00891
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@259fe828
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@17132465
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4dd7756f
+2024-07-22 17:29:22 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@529be9f8
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2b457bdc
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@543b2bba
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@71c2d17f
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@33eea874
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6bde3915
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3a3096f6
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2e048648
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@35233c1e
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4bd91f2a
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@38168055
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@55829cc9
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@15367e8
+2024-07-22 17:29:23 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@19c50f02
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@547eee22
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@386f2b23
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@10a17ef3
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4460424f
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@35c79e
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@79169fdb
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@f36b152
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6b9a3b35
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7c7ebfe0
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1c61a814
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@12c4e6b8
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@666a5c12
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2e43bf14
+2024-07-22 17:29:24 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3edc3bf8
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2dacf8ad
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6b682ecb
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1d28c057
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2538ac40
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@705083cc
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7927f920
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@283d39d0
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1f9ebeb3
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3eb0e341
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@38f95543
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6bb4cb0c
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@bebf18e
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@28840b92
+2024-07-22 17:29:25 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@52d68f40
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@15682c7d
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5ea65260
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@54f92c2e
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@63a27f38
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@49aa7c53
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6ee2877c
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5d23064f
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@729d8a25
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7d628fc5
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1a5e94ab
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7c2dc02c
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@71823013
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@35fd60e3
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@728bd918
+2024-07-22 17:29:26 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@14900b43
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@61403d0a
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1bc0b96f
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4de4bee5
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2f9d7a1b
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@9f5edcb
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@39b426f9
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@d318cf5
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6330708
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4919b88b
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@ab7a010
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3084953e
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4536089
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4918c67c
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7aa19879
+2024-07-22 17:29:27 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@24d98f86
+2024-07-22 17:29:28 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7855c95a
+2024-07-22 17:29:28 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@579f142f
+2024-07-22 17:29:28 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@c3a4c7
+2024-07-22 17:29:28 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@e017e7
+2024-07-22 17:29:28 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1e532600
+2024-07-22 17:29:28 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3bdaa1b8
+2024-07-22 17:29:28 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@653592be
+2024-07-22 17:29:28 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1e2cc595
+2024-07-22 17:29:28 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3ba65ecc
