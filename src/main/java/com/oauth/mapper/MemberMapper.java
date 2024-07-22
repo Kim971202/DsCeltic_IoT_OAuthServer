@@ -3,6 +3,7 @@ package com.oauth.mapper;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.oauth.dto.AuthServerDTO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,7 @@ public interface MemberMapper {
     public AuthServerDTO getUserByUserIdAndHpAndDeviceId(AuthServerDTO member);
     public AuthServerDTO getPasswordByUserId(String userId);
     public AuthServerDTO accessTokenCheck(AuthServerDTO member);
-    public AuthServerDTO getPushCodeStatus(AuthServerDTO member);
+    public List<AuthServerDTO> getPushCodeStatus(@Param("userId") String params, @Param("deviceIds") String deviceIds);
     public AuthServerDTO getNextHouseholderUserId(AuthServerDTO member);
     public AuthServerDTO identifyRKey(String deviceId);
     public AuthServerDTO getHpByUserId(String userId);

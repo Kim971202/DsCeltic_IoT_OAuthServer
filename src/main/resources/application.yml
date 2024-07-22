@@ -59,6 +59,8 @@ logging:
   level:
     com.zaxxer.hikari.HikariConfig: INFO
     com.zaxxer.hikari: TRACE
+    org.mybatis: DEBUG
+    org.apache.ibatis: TRACE
   file:
     path: logs
     name: oauthserver.log
