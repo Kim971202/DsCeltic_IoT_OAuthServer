@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 
 @Slf4j
 @RequestMapping("/stats/v1")
@@ -28,7 +29,8 @@ public class StatisticController {
     private StatisticService statisticService;
 
     /* 홈 IoT 가동시간 통계조회 */
-    public ResponseEntity<?> doInfoDaily(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+    @RequestMapping("/infoDaily")
+    public HashMap<String, Object> doInfoDaily(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException {
 
         String logStep = "[홈 IoT가동시간 통계조회]";
