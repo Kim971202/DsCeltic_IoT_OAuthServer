@@ -337,7 +337,6 @@ public class UserController {
         log.info("[홈 IoT 컨트롤러 알림 정보 조회]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getSearchFlag())){
