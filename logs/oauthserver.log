@@ -5070,3 +5070,527 @@ org.apache.ibatis.builder.BuilderException: Error evaluating expression 'list'. 
 2024-07-22 11:42:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@44654f70
 2024-07-22 11:42:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@e0f7fb0
 2024-07-22 11:42:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@72ab3627
+2024-07-22 11:44:36 - Starting OAuthServerApplication using Java 11.0.17 on DESKTOP-33SVC3J with PID 19420 (C:\Users\dsct\Documents\OAuthServer\out\production\classes started by dsct in C:\Users\dsct\Documents\OAuthServer)
+2024-07-22 11:44:36 - No active profile set, falling back to 1 default profile: "default"
+2024-07-22 11:44:36 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-core\2.3.0.1\23574ca124d0a694721ce3ef13cd720095f18fdd\jaxb-core-2.3.0.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-core/2.3.0.1/23574ca124d0a694721ce3ef13cd720095f18fdd/jaxb-api.jar
+2024-07-22 11:44:36 - The Class-Path manifest attribute in C:\Users\dsct\.gradle\caches\modules-2\files-2.1\com.sun.xml.bind\jaxb-impl\2.3.1\a1a12b85ba1435b4189e065f7dafcc3fb9410d38\jaxb-impl-2.3.1.jar referenced one or more files that do not exist: file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/jaxb-runtime-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/txw2-2.3.1.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/istack-commons-runtime-3.0.7.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/stax-ex-1.8.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/FastInfoset-1.2.15.jar,file:/C:/Users/dsct/.gradle/caches/modules-2/files-2.1/com.sun.xml.bind/jaxb-impl/2.3.1/a1a12b85ba1435b4189e065f7dafcc3fb9410d38/javax.activation-api-1.2.0.jar
+2024-07-22 11:44:36 - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-07-22 11:44:36 - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-07-22 11:44:38 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-22 11:44:38 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-22 11:44:38 - Finished Spring Data repository scanning in 11 ms. Found 0 Redis repository interfaces.
+2024-07-22 11:44:38 - Searching for mappers annotated with @Mapper
+2024-07-22 11:44:38 - Using auto-configuration base package 'com.oauth'
+2024-07-22 11:44:38 - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-07-22 11:44:38 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-07-22 11:44:38 - Finished Spring Data repository scanning in 45 ms. Found 0 Redis repository interfaces.
+2024-07-22 11:44:39 - Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
+2024-07-22 11:44:39 - Identified candidate component class: file [C:\Users\dsct\Documents\OAuthServer\out\production\classes\com\oauth\mapper\DeviceMapper.class]
+2024-07-22 11:44:39 - Identified candidate component class: file [C:\Users\dsct\Documents\OAuthServer\out\production\classes\com\oauth\mapper\MemberMapper.class]
+2024-07-22 11:44:39 - Creating MapperFactoryBean with name 'deviceMapper' and 'com.oauth.mapper.DeviceMapper' mapperInterface
+2024-07-22 11:44:39 - Enabling autowire by type for MapperFactoryBean with name 'deviceMapper'.
+2024-07-22 11:44:39 - Creating MapperFactoryBean with name 'memberMapper' and 'com.oauth.mapper.MemberMapper' mapperInterface
+2024-07-22 11:44:39 - Enabling autowire by type for MapperFactoryBean with name 'memberMapper'.
+2024-07-22 11:44:39 - BeanFactory id=ca6bf4af-bdb8-340f-aaba-da46a6a563bf
+2024-07-22 11:44:41 - Tomcat initialized with port(s): 8080 (http)
+2024-07-22 11:44:41 - Initializing ProtocolHandler ["http-nio-8080"]
+2024-07-22 11:44:41 - Starting service [Tomcat]
+2024-07-22 11:44:41 - Starting Servlet engine: [Apache Tomcat/9.0.64]
+2024-07-22 11:44:42 - Initializing Spring embedded WebApplicationContext
+2024-07-22 11:44:42 - Root WebApplicationContext: initialization completed in 5654 ms
+2024-07-22 11:44:42 - KeyStoreUtils -> readPublicKey(String path) :apikeys/public-key
+2024-07-22 11:44:42 - path: apikeys/public-key
+2024-07-22 11:44:42 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 11:44:42 - Path: apikeys/public-key
+2024-07-22 11:44:42 - KeyStoreUtils -> readPrivateKey(String path)
+2024-07-22 11:44:42 - path: apikeys/private-key
+2024-07-22 11:44:42 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 11:44:42 - Path: apikeys/private-key
+2024-07-22 11:44:42 - privateKeyPEM: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCH/Gc75PfBVX62U9U7IOx8QHV5iM9au6pTh2G7N5MmUYgSN3dBidvEAHqXxlZP348g4WuhZP0Ti2Cq6tKBkLUnx7BUnDfUk+fTzqKKpcm57NINwBSEqG2RUqSfrweO5OS/XPquiTzFVlXP3D0a63vZ83yu40VzPAG4uJwJIKOxayiu6fyDh3uBSeWuo+aeoLiDZUL7q5HTrWeek0d/CrFiN/5EOkzQQj84wBNgQsPGbiXuf9X43tSPFp3ZvJsF1BtAT/X+Dn4AbpJ3SSVB8iph2HVhp8kTmt/p+/Y3+Gkv9CqlA31vFtmvxGTeJ/HjuvKxFlCcK5PXz5jwAjj+A92hAgMBAAECggEAExGb0FRNQbkhaaPb1MzLHKlVT9OVcB28xrXHSJ+EbO0l7ZgFixUv0g5XIo1XcR/iTDQQCbPFoUX8Kjt/hVerb4aa/WJimdabvaHOPS7+WKoS0obK2cdchfJWz2WV473JLeR16p+n++wdYGZ70xiOZ4OzSjrodD5H54VLrCP9kFVGy7e6H4vZYVtSMFw5k72avXVIsKnJhsdB80B8E0wWvscwQsAihoCXDCm+lehG5gE+mcyjOVFjVtv0WnbATGwXzX4Co2oOXRdnWtTiAOHghZdWQ1hjj/HNwpAS9fys2r8IT73AsX8PsmCfVoyTvrgtpQSCxVvG24Q6ZKXKxqutGQKBgQDqp2iy2yc6iBHoHkjz+XiiT9fsnpJV5/D/IboXn8oSjMWwMR+rH+n98pZ0Hj+5blenQmXn+nCFSYroSNhmn/wp/zlXb7U7GVqCIjIYd0z40xqVvwFVeg7Z8pOgX59MUQLroziBV7jANJrNxujAqHMYMnLo20JFpd7svEvO6A0hzwKBgQCUWzoJG14qp6K/rQkpzTyhnujsyh12g89Uh0EqaxY4zLOSRMnsjIvNQloghWZ3FmYJJSFsIPSrovCgfrLEKOIFJ76IrU48hPmIODlmxjEMlELdKjygt8LMEhk8jMGM+yLbULxufY0zA18G0WKsUhG/DPrhUod3xsY42i1SSJgVjwKBgCT3AlNKmr9puAhs3OkyH4LSOR2ZTUwjIZ/PXFVkYpzReELtOiPm/yF2GaVpLniznTNIDm2g0iDtGOjGsPBZu4uSHSJdApuwvsVJRcL86C86cjGsyTUB6V0EDaVx6tJG4MLmD3ywqPX+U3SfJQNUhe0F5XwxLhtyqc95Sifp/keZAoGAFG6kBZERXQqNbZylQG6VxSSfq80CVco9icS/AtqQyu3WZXS34q5QqspSo1v8Cra5AtVsTvoS+HiOb2xDrqR6zH72zNghiFBAFbS4oyD0rGjW9KLWisQEPhrYAvDXz1TfLhlmekksYzQ5qDS6REVhUFC3VMULB0IHFtllmImK+J0CgYEAtHqTrp7KD2WZryQzmI4KnoNaJbRNuIerXFq7HozhNIDHaoK7nX0C1QffIVZ2q+CbsbT+p0A0xUjYwSX6tY7A+hV8Tll8aZiKhmOK5Jp56Amo81YVqIoMPlgczObkfi4dcS1uWkh//9OuiwuNcjJU/+aUphS8isQXU2ZxLGcUBD0=
+2024-07-22 11:44:42 - KeyStoreUtils -> getAesEncryptKey(String path)
+2024-07-22 11:44:42 - path: apikeys/encrypt-key
+2024-07-22 11:44:42 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 11:44:42 - Path: apikeys/encrypt-key
+2024-07-22 11:44:42 - setJwsVerifierApp CALLED
+2024-07-22 11:44:42 - KeyStoreUtils -> readPublicKey(String path) :apikeys/app-public-key
+2024-07-22 11:44:42 - path: apikeys/app-public-key
+2024-07-22 11:44:42 - KeyStoreUtils -> resourceFileToString(String path)
+2024-07-22 11:44:42 - Path: apikeys/app-public-key
+2024-07-22 11:44:42 - Using VFS adapter org.mybatis.spring.boot.autoconfigure.SpringBootVFS
+2024-07-22 11:44:43 - Parsed configuration file: 'class path resource [mybatis-config.xml]'
+2024-07-22 11:44:43 - Property 'mapperLocations' was not specified.
+2024-07-22 11:44:46 - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@57088eb4, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3fd228a1, org.springframework.security.web.context.SecurityContextPersistenceFilter@900ee3b, org.springframework.security.web.header.HeaderWriterFilter@1f87162c, org.springframework.security.web.authentication.logout.LogoutFilter@1de67c70, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@6a7b6cdd, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@42c54eea, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@7621fae6, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@6066ab47, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@6d9b3440, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@eccfdf1, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1762c761, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2b208789, org.springframework.security.web.session.SessionManagementFilter@557cd082, org.springframework.security.web.access.ExceptionTranslationFilter@e44479c, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@40892e97]
+2024-07-22 11:44:46 - WebSecurityConfig configure(WebSecurity web) CALLED
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/www/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/www/**']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/*.html']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/**/*.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/**/*.html']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/**/*.css']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/**/*.css']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/**/*.js']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/**/*.js']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/**/*.png']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/**/*.png']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/**/*.jpg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/**/*.jpg']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/**/*.gif']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/**/*.gif']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/**/*.svg']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/**/*.svg']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/**/*.ico']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/**/*.ico']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/**/*.ttf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/**/*.ttf']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/**/*.woff']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/**/*.woff']
+2024-07-22 11:44:46 - You are asking Spring Security to ignore Ant [pattern='/**/*.otf']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-07-22 11:44:46 - Will not secure Ant [pattern='/**/*.otf']
+2024-07-22 11:44:47 - Not found configuration for registering mapper bean using @MapperScan, MapperFactoryBean and MapperScannerConfigurer.
+2024-07-22 11:44:49 - LiveReload server is running on port 35729
+2024-07-22 11:44:50 - All Spring Cloud Security modules and starters are deprecated. They will be moved to individual projects in the next major release.
+2024-07-22 11:44:50 - Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-07-22 11:44:50 - Starting ProtocolHandler ["http-nio-8080"]
+2024-07-22 11:44:50 - Tomcat started on port(s): 8080 (http) with context path ''
+2024-07-22 11:44:52 - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-07-22 11:44:52 - Initializing Servlet 'dispatcherServlet'
+2024-07-22 11:44:52 - Completed initialization in 2 ms
+2024-07-22 11:44:52 - ApiTokenInterceptor -> preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+2024-07-22 11:44:52 - 수신.accessToken:eyJhbGciOiJSUzI1NiIsImN0eSI6Im15VHlwZSIsIl9zaWQiOiJteUlkIn0.eyJleHAiOjE3NDA0NjIxNTQsImlhdCI6MTcwODkyNjE1NCwiX2ZpZCI6Im15RnVuY3Rpb25JZCJ9.c4_OY9JmctPyR2Kl2dub2T_q13Qx-wCb4yjU-qcCsl9khQqhOvRgx88MIcFr-swdKScxO5Wh7rv1bxxwnAomloNVaW9UwEH9s2yLST6jMHGskJCAUgkDtEdlD_GhAh3KnHyTn2Bhh0nRkfEVpf_xN1oEEuERQ2jUAR2Sf_9YHv7QzKYpsBBGHn6KMNBupGVcESsX54CDXQX_LJ8dhoqmgg8mod5wvNlSPP6jjSj6use6up8usww58xt0UfQ2_oInXjPWPN3OSw-7O9LQFOLwqtipHonhONU6wDaGJFbjL6VjASdNZtcfE4lRleunDVJk8k0a0WT79TBaE9twXlF6gQ
+2024-07-22 11:44:52 - signedJWT.verify(jwsVerifier): true
+2024-07-22 11:44:52 - [홈 IoT 컨트롤러 알림 정보 조회]
+2024-07-22 11:44:52 - HikariPool-1 - Starting...
+2024-07-22 11:44:53 - Started OAuthServerApplication in 19.622 seconds (JVM running for 21.168)
+2024-07-22 11:44:53 - Flushing all data from Redis on application startup...
+2024-07-22 11:44:53 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5fee7a60
+2024-07-22 11:44:53 - HikariPool-1 - Start completed.
+2024-07-22 11:44:53 - HikariPool-1 - Pool stats (total=1, active=1, idle=0, waiting=0)
+2024-07-22 11:44:53 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3b60ef2d
+2024-07-22 11:44:53 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7a5de516
+2024-07-22 11:44:53 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4bed3da8
+2024-07-22 11:44:53 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1a721a59
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@a4533c0
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1e3c6482
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@761a340d
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@124d76d4
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4412c4c0
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@531cc0f7
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1b9865f1
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@73301ea0
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@167a079e
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@50c8eee9
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3796254c
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@74ea6058
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@237fe578
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2ac32d7b
+2024-07-22 11:44:54 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7bc58e0e
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@269d078e
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@39a77e64
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@502c3799
+2024-07-22 11:44:55 - Flush complete.
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@153aea4f
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@254c7109
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@17eedf6f
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2d1aab2f
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3826549b
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6977a98d
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2d08a218
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@981bbfb
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@43145272
+2024-07-22 11:44:55 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@685f4e18
+2024-07-22 11:44:57 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3bc8891
+2024-07-22 11:44:57 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@56b3aa0f
+2024-07-22 11:44:57 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@54984f9
+2024-07-22 11:44:57 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7ac366fb
+2024-07-22 11:44:57 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@62e2693c
+2024-07-22 11:44:57 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@68ffc48a
+2024-07-22 11:44:57 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1816122e
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@53935c74
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@73153422
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@f19bd4e
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5810c46f
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5d8e33b2
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@734c9936
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@38ddc2ba
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@ad1cacc
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5babbb77
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@59c6439a
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@79a03a7d
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6408d726
+2024-07-22 11:44:58 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@512f5001
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@30380637
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@15b25481
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2d3d9eef
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@21b1079b
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1c94240b
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@11f8c70d
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@9561264
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2d3aa14
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@71de6398
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1d8de74e
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@43dd0c70
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@38f0a278
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@39f9160a
+2024-07-22 11:44:59 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@62abd285
+2024-07-22 11:45:00 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@60b9f479
+2024-07-22 11:45:01 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@29f9490f
+2024-07-22 11:45:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@189b74c4
+2024-07-22 11:45:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3a0416fa
+2024-07-22 11:45:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3cb28ec3
+2024-07-22 11:45:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4b4f32c6
+2024-07-22 11:45:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7b32d283
+2024-07-22 11:45:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2ab27011
+2024-07-22 11:45:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6055e1e2
+2024-07-22 11:45:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@c147634
+2024-07-22 11:45:04 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3a867053
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5d081c15
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3f5214f3
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@43499211
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@25f13f37
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@12880133
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6e6fb8a9
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5705b6be
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5f16e1fd
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@15cf7c77
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4c316e29
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@610e4f65
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@13c6d1b
+2024-07-22 11:45:05 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@784d513a
+2024-07-22 11:45:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4401d8b
+2024-07-22 11:45:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@277e21f6
+2024-07-22 11:45:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@72f68b5f
+2024-07-22 11:45:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5218f82b
+2024-07-22 11:45:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@114b3746
+2024-07-22 11:45:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7802e846
+2024-07-22 11:45:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@68d63286
+2024-07-22 11:45:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1ecdb876
+2024-07-22 11:45:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@19e18afe
+2024-07-22 11:45:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@a689ac4
+2024-07-22 11:45:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@934c790
+2024-07-22 11:45:06 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1298038e
+2024-07-22 11:45:08 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1948b369
+2024-07-22 11:45:08 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5789289f
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@42f3d7a2
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@277ae3d8
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@28aeaea
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@40c2e98
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4c4388a4
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1e4ec837
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@8f3472f
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@12f777d
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6434e268
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@379311ad
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@624086b5
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@683684aa
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@f3a1e96
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2bd696e9
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@570c1288
+2024-07-22 11:45:09 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@75ad270f
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@21e19a61
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4be6b307
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2c080c3
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@501e21cd
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@796974
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@798278ba
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7db26bf1
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@563c9415
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@52aa567e
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@57c6416e
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@21ffb10c
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@66f273d0
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2b79ac8b
+2024-07-22 11:45:10 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@912a31d
+2024-07-22 11:45:11 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@8f945d8
+2024-07-22 11:45:11 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@31dc5dcc
+2024-07-22 11:45:11 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@8bb1091
+2024-07-22 11:45:11 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@26a492fd
+2024-07-22 11:45:13 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4e014377
+2024-07-22 11:45:13 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@15b1ea47
+2024-07-22 11:45:13 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3855aab0
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3037b1f7
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@32a9dad
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@50a69d62
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6c4d1790
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4c8a320b
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1ae5bc56
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@30c9a155
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1fbd2455
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@39b2b34e
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@e47afe0
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5642963
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3bd5db64
+2024-07-22 11:45:15 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@302fc9dd
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5ff95976
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@23681edb
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@695f0c0e
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5d2eaec6
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7602ea52
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7f889a4d
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1c39bffd
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3202cc85
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5a773b4d
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6ceca5b4
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1109594
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@31b92067
+2024-07-22 11:45:16 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@25f1b456
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6a6b4c29
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@23f6d960
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4e58e188
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3c606917
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5cb5585e
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@e439093
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@68046c40
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@68ec8974
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@10f483c8
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2c9b66ac
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@f9feaa9
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5fb6d5ce
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1a5ec8a1
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2050e36c
+2024-07-22 11:45:17 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@363a79e
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@67d43076
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3545a4a1
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@746fdfae
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6255b70a
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2a012a73
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@743d491b
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3f262d2d
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@603786f1
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4cf04251
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@d8083c6
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@bd63805
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3790f05f
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1812cfce
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@28e00f73
+2024-07-22 11:45:18 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@72043933
+2024-07-22 11:45:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@52ccb192
+2024-07-22 11:45:19 - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4ad1892b
+2024-07-22 11:45:19 - HikariPool-1 - After adding stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:45:23 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:45:23 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:45:53 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:45:53 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:46:23 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:46:23 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:46:53 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:46:53 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:47:23 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:47:23 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:47:53 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:47:53 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:48:23 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:48:23 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:48:53 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:48:53 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:49:23 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:49:23 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:49:53 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:49:53 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:50:23 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:50:23 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:50:53 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:50:53 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:51:23 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:51:23 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:51:53 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:51:53 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:52:23 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:52:23 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:52:53 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:52:53 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:53:23 - HikariPool-1 - Pool stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:53:23 - HikariPool-1 - Fill pool skipped, pool is at sufficient level.
+2024-07-22 11:53:46 - HikariPool-1 - Shutdown initiated...
+2024-07-22 11:53:46 - HikariPool-1 - Before shutdown stats (total=200, active=0, idle=200, waiting=0)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5fee7a60: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3b60ef2d: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@7a5de516: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@4bed3da8: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1a721a59: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@a4533c0: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1e3c6482: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@761a340d: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@124d76d4: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@4412c4c0: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@531cc0f7: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1b9865f1: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@73301ea0: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@167a079e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@50c8eee9: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3796254c: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@74ea6058: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@237fe578: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2ac32d7b: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@7bc58e0e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@269d078e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@39a77e64: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@502c3799: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@153aea4f: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@254c7109: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@17eedf6f: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2d1aab2f: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3826549b: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@6977a98d: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2d08a218: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@981bbfb: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@43145272: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@685f4e18: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3bc8891: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@56b3aa0f: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@54984f9: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@7ac366fb: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@62e2693c: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@68ffc48a: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1816122e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@53935c74: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@73153422: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@f19bd4e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5810c46f: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5d8e33b2: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@734c9936: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@38ddc2ba: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@ad1cacc: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5babbb77: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@59c6439a: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@79a03a7d: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@6408d726: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@512f5001: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@30380637: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@15b25481: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2d3d9eef: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@21b1079b: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1c94240b: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@11f8c70d: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@9561264: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2d3aa14: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@71de6398: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1d8de74e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@43dd0c70: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@38f0a278: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@39f9160a: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@62abd285: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@60b9f479: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@29f9490f: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@189b74c4: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3a0416fa: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3cb28ec3: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@4b4f32c6: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@7b32d283: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2ab27011: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@6055e1e2: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@c147634: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3a867053: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5d081c15: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3f5214f3: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@43499211: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@25f13f37: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@12880133: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@6e6fb8a9: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5705b6be: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5f16e1fd: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@15cf7c77: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@4c316e29: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@610e4f65: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@13c6d1b: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@784d513a: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@4401d8b: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@277e21f6: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@72f68b5f: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5218f82b: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@114b3746: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@7802e846: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@68d63286: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1ecdb876: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@19e18afe: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@a689ac4: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@934c790: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1298038e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1948b369: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5789289f: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@42f3d7a2: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@277ae3d8: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@28aeaea: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@40c2e98: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@4c4388a4: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1e4ec837: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@8f3472f: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@12f777d: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@6434e268: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@379311ad: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@624086b5: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@683684aa: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@f3a1e96: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2bd696e9: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@570c1288: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@75ad270f: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@21e19a61: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@4be6b307: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2c080c3: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@501e21cd: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@796974: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@798278ba: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@7db26bf1: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@563c9415: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@52aa567e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@57c6416e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@21ffb10c: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@66f273d0: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2b79ac8b: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@912a31d: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@8f945d8: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@31dc5dcc: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@8bb1091: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@26a492fd: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@4e014377: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@15b1ea47: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3855aab0: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3037b1f7: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@32a9dad: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@50a69d62: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@6c4d1790: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@4c8a320b: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1ae5bc56: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@30c9a155: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1fbd2455: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@39b2b34e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@e47afe0: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5642963: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3bd5db64: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@302fc9dd: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5ff95976: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@23681edb: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@695f0c0e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5d2eaec6: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@7602ea52: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@7f889a4d: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1c39bffd: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3202cc85: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5a773b4d: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@6ceca5b4: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1109594: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@31b92067: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@25f1b456: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@6a6b4c29: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@23f6d960: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@4e58e188: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3c606917: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5cb5585e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@e439093: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@68046c40: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@68ec8974: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@10f483c8: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2c9b66ac: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@f9feaa9: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@5fb6d5ce: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@1a5ec8a1: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2050e36c: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@363a79e: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@67d43076: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@3545a4a1: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@746fdfae: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@6255b70a: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@2a012a73: (connection evicted)
+2024-07-22 11:53:46 - HikariPool-1 - Closing connection com.mysql.cj.jdbc.ConnectionImpl@743d491b: (connection evicted)
