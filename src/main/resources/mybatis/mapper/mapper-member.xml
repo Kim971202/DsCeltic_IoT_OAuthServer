@@ -368,9 +368,12 @@
     </update>
 
     <update id="updateDeviceLocationNicknameDeviceRegist" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE TBT_OPR_DEVICE_REGIST
-        SET ADDR_NICK = #{newDeviceLocNickname}
-        WHERE DEVC_ID = #{deviceId}
+        UPDATE
+            TBT_OPR_DEVICE_REGIST
+        SET
+            ADDR_NICK = #{newDeviceLocNickname}
+        WHERE
+            DEVC_ID = #{deviceId}
     </update>
 
     <select id="getUserIdByUserId" resultMap="member">
@@ -462,7 +465,7 @@
         UPDATE
             TBR_OPR_ACCOUNT
         SET
-            PUSH_TOKEN AS pushToken
+            PUSH_TOKEN = #{pushToken}
         WHERE
             USER_ID = #{userId}
     </update>
