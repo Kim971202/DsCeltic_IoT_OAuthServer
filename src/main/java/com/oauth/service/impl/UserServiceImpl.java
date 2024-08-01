@@ -165,16 +165,19 @@ public class UserServiceImpl implements UserService {
             conMap.put("con", "Login OK");
             msg = "로그인 성공";
 
-            if(memberMapper.updatePushToken(pushToken) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-
             conMap.put("targetToken", pushToken);
             conMap.put("title", "Login");
             conMap.put("id", "Login ID");
             conMap.put("isEnd", "false");
+
+            param.setPushToken(pushToken);
+            param.setUserId(userId);
+
+            if(memberMapper.updatePushToken(param) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
@@ -182,7 +185,6 @@ public class UserServiceImpl implements UserService {
 
             param.setFunctionId("Login");
             param.setDeviceId("EMPTY");
-            param.setUserId(userId);
             if(memberMapper.insertCommandHistory(param) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -359,7 +361,7 @@ public class UserServiceImpl implements UserService {
                 msg = "비밀번호 찾기 - 초기화 실패";
             }
 
-            if(memberMapper.updatePushToken(params.getPushToken()) <= 0) {
+            if(memberMapper.updatePushToken(params) <= 0) {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
@@ -420,7 +422,7 @@ public class UserServiceImpl implements UserService {
                 msg = "비밀번호 변경 - 생성 실패";
             }
 
-            if(memberMapper.updatePushToken(params.getPushToken()) <= 0) {
+            if(memberMapper.updatePushToken(params) <= 0) {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
@@ -529,7 +531,7 @@ public class UserServiceImpl implements UserService {
                 msg = "회원 별칭(이름) 및 전화번호 변경 성공";
             }
 
-            if(memberMapper.updatePushToken(params.getPushToken()) <= 0) {
+            if(memberMapper.updatePushToken(params) <= 0) {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
