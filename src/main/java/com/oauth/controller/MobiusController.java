@@ -94,6 +94,7 @@ public class MobiusController {
             }
         } else if (functionId.equals("mfSt")) {
             // 변경실시간상태
+            // FCM Token 값 쿼리 필요
             pushService.sendPushMessage(jsonBody);
 
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();

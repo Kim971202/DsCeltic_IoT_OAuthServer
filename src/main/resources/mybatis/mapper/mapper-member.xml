@@ -434,7 +434,7 @@
         FROM
             TBR_OPR_USER
         WHERE
-            USER_ID = #{userID}
+            USER_ID = #{userId}
     </select>
 
     <select id="getWorkTime" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
@@ -448,5 +448,23 @@
         AND
             R_KEY = #{controlAuthKey};
     </select>
+
+    <select id="getPushTokenByUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            PUSH_TOKEN AS pushToken
+        FROM
+            TBR_OPR_ACCOUNT
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
+    <update id="updatePushToken" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_ACCOUNT
+        SET
+            PUSH_TOKEN AS pushToken
+        WHERE
+            USER_ID = #{userId}
+    </update>
 
 </mapper>

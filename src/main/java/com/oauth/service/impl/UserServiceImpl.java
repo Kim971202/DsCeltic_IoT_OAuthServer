@@ -165,6 +165,12 @@ public class UserServiceImpl implements UserService {
             conMap.put("con", "Login OK");
             msg = "로그인 성공";
 
+            if(memberMapper.updatePushToken(pushToken) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
             conMap.put("targetToken", pushToken);
             conMap.put("title", "Login");
             conMap.put("id", "Login ID");
