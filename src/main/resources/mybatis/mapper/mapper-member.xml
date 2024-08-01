@@ -254,8 +254,8 @@
             TBR_OPR_USER_DEVICE_PUSH
         <set>
             <if test="fPushYn != null">PUSH_YN_01 = #{fPushYn},</if>
-            <if test="fPushYn != null">PUSH_YN_02 = #{sPshYn},</if>
-            <if test="fPushYn != null">PUSH_YN_03 = #{tPushYn},</if>
+            <if test="sPushYn != null">PUSH_YN_02 = #{sPushYn},</if>
+            <if test="tPushYn != null">PUSH_YN_03 = #{tPushYn},</if>
         </set>
         WHERE
             USER_ID = #{userId} AND DEVC_ID = #{deviceId}
