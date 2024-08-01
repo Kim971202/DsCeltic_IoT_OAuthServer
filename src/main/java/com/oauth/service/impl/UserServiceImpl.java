@@ -967,11 +967,11 @@ public class UserServiceImpl implements UserService {
         String msg;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
-        String pushCode = params.getPushCd();
-        String pushYn = params.getPushYn();
+        List<String> pushCode = params.getPushCd();
+        List<String> pushYn = params.getPushYn();
 
-        System.out.println("pushCode: " + pushCode);
-        System.out.println("pushYn: " + pushYn);
+        System.out.println("pushCode: " + pushCode.toString());
+        System.out.println("pushYn: " + pushYn.toString());
 
             try{
 
