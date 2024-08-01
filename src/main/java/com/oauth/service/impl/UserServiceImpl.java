@@ -359,6 +359,12 @@ public class UserServiceImpl implements UserService {
                 msg = "비밀번호 찾기 - 초기화 실패";
             }
 
+            if(memberMapper.updatePushToken(params.getPushToken()) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Reset Password");
             conMap.put("id", "Reset Password ID");
@@ -412,6 +418,12 @@ public class UserServiceImpl implements UserService {
             } else{
                 conMap.put("body", "Change Password FAIL");
                 msg = "비밀번호 변경 - 생성 실패";
+            }
+
+            if(memberMapper.updatePushToken(params.getPushToken()) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             conMap.put("targetToken", params.getPushToken());
@@ -515,6 +527,12 @@ public class UserServiceImpl implements UserService {
             } else {
                 conMap.put("body", "Update Nickname and PhoneNum OK");
                 msg = "회원 별칭(이름) 및 전화번호 변경 성공";
+            }
+
+            if(memberMapper.updatePushToken(params.getPushToken()) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             conMap.put("targetToken", params.getPushToken());
