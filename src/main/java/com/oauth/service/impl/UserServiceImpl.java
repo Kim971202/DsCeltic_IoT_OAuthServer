@@ -964,9 +964,14 @@ public class UserServiceImpl implements UserService {
             throws CustomException{
 
         ApiResponse.Data data = new ApiResponse.Data();
-        String msg ;
+        String msg;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
+        String pushCode = params.getPushCd();
+        String pushYn = params.getPushYn();
+
+        System.out.println("pushCode: " + pushCode);
+        System.out.println("pushYn: " + pushYn);
 
             try{
 
@@ -976,7 +981,7 @@ public class UserServiceImpl implements UserService {
                     return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
                 }
 
-                msg = "홈 IoT 컨트롤러 알림 설정 실패";
+                msg = "홈 IoT 컨트롤러 알림 설정 성공";
 
                 params.setFunctionId("PushSet");
                 params.setDeviceId(deviceId);
