@@ -975,6 +975,20 @@ public class UserServiceImpl implements UserService {
 
             try{
 
+                for(int i = 0; i < pushCode.size(); ++i){
+                    switch (pushCode.get(i)) {
+                        case "01":
+                            params.setFPushYn(pushYn.get(i));
+                            break;
+                        case "02":
+                            params.setSPushYn(pushYn.get(i));
+                            break;
+                        case "03":
+                            params.setTPushYn(pushYn.get(i));
+                            break;
+                    }
+                }
+                System.out.println("params: " + params);
                 if(memberMapper.updatePushCodeStatus(params) <= 0){
                     msg = "홈 IoT 컨트롤러 알림 설정 실패";
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
