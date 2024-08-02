@@ -69,7 +69,6 @@ public class ReservationServiceImpl implements ReservationService{
             set24.setUserId(params.getUserId());
             set24.setDeviceId(deviceId);
             set24.setControlAuthKey(params.getControlAuthKey());
-            set24.setHours(params.getHours());
             set24.setType24h(params.getType24h());
             set24.setOnOffFlag(params.getOnOffFlag());
             set24.setFunctionId("24h");
@@ -94,6 +93,7 @@ public class ReservationServiceImpl implements ReservationService{
             System.out.println("결과 출력");
             System.out.println(map);
             System.out.println(JSON.toJson(map));
+            set24.setHours(JSON.toJson(map));
 
             redisValue = userId + "," + set24.getFunctionId();
             redisCommand.setValues(set24.getUuId(), redisValue);
