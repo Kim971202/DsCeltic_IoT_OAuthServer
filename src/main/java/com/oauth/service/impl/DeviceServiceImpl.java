@@ -462,18 +462,20 @@ public class DeviceServiceImpl implements DeviceService {
             msg = "홈 IoT 컨트롤러 상태 정보 조회 성공";
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+            System.out.println("params.getPushToken(): " + params.getPushToken());
 
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Device Status Info");
-            conMap.put("id", "Device Status Info ID");
-            conMap.put("isEnd", "false");
-
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", objectMapper.writeValueAsString(conMap));
+//            if(memberMapper.updatePushToken(params) <= 0) {
+//                msg = "구글 FCM TOKEN 갱신 실패.";
+//                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+//                return new ResponseEntity<>(result, HttpStatus.OK);
+//            }
+//
+//            conMap.put("targetToken", params.getPushToken());
+//            conMap.put("title", "Device Status Info");
+//            conMap.put("id", "Device Status Info ID");
+//            conMap.put("isEnd", "false");
+//
+//            mobiusService.createCin("ToPushServer", "ToPushServerCnt", objectMapper.writeValueAsString(conMap));
             redisCommand.deleteValues(uuId);
 
             params.setFunctionId("DeviceStatusInfo");
