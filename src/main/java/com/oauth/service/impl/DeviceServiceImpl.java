@@ -138,6 +138,12 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            if(memberMapper.updatePushToken(params) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Device ON/OFF");
             conMap.put("id", "Device ON/OFF ID");
@@ -281,12 +287,17 @@ public class DeviceServiceImpl implements DeviceService {
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 }
+
                 /* *
                  * IoT 디바이스 등록 INSERT 순서
                  * 1. TBR_IOT_DEVICE - 디바이스
                  * 2. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
                  * 3. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * 4. TBR_OPR_USER_DEVICE - 사용자 단말 정보
+                 *
+                 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                 * 1. Push 설정 관련 기본 DB 추가 (기본값: Y)
+                 * 2. 안전알림 설정 Table 기본 DB 추가 (기본값: 0000)
                  * */
 
                 params.setModelCode(" " + params.getModelCode());
@@ -321,6 +332,13 @@ public class DeviceServiceImpl implements DeviceService {
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+
+                // Push 설정 관련 기본 DB 추가
+                if(memberMapper.insertUserDevicePush(params) <= 0){
+                    msg = "사용자 PUSH 정보 등록 실패.";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 } else stringObject = "Y";
             }
 
@@ -346,6 +364,11 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            if(memberMapper.updatePushToken(params) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "DeviceInfoUpsert");
             conMap.put("id", "DeviceInfoUpsert ID");
@@ -438,6 +461,12 @@ public class DeviceServiceImpl implements DeviceService {
             conMap.put("body", "Device Status Info OK");
             msg = "홈 IoT 컨트롤러 상태 정보 조회 성공";
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+
+            if(memberMapper.updatePushToken(params) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
 
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Device Status Info");
@@ -549,6 +578,12 @@ public class DeviceServiceImpl implements DeviceService {
                 conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+
+            if(memberMapper.updatePushToken(params) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
             conMap.put("targetToken", params.getPushToken());
@@ -663,6 +698,12 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            if(memberMapper.updatePushToken(params) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "TemperatureSet");
             conMap.put("id", "TemperatureSet ID");
@@ -773,6 +814,11 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            if(memberMapper.updatePushToken(params) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "BoiledWaterTempertureSet");
             conMap.put("id", "BoiledWaterTempertureSet ID");
@@ -883,6 +929,11 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            if(memberMapper.updatePushToken(params) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "WaterTempertureSet");
             conMap.put("id", "WaterTempertureSet ID");
@@ -992,6 +1043,12 @@ public class DeviceServiceImpl implements DeviceService {
                 conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+
+            if(memberMapper.updatePushToken(params) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
             conMap.put("targetToken", params.getPushToken());
@@ -1105,6 +1162,12 @@ public class DeviceServiceImpl implements DeviceService {
                 conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+
+            if(memberMapper.updatePushToken(params) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
             conMap.put("targetToken", params.getPushToken());

@@ -29,8 +29,19 @@
     </select>
 
     <insert id="insertMember" parameterType="com.oauth.dto.AuthServerDTO">
-        INSERT INTO TBR_OPR_USER (HP, USER_ID, USER_NICK)
-        VALUES (#{hp}, #{userId}, #{userNickname})
+        INSERT INTO
+            TBR_OPR_USER
+        (
+            HP,
+            USER_ID,
+            USER_NICK
+        )
+        VALUES
+        (
+            #{hp},
+            #{userId},
+            #{userNickname}
+        )
     </insert>
 
     <insert id="insertAccount" parameterType="com.oauth.dto.AuthServerDTO">
@@ -470,4 +481,25 @@
             USER_ID = #{userId}
     </update>
 
+    <insert id="insertUserDevicePush" parameterType="com.oauth.dto.AuthServerDTO" >
+        INSERT INTO
+            TBR_OPR_USER_DEVICE_PUSH
+            (
+                USER_ID,
+                DEVC_ID,
+                HP,
+                PUSH_YN_01,
+                PUSH_YN_02,
+                PUSH_YN_03
+            )
+                VALUES
+            (
+                #{userId},
+                #{deviceId},
+                #{hp},
+                'Y',
+                'Y',
+                'Y'
+            )
+    </insert>
 </mapper>
