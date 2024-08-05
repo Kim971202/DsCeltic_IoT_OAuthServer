@@ -115,8 +115,13 @@
     </select>
 
     <update id="updateUserNicknameAndHp" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE TBR_OPR_USER SET HP = #{newHp}, USER_NICK = #{userNickname}
-        WHERE USER_ID = #{userId}
+        UPDATE
+            TBR_OPR_USER
+        SET
+            HP = #{newHp},
+            USER_NICK = #{userNickname}
+        WHERE
+            USER_ID = #{userId}
     </update>
 
     <select id="accessTokenCheck" parameterType="String" resultMap="member">

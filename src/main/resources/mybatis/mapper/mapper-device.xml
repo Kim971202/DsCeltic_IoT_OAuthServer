@@ -100,6 +100,15 @@
             DEVC_ID = #{deviceId}
     </update>
 
+    <update id="changeDeviceNicknameTemp" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBT_OPR_DEVICE_REGIST
+        SET
+            DEVC_NICK = #{deviceNickname}
+        WHERE
+            DEVC_ID = #{deviceId}
+    </update>
+
     <insert id="insertDeviceModelCode" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO TBD_IOT_DEVICE_MODL_CD
             (

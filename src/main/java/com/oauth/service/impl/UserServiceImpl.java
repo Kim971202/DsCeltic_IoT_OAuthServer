@@ -1644,17 +1644,24 @@ public class UserServiceImpl implements UserService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 
+            // deviceNickname Input 대신 newDeviceNickname을 받아서 Setter 사용
+            params.setDeviceNickname(params.getNewDeviceNickname());
+
             if(deviceMapper.changeDeviceNickname(params) <= 0){
                 msg = "기기 별칭 수정 실패";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            } else stringObject = "Y";
+            }
+            if(deviceMapper.changeDeviceNicknameTemp(params) <= 0){
+                msg = "기기 별칭 수정 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }else stringObject = "Y";
 
             if(stringObject.equals("Y")) {
                 conMap.put("body", "Device Nickname Change OK");
                 msg = "기기 별칭 수정 성공";
-            }
-            else {
+            } else {
                 conMap.put("body", "Device Nickname Change FAIL");
                 msg = "기기 별칭 수정 실패";
             }

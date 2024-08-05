@@ -27,6 +27,7 @@ public interface DeviceMapper {
     public AuthServerDTO getPushinfoByDeviceId(String deviceId);
     public AuthServerDTO getDeviceRegistStatus(String serialNumber);
     public int changeDeviceNickname(AuthServerDTO device);
+    public int changeDeviceNicknameTemp(AuthServerDTO device);
     public int insertDeviceModelCode(AuthServerDTO device);
     public int insertDevice(AuthServerDTO device);
     public int insertDeviceRegist(AuthServerDTO device);
