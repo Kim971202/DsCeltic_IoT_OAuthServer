@@ -97,6 +97,8 @@ public class MobiusController {
             // FCM Token 값 쿼리 필요
             pushService.sendPushMessage(jsonBody);
 
+            System.out.println(common.readCon(jsonBody, "24h"));
+
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
             deviceInfo.setMfcd(common.readCon(jsonBody, "mfcd"));
             deviceInfo.setPowr(common.readCon(jsonBody, "powr"));
