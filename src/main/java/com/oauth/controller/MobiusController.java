@@ -97,10 +97,6 @@ public class MobiusController {
             // FCM Token 값 쿼리 필요
             pushService.sendPushMessage(jsonBody);
 
-            System.out.println(common.readCon(jsonBody, "24h"));
-            common.readCon(jsonBody, "24h").replace("{", "{\"").replace(":", "\":\"").replace(",", "\",\"").replace("}", "\"}").replace("[", "[\"").replace("]", "\"]").replace("\",\"hs\":\"", "\",\"hs\":[\"").replace("\"]\"}", "\"]}");
-            System.out.println(common.readCon(jsonBody, "24h").replace("{", "{\"").replace(":", "\":\"").replace(",", "\",\"").replace("}", "\"}").replace("[", "[\"").replace("]", "\"]").replace("\",\"hs\":\"", "\",\"hs\":[\"").replace("\"]\"}", "\"]}"));
-
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
             deviceInfo.setMfcd(common.readCon(jsonBody, "mfcd"));
             deviceInfo.setPowr(common.readCon(jsonBody, "powr"));
