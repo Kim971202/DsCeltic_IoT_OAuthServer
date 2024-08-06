@@ -502,9 +502,9 @@
                 #{userId},
                 #{deviceId},
                 #{hp},
-                'Y',
-                'Y',
-                'Y'
+                'N',
+                'N',
+                'N'
             )
     </insert>
 
