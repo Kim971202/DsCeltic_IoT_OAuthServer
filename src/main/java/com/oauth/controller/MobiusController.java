@@ -97,10 +97,6 @@ public class MobiusController {
             // FCM Token 값 쿼리 필요
             pushService.sendPushMessage(jsonBody);
 
-            System.out.println(common.readCon(jsonBody, "24h"));
-            common.readCon(jsonBody, "24h").replace("{", "{\"").replace(":", "\":\"").replace(",", "\",\"").replace("}", "\"}").replace("[", "[\"").replace("]", "\"]").replace("\",\"hs\":\"", "\",\"hs\":[\"").replace("\"]\"}", "\"]}");
-            System.out.println(common.readCon(jsonBody, "24h").replace("{", "{\"").replace(":", "\":\"").replace(",", "\",\"").replace("}", "\"}").replace("[", "[\"").replace("]", "\"]").replace("\",\"hs\":\"", "\",\"hs\":[\"").replace("\"]\"}", "\"]}"));
-
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
             deviceInfo.setMfcd(common.readCon(jsonBody, "mfcd"));
             deviceInfo.setPowr(common.readCon(jsonBody, "powr"));
@@ -114,8 +110,25 @@ public class MobiusController {
             deviceInfo.setChTp(common.readCon(jsonBody, "chTp"));
             deviceInfo.setCwTp(common.readCon(jsonBody, "cwTp"));
             deviceInfo.setHwSt(common.readCon(jsonBody, "hwSt"));
-            deviceInfo.setWk7(common.readCon(jsonBody, "7wk"));
-            deviceInfo.setH12(common.readCon(jsonBody, "12h"));
+
+            deviceInfo.setWk7(common.readCon(jsonBody, "7wk")
+                    .replace("{", "{\"")
+                    .replace(":", "\":\"")
+                    .replace(",", "\",\"")
+                    .replace("}", "\"}")
+                    .replace("[", "[\"")
+                    .replace("]", "\"]")
+                    .replace("\"{\"", "{\"")
+                    .replace("}\"\"", "}\"")
+                    .replace("\",\"hs\":\"[\"", "\",\"hs\":[\"")
+                    .replace("\"]\"}", "\"]}")
+                    .replace("}\"},{\"", "},{"));
+
+            deviceInfo.setH12(common.readCon(jsonBody, "12h")
+                    .replace("{", "{\"")
+                    .replace(":", "\":\"")
+                    .replace(",", "\",\"")
+                    .replace("}", "\"}"));
 
             deviceInfo.setH24(common.readCon(jsonBody, "24h")
                     .replace("{", "{\"")
