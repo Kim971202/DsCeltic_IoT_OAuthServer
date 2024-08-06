@@ -152,7 +152,6 @@ public class DeviceServiceImpl implements DeviceService {
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("doPowerOnOff jsonString: " + jsonString);
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(powerOnOff.getUuId());
 
             deviceInfo.setPowr(params.getPowerStatus());
@@ -167,6 +166,16 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+
+            params.setPushTitle("기기제어");
+            params.setPushContent("전원 ON/OFF");
+            if(memberMapper.insertPushHistory(params) <= 0) {
+                msg = "PUSH HISTORY INSERT ERROR";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -388,7 +397,6 @@ public class DeviceServiceImpl implements DeviceService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(deviceInfoUpsert.getUuId());
 
             params.setFunctionId("DeviceInfoUpsert");
@@ -400,6 +408,21 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+
+            params.setPushTitle("기기제어");
+
+            if(registYn.equals("N"))
+                params.setPushContent("기기정보 수정");
+            else if(registYn.equals("Y"))
+                params.setPushContent("신규기기 등록");
+
+            if(memberMapper.insertPushHistory(params) <= 0) {
+                msg = "PUSH HISTORY INSERT ERROR";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CustomException e){
             log.error("", e);
@@ -417,9 +440,7 @@ public class DeviceServiceImpl implements DeviceService {
         String deviceId = params.getDeviceId();
         String uuId = common.getTransactionId();
         AuthServerDTO serialNumber;
-        Map<String, String> conMap = new HashMap<>();
         Map<String, String> resultMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
         List<DeviceStatusInfo.Device> device;
 
         try {
@@ -471,24 +492,9 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             }
 
-            conMap.put("body", "Device Status Info OK");
             msg = "홈 IoT 컨트롤러 상태 정보 조회 성공";
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            System.out.println("params.getPushToken(): " + params.getPushToken());
-
-//            if(memberMapper.updatePushToken(params) <= 0) {
-//                msg = "구글 FCM TOKEN 갱신 실패.";
-//                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-//                return new ResponseEntity<>(result, HttpStatus.OK);
-//            }
-//
-//            conMap.put("targetToken", params.getPushToken());
-//            conMap.put("title", "Device Status Info");
-//            conMap.put("id", "Device Status Info ID");
-//            conMap.put("isEnd", "false");
-//
-//            mobiusService.createCin("ToPushServer", "ToPushServerCnt", objectMapper.writeValueAsString(conMap));
             redisCommand.deleteValues(uuId);
 
             params.setFunctionId("DeviceStatusInfo");
@@ -608,7 +614,6 @@ public class DeviceServiceImpl implements DeviceService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             redisCommand.deleteValues(modeChange.getUuId());
 
@@ -624,6 +629,16 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+
+            params.setPushTitle("기기제어");
+            params.setPushContent("모드변경");
+            if(memberMapper.insertPushHistory(params) <= 0) {
+                msg = "PUSH HISTORY INSERT ERROR";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -725,7 +740,6 @@ public class DeviceServiceImpl implements DeviceService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(temperatureSet.getUuId());
 
             deviceInfo.setHtTp(params.getTemperture());
@@ -740,6 +754,16 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+
+            params.setPushTitle("기기제어");
+            params.setPushContent("실내온도 설정");
+            if(memberMapper.insertPushHistory(params) <= 0) {
+                msg = "PUSH HISTORY INSERT ERROR";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -841,7 +865,6 @@ public class DeviceServiceImpl implements DeviceService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
 
             deviceInfo.setWtTp(params.getTemperture());
@@ -856,6 +879,16 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+
+            params.setPushTitle("기기제어");
+            params.setPushContent("난방수온도 설정");
+            if(memberMapper.insertPushHistory(params) <= 0) {
+                msg = "PUSH HISTORY INSERT ERROR";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -955,7 +988,6 @@ public class DeviceServiceImpl implements DeviceService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(waterTempertureSet.getUuId());
 
             deviceInfo.setHwTp(params.getTemperture());
@@ -971,6 +1003,15 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
+            params.setPushTitle("기기제어");
+            params.setPushContent("온수온도 설정");
+            if(memberMapper.insertPushHistory(params) <= 0) {
+                msg = "PUSH HISTORY INSERT ERROR";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1072,7 +1113,6 @@ public class DeviceServiceImpl implements DeviceService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(fastHotWaterSet.getUuId());
 
             deviceInfo.setOpMd(params.getModeCode());
@@ -1087,6 +1127,16 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+
+            params.setPushTitle("기기제어");
+            params.setPushContent("빠른온수 설정");
+            if(memberMapper.insertPushHistory(params) <= 0) {
+                msg = "PUSH HISTORY INSERT ERROR";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1191,7 +1241,6 @@ public class DeviceServiceImpl implements DeviceService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             redisCommand.deleteValues(lockSet.getUuId());
 
             deviceInfo.setFcLc(params.getLockSet());
@@ -1206,6 +1255,16 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+
+            params.setPushTitle("기기제어");
+            params.setPushContent("잠금 모드 설정");
+            if(memberMapper.insertPushHistory(params) <= 0) {
+                msg = "PUSH HISTORY INSERT ERROR";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);

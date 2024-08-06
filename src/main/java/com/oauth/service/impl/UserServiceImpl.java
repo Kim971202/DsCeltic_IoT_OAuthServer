@@ -181,7 +181,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             param.setFunctionId("Login");
             param.setDeviceId("EMPTY");
@@ -199,6 +198,7 @@ public class UserServiceImpl implements UserService {
             } else result.setHp(hp);
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -374,7 +374,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             params.setFunctionId("ResetPassword");
             params.setDeviceId(params.getDeviceId());
@@ -388,6 +387,8 @@ public class UserServiceImpl implements UserService {
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -435,7 +436,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
@@ -450,6 +450,7 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -544,7 +545,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             params.setFunctionId("UpdateUserNicknameHp");
             params.setDeviceId("EMPTY");
@@ -556,6 +556,8 @@ public class UserServiceImpl implements UserService {
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -623,7 +625,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             params.setFunctionId("UpdatePassword");
             params.setDeviceId("EMPTY");
@@ -634,6 +635,7 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e) {
             log.error("", e);
@@ -746,13 +748,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusCode = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
-
-            if(!mobiusCode.getResponseCode().equals("201")){
-                msg = "사용자 추가 - 초대 실패";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
 
             params.setFunctionId("AddUser");
             params.setDeviceId("EMPTY");
@@ -766,6 +761,13 @@ public class UserServiceImpl implements UserService {
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
+
+            mobiusCode = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusCode.getResponseCode().equals("201")){
+                msg = "사용자 추가 - 초대 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
@@ -857,7 +859,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             params.setFunctionId("InviteStatus");
             params.setDeviceId("EMPTY");
@@ -868,6 +869,8 @@ public class UserServiceImpl implements UserService {
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -991,7 +994,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             params.setFunctionId("DelHouseholdMembers");
             params.setDeviceId("EMPTY");
@@ -1003,6 +1005,8 @@ public class UserServiceImpl implements UserService {
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1058,7 +1062,7 @@ public class UserServiceImpl implements UserService {
                     return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
                 }
 
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -1073,9 +1077,7 @@ public class UserServiceImpl implements UserService {
 
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
-        String searchFlag = params.getSearchFlag();
         HashMap<String, Object> resultMap = new LinkedHashMap<String, Object>();
-
         List<AuthServerDTO> deviceIdList;
 
         // "push" 부분을 표현하는 List 생성
@@ -1217,7 +1219,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             params.setFunctionId("DelHouseholder");
             params.setDeviceId("EMPTY");
@@ -1228,7 +1229,8 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);;
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1333,8 +1335,6 @@ public class UserServiceImpl implements UserService {
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
-
             params.setFunctionId("DeviceAuthCheck");
             params.setDeviceId("EMPTY");
             params.setUserId(userId);
@@ -1343,6 +1343,8 @@ public class UserServiceImpl implements UserService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1410,9 +1412,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
 
-            cinResult = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
-            if(!cinResult.getResponseCode().equals("201")) msg = "PUSH 메세지 전송 오류";
-
             params.setFunctionId("FirstDeviceAuthCheck");
             params.setDeviceId(result.getDeviceId());
             params.setUserId(userId);
@@ -1425,6 +1424,10 @@ public class UserServiceImpl implements UserService {
             result.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
+
+            cinResult = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!cinResult.getResponseCode().equals("201")) msg = "PUSH 메세지 전송 오류";
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1537,7 +1540,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             params.setFunctionId("UserDeviceDelete");
             params.setDeviceId(deviceId);
@@ -1552,6 +1554,7 @@ public class UserServiceImpl implements UserService {
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
 
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1679,7 +1682,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             params.setFunctionId("DeviceNicknameChange");
             params.setDeviceId(deviceId);
@@ -1693,6 +1695,8 @@ public class UserServiceImpl implements UserService {
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1791,6 +1795,8 @@ public class UserServiceImpl implements UserService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1919,7 +1925,6 @@ public class UserServiceImpl implements UserService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
             params.setFunctionId("UpdateDeviceLocationNickname");
             params.setDeviceId(deviceId);
@@ -1929,6 +1934,8 @@ public class UserServiceImpl implements UserService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
