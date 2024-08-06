@@ -507,4 +507,13 @@
                 'Y'
             )
     </insert>
+
+    <update id="updateSafeAlarmTimeSet" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_USER
+        SET
+            SAFE_ALARM_TIME = '0000'
+        WHERE
+            USER_ID = #{userId}
+    </update>
 </mapper>
