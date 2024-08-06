@@ -516,4 +516,24 @@
         WHERE
             USER_ID = #{userId}
     </update>
+
+    <update id="insertPushHistory" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_OPR_USER_DEVICE_PUSH_INFO
+        (
+            USER_ID,
+            PUSH_TITLE,
+            PUSH_CONTENT,
+            PUSH_TYPE,
+            PUSH_DATETIME
+        )
+        VALUES
+        (
+            #{userId},
+            #{pushTitle},
+            #{pushContent},
+            '00',
+            now()
+        )
+    </update>
 </mapper>
