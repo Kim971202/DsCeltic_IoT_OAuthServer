@@ -98,7 +98,7 @@ public class MobiusController {
             pushService.sendPushMessage(jsonBody);
 
             System.out.println(common.readCon(jsonBody, "24h"));
-//            common.readCon(jsonBody, "24h").replace("{", "{\"").replace(":", "\":\"").replace(",", "\",\"").replace("}", "\"}").replace("[", "[\"").replace("]", "\"]").replace("\",\"hs\":\"", "\",\"hs\":[\"").replace("\"]\"}", "\"]}");
+            common.readCon(jsonBody, "24h").replace("{", "{\"").replace(":", "\":\"").replace(",", "\",\"").replace("}", "\"}").replace("[", "[\"").replace("]", "\"]").replace("\",\"hs\":\"", "\",\"hs\":[\"").replace("\"]\"}", "\"]}");
             System.out.println(common.readCon(jsonBody, "24h").replace("{", "{\"").replace(":", "\":\"").replace(",", "\",\"").replace("}", "\"}").replace("[", "[\"").replace("]", "\"]").replace("\",\"hs\":\"", "\",\"hs\":[\"").replace("\"]\"}", "\"]}"));
 
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
@@ -116,7 +116,17 @@ public class MobiusController {
             deviceInfo.setHwSt(common.readCon(jsonBody, "hwSt"));
             deviceInfo.setWk7(common.readCon(jsonBody, "7wk"));
             deviceInfo.setH12(common.readCon(jsonBody, "12h"));
-            deviceInfo.setH24(common.readCon(jsonBody, "24h"));
+
+            deviceInfo.setH24(common.readCon(jsonBody, "24h")
+                    .replace("{", "{\"")
+                    .replace(":", "\":\"")
+                    .replace(",", "\",\"")
+                    .replace("}", "\"}")
+                    .replace("[", "[\"")
+                    .replace("]", "\"]")
+                    .replace("\",\"hs\":\"", "\",\"hs\":[\"")
+                    .replace("\"]\"}", "\"]}"));
+
             deviceInfo.setFwh(common.readCon(jsonBody, "fwh"));
             deviceInfo.setDeviceId(common.readCon(jsonBody, "deviceId"));
             int rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
