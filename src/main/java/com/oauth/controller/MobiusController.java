@@ -112,38 +112,15 @@ public class MobiusController {
             deviceInfo.setHwSt(common.readCon(jsonBody, "hwSt"));
 
             if(common.readCon(jsonBody, "7wk") != null){
-                deviceInfo.setWk7(common.readCon(jsonBody, "7wk")
-                        .replace("{", "{\"")
-                        .replace(":", "\":\"")
-                        .replace(",", "\",\"")
-                        .replace("}", "\"}")
-                        .replace("[", "[\"")
-                        .replace("]", "\"]")
-                        .replace("\"{\"", "{\"")
-                        .replace("}\"\"", "}\"")
-                        .replace("\",\"hs\":\"[\"", "\",\"hs\":[\"")
-                        .replace("\"]\"}", "\"]}")
-                        .replace("}\"},{\"", "},{"));
+                deviceInfo.setWk7(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")));
             }
 
             if(common.readCon(jsonBody, "12h") != null){
-                deviceInfo.setH12(common.readCon(jsonBody, "12h")
-                        .replace("{", "{\"")
-                        .replace(":", "\":\"")
-                        .replace(",", "\",\"")
-                        .replace("}", "\"}"));
+                deviceInfo.setH12(common.convertToJsonFormat(common.readCon(jsonBody, "12h")));
             }
 
             if(common.readCon(jsonBody, "24h") != null){
-                deviceInfo.setH24(common.readCon(jsonBody, "24h")
-                        .replace("{", "{\"")
-                        .replace(":", "\":\"")
-                        .replace(",", "\",\"")
-                        .replace("}", "\"}")
-                        .replace("[", "[\"")
-                        .replace("]", "\"]")
-                        .replace("\",\"hs\":\"", "\",\"hs\":[\"")
-                        .replace("\"]\"}", "\"]}"));
+                deviceInfo.setH24(common.convertToJsonFormat(common.readCon(jsonBody, "24h")));
             }
 
             deviceInfo.setFwh(common.readCon(jsonBody, "fwh"));
