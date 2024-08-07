@@ -1111,7 +1111,7 @@ public class UserServiceImpl implements UserService {
 
                 Map<String, String> push2 = new LinkedHashMap<>();
                 push2.put("pushCd", "02");
-                push1.put("pushYn", pushCodeInfo.get(i).getSPushYn());
+                push2.put("pushYn", pushCodeInfo.get(i).getSPushYn());
                 push2.put("deviceId", pushCodeInfo.get(i).getDeviceId());
                 push2.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
                 push2.put("modelCode", pushCodeInfo.get(i).getModelCode());
