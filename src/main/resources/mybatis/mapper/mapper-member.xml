@@ -352,7 +352,7 @@
                  ELSE '-'
             END
             ) AS pushType,
-            DATE_FORMAT(PUSH_DATETIME, '%Y-%m-%d %h:%i:%s') AS pushDateTime
+            DATE_FORMAT(PUSH_DATETIME, '%Y-%m-%d %H:%i:%s') AS pushDateTime
         FROM
             TBR_OPR_USER_DEVICE_PUSH_INFO
         WHERE
@@ -513,7 +513,8 @@
         UPDATE
             TBR_OPR_USER
         SET
-            SAFE_ALARM_TIME = '0000'
+            SAFE_ALARM_TIME = '0000',
+            SAFE_
         WHERE
             USER_ID = #{userId}
     </update>
