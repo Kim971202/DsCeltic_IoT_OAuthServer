@@ -1362,7 +1362,7 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("addrNickname", addrNicknameList.get(i));
                     data.put("regSort", regSortList.get(i));
                     data.put("deviceId", deviceIdList.get(i));
-                    data.put("controlAuthKey", deviceIdList.get(i));
+                    data.put("controlAuthKey", rKeyList.get(i));
                     data.put("deviceStatus", "1");
                     data.put("powr", devicesStatusInfo.get(i).getPowr());
                     data.put("opMd", devicesStatusInfo.get(i).getOpMd());
