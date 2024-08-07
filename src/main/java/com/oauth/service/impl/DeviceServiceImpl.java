@@ -356,12 +356,6 @@ public class DeviceServiceImpl implements DeviceService {
                     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 }
 
-                // 안전알림 설정 Table 기본 DB 추가 (기본값: 0000)
-                if(memberMapper.updateSafeAlarmTimeSet(params) <= 0){
-                    msg = "안전안심 시간 정보 등록 실패.";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
             }
 
             if (stringObject.equals("Y") && registYn.equals("Y")) {

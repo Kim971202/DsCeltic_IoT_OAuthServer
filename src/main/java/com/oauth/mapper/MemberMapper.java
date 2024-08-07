@@ -35,7 +35,6 @@ public interface MemberMapper {
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
     public int insertPushHistory(AuthServerDTO member);
-    public int updateSafeAlarmTimeSet(AuthServerDTO member);
     public int updatePushToken(AuthServerDTO member);
     public int insertUserDevicePush(AuthServerDTO member);
     public int insertMember(AuthServerDTO member);
