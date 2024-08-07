@@ -1126,6 +1126,7 @@ public class UserServiceImpl implements UserService {
                 pushList.add(push3);
             }
 
+            log.info("pushList: " + pushList);
             resultMap.put("push", pushList);
 
             resultMap.put("resultCode", "200");
