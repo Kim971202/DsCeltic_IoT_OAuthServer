@@ -347,7 +347,7 @@ public class DeviceServiceImpl implements DeviceService {
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
+                } else stringObject = "Y";
 
                 // Push 설정 관련 기본 DB 추가
                 if(memberMapper.insertUserDevicePush(params) <= 0){
@@ -361,7 +361,7 @@ public class DeviceServiceImpl implements DeviceService {
                     msg = "안전안심 시간 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                } else stringObject = "Y";
+                }
             }
 
             if (stringObject.equals("Y") && registYn.equals("Y")) {
