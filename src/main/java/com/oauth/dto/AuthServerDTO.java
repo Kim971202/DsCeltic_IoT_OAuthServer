@@ -144,7 +144,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String[][] ws;
     private String[] hr;
     private String[] mn;
-    private String weekList;                 // 요일: 0,1,2,3,4,5,6 (일,월,화,수,목,금,토)
+    private String weekList;                     // 요일: 0,1,2,3,4,5,6 (일,월,화,수,목,금,토)
     private String[] dayWeek;                    // 주간예약 요일별 가동시간
     private String pushToken;                    // 푸시 토큰
     private String startDate;                    // 통계 시작일(YYYYMMDD)
@@ -158,8 +158,8 @@ public class AuthServerDTO implements UserDetails, Serializable {
 
     private String registUserType;
 
-    private String safeAlarmTime;                // 안전안심
-    private String safeAlarmStatus;
+    private String safeAlarmTime;                // 안전안심 시간 (예: 0723 = 7일 23시간)
+    private String safeAlarmStatus;              // 안전안심 알람 사용 여부 (Y/N)
 
     private String errorCode;
     private String errorMessage;

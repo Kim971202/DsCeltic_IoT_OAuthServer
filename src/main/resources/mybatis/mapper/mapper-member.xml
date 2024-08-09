@@ -509,7 +509,7 @@
             )
     </insert>
 
-    <update id="insertPushHistory" parameterType="com.oauth.dto.AuthServerDTO">
+    <insert id="insertPushHistory" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO
             TBR_OPR_USER_DEVICE_PUSH_INFO
         (
@@ -527,5 +527,15 @@
             '00',
             now()
         )
+    </insert>
+
+    <update id="UpdateSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_USER
+        SET
+            SAFE_ALARM_TIME = #{safeAlarmTime},
+            SAFE_ALARM_STATUS = #{safeAlarmStatus}
+        WHERE
+            USER_ID = #{userId}
     </update>
 </mapper>
