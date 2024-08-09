@@ -158,6 +158,9 @@ public class AuthServerDTO implements UserDetails, Serializable {
 
     private String registUserType;
 
+    private String safeAlarmTime;                // 안전안심
+    private String safeAlarmStatus;
+
     private String errorCode;
     private String errorMessage;
     private String errorDateTime;

@@ -578,6 +578,23 @@ public class UserController {
         return userService.dogenerateTempKey(params.getUserId());
     }
 
+    /*
+     * 안전안심 알람 설정
+     * */
+    @PostMapping(value = "/safeAlarmSet")
+    @ResponseBody
+    public ResponseEntity<?> doSafeAlarmSet(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws Exception {
+        log.info("안전안심 알람 설정");
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+            Validator.isNullOrEmpty(params.getSafeAlarmTime()) ||
+            Validator.isNullOrEmpty(params.getSafeAlarmStatus())){
+            throw new CustomException("404", "안전안심 알람 설정 값 오류");
+        }
+        return null;
+    }
+
     @PostMapping(value = "/test")
     public String test(String on) throws Exception {
         DeviceStatusInfo.Device a = new DeviceStatusInfo.Device();
