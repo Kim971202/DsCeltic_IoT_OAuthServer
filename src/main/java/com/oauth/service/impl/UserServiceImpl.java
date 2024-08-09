@@ -735,6 +735,7 @@ public class UserServiceImpl implements UserService {
                 msg = "사용자 추가 - 초대 실패";
             }
 
+            params.setUserId(params.getRequestUserId());
             if(memberMapper.updatePushToken(params) <= 0) {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
