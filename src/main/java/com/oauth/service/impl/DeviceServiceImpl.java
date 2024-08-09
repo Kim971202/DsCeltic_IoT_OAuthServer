@@ -175,7 +175,12 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -359,7 +364,12 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CustomException e){
             log.error("", e);
@@ -575,7 +585,12 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -700,7 +715,12 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -825,7 +845,12 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -948,7 +973,12 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1073,7 +1103,12 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1201,7 +1236,12 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
