@@ -1996,6 +1996,12 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
+            if(memberMapper.updatePushToken(params) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
