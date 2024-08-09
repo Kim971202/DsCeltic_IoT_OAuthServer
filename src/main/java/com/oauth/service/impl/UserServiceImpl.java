@@ -3,7 +3,6 @@ package com.oauth.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
-import com.oauth.jwt.ApiTokenUtils;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.message.GwMessagingSystem;
@@ -41,8 +40,6 @@ public class UserServiceImpl implements UserService {
     private Common common;
     @Autowired
     private RedisCommand redisCommand;
-    @Autowired
-    private ApiTokenUtils apiTokenUtils;
     @Autowired
     GwMessagingSystem gwMessagingSystem;
     @Value("${server.timeout}")
@@ -197,8 +194,13 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else result.setHp(hp);
 
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -388,7 +390,11 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -450,7 +456,11 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -555,9 +565,13 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -635,7 +649,11 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e) {
             log.error("", e);
@@ -765,7 +783,7 @@ public class UserServiceImpl implements UserService {
 
             mobiusCode = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             if(!mobiusCode.getResponseCode().equals("201")){
-                msg = "사용자 추가 - 초대 실패";
+                msg = "PUSH 메세지 전송 오류";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
@@ -869,9 +887,13 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1005,9 +1027,13 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1231,8 +1257,13 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
+
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);;
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1346,7 +1377,11 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1423,12 +1458,17 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
+
+            cinResult = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!cinResult.getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             result.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
-
-            cinResult = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
-            if(!cinResult.getResponseCode().equals("201")) msg = "PUSH 메세지 전송 오류";
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
@@ -1552,11 +1592,16 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
+
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1694,11 +1739,16 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
+
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1798,7 +1848,11 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1937,7 +1991,12 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
