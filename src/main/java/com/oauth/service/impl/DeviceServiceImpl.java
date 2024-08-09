@@ -190,23 +190,19 @@ public class DeviceServiceImpl implements DeviceService {
         ApiResponse.Data result = new ApiResponse.Data();
         DeviceInfoUpsert deviceInfoUpsert = new DeviceInfoUpsert();
 
-        String stringObject;
+        String stringObject = null;
         String msg;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String serialNumber = params.getSerialNumber();
         String controlAuthKey = params.getControlAuthKey();
         String registYn = params.getRegistYn();
-        String responseMessage;
-        String redisValue;
 
         log.info("userId: " + userId);
         log.info("deviceId: " + deviceId);
         log.info("serialNumber: " + serialNumber);
         log.info("controlAuthKey: " + controlAuthKey);
         log.info("registYn: " + registYn);
-
-        MobiusResponse response;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -241,16 +237,6 @@ public class DeviceServiceImpl implements DeviceService {
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                redisValue = userId + "," + deviceInfoUpsert.getFunctionId();
-                redisCommand.setValues(deviceInfoUpsert.getUuId(), redisValue);
-                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(deviceInfoUpsert));
-
-                if(!response.getResponseCode().equals("201")){
-                    msg = "중계서버 오류";
-                    result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
-                    return new ResponseEntity<>(result, HttpStatus.OK);
-                }
-
                 /* *
                  * IoT 디바이스 UPDATE 순서
                  * 1. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
@@ -272,28 +258,10 @@ public class DeviceServiceImpl implements DeviceService {
                     msg = "홈 IoT 컨트롤러 정보 수정 실패.";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
+                } else stringObject = "Y";
 
-                try {
-                    responseMessage = gwMessagingSystem.waitForResponse("mfAr" + deviceInfoUpsert.getUuId(), TIME_OUT, TimeUnit.SECONDS);
-                    if (responseMessage != null) {
-                        stringObject = "Y";
-                        // 응답 처리
-                        log.info("receiveCin에서의 응답: " + responseMessage);
-                        if (responseMessage.equals("0")) stringObject = "Y";
-                        else stringObject = "N";
-                    } else {
-                        // 타임아웃이나 응답 없음 처리
-                        stringObject = "T";
-                        log.info("응답이 없거나 시간 초과");
-                    }
-                } catch (InterruptedException e) {
-                    // 대기 중 인터럽트 처리
-                    log.error("", e);
-                    throw new CustomException("507", "입력값 오류");
-                }
-            } else {
-
+            // 등록
+            } else if(registYn.equals("Y")){
                 // 등록전 SerialNumber로 등록된 기기인지 확인
                 deviceRegistStatus = deviceMapper.getDeviceRegistStatus(serialNumber);
                 if(!deviceRegistStatus.getDeviceId().equals("EMPTY")){
@@ -358,8 +326,8 @@ public class DeviceServiceImpl implements DeviceService {
 
             }
 
-            System.out.println("stringObject: " + stringObject);
-            System.out.println("registYn: " + registYn);
+            log.info("stringObject: " + stringObject);
+            log.info("registYn: " + registYn);
 
             if (stringObject.equals("Y") && registYn.equals("Y")) {
                 conMap.put("body", "Device Insert OK");
