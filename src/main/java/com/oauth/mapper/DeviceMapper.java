@@ -26,6 +26,7 @@ public interface DeviceMapper {
     public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public AuthServerDTO getPushinfoByDeviceId(String deviceId);
     public AuthServerDTO getDeviceRegistStatus(String serialNumber);
+    public int changeDeviceNicknameTemp(AuthServerDTO device);
     public int changeDeviceNickname(AuthServerDTO device);
     public int insertDeviceModelCode(AuthServerDTO device);
     public int insertDevice(AuthServerDTO device);
