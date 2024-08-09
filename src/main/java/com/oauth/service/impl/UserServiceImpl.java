@@ -1958,4 +1958,48 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
     }
+
+    /** 안전안심 알람 설정 */
+    @Override
+    public ResponseEntity<?> doSafeAlarmSet(AuthServerDTO params) throws Exception {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        String stringObject = "N";
+        String msg;
+
+        String userId = params.getUserId();
+
+        try {
+
+            if(memberMapper.UpdateSafeAlarmSet(params) <= 0){
+                msg = "안전안심 알람 설정 실패";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            } else stringObject = "Y";
+
+            if(stringObject.equals("Y"))
+                msg = "기기 설치 위치 별칭 수정 성공";
+            else
+                msg = "기기 설치 위치 별칭 수정 실패";
+
+
+            params.setFunctionId("SafeAlarmSet");
+            params.setDeviceId("EMPTY");
+            params.setUserId(userId);
+            if(memberMapper.insertCommandHistory(params) <= 0) {
+                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200
+                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

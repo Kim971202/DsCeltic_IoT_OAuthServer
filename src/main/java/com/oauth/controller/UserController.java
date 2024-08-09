@@ -592,7 +592,7 @@ public class UserController {
             Validator.isNullOrEmpty(params.getSafeAlarmStatus())){
             throw new CustomException("404", "안전안심 알람 설정 값 오류");
         }
-        return null;
+        return userService.doSafeAlarmSet(params);
     }
 
     @PostMapping(value = "/test")
