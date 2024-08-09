@@ -100,15 +100,6 @@
             DEVC_ID = #{deviceId}
     </update>
 
-    <update id="changeDeviceNicknameTemp" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE
-            TBT_OPR_DEVICE_REGIST
-        SET
-            DEVC_NICK = #{deviceNickname}
-        WHERE
-            DEVC_ID = #{deviceId}
-    </update>
-
     <insert id="insertDeviceModelCode" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO TBD_IOT_DEVICE_MODL_CD
             (
@@ -226,7 +217,10 @@
             TBT_OPR_DEVICE_REGIST
         SET
             LAT = #{latitude},
-            LON = #{longitude}
+            LON = #{longitude},
+            DEVC_NICK = #{deviceNickname},
+            ADDR_NICK = #{addrNickname},
+            DTAIL_ADDR = #{addrDetail}
         WHERE
             TEMP_DEVC_REG_KEY = #{tmpRegistKey}
         AND
@@ -239,7 +233,9 @@
         SET
             OLD_ADDR = #{oldAddr},
             NEW_ADDR = #{newAddr},
-            DTAIL_ADDR = #{addrDetail}
+            DTAIL_ADDR = #{addrDetail},
+            ADDR_NICK = #{addrNickname},
+            DEVC_NICK = #{deviceNickname}
         WHERE
             DEVC_ID = #{deviceId}
     </update>
