@@ -210,24 +210,6 @@ public class DeviceServiceImpl implements DeviceService {
         AuthServerDTO deviceRegistStatus;
 
         try {
-
-            deviceInfoUpsert.setAddrNickname(params.getAddrNickname());
-            deviceInfoUpsert.setUserId(params.getUserId());
-            deviceInfoUpsert.setHp(params.getHp());
-            deviceInfoUpsert.setRegisYn(registYn);
-            deviceInfoUpsert.setDeviceId(deviceId);
-            deviceInfoUpsert.setControlAuthKey(controlAuthKey);
-            deviceInfoUpsert.setTmpRegistryKey(params.getTmpRegistKey());
-            deviceInfoUpsert.setDeviceType(params.getDeviceType());
-            deviceInfoUpsert.setModelCode(params.getModelCode());
-            deviceInfoUpsert.setSerialNumber(params.getSerialNumber());
-            deviceInfoUpsert.setZipCode(params.getZipCode());
-            deviceInfoUpsert.setLatitude(params.getLatitude());
-            deviceInfoUpsert.setLongitude(params.getLongitude());
-            deviceInfoUpsert.setDeviceNickname(params.getDeviceNickname());
-            deviceInfoUpsert.setFunctionId("mfAr");
-            deviceInfoUpsert.setUuId(common.getTransactionId());
-
             // 수정
             if(registYn.equals("N")){
 
@@ -256,14 +238,6 @@ public class DeviceServiceImpl implements DeviceService {
 
             // 등록
             } else if(registYn.equals("Y")){
-                // 등록전 SerialNumber로 등록된 기기인지 확인
-                deviceRegistStatus = deviceMapper.getDeviceRegistStatus(serialNumber);
-                if(!deviceRegistStatus.getDeviceId().equals("EMPTY")){
-                    // 이미 등록된 SerialNumber
-                    msg = "중복 SerialNumber.";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
 
                 /* *
                  * IoT 디바이스 등록 INSERT 순서
@@ -274,7 +248,6 @@ public class DeviceServiceImpl implements DeviceService {
                  *
                  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                  * 1. Push 설정 관련 기본 DB 추가 (기본값: Y)
-                 * 2. 안전알림 설정 Table 기본 DB 추가 (기본값: 0000)
                  * */
 
                 params.setModelCode(" " + params.getModelCode());
@@ -287,10 +260,16 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setModelCode(params.getModelCode().replaceAll(" ", ""));
                 params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
 
-                if(deviceMapper.insertDevice(params) <= 0){
-                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                // SerialNumber가 등록된 기기 일 경우 TBR_IOT_DEVICE Table에 INSERT 스킵
+                deviceRegistStatus = deviceMapper.getDeviceRegistStatus(serialNumber);
+                log.info("deviceRegistStatus: " + deviceRegistStatus.getDeviceId());
+
+                if(!deviceRegistStatus.getDeviceId().equals("EMPTY")){
+                    if(deviceMapper.insertDevice(params) <= 0){
+                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                        result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    }
                 }
 
                 if(deviceMapper.insertDeviceRegist(params) <= 0){
@@ -356,7 +335,6 @@ public class DeviceServiceImpl implements DeviceService {
             conMap.put("isEnd", "false");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            redisCommand.deleteValues(deviceInfoUpsert.getUuId());
 
             params.setFunctionId("DeviceInfoUpsert");
             if(deviceId == null) deviceId = "EMPTy";
