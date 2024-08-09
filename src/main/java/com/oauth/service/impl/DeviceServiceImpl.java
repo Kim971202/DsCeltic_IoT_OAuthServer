@@ -358,6 +358,9 @@ public class DeviceServiceImpl implements DeviceService {
 
             }
 
+            System.out.println("stringObject: " + stringObject);
+            System.out.println("registYn: " + registYn);
+
             if (stringObject.equals("Y") && registYn.equals("Y")) {
                 conMap.put("body", "Device Insert OK");
                 msg = "홈 IoT 컨트롤러 정보 등록 성공";
