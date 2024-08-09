@@ -264,7 +264,7 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceRegistStatus = deviceMapper.getDeviceRegistStatus(serialNumber);
                 log.info("deviceRegistStatus: " + deviceRegistStatus.getDeviceId());
 
-                if(!deviceRegistStatus.getDeviceId().equals("EMPTY")){
+                if(deviceRegistStatus.getDeviceId().equals("EMPTY")){
                     if(deviceMapper.insertDevice(params) <= 0){
                         msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                         result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
