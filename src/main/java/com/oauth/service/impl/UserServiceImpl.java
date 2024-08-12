@@ -916,7 +916,7 @@ public class UserServiceImpl implements UserService {
             if (invitationInfo.isEmpty()) {
                 msg = "사용자 초대 이력이 없습니다.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             // Device Set 생성

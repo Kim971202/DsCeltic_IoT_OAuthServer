@@ -290,7 +290,7 @@
         ON
             device.DEVC_ID = regist.DEVC_ID
         WHERE
-            device.DEVC_ID = #{deviceId};
+            device.DEVC_ID =  #{deviceId} AND regist.USER_ID = #{userId};
     </select>
 
     <insert id="insertDeviceStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
