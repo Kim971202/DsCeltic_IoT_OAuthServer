@@ -274,8 +274,8 @@ public class UserController {
     public ResponseEntity<?> doInviteListView(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException{
 
-        String logStep = "[회원 별칭(이름) 및 전화번호 변경]";
-        log.info("[회원 별칭(이름) 및 전화번호 변경]");
+        String logStep = "[사용자 초대 - 목록 조회]";
+        log.info("[사용자 초대 - 목록 조회]");
 
         if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException("404", "회원 별칭(이름) 및 전화번호 변경 값 오류");

@@ -226,7 +226,7 @@
         FROM
             TBR_OPR_USER_INVITE_STATUS
         WHERE
-            REQUEST_USER_ID = #{responseUserId};
+            REQUEST_USER_ID = #{responseUserId} OR RESPONSE_USER_ID = #{responseUserId};
     </select>
     
     <update id="acceptInvite" parameterType="com.oauth.dto.AuthServerDTO">
