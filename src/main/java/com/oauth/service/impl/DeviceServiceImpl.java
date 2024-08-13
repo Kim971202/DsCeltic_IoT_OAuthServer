@@ -1406,7 +1406,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         try {
 
-        resultDto = deviceMapper.getDeviceInfoSearch(params.getDeviceId());
+        resultDto = deviceMapper.getDeviceInfoSearch(params);
 
         if(resultDto == null){
             rtCode = "404";
