@@ -1125,6 +1125,9 @@ public class UserServiceImpl implements UserService {
                 return resultMap;
             }
             System.out.println(pushCodeInfo);
+            System.out.println("pushCodeInfo.size(): " + pushCodeInfo.size());
+            System.out.println("pushCodeInfo.get(0): " + pushCodeInfo.get(0));
+
             // 사용자가 가진 DeviceId 리스트 개수 만큼 생성
             for(int i = 0; deviceIdList.size() > i; ++i){
                 // 각각의 "pushCd"와 "pushYn"을 가지는 Map을 생성하여 리스트에 추가
