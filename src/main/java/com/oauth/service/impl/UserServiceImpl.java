@@ -1118,6 +1118,8 @@ public class UserServiceImpl implements UserService {
                     .map(AuthServerDTO::getDeviceId)
                     .collect(Collectors.joining("','", "'", "'"));
 
+            System.out.println("deviceIds: " + deviceIds);
+
             List<AuthServerDTO> pushCodeInfo = memberMapper.getPushCodeStatus(params.getUserId(), deviceIds);
             if (pushCodeInfo == null) {
                 resultMap.put("resultCode", "200");
