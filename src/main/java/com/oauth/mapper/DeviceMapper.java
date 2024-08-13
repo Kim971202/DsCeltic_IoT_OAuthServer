@@ -22,7 +22,7 @@ public interface DeviceMapper {
     public AuthServerDTO getSingleSerialNumberBydeviceId(String deviceId);
     public AuthServerDTO getPushTokenByUserId(String userId);
     public AuthServerDTO deviceTempAuthCheck(List<AuthServerDTO> device);
-    public AuthServerDTO getDeviceInfoSearch(String userId);
+    public AuthServerDTO getDeviceInfoSearch(AuthServerDTO params);
     public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public AuthServerDTO getPushinfoByDeviceId(String deviceId);
     public AuthServerDTO getDeviceRegistStatus(String serialNumber);
