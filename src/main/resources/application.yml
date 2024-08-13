@@ -66,5 +66,5 @@ logging:
     org.mybatis: DEBUG
     org.apache.ibatis: TRACE
   file:
-    path: logs
+    path: /home/ubuntu/DsCeltic_IoT_OAuthServer/logs
     name: oauthserver.log
