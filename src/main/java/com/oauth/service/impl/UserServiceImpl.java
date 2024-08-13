@@ -1127,6 +1127,7 @@ public class UserServiceImpl implements UserService {
             System.out.println(pushCodeInfo);
             System.out.println("pushCodeInfo.size(): " + pushCodeInfo.size());
             System.out.println("pushCodeInfo.get(0): " + pushCodeInfo.get(0));
+            System.out.println("pushCodeInfo.get(1): " + pushCodeInfo.get(1));
 
             // 사용자가 가진 DeviceId 리스트 개수 만큼 생성
             for(int i = 0; deviceIdList.size() > i; ++i){
