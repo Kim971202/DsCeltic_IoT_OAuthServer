@@ -1130,6 +1130,7 @@ public class UserServiceImpl implements UserService {
 
             // 사용자가 가진 DeviceId 리스트 개수 만큼 생성
             for(int i = 0; deviceIdList.size() > i; ++i){
+                System.out.println("int i: " + i);
                 // 각각의 "pushCd"와 "pushYn"을 가지는 Map을 생성하여 리스트에 추가
                 Map<String, String> push1 = new LinkedHashMap<>();
                 push1.put("pushCd", "01");
