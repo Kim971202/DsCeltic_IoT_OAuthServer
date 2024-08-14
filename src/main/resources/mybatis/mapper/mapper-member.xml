@@ -367,11 +367,7 @@
         WHERE
             USER_ID = #{userId}
         AND
-            PUSH_DATETIME
-        BETWEEN
-            #{startDatetime}
-        AND
-            #{endDatetime}
+            PUSH_DATETIME BETWEEN #{startDatetime} AND  #{endDatetime}
 
     </select>
 
