@@ -348,7 +348,7 @@
                 )
     </select>
 
-    <select id="getPushInfoList" parameterType="String" resultMap="member">
+    <select id="getPushInfoList" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             PUSH_IDX AS pushIdx,
             PUSH_TITLE AS pushTitle,
@@ -367,7 +367,7 @@
         WHERE
             USER_ID = #{userId}
         AND
-            PUSH_DATETIME BETWEEN #{startDatetime} AND  #{endDatetime}
+            PUSH_DATETIME BETWEEN #{startDatetime} AND #{endDatetime}
 
     </select>
 
