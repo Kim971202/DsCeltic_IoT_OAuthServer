@@ -26,10 +26,7 @@
         ON
             device.DEVC_ID = regist.DEVC_ID
         WHERE
-            device.DEVC_ID IN
-        <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.deviceId}
-        </foreach>
+            regist.USER_ID = #{userId}
     </select>
 
     <select id="getSingleSerialNumberBydeviceId" parameterType="String" resultMap="device">
