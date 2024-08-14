@@ -19,7 +19,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getHouseMembersByUserId(List<AuthServerDTO> members);
     public List<AuthServerDTO> getDeviceIdByUserId(String userId);
     public List<AuthServerDTO> getInvitationList (String requestUserId);
-    public List<AuthServerDTO> getPushInfoList(String userId);
+    public List<AuthServerDTO> getPushInfoList(AuthServerDTO params);
     public List<AuthServerDTO> getNoticeList();
     public List<AuthServerDTO> getPushCodeStatus(@Param("userId") String params, @Param("deviceIds") String deviceIds);
     public List<AuthServerDTO> getWorkTime(AuthServerDTO param);

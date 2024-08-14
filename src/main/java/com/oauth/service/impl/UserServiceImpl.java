@@ -1624,7 +1624,7 @@ public class UserServiceImpl implements UserService {
         List<AuthServerDTO> member;
         try{
 
-            member = memberMapper.getPushInfoList(userId);
+            member = memberMapper.getPushInfoList(params);
             if (member == null) {
                 msg = "계정이 존재하지 않습니다.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
