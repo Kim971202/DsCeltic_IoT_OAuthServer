@@ -365,7 +365,7 @@
         FROM
             TBR_OPR_USER_DEVICE_PUSH_INFO
         WHERE
-            USER_ID = #{userId};
+            USER_ID = #{userId} AND DATE_FORMAT(PUSH_DATETIME, '%Y-%m-%d %H:%i') = #{pushDatetime};
     </select>
 
     <select id="getNoticeList" resultMap="member">

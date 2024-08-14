@@ -1525,31 +1525,27 @@ public class DeviceServiceImpl implements DeviceService {
         String msg = null;
 
         List<Map<String, String>> appResponse = new ArrayList<>();
-
-        String userId = params.getUserId();
-
-        List<AuthServerDTO> deviceIdList;
         List<AuthServerDTO> deviceInfoList;
 
         try {
-            deviceIdList = memberMapper.getDeviceIdListByUserId(userId);
 
-            if(!deviceIdList.isEmpty()){
-                deviceInfoList = deviceMapper.getDeviceInfoSearchList(deviceIdList);
-                for(int i = 0; i < deviceIdList.size(); ++i){
+            deviceInfoList = deviceMapper.getDeviceInfoSearchList(params);
+
+            if(!deviceInfoList.isEmpty()){
+                for (AuthServerDTO authServerDTO : deviceInfoList) {
                     Map<String, String> data = new HashMap<>();
-                    data.put("modelCode", deviceInfoList.get(i).getModelCode());
-                    data.put("deviceNickname", deviceInfoList.get(i).getDeviceNickname());
-                    data.put("addrNickname", deviceInfoList.get(i).getAddrNickname());
-                    data.put("zipCode", deviceInfoList.get(i).getZipCode());
-                    data.put("oldAddr", deviceInfoList.get(i).getOldAddr());
-                    data.put("newAddr", deviceInfoList.get(i).getNewAddr());
-                    data.put("addrDetail", deviceInfoList.get(i).getAddrDetail());
-                    data.put("latitude", deviceInfoList.get(i).getLatitude());
-                    data.put("longitude", deviceInfoList.get(i).getLongitude());
-                    data.put("regSort", deviceInfoList.get(i).getRegSort());
-                    data.put("deviceId", deviceInfoList.get(i).getDeviceId());
-                    data.put("controlAuthKey", deviceInfoList.get(i).getControlAuthKey());
+                    data.put("modelCode", authServerDTO.getModelCode());
+                    data.put("deviceNickname", authServerDTO.getDeviceNickname());
+                    data.put("addrNickname", authServerDTO.getAddrNickname());
+                    data.put("zipCode", authServerDTO.getZipCode());
+                    data.put("oldAddr", authServerDTO.getOldAddr());
+                    data.put("newAddr", authServerDTO.getNewAddr());
+                    data.put("addrDetail", authServerDTO.getAddrDetail());
+                    data.put("latitude", authServerDTO.getLatitude());
+                    data.put("longitude", authServerDTO.getLongitude());
+                    data.put("regSort", authServerDTO.getRegSort());
+                    data.put("deviceId", authServerDTO.getDeviceId());
+                    data.put("controlAuthKey", authServerDTO.getControlAuthKey());
                     appResponse.add(data);
                 }
                 stringObject = "Y";
