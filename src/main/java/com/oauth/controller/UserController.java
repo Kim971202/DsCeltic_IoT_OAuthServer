@@ -474,8 +474,8 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
-                Validator.isNullOrEmpty(params.getStartDate()) ||
-                Validator.isNullOrEmpty(params.getEndDate())){
+                Validator.isNullOrEmpty(params.getStartDatetime()) ||
+                Validator.isNullOrEmpty(params.getEndDatetime())){
             throw new CustomException("404", "스마트알림 - PUSH 이력 조회 값 오류");
         }
         return userService.doViewPushHistory(params);
