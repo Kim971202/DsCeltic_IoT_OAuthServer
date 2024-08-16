@@ -562,4 +562,13 @@
             USER_ID = #{userId}
     </select>
 
+    <select id="getUserIdsByDeviceId" parameterType="String" resultMap="member">
+        SELECT
+            USER_ID AS userId
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
 </mapper>
