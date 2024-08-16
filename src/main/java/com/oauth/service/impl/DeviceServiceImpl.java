@@ -64,6 +64,7 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         String serialNumber;
         String responseMessage = null;
+        AuthServerDTO pushYn;
 
         MobiusResponse response;
 
@@ -144,10 +145,13 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(userId);
+
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Device ON/OFF");
             conMap.put("id", "Device ON/OFF ID");
             conMap.put("isEnd", "false");
+            conMap.put("pushYn", pushYn.getFPushYn());
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("doPowerOnOff jsonString: " + jsonString);
@@ -193,15 +197,15 @@ public class DeviceServiceImpl implements DeviceService {
     public ResponseEntity<?> doDeviceInfoUpsert(AuthServerDTO params) throws Exception {
 
         ApiResponse.Data result = new ApiResponse.Data();
-        DeviceInfoUpsert deviceInfoUpsert = new DeviceInfoUpsert();
 
-        String stringObject = null;
+        String stringObject = "N";
         String msg;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String serialNumber = params.getSerialNumber();
         String controlAuthKey = params.getControlAuthKey();
         String registYn = params.getRegistYn();
+        AuthServerDTO pushYn;
 
         log.info("userId: " + userId);
         log.info("deviceId: " + deviceId);
@@ -315,7 +319,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setLongitude(params.getLongitude());
                 result.setTmpRegistKey(params.getTmpRegistKey());
 
-            } else if(stringObject.equals("Y") && registYn.equals("N")){
+            } else if(stringObject.equals("Y")){
                 conMap.put("body", "Device Update OK");
                 msg = "홈 IoT 컨트롤러 정보 수정 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -334,6 +338,9 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
+
+            pushYn = memberMapper.getPushYnStatus(userId);
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "DeviceInfoUpsert");
             conMap.put("id", "DeviceInfoUpsert ID");
@@ -473,6 +480,7 @@ public class DeviceServiceImpl implements DeviceService {
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String sleepCode = null;
+        AuthServerDTO pushYn;
         if(params.getModeCode().equals("06")) sleepCode = params.getSleepCode();
 
         String responseMessage;
@@ -554,6 +562,8 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(userId);
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Mode Change");
             conMap.put("id", "Mode Change ID");
@@ -612,6 +622,7 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         MobiusResponse response;
         String serialNumber;
+        AuthServerDTO pushYn;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -686,6 +697,8 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(userId);
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "TemperatureSet");
             conMap.put("id", "TemperatureSet ID");
@@ -742,6 +755,7 @@ public class DeviceServiceImpl implements DeviceService {
         String responseMessage;
         MobiusResponse response;
         String serialNumber;
+        AuthServerDTO pushYn;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -815,6 +829,9 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
+
+            pushYn = memberMapper.getPushYnStatus(userId);
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "BoiledWaterTempertureSet");
             conMap.put("id", "BoiledWaterTempertureSet ID");
@@ -872,6 +889,7 @@ public class DeviceServiceImpl implements DeviceService {
         String responseMessage;
         MobiusResponse response;
         String serialNumber;
+        AuthServerDTO pushYn;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -944,6 +962,9 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
+
+            pushYn = memberMapper.getPushYnStatus(userId);
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "WaterTempertureSet");
             conMap.put("id", "WaterTempertureSet ID");
@@ -1000,6 +1021,7 @@ public class DeviceServiceImpl implements DeviceService {
         MobiusResponse response;
         String responseMessage;
         String serialNumber;
+        AuthServerDTO pushYn;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -1074,6 +1096,8 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(userId);
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "FastHotWaterSet");
             conMap.put("id", "FastHotWaterSet ID");
@@ -1126,6 +1150,7 @@ public class DeviceServiceImpl implements DeviceService {
         String msg;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
+        AuthServerDTO pushYn;
 
         String redisValue;
         MobiusResponse response;
@@ -1175,7 +1200,7 @@ public class DeviceServiceImpl implements DeviceService {
                 gwMessagingSystem.removeMessageQueue("fcLc" + lockSet.getUuId());
                 if(responseMessage == null) stringObject = "T";
                 else {
-                    if(responseMessage.equals("\"200\"")) stringObject = "Y";
+                    if(responseMessage.equals("0")) stringObject = "Y";
                     else stringObject = "N";
                     // 응답 처리
                     log.info("receiveCin에서의 응답: " + responseMessage);
@@ -1207,6 +1232,8 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(userId);
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "LockSet");
             conMap.put("id", "LockSet ID");
