@@ -3,6 +3,7 @@ package com.oauth.controller;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.DeviceStatusInfo;
 import com.oauth.mapper.DeviceMapper;
+import com.oauth.mapper.MemberMapper;
 import com.oauth.message.GwMessagingSystem;
 import com.oauth.response.ApiResponse;
 import com.oauth.service.impl.MobiusService;
@@ -34,6 +35,8 @@ public class MobiusController {
     MobiusService mobiusService;
     @Autowired
     DeviceMapper deviceMapper;
+    @Autowired
+    MemberMapper memberMapper;
     @Autowired
     GwMessagingSystem gwMessagingSystem;
     @Autowired
@@ -96,6 +99,11 @@ public class MobiusController {
             // 변경실시간상태
             // FCM Token 값 쿼리 필요
             pushService.sendPushMessage(jsonBody);
+
+            // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
+            System.out.println("userIds");
+            System.out.println(userIds);
 
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
             deviceInfo.setMfcd(common.readCon(jsonBody, "mfcd"));
