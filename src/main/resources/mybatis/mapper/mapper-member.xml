@@ -571,4 +571,18 @@
             DEVC_ID = #{deviceId}
     </select>
 
+    <select id="getPushYnStatusByUserIds" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+        PUSH_YN_01 AS fPushYn,
+        PUSH_YN_02 AS sPushYn,
+        PUSH_YN_03 AS tPushYn
+        FROM
+        TBR_OPR_USER_DEVICE_PUSH
+        WHERE
+        USER_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.userId}
+        </foreach>
+    </select>
+
 </mapper>
