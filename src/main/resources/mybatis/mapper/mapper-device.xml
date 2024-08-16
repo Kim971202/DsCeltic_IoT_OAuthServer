@@ -421,16 +421,19 @@
 
     <select id="getPushinfoByDeviceId" parameterType="String" resultMap="device">
         SELECT
+        DISTINCT
             a.USER_ID AS userId,
             a.PUSH_TOKEN AS pushToken,
-            b.DEVC_ID AS deviceId
+            b.DEVC_ID AS deviceId,
+            c.PUSH_YN_02 AS sPushYn
         FROM
             TBR_OPR_ACCOUNT a
         INNER JOIN
-            TBR_OPR_USER_DEVICE b
+            TBR_OPR_USER_DEVICE b ON a.USER_ID = b.USER_ID
+        INNER JOIN
+            TBR_OPR_USER_DEVICE_PUSH c ON b.DEVC_ID = c.DEVC_ID
         WHERE
-            a.USER_ID = b.USER_ID AND DEVC_ID = #{deviceId}
-        LIMIT 1
+            b.DEVC_ID = #{deviceId}
     </select>
 
     <select id="getDeviceStauts" parameterType="java.util.List" resultMap="dr910w">

@@ -96,18 +96,17 @@ public class MobiusController {
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
         } else if (functionId.equals("mfSt")) {
-            // 변경실시간상태
-            // FCM Token 값 쿼리 필요
-            pushService.sendPushMessage(jsonBody);
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
-            for (AuthServerDTO id : userIds) {
-                log.info("쿼리한 UserId: " + id.getUserId());
+            for (int i = 0; i < userIds.size(); ++i) {
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
 
-                System.out.println("memberMapper.getPushYnStatusByUserIds(userIds)");
-                System.out.println(memberMapper.getPushYnStatusByUserIds(userIds));
-
+                String fPushYn = memberMapper.getPushYnStatusByUserIds(userIds).get(i).getFPushYn();
+                String pushToken = userIds.get(i).getPushToken();
+                // 변경실시간상태
+                // FCM Token 값 쿼리 필요
+                pushService.sendPushMessage(jsonBody, pushToken, fPushYn, userIds.get(i).getUserId());
             }
 
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
