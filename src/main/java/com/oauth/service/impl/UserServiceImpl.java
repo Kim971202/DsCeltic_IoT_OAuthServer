@@ -68,6 +68,7 @@ public class UserServiceImpl implements UserService {
         List<String> latitude;
         List<String> longitude;
 
+        AuthServerDTO pushYn;
         String msg;
         String token;
         String hp;
@@ -162,6 +163,8 @@ public class UserServiceImpl implements UserService {
             conMap.put("con", "Login OK");
             msg = "로그인 성공";
 
+            pushYn = memberMapper.getPushYnStatus(userId);
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", pushToken);
             conMap.put("title", "Login");
             conMap.put("id", "Login ID");
@@ -342,8 +345,7 @@ public class UserServiceImpl implements UserService {
         String modelCode = params.getModelCode();
         AuthServerDTO member;
         String msg;
-        Map<String, String> conMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
+
         try {
 
             // 구형 모델의 경우
@@ -355,27 +357,17 @@ public class UserServiceImpl implements UserService {
             if(member == null) stringObject = "N";
             else stringObject = "Y";
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Reset Password OK");
+            if(stringObject.equals("Y"))
                 msg = "비밀번호 찾기 - 초기화 성공";
-            } else{
-                conMap.put("body", "Reset Password FAIL");
+            else
                 msg = "비밀번호 찾기 - 초기화 실패";
-            }
+
 
             if(memberMapper.updatePushToken(params) <= 0) {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
-
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Reset Password");
-            conMap.put("id", "Reset Password ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
 
             params.setFunctionId("ResetPassword");
             params.setDeviceId(params.getDeviceId());
@@ -390,11 +382,6 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -409,8 +396,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String stringObject = "N";
         String msg;
-        Map<String, String> conMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
+
         try{
 
             params.setNewPassword(encoder.encode(params.getUserPassword()));
@@ -421,27 +407,17 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             } else stringObject = "Y";
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Change Password OK");
+            if(stringObject.equals("Y"))
                 msg = "비밀번호 변경 - 생성 성공";
-            } else{
-                conMap.put("body", "Change Password FAIL");
+            else
                 msg = "비밀번호 변경 - 생성 실패";
-            }
+
 
             if(memberMapper.updatePushToken(params) <= 0) {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
-
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Change Password");
-            conMap.put("id", "Change Password ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
@@ -456,11 +432,6 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -516,8 +487,6 @@ public class UserServiceImpl implements UserService {
         String msg;
         String userPassword = params.getUserPassword();
         AuthServerDTO dbPassword;
-        Map<String, String> conMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
 
         try{
             dbPassword = memberMapper.getPasswordByUserId(params.getUserId());
@@ -538,7 +507,6 @@ public class UserServiceImpl implements UserService {
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             } else {
-                conMap.put("body", "Update Nickname and PhoneNum OK");
                 msg = "회원 별칭(이름) 및 전화번호 변경 성공";
             }
 
@@ -548,14 +516,6 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Update Nickname and PhoneNum");
-            conMap.put("id", "Update Nickname and PhoneNum ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
-
             params.setFunctionId("UpdateUserNicknameHp");
             params.setDeviceId("EMPTY");
             params.setUserId(params.getUserId());
@@ -563,12 +523,6 @@ public class UserServiceImpl implements UserService {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -588,9 +542,6 @@ public class UserServiceImpl implements UserService {
         String oldPassword = params.getOldPassword();
         String userId = params.getUserId();
         String msg;
-
-        Map<String, String> conMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
 
         try{
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
@@ -614,13 +565,11 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             } else stringObject = "Y";
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Update Password OK");
+            if(stringObject.equals("Y"))
                 msg = "비밀번호 변경 - 로그인시 성공";
-            } else{
-                conMap.put("body", "Update Password FAIL");
+            else
                 msg = "비밀번호 변경 - 로그인시 실패";
-            }
+
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
@@ -632,14 +581,6 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Update Password");
-            conMap.put("id", "Update Password ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
-
             params.setFunctionId("UpdatePassword");
             params.setDeviceId("EMPTY");
             params.setUserId(userId);
@@ -649,11 +590,6 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e) {
             log.error("", e);
@@ -668,6 +604,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String userId = params.getUserId();
+
         try {
 
             // Device Set 생성
@@ -733,9 +670,11 @@ public class UserServiceImpl implements UserService {
         String userId = params.getRequestUserId();
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
+        AuthServerDTO pushYn;
         MobiusResponse mobiusCode;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+
         try {
 
             if(memberMapper.inviteHouseMember(params) <= 0){
@@ -760,6 +699,8 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(params.getUserId());
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Add User");
             conMap.put("id", "Add User ID");
@@ -802,6 +743,7 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
+        AuthServerDTO pushYn;
         String requestUserId = params.getRequestUserId();
         String responseUserId = params.getResponseUserId();
         String inviteAcceptYn = params.getInviteAcceptYn();
@@ -871,6 +813,8 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(params.getUserId());
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Accept Invite");
             conMap.put("id", "Accept Invite ID");
@@ -990,6 +934,7 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
+        AuthServerDTO pushYn;
         String userId = params.getUserId();
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -1009,6 +954,8 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(userId);
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Force Delete Member");
             conMap.put("body", "Force Delete Member OK");
@@ -1188,7 +1135,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String nextHouseholdId = null;
-
+        AuthServerDTO pushYn;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -1244,6 +1191,8 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(params.getUserId());
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Delete householder");
             conMap.put("id", "Delete householder ID");
@@ -1285,6 +1234,7 @@ public class UserServiceImpl implements UserService {
         String userId = params.getUserId();
         String userPassword = params.getUserPassword();
         AuthServerDTO account;
+
         try {
 
             account = memberMapper.getAccountByUserId(userId);
@@ -1333,6 +1283,7 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data result = new ApiResponse.Data();
         String msg;
+        AuthServerDTO pushYn;
         String userId = params.getUserId();
         List<AuthServerDTO> deviceIdAndAuthKey;
         List<AuthServerDTO> deviceAuthCheck;
@@ -1365,10 +1316,13 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(userId);
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Device Auth Check");
             conMap.put("id", "Device Auth Check ID");
             conMap.put("isEnd", "false");
+
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
 
@@ -1402,6 +1356,7 @@ public class UserServiceImpl implements UserService {
         String stringObject = "N";
         String msg;
         String userId = params.getUserId();
+        AuthServerDTO pushYn;
 
         MobiusResponse aeResult;
         MobiusResponse cntResult;
@@ -1446,6 +1401,8 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(userId);
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "First Device Auth Check");
             conMap.put("id", "First Device Auth Check ID");
@@ -1493,6 +1450,7 @@ public class UserServiceImpl implements UserService {
         String userId = params.getUserId();
         String token;
         AuthServerDTO account;
+
         try{
             account = memberMapper.getAccountByUserId(userId);
             if (account == null) {
@@ -1546,6 +1504,7 @@ public class UserServiceImpl implements UserService {
         String stringObject = "N";
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
+        AuthServerDTO pushYn;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         Map<String, String> conMap = new HashMap<>();
@@ -1579,6 +1538,8 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(userId);
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "User Device Delete");
             conMap.put("id", "User Device Delete ID");
@@ -1622,6 +1583,7 @@ public class UserServiceImpl implements UserService {
         String msg;
         String userId = params.getUserId();
         List<AuthServerDTO> member;
+
         try{
 
             member = memberMapper.getPushInfoList(params);
@@ -1692,6 +1654,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String stringObject = "N";
         String msg;
+        AuthServerDTO pushYn;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         Map<String, String> conMap = new HashMap<>();
@@ -1726,6 +1689,8 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(params.getUserId());
+            conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Device Nickname Change");
             conMap.put("id", "Device Nickname Change ID");
@@ -1771,6 +1736,7 @@ public class UserServiceImpl implements UserService {
         String deviceId = params.getDeviceId();
         String uuId = common.getTransactionId();
         String redisValue;
+        AuthServerDTO pushYn;
         Map<String, Object> conMap = new HashMap<>();
         Map<String, Object> conMap1 = new HashMap<>();
         MobiusResponse mobiusResponse;
@@ -1810,7 +1776,7 @@ public class UserServiceImpl implements UserService {
                     result.setResult(ApiResponse.ResponseType.HTTP_500, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
 
-                } else if(!responseMessage.equals("\"200\"")) {
+                } else if(!responseMessage.equals("0")) {
                     msg = "기기 밝기 수정 실패";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1832,6 +1798,8 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
+            pushYn = memberMapper.getPushYnStatus(params.getUserId());
+            conMap1.put("pushYn", pushYn.getFPushYn());
             conMap1.put("targetToken", params.getPushToken());
             conMap1.put("title", "Reset Password");
             conMap1.put("id", "Reset Password ID");
@@ -1839,7 +1807,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString1 = objectMapper.writeValueAsString(conMap1);
             log.info("jsonString1: " + jsonString1);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1);
 
             redisCommand.deleteValues(uuId);
 
@@ -1852,7 +1819,7 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201")) {
                 msg = "PUSH 메세지 전송 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
