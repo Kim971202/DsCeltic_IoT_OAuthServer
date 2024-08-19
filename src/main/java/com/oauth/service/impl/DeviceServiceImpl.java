@@ -312,7 +312,6 @@ public class DeviceServiceImpl implements DeviceService {
             log.info("registYn: " + registYn);
 
             if (stringObject.equals("Y") && registYn.equals("Y")) {
-                conMap.put("body", "Device Insert OK");
                 msg = "홈 IoT 컨트롤러 정보 등록 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 result.setLatitude(params.getLatitude());
@@ -320,7 +319,6 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setTmpRegistKey(params.getTmpRegistKey());
 
             } else if(stringObject.equals("Y")){
-                conMap.put("body", "Device Update OK");
                 msg = "홈 IoT 컨트롤러 정보 수정 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 result.setLatitude(params.getLatitude());
@@ -328,7 +326,6 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setTmpRegistKey("NULL");
 
             } else {
-                conMap.put("body", "Service TIME-OUT");
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
@@ -338,15 +335,6 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
-
-            pushYn = memberMapper.getPushYnStatus(userId);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "DeviceInfoUpsert");
-            conMap.put("id", "DeviceInfoUpsert ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
 
             params.setFunctionId("DeviceInfoUpsert");
             if(deviceId == null) deviceId = "EMPTy";
@@ -369,12 +357,6 @@ public class DeviceServiceImpl implements DeviceService {
                 msg = "PUSH HISTORY INSERT ERROR";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
