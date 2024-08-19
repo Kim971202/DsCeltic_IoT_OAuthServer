@@ -1338,7 +1338,6 @@ public class UserServiceImpl implements UserService {
         String stringObject = "N";
         String msg;
         String userId = params.getUserId();
-        AuthServerDTO pushYn;
 
         MobiusResponse aeResult;
         MobiusResponse cntResult;
@@ -1346,7 +1345,6 @@ public class UserServiceImpl implements UserService {
         MobiusResponse subResult;
 
         Map<String, String> conMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
 
         try{
 
@@ -1370,10 +1368,8 @@ public class UserServiceImpl implements UserService {
 
             if(stringObject.equals("Y")){
                 result.setDeviceId("0.2.481.1.1." + common.stringToHex(params.getModelCode()) + "." + common.stringToHex(params.getSerialNumber()));
-                conMap.put("body", "First Device Auth Check OK");
                 msg = "최초 인증 성공";
             } else {
-                conMap.put("body", "First Device Auth Check FAIL");
                 msg = "최초 인증 실패";
             }
 
@@ -1383,28 +1379,11 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(userId);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "First Device Auth Check");
-            conMap.put("id", "First Device Auth Check ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-
             params.setFunctionId("FirstDeviceAuthCheck");
             params.setDeviceId(result.getDeviceId());
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
-
-            cinResult = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
-            if(!cinResult.getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
