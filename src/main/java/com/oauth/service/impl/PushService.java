@@ -52,6 +52,10 @@ public class PushService {
 
         try {
             for (AuthServerDTO authServerDTO : pushInfo) {
+                log.info("authServerDTO.getPushToken(): " + authServerDTO.getPushToken());
+                log.info("authServerDTO.getUserId(): " + authServerDTO.getUserId());
+                log.info("authServerDTO.getSPushYn(): " + authServerDTO.getSPushYn());
+
                 pushMap.put("targetToken", authServerDTO.getPushToken());
                 pushMap.put("title","ERROR");
                 pushMap.put("body", common.readCon(jsonBody, "con"));
