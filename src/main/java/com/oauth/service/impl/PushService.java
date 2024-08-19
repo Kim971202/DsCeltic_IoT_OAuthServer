@@ -58,9 +58,10 @@ public class PushService {
                 pushMap.put("id", authServerDTO.getUserId());
                 pushMap.put("pushYn", authServerDTO.getSPushYn());
                 pushMap.put("isEnd", "False");
+
+                mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
             }
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
         } catch (Exception e){
             log.error("", e);
         }
