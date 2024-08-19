@@ -560,6 +560,12 @@
             TBR_OPR_USER_DEVICE_PUSH
         WHERE
             USER_ID = #{userId}
+        <if test="deviceId != null">
+            AND DEVC_ID = #{deviceId}
+        </if>
+        <if test="deviceId == null">
+            LIMIT 1
+        </if>
     </select>
 
     <select id="getUserIdsByDeviceId" parameterType="String" resultMap="member">
