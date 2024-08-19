@@ -68,7 +68,6 @@ public class UserServiceImpl implements UserService {
         List<String> latitude;
         List<String> longitude;
 
-        AuthServerDTO pushYn;
         String msg;
         String token;
         String hp;
@@ -159,16 +158,7 @@ public class UserServiceImpl implements UserService {
             result.setDevice(data);
 
             param.setAccessToken(token);
-            memberMapper.updateLoginDatetime(param);
-            conMap.put("con", "Login OK");
             msg = "로그인 성공";
-
-            pushYn = memberMapper.getPushYnStatus(userId);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", pushToken);
-            conMap.put("title", "Login");
-            conMap.put("id", "Login ID");
-            conMap.put("isEnd", "false");
 
             param.setPushToken(pushToken);
             param.setUserId(userId);
@@ -196,12 +186,6 @@ public class UserServiceImpl implements UserService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else result.setHp(hp);
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(result, HttpStatus.OK);
