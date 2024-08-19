@@ -280,9 +280,7 @@ public class UserServiceImpl implements UserService {
             else msg = "중복 되지 않는 ID";
 
             data.setDuplicationYn(stringObject);
-            data.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_1001, msg);
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
