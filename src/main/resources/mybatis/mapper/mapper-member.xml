@@ -368,6 +368,8 @@
             USER_ID = #{userId}
         AND
             PUSH_DATETIME BETWEEN #{startDatetime} AND #{endDatetime}
+        AND
+            PUSH_TYPE = #{pushType}
 
     </select>
 
