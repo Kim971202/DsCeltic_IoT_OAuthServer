@@ -163,6 +163,17 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else result.setHp(hp);
 
+            AuthServerDTO params = new AuthServerDTO();
+
+            params.setAccessToken(token);
+            params.setUserId(userId);
+
+            if(memberMapper.updateLoginDatetime(params) <= 0) {
+                msg = "LOGIN_INFO_UPDATE_ERROR";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
