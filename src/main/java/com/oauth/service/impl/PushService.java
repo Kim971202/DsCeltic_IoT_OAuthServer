@@ -2,10 +2,13 @@ package com.oauth.service.impl;
 
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.mapper.DeviceMapper;
+import com.oauth.mapper.MemberMapper;
+import com.oauth.response.ApiResponse;
 import com.oauth.utils.Common;
 import com.oauth.utils.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,8 @@ public class PushService {
     Common common;
     @Autowired
     DeviceMapper deviceMapper;
+    @Autowired
+    MemberMapper memberMapper;
 
     public void sendPushMessage(String jsonBody, String pushToken, String fPushYn, String userId) throws Exception {
         log.info("sendPushMessage jsonBody: " + jsonBody);
@@ -43,7 +48,7 @@ public class PushService {
         }
     }
 
-    public void sendPushMessage(String jsonBody) throws Exception {
+    public void sendPushMessage(String jsonBody, String errroCode, String errorMesssage) throws Exception {
         log.info("sendPushMessage jsonBody: " + jsonBody);
 
         HashMap<String, String> pushMap = new HashMap<>();
@@ -55,6 +60,11 @@ public class PushService {
                 log.info("authServerDTO.getPushToken(): " + authServerDTO.getPushToken());
                 log.info("authServerDTO.getUserId(): " + authServerDTO.getUserId());
                 log.info("authServerDTO.getSPushYn(): " + authServerDTO.getSPushYn());
+
+                AuthServerDTO params = new AuthServerDTO();
+                params.setPushTitle(errroCode);
+                params.setPushContent(errorMesssage);
+                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH ERROR HISTORY INSERT ERROR");
 
                 pushMap.put("targetToken", authServerDTO.getPushToken());
                 pushMap.put("title","ERROR");
