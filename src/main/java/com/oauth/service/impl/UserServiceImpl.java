@@ -71,9 +71,6 @@ public class UserServiceImpl implements UserService {
         String msg;
         String token;
         String hp;
-        Map<String, String> conMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
-        AuthServerDTO param = new AuthServerDTO();
 
         try {
 
@@ -157,28 +154,7 @@ public class UserServiceImpl implements UserService {
             result.setUserNickname(userNickname);
             result.setDevice(data);
 
-            param.setAccessToken(token);
             msg = "로그인 성공";
-
-            param.setPushToken(pushToken);
-            param.setUserId(userId);
-
-            if(memberMapper.updatePushToken(param) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
-
-            param.setFunctionId("Login");
-            param.setDeviceId("EMPTY");
-            if(memberMapper.insertCommandHistory(param) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
 
             hp = memberMapper.getHpByUserId(userId).getHp();
             if (hp == null) {
