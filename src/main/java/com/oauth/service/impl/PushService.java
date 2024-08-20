@@ -64,6 +64,7 @@ public class PushService {
                 AuthServerDTO params = new AuthServerDTO();
                 params.setPushTitle(errroCode);
                 params.setPushContent(errorMesssage);
+                params.setUserId(authServerDTO.getUserId());
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH ERROR HISTORY INSERT ERROR");
 
                 pushMap.put("targetToken", authServerDTO.getPushToken());

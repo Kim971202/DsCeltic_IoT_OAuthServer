@@ -536,7 +536,7 @@
             #{userId},
             #{pushTitle},
             #{pushContent},
-            '00',
+            '01',
             now()
         )
     </insert>
