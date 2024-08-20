@@ -368,9 +368,9 @@
             USER_ID = #{userId}
         AND
             PUSH_DATETIME BETWEEN #{startDatetime} AND #{endDatetime}
-        AND
-            PUSH_TYPE = #{pushType}
-
+        <if test="deviceType != 00">
+            AND PUSH_TYPE = #{deviceType}
+        </if>
     </select>
 
     <select id="getNoticeList" resultMap="member">
