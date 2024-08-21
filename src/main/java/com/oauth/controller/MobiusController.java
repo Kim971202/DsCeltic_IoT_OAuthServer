@@ -130,11 +130,6 @@ public class MobiusController {
             int rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
             log.info("rcUpdateResult: " + rcUpdateResult);
 
-            Map<String, Object> nonNullField = common.getNonNullFields(deviceInfo);
-            System.out.println("nonNullField: " + nonNullField);
-            System.out.println("nonNullField: " + nonNullField.get(0));
-            System.out.println("nonNullField: " + nonNullField.get(1));
-
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
             for (int i = 0; i < userIds.size(); ++i) {
@@ -147,10 +142,17 @@ public class MobiusController {
                 pushService.sendPushMessage(jsonBody, pushToken, fPushYn, userIds.get(i).getUserId());
 
                 AuthServerDTO params = new AuthServerDTO();
+                Map<String, Object> nonNullField = new HashMap<>();
 
-                params.setCommandId("powerOnOff");
-                params.setControlCode("powr");
-                params.setControlCodeName("전원 ON/OFF");
+                common.setCommandParams(nonNullField, params);
+                // 결과 출력
+                System.out.println("CommandId: " + params.getCommandId());
+                System.out.println("ControlCode: " + params.getControlCode());
+                System.out.println("ControlCodeName: " + params.getControlCodeName());
+
+                params.setCommandId(params.getCommandId());
+                params.setControlCode(params.getControlCode());
+                params.setControlCodeName(params.getControlCodeName());
 
                 params.setCodeType("1");
                 params.setCommandFlow("1");
