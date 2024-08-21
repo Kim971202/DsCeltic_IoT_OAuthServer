@@ -1276,16 +1276,6 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            params.setDeviceId(deviceId);
-            params.setUserId(userId);
-            params.setPushTitle("기기제어");
-            params.setPushContent("잠금 모드 설정");
-            if(memberMapper.insertPushHistory(params) <= 0) {
-                msg = "PUSH HISTORY INSERT ERROR";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
                 msg = "PUSH 메세지 전송 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
