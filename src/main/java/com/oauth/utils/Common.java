@@ -379,6 +379,26 @@ public class Common {
         return result.toString();
     }
 
+    // null이 아닌 필드와 값을 Map으로 반환하는 메서드
+    public Map<String, Object> getNonNullFields(Object obj) {
+        Map<String, Object> nonNullFields = new HashMap<>();
+
+        // 객체의 모든 필드에 대해 반복
+        Field[] fields = obj.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true); // private 필드에도 접근 가능하도록 설정
+            try {
+                Object value = field.get(obj); // 필드 값 가져오기
+                // 필드 값이 null이 아닌 경우에만 맵에 추가
+                if (value != null) {
+                    nonNullFields.put(field.getName(), value);
+                }
+            } catch (IllegalAccessException e) {
+                log.error("", e);
+            }
+        }
+        return nonNullFields;
+    }
     public void setCommandParams(Map<String, Object> nonNullField, AuthServerDTO params) {
         // 필드 이름을 키로, 그에 따른 Command 설정을 값으로 갖는 Map 생성
         Map<String, String[]> commandMap = new HashMap<>();
