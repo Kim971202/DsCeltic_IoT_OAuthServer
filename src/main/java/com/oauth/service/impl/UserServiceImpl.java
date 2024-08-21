@@ -563,7 +563,6 @@ public class UserServiceImpl implements UserService {
             throws CustomException{
 
         String stringObject = "N";
-        String userId = params.getRequestUserId();
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         AuthServerDTO pushYn;
@@ -595,7 +594,7 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(params.getUserId());
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Add User");
@@ -701,7 +700,7 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(params.getUserId());
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Accept Invite");
@@ -825,7 +824,7 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(userId);
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Force Delete Member");
@@ -1037,7 +1036,7 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(params.getUserId());
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Delete householder");
@@ -1145,7 +1144,7 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(userId);
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Device Auth Check");
@@ -1319,7 +1318,7 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(userId);
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "User Device Delete");
@@ -1452,7 +1451,7 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(params.getUserId());
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Device Nickname Change");
@@ -1552,7 +1551,7 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(params.getUserId());
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap1.put("pushYn", pushYn.getFPushYn());
             conMap1.put("targetToken", params.getPushToken());
             conMap1.put("title", "Reset Password");
