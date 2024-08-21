@@ -210,16 +210,12 @@ public class DeviceServiceImpl implements DeviceService {
         String serialNumber = params.getSerialNumber();
         String controlAuthKey = params.getControlAuthKey();
         String registYn = params.getRegistYn();
-        AuthServerDTO pushYn;
 
         log.info("userId: " + userId);
         log.info("deviceId: " + deviceId);
         log.info("serialNumber: " + serialNumber);
         log.info("controlAuthKey: " + controlAuthKey);
         log.info("registYn: " + registYn);
-
-        Map<String, String> conMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
 
         AuthServerDTO deviceRegistStatus;
 
@@ -341,17 +337,10 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            params.setFunctionId("DeviceInfoUpsert");
+            params.setUserId(userId);
+            params.setPushTitle("기기제어");
             if(deviceId == null) deviceId = "EMPTy";
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
-            params.setPushTitle("기기제어");
 
             if(registYn.equals("N"))
                 params.setPushContent("기기정보 수정");
@@ -438,14 +427,6 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisCommand.deleteValues(uuId);
 
-            params.setFunctionId("DeviceStatusInfo");
-            params.setDeviceId(deviceId);
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
             result.setDeviceStatusInfo(resultMap);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
@@ -1295,15 +1276,8 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            params.setFunctionId("LockSet");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
             params.setPushTitle("기기제어");
             params.setPushContent("잠금 모드 설정");
             if(memberMapper.insertPushHistory(params) <= 0) {
@@ -1453,14 +1427,6 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisCommand.deleteValues(uuId);
 
-            params.setFunctionId("BasicDeviceStatusInfo");
-            params.setDeviceId("EMPTY");
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1472,13 +1438,10 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public HashMap<String, Object> doDeviceInfoSearch(AuthServerDTO params) throws CustomException {
 
-        String userId = params.getUserId();
-        String deviceId = params.getDeviceId();
         String rtCode;
         String msg;
         AuthServerDTO resultDto;
         HashMap<String, Object> result = new HashMap<>();
-        HashMap<String, Object> errorResult = new HashMap<>();
 
         try {
 
@@ -1504,15 +1467,6 @@ public class DeviceServiceImpl implements DeviceService {
             result.put("resultCode", rtCode);
             result.put("resultMsg", msg);
 
-            params.setFunctionId("DeviceInfoSearch");
-            params.setDeviceId(deviceId);
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                errorResult.put("resultCode", "404");
-                errorResult.put("resultMsg", msg);
-                return errorResult;
-            }
             return result;
         } catch (Exception e) {
             log.error("", e);
@@ -1527,9 +1481,6 @@ public class DeviceServiceImpl implements DeviceService {
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject;
         String msg;
-
-        String userId = params.getUserId();
-        String deviceId = params.getDeviceId();
         String serialNumber;
         List<Map<String, String>> resultMap = new ArrayList<>();
         List<AuthServerDTO> errorInfoList;
@@ -1572,14 +1523,6 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            params.setFunctionId("DeviceErrorInfo");
-            params.setDeviceId(deviceId);
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
