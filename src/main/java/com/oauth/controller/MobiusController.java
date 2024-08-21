@@ -132,6 +132,8 @@ public class MobiusController {
 
             Map<String, Object> nonNullField = common.getNonNullFields(deviceInfo);
             System.out.println("nonNullField: " + nonNullField);
+            System.out.println("nonNullField: " + nonNullField.get(0));
+            System.out.println("nonNullField: " + nonNullField.get(1));
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
