@@ -138,7 +138,11 @@ public class ReservationServiceImpl implements ReservationService{
             log.info("deviceId: " + deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            params.setFunctionId("Set24");
+            params.setCodeType("1");
+            params.setCommandId("Set24");
+            params.setControlCode("24h");
+            params.setControlCodeName("24시간 예약");
+            params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {
@@ -232,7 +236,11 @@ public class ReservationServiceImpl implements ReservationService{
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            params.setFunctionId("Set12");
+            params.setCodeType("1");
+            params.setCommandId("Set12");
+            params.setControlCode("12h");
+            params.setControlCodeName("12시간 예약");
+            params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {
@@ -250,7 +258,6 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
     /** 빠른 온수 예약  */
-    // TODO: 앱에서 보내는 Data 확인 후 구현
     @Override
     public ResponseEntity<?> doAwakeAlarmSet(AuthServerDTO params) throws CustomException {
 
@@ -346,7 +353,11 @@ public class ReservationServiceImpl implements ReservationService{
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            params.setFunctionId("Set24");
+            params.setCodeType("1");
+            params.setCommandId("AwakeAlarmSet");
+            params.setControlCode("fwh");
+            params.setControlCodeName("빠른온수 예약");
+            params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {
@@ -364,7 +375,6 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
     /** 주간 예약  */
-    // TODO: 앱에서 보내는 Data 확인 후 구현
     @Override
     public ResponseEntity<?> doSetWeek(AuthServerDTO params) throws CustomException {
 
@@ -457,7 +467,11 @@ public class ReservationServiceImpl implements ReservationService{
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            params.setFunctionId("Set24");
+            params.setCodeType("1");
+            params.setCommandId("SetWeek");
+            params.setControlCode("7wk");
+            params.setControlCodeName("주간 예약");
+            params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {

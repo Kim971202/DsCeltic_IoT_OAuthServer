@@ -420,19 +420,25 @@
         INSERT INTO
             TBR_IOT_CTRL_REQ
         (
-            CTRL_NM,
-            REG_DATM,
-            LAST_COLEC_DATM,
-            DEVC_ID,
-            USER_ID
+            CD_TYPE,
+            COMD_ID,
+            CTRL_CD,
+            CTRL_CD_NM,
+            COMD_FLOW,
+            COMD_DATM,
+            USER_ID,
+            DEVC_ID
         )
             VALUES
         (
-            #{functionId},
+            #{codeType},
+            #{commandId},
+            #{controlCode},
+            #{controlCodeName},
+            #{commandFlow},
             now(),
-            now(),
-            #{deviceId},
-            #{userId}
+            #{userId},
+            #{deviceId}
         )
     </insert>
 

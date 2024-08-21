@@ -162,7 +162,12 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            params.setFunctionId("PowerOnOff");
+
+            params.setCodeType("1");
+            params.setCommandId("PowerOnOff");
+            params.setControlCode("powr");
+            params.setControlCodeName("전원 ON/OFF");
+            params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {
@@ -560,7 +565,53 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            params.setFunctionId("ModeChange");
+
+            switch (modeCode){
+                case "01":
+                    params.setControlCodeName("실내난방");
+                    break;
+                case "02":
+                    params.setControlCodeName("온돌난방");
+                    break;
+                case "03":
+                    params.setControlCodeName("외출");
+                    break;
+                case "04":
+                    params.setControlCodeName("자동");
+                    break;
+                case "05":
+                    params.setControlCodeName("절약난방");
+                    break;
+                case "06":
+                    params.setControlCodeName("취침");
+                    break;
+                case "07":
+                    params.setControlCodeName("온수전용");
+                    break;
+                case "08":
+                    params.setControlCodeName("온수-빠른온수");
+                    break;
+                case "09":
+                    params.setControlCodeName("귀가");
+                    break;
+                case "10":
+                    params.setControlCodeName("예약난방-24시간");
+                    break;
+                case "11":
+                    params.setControlCodeName("예약난방-반복(12시간)");
+                    break;
+                case "12":
+                    params.setControlCodeName("예약난방-주간");
+                    break;
+                default:
+                    params.setControlCodeName("NONE_MODE");
+                    break;
+            }
+
+            params.setCodeType("0");
+            params.setCommandId("ModeChange");
+            params.setControlCode(modeCode);
+            params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {
@@ -693,7 +744,11 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfo.setDeviceId(params.getDeviceId());
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            params.setFunctionId("TemperatureSet");
+            params.setCodeType("1");
+            params.setCommandId("TemperatureSet");
+            params.setControlCode("htTp");
+            params.setControlCodeName("실내 온도 설정");
+            params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {
@@ -827,7 +882,11 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            params.setFunctionId("BoiledWaterTempertureSet");
+            params.setCodeType("1");
+            params.setCommandId("BoiledWaterTempertureSet");
+            params.setControlCode("wtTp");
+            params.setControlCodeName("난방수 온도 설정");
+            params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {
@@ -959,7 +1018,11 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            params.setFunctionId("WaterTempertureSet");
+            params.setCodeType("1");
+            params.setCommandId("WaterTempertureSet");
+            params.setControlCode("hwTp");
+            params.setControlCodeName("온수 온도 설정");
+            params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {
@@ -1092,7 +1155,11 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            params.setFunctionId("FastHotWaterSet");
+            params.setCodeType("1");
+            params.setCommandId("FastHotWaterSet");
+            params.setControlCode("ftMd");
+            params.setControlCodeName("빠른 온수 설정");
+            params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) {
