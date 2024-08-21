@@ -160,6 +160,8 @@ public class MobiusController {
                 params.setCommandFlow("1");
                 params.setDeviceId(deviceInfo.getDeviceId());
                 params.setUserId(userIds.get(i).getUserId());
+                int insertCommandHistoryResult = memberMapper.insertCommandHistory(params);
+                log.info("insertCommandHistoryResult: " + insertCommandHistoryResult);
             }
 
 
