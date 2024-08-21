@@ -379,25 +379,30 @@ public class Common {
         return result.toString();
     }
 
-    // null이 아닌 필드와 값을 Map으로 반환하는 메서드
-    public Map<String, Object> getNonNullFields(Object obj) {
-        Map<String, Object> nonNullFields = new HashMap<>();
+    public void setCommandParams(Map<String, Object> nonNullField, AuthServerDTO params) {
+        // 필드 이름을 키로, 그에 따른 Command 설정을 값으로 갖는 Map 생성
+        Map<String, String[]> commandMap = new HashMap<>();
+        commandMap.put("powr", new String[]{"powerOnOff", "powr", "전원 ON/OFF"});
+        commandMap.put("opMd", new String[]{"ModeChange", "opMd", "홈 IoT 모드"});
+        commandMap.put("htTp", new String[]{"TemperatureSet", "htTp", "실내온도설정"});
+        commandMap.put("wtTp", new String[]{"BoiledWaterTempertureSet", "wtTp", "난방수 온도 설정"});
+        commandMap.put("hwTp", new String[]{"WaterTempertureSet", "hwTp", "온수 온도 설정"});
+        commandMap.put("ftMd", new String[]{"FastHotWaterSet", "ftMd", "빠른 온수 설정"});
+        commandMap.put("24h", new String[]{"Set24", "24h", "24시간 예약"});
+        commandMap.put("7wk", new String[]{"SetWeek", "7wk", "주간 예약"});
+        commandMap.put("fwh", new String[]{"AwakeAlarmSet", "fwh", "빠른온수 예약"});
+        commandMap.put("mwk", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
+        commandMap.put("reSt", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
+        commandMap.put("mfAr", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
 
-        // 객체의 모든 필드에 대해 반복
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            field.setAccessible(true); // private 필드에도 접근 가능하도록 설정
-            try {
-                Object value = field.get(obj); // 필드 값 가져오기
-                // 필드 값이 null이 아닌 경우에만 맵에 추가
-                if (value != null) {
-                    nonNullFields.put(field.getName(), value);
-                }
-            } catch (IllegalAccessException e) {
-                log.error("", e);
+        // nonNullField에서 해당 필드가 존재하는지 확인하고, 해당 Command 설정 적용
+        for (Map.Entry<String, String[]> entry : commandMap.entrySet()) {
+            if (nonNullField.get(entry.getKey()) != null) {
+                params.setCommandId(entry.getValue()[0]);
+                params.setControlCode(entry.getValue()[1]);
+                params.setControlCodeName(entry.getValue()[2]);
+                break; // 첫 번째 일치하는 필드만 처리하고 종료
             }
         }
-        return nonNullFields;
     }
-
 }
