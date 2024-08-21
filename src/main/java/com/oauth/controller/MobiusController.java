@@ -142,9 +142,11 @@ public class MobiusController {
                 pushService.sendPushMessage(jsonBody, pushToken, fPushYn, userIds.get(i).getUserId());
 
                 AuthServerDTO params = new AuthServerDTO();
-                Map<String, Object> nonNullField = new HashMap<>();
+                Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
+                System.out.println("Non-null fields: " + nonNullFields);
 
-                common.setCommandParams(nonNullField, params);
+                common.setCommandParams(nonNullFields, params);
+
                 // 결과 출력
                 System.out.println("CommandId: " + params.getCommandId());
                 System.out.println("ControlCode: " + params.getControlCode());
