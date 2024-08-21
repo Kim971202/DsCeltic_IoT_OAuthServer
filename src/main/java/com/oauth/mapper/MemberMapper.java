@@ -25,7 +25,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getWorkTime(AuthServerDTO param);
     public List<AuthServerDTO> getUserIdsByDeviceId(String deviceId);
     public List<AuthServerDTO> getPushYnStatusByUserIds(List<AuthServerDTO> userIds);
-    public AuthServerDTO getPushYnStatus(String userId);
+    public AuthServerDTO getPushYnStatus(AuthServerDTO userId);
     public AuthServerDTO getUserByUserId(String userId);
     public AuthServerDTO getAccountByUserId(String userId);
     public AuthServerDTO getUserByUserIdAndHp(AuthServerDTO member);

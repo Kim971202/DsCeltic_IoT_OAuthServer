@@ -145,7 +145,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(userId);
+            pushYn = memberMapper.getPushYnStatus(params);
 
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Device ON/OFF");
@@ -530,7 +530,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(userId);
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "Mode Change");
@@ -711,7 +711,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(userId);
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "TemperatureSet");
@@ -848,7 +848,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(userId);
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "BoiledWaterTempertureSet");
@@ -985,7 +985,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(userId);
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "WaterTempertureSet");
@@ -1122,7 +1122,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(userId);
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "FastHotWaterSet");
@@ -1262,7 +1262,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(userId);
+            pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
             conMap.put("title", "LockSet");
