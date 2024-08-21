@@ -212,15 +212,6 @@ public class UserServiceImpl implements UserService {
 
             msg = "회원가입 성공";
 
-            params.setFunctionId("Regist");
-            params.setDeviceId("EMPTY");
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
             token = common.createJwtToken(userId, "NORMAL", "Regist");
             log.info("Token: " + token);
             data.setAccessToken(token);
@@ -286,16 +277,6 @@ public class UserServiceImpl implements UserService {
 
             msg = "ID 찾기 성공";
 
-            params.setFunctionId("IdFind");
-            if(deviceId.isEmpty()) deviceId = "EMPTY";
-            params.setDeviceId(deviceId);
-            params.setUserId("EMPTY");
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-
             data.setUserIdList(userId);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -336,15 +317,6 @@ public class UserServiceImpl implements UserService {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            params.setFunctionId("ResetPassword");
-            params.setDeviceId(params.getDeviceId());
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
@@ -392,15 +364,6 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
-            params.setFunctionId("ChangePassword");
-            params.setDeviceId("EMPTY");
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -429,15 +392,6 @@ public class UserServiceImpl implements UserService {
                 data.setHp(member.getHp());
                 data.setHouseholder(member.getHouseholder());
                 msg = "사용자정보 조회 성공";
-            }
-
-            params.setFunctionId("SearchUsers");
-            params.setDeviceId("EMPTY");
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -483,15 +437,6 @@ public class UserServiceImpl implements UserService {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            params.setFunctionId("UpdateUserNicknameHp");
-            params.setDeviceId("EMPTY");
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -550,15 +495,6 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            params.setFunctionId("UpdatePassword");
-            params.setDeviceId("EMPTY");
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e) {
             log.error("", e);
@@ -611,15 +547,6 @@ public class UserServiceImpl implements UserService {
             }
 
             msg = "사용자(세대원) 정보 조회 성공";
-
-            params.setFunctionId("ViewHouseholdMemebers");
-            params.setDeviceId("EMPTY");
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
 
             data.setUser(user);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -678,14 +605,6 @@ public class UserServiceImpl implements UserService {
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
 
-            params.setFunctionId("AddUser");
-            params.setDeviceId("EMPTY");
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
@@ -792,14 +711,6 @@ public class UserServiceImpl implements UserService {
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
 
-            params.setFunctionId("InviteStatus");
-            params.setDeviceId("EMPTY");
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
                 msg = "PUSH 메세지 전송 오류";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -878,15 +789,6 @@ public class UserServiceImpl implements UserService {
 
             msg = "사용자 초대 - 목록 조회 성공";
 
-            params.setFunctionId("InviteListView");
-            params.setDeviceId("EMPTY");
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-
             data.setInvitation(inv);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -934,14 +836,6 @@ public class UserServiceImpl implements UserService {
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
 
-            params.setFunctionId("DelHouseholdMembers");
-            params.setDeviceId("EMPTY");
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
 
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
                 msg = "PUSH 메세지 전송 오류";
@@ -995,15 +889,6 @@ public class UserServiceImpl implements UserService {
                 }
 
                 msg = "홈 IoT 컨트롤러 알림 설정 성공";
-
-                params.setFunctionId("PushSet");
-                params.setDeviceId(deviceId);
-                params.setUserId(userId);
-                if(memberMapper.insertCommandHistory(params) <= 0) {
-                    msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                }
 
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
@@ -1079,14 +964,6 @@ public class UserServiceImpl implements UserService {
             resultMap.put("resultCode", "200");
             resultMap.put("resultMsg", "홈 IoT 컨트롤러 알림 정보 조회 성공");
 
-            params.setFunctionId("SearchPushSet");
-            params.setDeviceId(deviceId);
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                resultMap.put("resultCode", "200");
-                resultMap.put("resultMsg", "DB_ERROR 잠시 후 다시 시도 해주십시오.");
-                return resultMap;
-            }
             return resultMap;
         }catch (CustomException e){
             log.error("", e);
@@ -1170,15 +1047,6 @@ public class UserServiceImpl implements UserService {
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
 
-            params.setFunctionId("DelHouseholder");
-            params.setDeviceId("EMPTY");
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
                 msg = "PUSH 메세지 전송 오류";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -1228,14 +1096,6 @@ public class UserServiceImpl implements UserService {
 
             msg = "홈IoT 서비스 회원 탈퇴 성공";
 
-            params.setFunctionId("Withdrawal");
-            params.setDeviceId("EMPTY");
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -1294,15 +1154,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-
-            params.setFunctionId("DeviceAuthCheck");
-            params.setDeviceId("EMPTY");
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
 
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
                 msg = "PUSH 메세지 전송 오류";
@@ -1366,15 +1217,6 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            params.setFunctionId("FirstDeviceAuthCheck");
-            params.setDeviceId(result.getDeviceId());
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
             result.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
@@ -1423,15 +1265,6 @@ public class UserServiceImpl implements UserService {
             else msg = "API인증키 갱신 실패";
 
             result.setAccessToken(token);
-
-            params.setFunctionId("AccessTokenRenewal");
-            params.setDeviceId("EMPTY");
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
 
             result.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
@@ -1495,15 +1328,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-
-            params.setFunctionId("UserDeviceDelete");
-            params.setDeviceId(deviceId);
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
 
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
                 msg = "PUSH 메세지 전송 오류";
@@ -1577,15 +1401,6 @@ public class UserServiceImpl implements UserService {
 
             msg = "스마트알림 - PUSH 이력 조회 성공";
 
-            params.setFunctionId("ViewPushHistory");
-            params.setDeviceId("EMPTY");
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
@@ -1646,15 +1461,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-
-            params.setFunctionId("DeviceNicknameChange");
-            params.setDeviceId(deviceId);
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
 
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
                 msg = "PUSH 메세지 전송 오류";
@@ -1758,15 +1564,6 @@ public class UserServiceImpl implements UserService {
 
             redisCommand.deleteValues(uuId);
 
-            params.setFunctionId("BrightnessControl");
-            params.setDeviceId(deviceId);
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201")) {
                 msg = "PUSH 메세지 전송 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -1833,15 +1630,6 @@ public class UserServiceImpl implements UserService {
 
             msg = "공지사항 조회 성공";
 
-            params.setFunctionId("Notice");
-            params.setDeviceId("EMPTY");
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
@@ -1901,15 +1689,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
 
-            params.setFunctionId("UpdateDeviceLocationNickname");
-            params.setDeviceId(deviceId);
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
                 msg = "PUSH 메세지 전송 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -1960,16 +1739,6 @@ public class UserServiceImpl implements UserService {
                 msg = "기기 설치 위치 별칭 수정 성공";
             else
                 msg = "기기 설치 위치 별칭 수정 실패";
-
-
-            params.setFunctionId("SafeAlarmSet");
-            params.setDeviceId("EMPTY");
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
 
             result.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
