@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -376,6 +377,27 @@ public class Common {
         m.appendTail(result);
         log.info("convertToJsonFormat: " + result.toString());
         return result.toString();
+    }
+
+    // null이 아닌 필드와 값을 Map으로 반환하는 메서드
+    public Map<String, Object> getNonNullFields(Object obj) {
+        Map<String, Object> nonNullFields = new HashMap<>();
+
+        // 객체의 모든 필드에 대해 반복
+        Field[] fields = obj.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true); // private 필드에도 접근 가능하도록 설정
+            try {
+                Object value = field.get(obj); // 필드 값 가져오기
+                // 필드 값이 null이 아닌 경우에만 맵에 추가
+                if (value != null) {
+                    nonNullFields.put(field.getName(), value);
+                }
+            } catch (IllegalAccessException e) {
+                log.error("", e);
+            }
+        }
+        return nonNullFields;
     }
 
 }

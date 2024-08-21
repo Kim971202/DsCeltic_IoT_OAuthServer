@@ -118,8 +118,8 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String longitude;                    // 경도
     private String deviceStatusJson;             // RC주기보고 JSON 전문
     /**
-     * 01: 난방-실내온도
-     * 02: 난방-난방수온도
+     * 01: 실내난방
+     * 02: 온돌난방
      * 03: 외출
      * 04: 자동
      * 05: 절약난방
@@ -127,9 +127,9 @@ public class AuthServerDTO implements UserDetails, Serializable {
      * 07: 온수전용
      * 08: 온수-빠른온수
      * 09: 귀가
-     * 10: 24시간예약
-     * 11: 12시간예약/전원(꺼짐/켜짐) 예약
-     * 12: 주간예약
+     * 10: 예약난방 - 24시간
+     * 11: 예약난방 - 반복(12시간)
+     * 12: 예약난방 - 주간
      * */
     private String modeCode;
     private String sleepCode;                    // 01: Comfort 02: Normal 03: Warm
@@ -164,6 +164,13 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String errorCode;
     private String errorMessage;
     private String errorDateTime;
+
+    private String codeType;                     // 코드 구분 (0 = 모드코드, 1 = 변경상태정보코드)
+    private String commandId;                    // 명령어 (예: modeChange)
+    private String controlCode;                  // 제어코드 (예: 01)
+    private String controlCodeName;              // 제어코드명 (예: 실내난방)
+    private String commandFlow;                  // 명령방향: 0 = APP -> 제어기기, 1 = 제어기기 -> APP
+
 
     private Role role = Role.USER;
 

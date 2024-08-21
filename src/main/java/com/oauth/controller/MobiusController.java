@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 @Slf4j
 @RestController
@@ -97,18 +98,6 @@ public class MobiusController {
             }
         } else if (functionId.equals("mfSt")) {
 
-            // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
-            for (int i = 0; i < userIds.size(); ++i) {
-                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-
-                String fPushYn = memberMapper.getPushYnStatusByUserIds(userIds).get(i).getFPushYn();
-                String pushToken = userIds.get(i).getPushToken();
-                // 변경실시간상태
-                // FCM Token 값 쿼리 필요
-                pushService.sendPushMessage(jsonBody, pushToken, fPushYn, userIds.get(i).getUserId());
-            }
-
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
             deviceInfo.setMfcd(common.readCon(jsonBody, "mfcd"));
             deviceInfo.setPowr(common.readCon(jsonBody, "powr"));
@@ -137,8 +126,36 @@ public class MobiusController {
 
             deviceInfo.setFwh(common.readCon(jsonBody, "fwh"));
             deviceInfo.setDeviceId(common.readCon(jsonBody, "deviceId"));
+
             int rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
             log.info("rcUpdateResult: " + rcUpdateResult);
+
+            Map<String, Object> nonNullField = common.getNonNullFields(deviceInfo);
+            System.out.println("nonNullField: " + nonNullField);
+
+            // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
+            for (int i = 0; i < userIds.size(); ++i) {
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+
+                String fPushYn = memberMapper.getPushYnStatusByUserIds(userIds).get(i).getFPushYn();
+                String pushToken = userIds.get(i).getPushToken();
+                // 변경실시간상태
+                // FCM Token 값 쿼리 필요
+                pushService.sendPushMessage(jsonBody, pushToken, fPushYn, userIds.get(i).getUserId());
+
+                AuthServerDTO params = new AuthServerDTO();
+
+                params.setCommandId("powerOnOff");
+                params.setControlCode("powr");
+                params.setControlCodeName("전원 ON/OFF");
+
+                params.setCodeType("1");
+                params.setCommandFlow("1");
+                params.setDeviceId(deviceInfo.getDeviceId());
+                params.setUserId(userIds.get(i).getUserId());
+            }
+
 
         } else if (functionId.equals("rtSt")) {
             // 주기상태보고
