@@ -68,11 +68,18 @@
 
     <select id="getUserByHp" parameterType="String" resultMap="member">
         SELECT
-            HP AS hp, USER_ID AS userId, USER_NICK AS userNick
+            a.HP AS hp,
+            a.USER_ID AS userId,
+            a.USER_NICK AS userNick,
+            b.REGIST_USER_TYPE AS registUserType
         FROM
-            TBR_OPR_USER
+            TBR_OPR_USER a
+        INNER JOIN
+            TBR_OPR_ACCOUNT b
+        ON
+            a.USER_ID = b.USER_ID
         WHERE
-            HP = #{hp}
+            a.HP = #{hp}
     </select>
 
     <select id="getUserByDeviceId" parameterType="String" resultMap="member">
@@ -94,15 +101,43 @@
     </select>
 
     <select id="getUserByUserIdAndHp" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
-        SELECT *
-        FROM TBR_OPR_USER
-        WHERE HP = #{hp} AND USER_ID = #{userId};
+        SELECT
+            a.HP AS hp,
+            a.USER_ID AS userId,
+            a.USER_NICK AS userNick,
+            b.REGIST_USER_TYPE AS registUserType
+        FROM
+            TBR_OPR_USER a
+        INNER JOIN
+            TBR_OPR_ACCOUNT b
+        ON
+            a.USER_ID = b.USER_ID
+        WHERE
+            a.USER_ID = #{userId} AND a.HP = #{hp}
     </select>
 
     <select id="getUserByUserIdAndHpAndDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
-        SELECT *
-        FROM TBT_OPR_DEVICE_REGIST
-        WHERE DEVC_ID = #{deviceId} AND HP = #{hp} AND USER_ID = #{userId};
+        SELECT
+            a.HP AS hp,
+            a.USER_ID AS userId,
+            b.REGIST_USER_TYPE AS registUserType
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        INNER JOIN
+            TBR_OPR_ACCOUNT b
+        ON
+            a.USER_ID = b.USER_ID
+        WHERE
+            HP = #{hp}
+        AND
+            USER_ID = #{userId}
+        <if test="deviceId != null">
+        AND
+            DEVC_ID = #{deviceId}
+        </if>
+        <if test="deviceId == null">
+            LIMIT 1
+        </if>
     </select>
 
     <update id="updatePassword" parameterType="com.oauth.dto.AuthServerDTO">
