@@ -267,6 +267,9 @@
             DEVC_ID IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.deviceId},
+        </foreach>
+        AND
+        <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.userId}
         </foreach>
     </select>
