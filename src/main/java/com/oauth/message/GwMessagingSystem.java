@@ -32,6 +32,7 @@ public class GwMessagingSystem implements MessagingSystem {
 
     @Override
     public String waitForResponse(String destination, long timeout, TimeUnit unit) throws InterruptedException {
+        printMessageQueues();
         // 해당 destination에 대한 큐를 가져오거나 생성
         BlockingQueue<String> messageQueue = messageQueues.computeIfAbsent(destination, k -> new LinkedBlockingQueue<>());
 
