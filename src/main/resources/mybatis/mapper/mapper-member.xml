@@ -122,18 +122,18 @@
             a.USER_ID AS userId,
             b.REGIST_USER_TYPE AS registUserType
         FROM
-            TBT_OPR_DEVICE_REGIST
+            TBT_OPR_DEVICE_REGIST a
         INNER JOIN
             TBR_OPR_ACCOUNT b
         ON
             a.USER_ID = b.USER_ID
         WHERE
-            HP = #{hp}
+            a.HP = #{hp}
         AND
-            USER_ID = #{userId}
+            a.USER_ID = #{userId}
         <if test="deviceId != null">
         AND
-            DEVC_ID = #{deviceId}
+            a.DEVC_ID = #{deviceId}
         </if>
         <if test="deviceId == null">
             LIMIT 1
