@@ -249,7 +249,8 @@
     <select id="getControlAuthKeyByUserId" parameterType="String" resultMap="device">
         SELECT
             DEVC_CTRL_KEY AS controlAuthKey,
-            DEVC_ID AS deviceId
+            DEVC_ID AS deviceId,
+            USER_ID AS userId
         FROM
             TBR_OPR_USER_DEVICE
         WHERE USER_ID = #{userId}
@@ -266,9 +267,8 @@
             DEVC_ID IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.deviceId}
+            #{item.userId}
         </foreach>
-        AND
-            USER_ID = #{userId}
     </select>
 
     <select id="getDeviceInfoSearch" parameterType="String" resultMap="device">
