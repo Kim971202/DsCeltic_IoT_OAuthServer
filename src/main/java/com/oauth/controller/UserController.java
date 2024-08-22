@@ -133,8 +133,7 @@ public class UserController {
         String logStep = "[비밀번호 찾기 - 초기화]";
         log.info("[비밀번호 찾기 - 초기화]");
 
-        if(Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getHp()) ||
+        if(Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode())){
             throw new CustomException("404", "비밀번호 찾기 - 초기화 입력 값 오류");
