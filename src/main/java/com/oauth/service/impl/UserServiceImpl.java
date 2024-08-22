@@ -1285,12 +1285,21 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         AuthServerDTO pushYn;
-        String userId = params.getUserId();
-        String deviceId = params.getDeviceId();
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try{
+
+            pushYn = memberMapper.getPushYnStatus(params);
+            conMap.put("pushYn", pushYn.getFPushYn());
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "User Device Delete");
+            conMap.put("id", "User Device Delete ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            log.info("jsonString: " + jsonString);
+
             /* *
              * TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
              * TBR_OPR_USER_DEVICE - 사용자 단말 정보
@@ -1317,16 +1326,6 @@ public class UserServiceImpl implements UserService {
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
-
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "User Device Delete");
-            conMap.put("id", "User Device Delete ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
 
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
                 msg = "PUSH 메세지 전송 오류";

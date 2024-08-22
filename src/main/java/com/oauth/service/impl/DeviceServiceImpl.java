@@ -182,6 +182,7 @@ public class DeviceServiceImpl implements DeviceService {
                 conMap.put("title", "Device ON/OFF");
                 conMap.put("id", "Device ON/OFF ID");
                 conMap.put("isEnd", "false");
+                conMap.put("userNickname", "TODO");
                 conMap.put("pushYn", memberMapper.getPushYnStatusByUserIds(userIds).get(i).getFPushYn());
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
