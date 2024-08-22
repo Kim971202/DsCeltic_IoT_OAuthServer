@@ -109,6 +109,7 @@ public class DeviceServiceImpl implements DeviceService {
                 try {
                     // 메시징 시스템을 통해 응답 메시지 대기
                     gwMessagingSystem.printMessageQueues();
+                    log.info("responseMessage: powr" + powerOnOff.getUuId());
                     responseMessage = gwMessagingSystem.waitForResponse("powr" + powerOnOff.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                     if (responseMessage != null) {
                         // 응답 처리
@@ -125,7 +126,7 @@ public class DeviceServiceImpl implements DeviceService {
                     log.error("", e);
                 }
             }
-            gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
+            // gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
 
             if(stringObject.equals("Y")) {
                 conMap.put("body", "Device ON/OFF OK");
