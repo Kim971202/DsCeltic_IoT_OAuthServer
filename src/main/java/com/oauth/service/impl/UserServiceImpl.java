@@ -1724,8 +1724,6 @@ public class UserServiceImpl implements UserService {
         String stringObject = "N";
         String msg;
 
-        String userId = params.getUserId();
-
         try {
 
             if(memberMapper.UpdateSafeAlarmSet(params) <= 0){
@@ -1735,9 +1733,9 @@ public class UserServiceImpl implements UserService {
             } else stringObject = "Y";
 
             if(stringObject.equals("Y"))
-                msg = "기기 설치 위치 별칭 수정 성공";
+                msg = "안전안심 알람 설정 성공";
             else
-                msg = "기기 설치 위치 별칭 수정 실패";
+                msg = "안전안심 알람 설정 실패";
 
             result.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
