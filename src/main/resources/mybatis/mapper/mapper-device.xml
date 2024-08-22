@@ -267,6 +267,8 @@
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.deviceId}
         </foreach>
+        AND
+            USER_ID = #{userId}
     </select>
 
     <select id="getDeviceInfoSearch" parameterType="String" resultMap="device">
