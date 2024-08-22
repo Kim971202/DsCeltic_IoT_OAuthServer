@@ -985,6 +985,16 @@ public class UserServiceImpl implements UserService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 
+            pushYn = memberMapper.getPushYnStatus(params);
+            conMap.put("pushYn", pushYn.getFPushYn());
+            conMap.put("targetToken", params.getPushToken());
+            conMap.put("title", "Delete householder");
+            conMap.put("id", "Delete householder ID");
+            conMap.put("isEnd", "false");
+
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            log.info("jsonString: " + jsonString);
+
             List<AuthServerDTO> deviceIds = memberMapper.getDeviceIdByUserId(params.getUserId());
             if (deviceIds.isEmpty()) {
                 msg = "등록된 존재하지 않습니다.";
@@ -1035,16 +1045,6 @@ public class UserServiceImpl implements UserService {
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
-
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Delete householder");
-            conMap.put("id", "Delete householder ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
 
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
                 msg = "PUSH 메세지 전송 오류";
