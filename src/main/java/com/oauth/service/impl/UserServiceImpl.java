@@ -305,7 +305,10 @@ public class UserServiceImpl implements UserService {
                 member = memberMapper.getUserByUserIdAndHpAndDeviceId(params);
 
             if(member == null) stringObject = "N";
-            else stringObject = "Y";
+            else {
+                data.setRegistUserType(member.getRegistUserType());
+                stringObject = "Y";
+            }
 
             if(stringObject.equals("Y"))
                 msg = "비밀번호 찾기 - 초기화 성공";
