@@ -269,6 +269,7 @@
             #{item.deviceId}
         </foreach>
         AND
+            USER_ID IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.userId}
         </foreach>
