@@ -297,7 +297,7 @@ public class UserServiceImpl implements UserService {
         String msg;
 
         try {
-
+            if(params.getDeviceId().equals("null")) params.setDeviceId(null);
             // 구형 모델의 경우
             if(modelCode.equals(modelCodeMap.get("oldModel")) || modelCode.equals(modelCodeMap.get("newModel")))
                 member = memberMapper.getUserByUserIdAndHp(params);
