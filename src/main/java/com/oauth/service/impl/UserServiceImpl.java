@@ -272,7 +272,7 @@ public class UserServiceImpl implements UserService {
             if (member == null) {
                 msg = "일치하는 회원정보가 없습니다.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             } else userId = Common.extractJson(member.toString(), "userId");
 
             msg = "ID 찾기 성공";

@@ -67,15 +67,21 @@
     </insert>
 
     <select id="getUserByHp" parameterType="String" resultMap="member">
-        SELECT HP AS hp, USER_ID AS userId, USER_NICK AS userNick
-        FROM TBR_OPR_USER
-        WHERE HP = #{value}
+        SELECT
+            HP AS hp, USER_ID AS userId, USER_NICK AS userNick
+        FROM
+            TBR_OPR_USER
+        WHERE
+            HP = #{hp}
     </select>
 
     <select id="getUserByDeviceId" parameterType="String" resultMap="member">
-        SELECT USER_ID AS userId
-        FROM TBR_OPR_USER_DEVICE
-        WHERE DEVC_ID = #{value}
+        SELECT
+            USER_ID AS userId
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE
+            DEVC_ID = #{deviceId}
     </select>
 
     <select id="getDeviceIdListByUserId" parameterType="String" resultMap="member">
