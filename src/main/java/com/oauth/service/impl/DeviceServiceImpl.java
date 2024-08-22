@@ -145,17 +145,6 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(params);
-
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Device ON/OFF");
-            conMap.put("id", "Device ON/OFF ID");
-            conMap.put("isEnd", "false");
-            conMap.put("pushYn", pushYn.getFPushYn());
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("doPowerOnOff jsonString: " + jsonString);
-
             redisCommand.deleteValues(powerOnOff.getUuId());
 
             deviceInfo.setPowr(params.getPowerStatus());
@@ -184,10 +173,25 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+
+            for(int i = 0; i < userIds.size(); ++i){
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+
+                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("title", "Device ON/OFF");
+                conMap.put("id", "Device ON/OFF ID");
+                conMap.put("isEnd", "false");
+                conMap.put("pushYn", memberMapper.getPushYnStatusByUserIds(userIds).get(i).getFPushYn());
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+                log.info("doPowerOnOff jsonString: " + jsonString);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                    msg = "PUSH 메세지 전송 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
             }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
