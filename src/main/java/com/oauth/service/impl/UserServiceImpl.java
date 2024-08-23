@@ -670,6 +670,7 @@ public class UserServiceImpl implements UserService {
 
                 Common.updateMemberDTOList(member, "responseUserId", responseUserId);
                 Common.updateMemberDTOList(member, "householder", "N");
+                Common.updateMemberDTOList(member, "requestUserId", requestUserId);
 
                 if(memberMapper.insertNewHouseMember(member) <= 0){
                     msg = "사용자 초대 - 수락 실패";
