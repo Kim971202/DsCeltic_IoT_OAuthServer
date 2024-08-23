@@ -253,7 +253,7 @@ public class UserController {
 
         String logStep = "[사용자 초대 - 수락여부]";
         log.info("[사용자 초대 - 수락여부]");
-
+        System.out.println(params);
         if(Validator.isNullOrEmpty(params.getRequestUserId()) ||
                 Validator.isNullOrEmpty(params.getResponseHp()) ||
                 Validator.isNullOrEmpty(params.getResponseUserId()) ||
