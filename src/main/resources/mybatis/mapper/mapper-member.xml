@@ -285,7 +285,7 @@
         SET
             INVITE_ACCEPT_YN = #{inviteAcceptYn},
             INVITE_ACCEPT_DATE = now(),
-            RESPONSE_USER_NICK = #{responseUserNick}
+            RESPONSE_USER_NICK = #{responseNickname}
         WHERE INVITATION_IDX = #{invitationIdx}
     </update>
 
