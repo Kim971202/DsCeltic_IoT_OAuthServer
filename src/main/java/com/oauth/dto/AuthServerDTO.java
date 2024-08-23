@@ -80,7 +80,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String requestUserId;                // 요청 회원 ID
     private String responseUserId;               // 응답 회원 ID
     private String requestUserNick;              // 요청 회원 별칭
-    private String responseUserNick;             // 응답 회원 별칭
+    private String responseUserNickna;             // 응답 회원 별칭
     private String responseHp;                   // 응답 회원 전화번호
     private String authenticationDatetime;       // 기기 인증 일시
     private String responseNickname;             // 응답 회원 별칭

@@ -290,8 +290,15 @@
     </update>
 
     <insert id="insertNewHouseMember" parameterType="com.oauth.dto.AuthServerDTO">
-        INSERT INTO TBR_OPR_USER_DEVICE
-            (USER_ID, DEVC_ID, DEVC_CTRL_KEY, ATTC_DATM, HOUSE_HOLDER)
+        INSERT INTO
+            TBR_OPR_USER_DEVICE
+        (
+            USER_ID,
+            DEVC_ID,
+            DEVC_CTRL_KEY,
+            ATTC_DATM,
+            HOUSE_HOLDER
+        )
         VALUES
         <foreach collection="list" item="item" index="idx" separator=",">
         (

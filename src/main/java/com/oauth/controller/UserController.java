@@ -257,10 +257,9 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getRequestUserId()) ||
                 Validator.isNullOrEmpty(params.getResponseHp()) ||
                 Validator.isNullOrEmpty(params.getResponseUserId()) ||
-                Validator.isNullOrEmpty(params.getResponseUserNick()) ||
+                Validator.isNullOrEmpty(params.getResponseNickname()) ||
                 Validator.isNullOrEmpty(params.getInviteAcceptYn()) ||
-                Validator.isNullOrEmpty(params.getInvitationIdx()) ||
-                Validator.isNullOrEmpty(params.getRequestUserNick())){
+                Validator.isNullOrEmpty(params.getInvitationIdx())){
             throw new CustomException("404", "사용자 초대 - 수락여부 값 오류");
         }
 
