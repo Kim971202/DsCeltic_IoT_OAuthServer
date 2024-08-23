@@ -754,7 +754,7 @@ public class UserServiceImpl implements UserService {
             List<String> requestUserIdList = Common.extractJson(invitationInfo.toString(), "requestUserId");
             List<String> requestUserNickList = Common.extractJson(invitationInfo.toString(), "requestUserNick");
             List<String> responseUserIdList = Common.extractJson(invitationInfo.toString(), "responseUserId");
-            List<String> responseUserNickList = Common.extractJson(invitationInfo.toString(), "responseUserNick");
+//            List<String> responseUserNickList = Common.extractJson(invitationInfo.toString(), "responseUserNick");
             List<String> responseHpList = Common.extractJson(invitationInfo.toString(), "responseHp");
             List<String> inviteStartDateList = Common.extractJson(invitationInfo.toString(), "inviteStartDate");
             List<String> inviteEndDateList = Common.extractJson(invitationInfo.toString(), "inviteEndDate");
@@ -767,7 +767,7 @@ public class UserServiceImpl implements UserService {
                     && requestUserIdList != null
                     && requestUserNickList != null
                     && responseUserIdList != null
-                    && responseUserNickList != null
+//                    && responseUserNickList != null
                     && responseHpList != null
                     && inviteStartDateList != null
                     && inviteEndDateList != null
@@ -780,7 +780,7 @@ public class UserServiceImpl implements UserService {
                             requestUserIdList.get(i),
                             requestUserNickList.get(i),
                             responseUserIdList.get(i),
-                            responseUserNickList.get(i),
+//                            responseUserNickList.get(i),
                             responseHpList.get(i),
                             inviteStartDateList.get(i),
                             inviteEndDateList.get(i),

@@ -140,7 +140,7 @@ public class ApiResponse {
             private String requestUserId;
             private String requestUserNick;
             private String responseUserId;
-            private String responseUserNick;
+//            private String responseUserNick;
             private String responseHp;
             private String inviteStartDate;
             private String inviteEndDate;

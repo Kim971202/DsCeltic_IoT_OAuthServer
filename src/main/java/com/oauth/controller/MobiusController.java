@@ -132,6 +132,7 @@ public class MobiusController {
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
+            
             for (int i = 0; i < userIds.size(); ++i) {
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
 
