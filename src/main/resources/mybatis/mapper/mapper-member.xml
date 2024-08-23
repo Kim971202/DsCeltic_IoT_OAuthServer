@@ -297,7 +297,8 @@
             DEVC_ID,
             DEVC_CTRL_KEY,
             ATTC_DATM,
-            HOUSE_HOLDER
+            HOUSE_HOLDER,
+            GROUP_KEY
         )
         VALUES
         <foreach collection="list" item="item" index="idx" separator=",">
@@ -306,7 +307,8 @@
             #{item.deviceId},
             #{item.controlAuthKey},
             #{item.authenticationDatetime},
-            #{item.householder}
+            #{item.householder},
+            #{item.requestUserId}
         )
         </foreach>
     </insert>
