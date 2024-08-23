@@ -87,7 +87,7 @@ public class Common {
             String requestUserId,
             String requestUserNick,
             String responseUserId,
-            String responseUserNick,
+//            String responseUserNick,
             String responseHp,
             String inviteStartDate,
             String inviteEndDate,
@@ -103,7 +103,7 @@ public class Common {
         invitation.setRequestUserId(requestUserId);
         invitation.setRequestUserNick(requestUserNick);
         invitation.setResponseUserId(responseUserId);
-        invitation.setResponseUserNick(responseUserNick);
+//        invitation.setResponseUserNick(responseUserNick);
         invitation.setResponseHp(responseHp);
         invitation.setInviteStartDate(inviteStartDate);
         invitation.setInviteEndDate(inviteEndDate);
