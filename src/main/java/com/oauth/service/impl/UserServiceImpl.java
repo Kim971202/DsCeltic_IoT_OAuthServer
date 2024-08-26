@@ -716,6 +716,35 @@ public class UserServiceImpl implements UserService {
                         System.out.println("deviceListMap");
                         System.out.println(deviceListMap);
                         memberMapper.insertDeviceRegistFromSelect(deviceListMap);
+
+                        // TODO: 3. RequestUserId가 DeviceId를 가지고 있다면 해당 기기의 CNT, SUB 생성
+                        System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
+                        mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), params.getResponseUserId());
+                        mobiusService.createSub(authServerDTO.getDeviceId().substring(33), params.getResponseUserId(), "gw");
+
+                    }
+                }
+
+                // TODO: 4. 반대로 ResponseUserId가 가지고 있는 DeviceId 검색
+                params.setRequestUserId(responseUserId);
+                List<AuthServerDTO> responseDeviceIdList = memberMapper.getDeviceIdFromRegistTable(params.getRequestUserId());
+                if(!responseDeviceIdList.isEmpty()) {
+                    for (AuthServerDTO authServerDTO : responseDeviceIdList) {
+                        Map<String, Object> deviceListMap = new HashMap<>();
+                        deviceListMap.put("tmpRegistKey", responseUserId + common.getCurrentDateTime());
+                        deviceListMap.put("userId", responseUserId);
+                        deviceListMap.put("requestUserId", responseUserId);
+                        deviceListMap.put("deviceId", responseDeviceIdList);
+                        deviceListMap.put("deviceList", responseDeviceIdList);
+                        System.out.println("deviceListMap");
+                        System.out.println(deviceListMap);
+                        memberMapper.insertDeviceRegistFromSelect(deviceListMap);
+
+                        // TODO: 3. RequestUserId가 DeviceId를 가지고 있다면 해당 기기의 CNT, SUB 생성
+                        System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
+                        mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), responseUserId);
+                        mobiusService.createSub(authServerDTO.getDeviceId().substring(33), responseUserId, "gw");
+
                     }
                 }
 
@@ -727,11 +756,7 @@ public class UserServiceImpl implements UserService {
 //                }
 
 //                deviceInfo = memberMapper.getDeviceIdFromRegistTable(params.getRequestUserId());
-//                if(!deviceInfo.getDeviceId().isEmpty()){
-//                String serialNumber = deviceInfo.getDeviceId().substring(33);
-//                mobiusService.createCnt(serialNumber, params.getResponseUserId());
-//                mobiusService.createSub(serialNumber, params.getResponseUserId(), "gw");
-//                }
+
 //
 //                params.setTmpRegistKey(requestUserId + common.getCurrentDateTime());
 //                // 세대원 -> 세대주 방향으로 기기 등록 이기때문에 RequestUserId를 ResponseUserId로 Setting 한다

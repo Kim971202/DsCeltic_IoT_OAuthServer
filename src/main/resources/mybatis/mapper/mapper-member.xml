@@ -670,7 +670,8 @@
                 LAT,
                 LON,
                 DEVC_NICK,
-                ADDR_NICK
+                ADDR_NICK,
+                REG_DATM
             )
             SELECT
                 #{tmpRegistKey},  -- TEMP_DEVC_REG_KEY (외부에서 전달된 값)
@@ -684,7 +685,8 @@
                 LAT,
                 LON,
                 DEVC_NICK,
-                ADDR_NICK
+                ADDR_NICK,
+                NOW()
             FROM
                 TBT_OPR_DEVICE_REGIST
             WHERE
