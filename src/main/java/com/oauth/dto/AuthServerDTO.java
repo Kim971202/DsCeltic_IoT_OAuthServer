@@ -72,7 +72,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String newHp;                        // 신규 전화번호
     private String oldPassword;                  // 이전 비밀번호
     private String newPassword;                  // 신규 비밀번호
-    private String  householder;                  // 세대주 여부
+    private String householder;                  // 세대주 여부
     private String inviteStartDate;              // 사용자 초대 시작 시간
     private String inviteEndDate;                // 사용자 초대 만료 시간
     private String inviteAcceptYn;               // 사용자 초대 수락 여부
