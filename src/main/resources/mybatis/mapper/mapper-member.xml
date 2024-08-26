@@ -201,6 +201,7 @@
             a.HOUSE_HOLDER AS householder,
             a.DEVC_CTRL_KEY AS controlAuthKey,
             MAX(a.ATTC_DATM) AS authenticationDatetime,  -- 최근 인증 날짜를 선택
+            b.ADDR_NICK AS addrNickname,
             b.DEVC_NICK AS deviceNickname,
             c.TEMP_DEVC_REG_KEY AS tmpRegistKey,
             c.LAT AS latitude,
@@ -651,5 +652,43 @@
             #{item.userId}
         </foreach>
     </select>
+
+    <insert id="insertDeviceRegistFromSelect" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBT_OPR_DEVICE_REGIST
+        (
+            USER_ID,
+            TEMP_DEVC_REG_KEY,
+            DEVC_ID,
+            HP,
+            ZIP,
+            OLD_ADDR,
+            NEW_ADDR,
+            DTAIL_ADDR,
+            LAT,
+            LON,
+            DEVC_NICK,
+            ADDR_NICK,
+            REG_DATM
+        )
+        SELECT
+            #{userId}                             -- USER_ID
+            #{tmpRegistKey},                      -- TEMP_DEVC_REG_KEY
+            DEVC_ID,                              -- DEVC_ID
+            HP,                                   -- HP
+            ZIP,                                  -- ZIP
+            OLD_ADDR,                             -- OLD_ADDR
+            NEW_ADDR,                             -- NEW_ADDR
+            DTAIL_ADDR,                           -- DTAIL_ADDR
+            LAT,                                  -- LAT
+            LON,                                  -- LON
+            DEVC_NICK,                            -- DEVC_NICK
+            ADDR_NICK,                            -- ADDR_NICK
+            NOW()                                 -- REG_DATM
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            USER_ID = #{responseUserId};
+    </insert>
 
 </mapper>

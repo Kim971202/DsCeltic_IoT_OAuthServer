@@ -193,7 +193,8 @@
                 DTAIL_ADDR,
                 DEVC_STAT_JSON,
                 DEVC_NICK,
-                DEVC_REG_DATM
+                DEVC_REG_DATM,
+                ADDR_NICK
             )
         VALUES
             (
@@ -205,7 +206,8 @@
                 #{addrDetail},
                 'empty',
                 #{deviceNickname},
-                now()
+                now(),
+                #{addrNickname}
             )
     </insert>
 
@@ -253,7 +255,8 @@
             USER_ID AS userId
         FROM
             TBR_OPR_USER_DEVICE
-        WHERE USER_ID = #{userId}
+        WHERE
+            USER_ID = #{userId}
     </select>
 
     <select id="getDeviceNicknameAndDeviceLocNickname" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">

@@ -678,6 +678,12 @@ public class UserServiceImpl implements UserService {
                     return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
                 }
 
+                if(memberMapper.insertDeviceRegistFromSelect(params) <= 0){
+                    msg = "사용자 초대 - 수락 실패";
+                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
+
             } else if(inviteAcceptYn.equals("N")){
 
                 if(memberMapper.acceptInvite(params) <= 0){
