@@ -673,7 +673,7 @@
             REG_DATM
         )
         SELECT
-            #{userId}                             -- USER_ID
+            #{responseUserId}                     -- USER_ID
             #{tmpRegistKey},                      -- TEMP_DEVC_REG_KEY
             DEVC_ID,                              -- DEVC_ID
             HP,                                   -- HP
