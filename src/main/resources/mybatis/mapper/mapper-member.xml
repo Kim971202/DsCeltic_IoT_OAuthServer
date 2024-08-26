@@ -654,46 +654,44 @@
         </foreach>
     </select>
 
-    <insert id="insertDeviceRegistFromSelect" parameterType="java.util.Map">
-        <foreach collection="deviceList" item="item" separator=";">
-            INSERT INTO
-                TBT_OPR_DEVICE_REGIST
-            (
-                TEMP_DEVC_REG_KEY,
-                DEVC_ID,
-                USER_ID,
-                HP,
-                ZIP,
-                OLD_ADDR,
-                NEW_ADDR,
-                DTAIL_ADDR,
-                LAT,
-                LON,
-                DEVC_NICK,
-                ADDR_NICK,
-                REG_DATM
-            )
+    <insert id="insertDeviceRegistFromSelect" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBT_OPR_DEVICE_REGIST
+        (
+            TEMP_DEVC_REG_KEY,  -- 입력 값
+            DEVC_ID,            -- SELECT된 값
+            HP,                 -- 입력 값
+            USER_ID,            -- 입력 값
+            ZIP,                -- SELECT된 값
+            OLD_ADDR,           -- SELECT된 값
+            NEW_ADDR,           -- SELECT된 값
+            DTAIL_ADDR,         -- SELECT된 값
+            LAT,                -- SELECT된 값
+            LON,                -- SELECT된 값
+            DEVC_NICK,          -- SELECT된 값
+            ADDR_NICK,          -- SELECT된 값
+            REG_DATM            -- SELECT된 값
+        )
             SELECT
-                #{tmpRegistKey},  -- TEMP_DEVC_REG_KEY (외부에서 전달된 값)
-                #{item.deviceId},  -- DEVC_ID (deviceList의 각 아이템에서 가져옴)
-                #{userId},         -- USER_ID (외부에서 전달된 값)
-                HP,
-                ZIP,
-                OLD_ADDR,
-                NEW_ADDR,
-                DTAIL_ADDR,
-                LAT,
-                LON,
-                DEVC_NICK,
-                ADDR_NICK,
-                NOW()
-            FROM
-                TBT_OPR_DEVICE_REGIST
-            WHERE
-                DEVC_ID = #{item.deviceId}
-            AND
-                USER_ID = #{requestUserId}
-        </foreach>
+            #{tmpRegistKey},        -- TEMP_DEVC_REG_KEY (입력 값)
+            DEVC_ID,                -- SELECT된 값
+            #{hp},                  -- HP (입력 값)
+            #{userId},              -- USER_ID (입력 값)
+            ZIP,                    -- SELECT된 값
+            OLD_ADDR,               -- SELECT된 값
+            NEW_ADDR,               -- SELECT된 값
+            DTAIL_ADDR,             -- SELECT된 값
+            LAT,                    -- SELECT된 값
+            LON,                    -- SELECT된 값
+            DEVC_NICK,              -- SELECT된 값
+            ADDR_NICK,              -- SELECT된 값
+            NOW()                   -- 현재 시간 (REG_DATM)
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            DEVC_ID = #{deviceId}
+        AND
+            USER_ID = #{requestUserId};
     </insert>
 
     <select id="getDeviceIdFromRegistTable" parameterType="String" resultMap="member">

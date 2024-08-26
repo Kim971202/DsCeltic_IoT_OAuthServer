@@ -707,20 +707,17 @@ public class UserServiceImpl implements UserService {
                 List<AuthServerDTO> requestDeviceIdList = memberMapper.getDeviceIdFromRegistTable(requestUserId);
                 if(!requestDeviceIdList.isEmpty()){
                     for(AuthServerDTO authServerDTO : requestDeviceIdList){
-                        Map<String, Object> deviceListMap = new HashMap<>();
-                        deviceListMap.put("tmpRegistKey", responseUserId + common.getCurrentDateTime());
-                        deviceListMap.put("userId", responseUserId);
-                        deviceListMap.put("requestUserId", requestUserId);
-                        deviceListMap.put("deviceId", requestDeviceIdList);
-                        deviceListMap.put("deviceList", requestDeviceIdList);
-                        System.out.println("deviceListMap");
-                        System.out.println(deviceListMap);
-                        memberMapper.insertDeviceRegistFromSelect(deviceListMap);
+
+                        params.setDeviceId(authServerDTO.getDeviceId());
+                        params.setHp(authServerDTO.getResponseHp());
+                        params.setTmpRegistKey(responseUserId + common.getCurrentDateTime());
+                        params.setRequestUserId(requestUserId);
+                        memberMapper.insertDeviceRegistFromSelect(params);
 
                         // TODO: 3. RequestUserId가 DeviceId를 가지고 있다면 해당 기기의 CNT, SUB 생성
-                        System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
-                        mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), params.getResponseUserId());
-                        mobiusService.createSub(authServerDTO.getDeviceId().substring(33), params.getResponseUserId(), "gw");
+//                        System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
+//                        mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), params.getResponseUserId());
+//                        mobiusService.createSub(authServerDTO.getDeviceId().substring(33), params.getResponseUserId(), "gw");
 
                     }
                 }
@@ -728,23 +725,13 @@ public class UserServiceImpl implements UserService {
                 // TODO: 4. 반대로 ResponseUserId가 가지고 있는 DeviceId 검색
                 params.setRequestUserId(responseUserId);
                 List<AuthServerDTO> responseDeviceIdList = memberMapper.getDeviceIdFromRegistTable(params.getRequestUserId());
-                if(!responseDeviceIdList.isEmpty()) {
-                    for (AuthServerDTO authServerDTO : responseDeviceIdList) {
-                        Map<String, Object> deviceListMap = new HashMap<>();
-                        deviceListMap.put("tmpRegistKey", responseUserId + common.getCurrentDateTime());
-                        deviceListMap.put("userId", responseUserId);
-                        deviceListMap.put("requestUserId", responseUserId);
-                        deviceListMap.put("deviceId", responseDeviceIdList);
-                        deviceListMap.put("deviceList", responseDeviceIdList);
-                        System.out.println("deviceListMap");
-                        System.out.println(deviceListMap);
-                        memberMapper.insertDeviceRegistFromSelect(deviceListMap);
-
-                        // TODO: 3. RequestUserId가 DeviceId를 가지고 있다면 해당 기기의 CNT, SUB 생성
-                        System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
-                        mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), responseUserId);
-                        mobiusService.createSub(authServerDTO.getDeviceId().substring(33), responseUserId, "gw");
-
+                if(!responseDeviceIdList.isEmpty()){
+                    for(AuthServerDTO authServerDTO : responseDeviceIdList){
+                        params.setDeviceId(authServerDTO.getDeviceId());
+                        params.setHp(authServerDTO.getResponseHp());
+                        params.setTmpRegistKey(requestUserId + common.getCurrentDateTime());
+                        params.setRequestUserId(requestUserId);
+                        memberMapper.insertDeviceRegistFromSelect(params);
                     }
                 }
 

@@ -40,7 +40,7 @@ public interface MemberMapper {
     public AuthServerDTO getHpByUserId(String userId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
-    public int insertDeviceRegistFromSelect(Map<String, Object> member);
+    public int insertDeviceRegistFromSelect(AuthServerDTO member);
     public int UpdateSafeAlarmSet(AuthServerDTO member);
     public int insertPushHistory(AuthServerDTO member);
     public int updatePushToken(AuthServerDTO member);
