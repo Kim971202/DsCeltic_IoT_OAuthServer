@@ -677,7 +677,7 @@ public class UserServiceImpl implements UserService {
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
                 }
-
+                params.setTmpRegistKey(responseUserId + common.getCurrentDateTime());
                 if(memberMapper.insertDeviceRegistFromSelect(params) <= 0){
                     msg = "사용자 초대 - 수락 실패";
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
