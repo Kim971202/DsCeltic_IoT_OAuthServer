@@ -301,6 +301,7 @@ public class MobiusService {
 
     public void rtstHandler(DeviceStatusInfo.Device dr910W){
         ApiResponse.Data result = new ApiResponse.Data();
+        System.out.println("deviceMapper.getDeviceStautsByDeviceId(dr910W.getDeviceId()): " + deviceMapper.getDeviceStautsByDeviceId(dr910W.getDeviceId()));
         if(deviceMapper.getDeviceStautsByDeviceId(dr910W.getDeviceId()) == null){
             // 신규 기기 INSERT
             if(deviceMapper.insertDeviceStatus(dr910W) <= 0) {

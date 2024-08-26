@@ -19,13 +19,13 @@ public interface DeviceMapper {
     public List<AuthServerDTO> getDeviceErroInfo(String serialNumber);
     public List<AuthServerDTO> getPushinfoByDeviceId(String deviceId);
     public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);
-    public DeviceStatusInfo.Device getSingleDeviceStauts(String deviceId);
     public AuthServerDTO getSingleSerialNumberBydeviceId(String deviceId);
     public AuthServerDTO getPushTokenByUserId(String userId);
     public AuthServerDTO deviceTempAuthCheck(List<AuthServerDTO> device);
     public AuthServerDTO getDeviceInfoSearch(AuthServerDTO params);
-    public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public AuthServerDTO getDeviceRegistStatus(String serialNumber);
+    public DeviceStatusInfo.Device getSingleDeviceStauts(String deviceId);
+    public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public int changeDeviceNicknameTemp(AuthServerDTO device);
     public int changeDeviceNickname(AuthServerDTO device);
     public int insertDeviceModelCode(AuthServerDTO device);

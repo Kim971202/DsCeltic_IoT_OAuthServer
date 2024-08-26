@@ -689,7 +689,16 @@
         FROM
             TBT_OPR_DEVICE_REGIST
         WHERE
-            USER_ID = #{responseUserId};
+            USER_ID = #{requestUserId};
     </insert>
+
+    <select id="getDeviceIdFromRegistTable" parameterType="String" resultMap="member">
+        SELECT
+            DEVC_ID AS deviceId
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            USER_ID = #{requestUserId}
+    </select>
 
 </mapper>
