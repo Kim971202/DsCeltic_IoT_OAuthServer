@@ -705,6 +705,9 @@ public class UserServiceImpl implements UserService {
 
                 // TODO: 2. RequestUserId가 가지고 있는 DeviceId 검색
                 List<AuthServerDTO> requestDeviceIdList = memberMapper.getDeviceIdFromRegistTable(requestUserId);
+                params.setRequestUserId(responseUserId);
+                List<AuthServerDTO> responseDeviceIdList = memberMapper.getDeviceIdFromRegistTable(params.getRequestUserId());
+
                 if(!requestDeviceIdList.isEmpty()){
                     for(AuthServerDTO authServerDTO : requestDeviceIdList){
 
@@ -724,8 +727,7 @@ public class UserServiceImpl implements UserService {
                 }
 
                 // TODO: 4. 반대로 ResponseUserId가 가지고 있는 DeviceId 검색
-                params.setRequestUserId(responseUserId);
-                List<AuthServerDTO> responseDeviceIdList = memberMapper.getDeviceIdFromRegistTable(params.getRequestUserId());
+
                 if(!responseDeviceIdList.isEmpty()){
                     for(AuthServerDTO authServerDTO : responseDeviceIdList){
                         params.setDeviceId(authServerDTO.getDeviceId());
