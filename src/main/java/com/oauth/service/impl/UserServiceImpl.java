@@ -634,6 +634,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         AuthServerDTO pushYn;
+        AuthServerDTO deviceInfo;
         String requestUserId = params.getRequestUserId();
         String responseUserId = params.getResponseUserId();
         String inviteAcceptYn = params.getInviteAcceptYn();
@@ -677,12 +678,44 @@ public class UserServiceImpl implements UserService {
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
                 }
+
+                /*
+                * TODO:
+                *  1. 세대주 기기 -> 세대원 등록
+                *  2. 등록 기기 AE, CNT 생성
+                *  3. 세대원 기기  -> 세대주 등록
+                *  4. 등록 기기 AE, CNT 생성
+                * */
+
                 params.setTmpRegistKey(responseUserId + common.getCurrentDateTime());
                 if(memberMapper.insertDeviceRegistFromSelect(params) <= 0){
                     msg = "사용자 초대 - 수락 실패";
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
                 }
+
+                deviceInfo = memberMapper.getDeviceIdFromRegistTable(params.getRequestUserId());
+                if(!deviceInfo.getDeviceId().isEmpty()){
+                String serialNumber = deviceInfo.getDeviceId().substring(33);
+                mobiusService.createCnt(serialNumber, params.getResponseUserId());
+                mobiusService.createSub(serialNumber, params.getResponseUserId(), "gw");
+                }
+
+                params.setTmpRegistKey(requestUserId + common.getCurrentDateTime());
+                // 세대원 -> 세대주 방향으로 기기 등록 이기때문에 RequestUserId를 ResponseUserId로 Setting 한다
+                params.setRequestUserId(responseUserId);
+                if(memberMapper.insertDeviceRegistFromSelect(params) <= 0){
+                    msg = "사용자 초대 - 수락 실패";
+                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
+                deviceInfo = memberMapper.getDeviceIdFromRegistTable(params.getResponseUserId());
+                if(!deviceInfo.getDeviceId().isEmpty()){
+                    String serialNumber = deviceInfo.getDeviceId().substring(33);
+                    mobiusService.createCnt(serialNumber, params.getResponseUserId());
+                    mobiusService.createSub(serialNumber, params.getResponseUserId(), "gw");
+                }
+
 
             } else if(inviteAcceptYn.equals("N")){
 
@@ -1188,10 +1221,7 @@ public class UserServiceImpl implements UserService {
 
         MobiusResponse aeResult;
         MobiusResponse cntResult;
-        MobiusResponse cinResult;
         MobiusResponse subResult;
-
-        Map<String, String> conMap = new HashMap<>();
 
         try{
 

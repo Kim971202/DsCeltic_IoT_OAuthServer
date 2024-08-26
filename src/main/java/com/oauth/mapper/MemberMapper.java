@@ -35,6 +35,7 @@ public interface MemberMapper {
     public AuthServerDTO getNextHouseholderUserId(AuthServerDTO member);
     public AuthServerDTO identifyRKey(String deviceId);
     public AuthServerDTO getHpByUserId(String userId);
+    public AuthServerDTO getDeviceIdFromRegistTable(String userId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
     public int insertDeviceRegistFromSelect(AuthServerDTO member);
