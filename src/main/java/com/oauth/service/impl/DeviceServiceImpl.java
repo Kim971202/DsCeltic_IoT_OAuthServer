@@ -64,7 +64,6 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         String serialNumber;
         String responseMessage = null;
-        AuthServerDTO pushYn;
 
         MobiusResponse response;
 
@@ -126,7 +125,7 @@ public class DeviceServiceImpl implements DeviceService {
                     log.error("", e);
                 }
             }
-            // gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
+             gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
 
             if(stringObject.equals("Y")) {
                 conMap.put("body", "Device ON/OFF OK");
