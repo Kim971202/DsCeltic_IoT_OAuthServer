@@ -24,5 +24,4 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - /etc/mysql/conf.d/init.sql:/docker-entrypoint-initdb.d/init.sql
-#      - /home/ubuntu/DsCeltic_IoT_OAuthServer/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - /home/ubuntu/DsCeltic_IoT_OAuthServer/init.sql:/docker-entrypoint-initdb.d/init.sql
