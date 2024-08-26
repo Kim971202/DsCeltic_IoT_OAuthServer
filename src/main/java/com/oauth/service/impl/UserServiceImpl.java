@@ -734,7 +734,7 @@ public class UserServiceImpl implements UserService {
                         params.setHp(params.getResponseHp());
                         params.setUserId(requestUserId);
                         params.setTmpRegistKey(requestUserId + common.getCurrentDateTime());
-                        params.setRequestUserId(requestUserId);
+                        params.setRequestUserId(responseUserId);
                         memberMapper.insertDeviceRegistFromSelect(params);
                     }
                 }
