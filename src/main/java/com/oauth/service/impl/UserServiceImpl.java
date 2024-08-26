@@ -729,7 +729,8 @@ public class UserServiceImpl implements UserService {
                 if(!responseDeviceIdList.isEmpty()){
                     for(AuthServerDTO authServerDTO : responseDeviceIdList){
                         params.setDeviceId(authServerDTO.getDeviceId());
-                        params.setHp(authServerDTO.getResponseHp());
+                        params.setHp(params.getResponseHp());
+                        params.setUserId(requestUserId);
                         params.setTmpRegistKey(requestUserId + common.getCurrentDateTime());
                         params.setRequestUserId(requestUserId);
                         memberMapper.insertDeviceRegistFromSelect(params);
