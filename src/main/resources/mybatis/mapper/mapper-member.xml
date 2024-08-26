@@ -221,6 +221,7 @@
             a.DEVC_ID,
             a.HOUSE_HOLDER,
             a.DEVC_CTRL_KEY,
+            b.ADDR_NICK,
             b.DEVC_NICK,
             c.TEMP_DEVC_REG_KEY,
             c.LAT,
