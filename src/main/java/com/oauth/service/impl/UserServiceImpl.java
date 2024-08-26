@@ -694,14 +694,14 @@ public class UserServiceImpl implements UserService {
                 * */
 
                 // TODO: 1. ResponseUserId가 RequestUserId의 GROUP_KEY에 속해 있는지 확인
-                List<AuthServerDTO> groupKeyList = memberMapper.getUserIdByGroupKey(requestUserId);
-                for (AuthServerDTO authServerDTO : groupKeyList) {
-                    if (authServerDTO.getUserId().equals(responseUserId)) {
-                        msg = "중복_GROUP_KEY";
-                        data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                        return new ResponseEntity<>(data, HttpStatus.OK);
-                    }
-                }
+//                List<AuthServerDTO> groupKeyList = memberMapper.getUserIdByGroupKey(requestUserId);
+//                for (AuthServerDTO authServerDTO : groupKeyList) {
+//                    if (authServerDTO.getUserId().equals(responseUserId)) {
+//                        msg = "중복_GROUP_KEY";
+//                        data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+//                        return new ResponseEntity<>(data, HttpStatus.OK);
+//                    }
+//                }
 
                 // TODO: 2. RequestUserId가 가지고 있는 DeviceId 검색
                 List<AuthServerDTO> requestDeviceIdList = memberMapper.getDeviceIdFromRegistTable(requestUserId);
