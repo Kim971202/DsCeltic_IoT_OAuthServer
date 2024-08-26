@@ -705,7 +705,7 @@
 
     <select id="getUserIdByGroupKey" parameterType="String" resultMap="member">
         SELECT
-            USERID AS userId
+            USER_ID AS userId
         FROM
             TBR_OPR_USER_DEVICE
         WHERE
