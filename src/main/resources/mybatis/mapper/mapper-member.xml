@@ -658,8 +658,8 @@
         INSERT INTO
             TBT_OPR_DEVICE_REGIST
         (
-            USER_ID,
-            TEMP_DEVC_REG_KEY,
+            USER_ID,          -- responseUserId
+            TEMP_DEVC_REG_KEY,-- tmpRegistKey
             DEVC_ID,
             HP,
             ZIP,
@@ -673,19 +673,19 @@
             REG_DATM
         )
         SELECT
-            #{responseUserId}                     -- USER_ID
-            #{tmpRegistKey},                      -- TEMP_DEVC_REG_KEY
-            DEVC_ID,                              -- DEVC_ID
-            HP,                                   -- HP
-            ZIP,                                  -- ZIP
-            OLD_ADDR,                             -- OLD_ADDR
-            NEW_ADDR,                             -- NEW_ADDR
-            DTAIL_ADDR,                           -- DTAIL_ADDR
-            LAT,                                  -- LAT
-            LON,                                  -- LON
-            DEVC_NICK,                            -- DEVC_NICK
-            ADDR_NICK,                            -- ADDR_NICK
-            NOW()                                 -- REG_DATM
+            #{responseUserId},
+            #{tmpRegistKey},
+            DEVC_ID,
+            HP,
+            ZIP,
+            OLD_ADDR,
+            NEW_ADDR,
+            DTAIL_ADDR,
+            LAT,
+            LON,
+            DEVC_NICK,
+            ADDR_NICK,
+            NOW()
         FROM
             TBT_OPR_DEVICE_REGIST
         WHERE
