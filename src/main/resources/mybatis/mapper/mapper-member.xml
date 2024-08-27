@@ -725,6 +725,7 @@
     <select id="getFailyMemberByUserId" parameterType="String" resultMap="member">
         SELECT
             a.USER_ID AS userId,
+            a.GROUP_KEY AS groupId,
             b.HP AS hp,
             b.USER_NICK AS userNickname,
             b.HOUSE_HOLDER AS householder
@@ -736,6 +737,21 @@
             a.USER_ID = b.USER_ID
         WHERE
             GROUP_KEY = #{requestUserId}
+    </select>
+
+    <select id="getHouseholdByUserId" parameterType="String" resultMap="member">
+        SELECT
+            a.USER_ID AS userId,
+            a.GROUP_KEY AS groupId,
+            b.HOUSE_HOLDER AS householder
+        FROM
+            TBR_OPR_ACCOUNT a
+        INNER JOIN
+            TBR_OPR_USER b
+        ON
+            a.USER_ID = b.USER_ID
+        WHERE
+            a.USER_ID = #{userId}
     </select>
 
 </mapper>
