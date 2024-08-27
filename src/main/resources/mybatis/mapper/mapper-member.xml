@@ -718,6 +718,7 @@
             GROUP_KEY = #{requestUserId}
         AND
             USER_ID = #{responseId}
+        LIMIT 1
     </select>
 
 </mapper>
