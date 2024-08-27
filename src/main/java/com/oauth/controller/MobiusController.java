@@ -75,6 +75,11 @@ public class MobiusController {
 
         log.info("functionId: " + functionId);
         log.info("redisValue: " + redisValue);
+        if(functionId == null || redisValue == null) {
+            log.info("NULL RECEIVED");
+            return "NULL RECEIVED";
+        }
+
         List<String> redisValueList;
         if (!redisValue.equals("false")) {
             redisValueList = common.getUserIdAndFunctionId(redisCommand.getValues(uuId));
