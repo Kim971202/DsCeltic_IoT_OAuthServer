@@ -676,6 +676,8 @@
             HOUSE_HOLDER = 'Y'
         WHERE
             USER_ID = #{responseUserId}
+        AND
+            DEVC_ID =
     </update>
 
     <update id="updateAccountTable" parameterType="com.oauth.dto.AuthServerDTO" >
@@ -696,9 +698,26 @@
             USER_ID = #{responseUserId}
     </update>
 
+    <delete id="deleteDuplicateDeviceIdFromUserDevice" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE
+            DEVC_ID IN
+        <foreach item="list" collection="item" open="(" separator="," close=")">
+            #{item.deviceId}
+        </foreach>
+        AND
+            USER_ID IN
+        <foreach item="list" collection="item" open="(" separator="," close=")">
+            #{item.userId}
+        </foreach>
+    </delete>
+
     <select id="getRegistDeviceIdByUserId" parameterType="String" resultMap="member">
         SELECT
-            DEVC_ID AS deviceId
+            DEVC_ID AS deviceId,
+            USER_ID AS userId
         FROM
             TBT_OPR_DEVICE_REGIST
         WHERE
@@ -720,4 +739,19 @@
         WHERE
             GROUP_KEY = #{requestUserId}
     </select>
+
+    <select id="getDuplicateDeviceIdFromUserDevice" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            DEVC_ID AS deviceId
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE
+            DEVC_ID IN
+        <foreach item="list" collection="item" open="(" separator="," close=")">
+            #{item.deviceId}
+        </foreach>
+        AND
+            USER_ID = #{responseUserId}
+    </select>
+
 </mapper>
