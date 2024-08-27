@@ -206,6 +206,7 @@
             c.TEMP_DEVC_REG_KEY AS tmpRegistKey,
             c.LAT AS latitude,
             c.LON AS longitude,
+            c.HP AS hp,
             MAX(a.REG_DATM) AS REG_DATM,  -- 가장 최근의 등록 날짜를 선택
             ROW_NUMBER() OVER () AS regSort
         FROM
@@ -225,7 +226,8 @@
             b.DEVC_NICK,
             c.TEMP_DEVC_REG_KEY,
             c.LAT,
-            c.LON
+            c.LON,
+            c.HP
         ORDER BY
             MAX(a.REG_DATM) ASC
     </select>
@@ -710,6 +712,8 @@
             TBR_OPR_USER_DEVICE
         WHERE
             GROUP_KEY = #{requestUserId}
+        AND
+            USER_ID = #{responseId}
     </select>
 
 </mapper>

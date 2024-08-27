@@ -635,7 +635,6 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         AuthServerDTO pushYn;
-        AuthServerDTO deviceInfo;
         String requestUserId = params.getRequestUserId();
         String responseUserId = params.getResponseUserId();
         String inviteAcceptYn = params.getInviteAcceptYn();
@@ -683,27 +682,23 @@ public class UserServiceImpl implements UserService {
                 /*
                 * TODO:
                 *  1. ResponseUserId가 RequestUserId의 GROUP_KEY에 속해 있는지 확인
-                *     - 속해 있다면 Reutnr
-                *  2. RequestUserId가 가지고 있는 DeviceId 검색
+                *     - 속해 있다면 Reutrn
+                *  2. RequestUserId, ResponseUserId 가지고 있는 DeviceId 검색
                 *     - 있든 없든 3번으로 진행
                 *  3. RequestUserId가 DeviceId를 가지고 있다면 해당 기기의 CNT, SUB 생성
                 *     - 등록한 기기가 없다면 Skip
-                *  4. 반대로 ResponseUserId가 가지고 있는 DeviceId 검색
-                *     - 없으면 로직 종료
-                *  5. 등록한 기기가 있다면 RequestUserId에 등록 후 CNT, SUB 등록 과정 진핼 후 로직 종료
+                *  4. 등록한 기기가 있다면 RequestUserId에 등록 후 CNT, SUB 등록 과정 진핼 후 로직 종료
                 * */
 
                 // TODO: 1. ResponseUserId가 RequestUserId의 GROUP_KEY에 속해 있는지 확인
-//                List<AuthServerDTO> groupKeyList = memberMapper.getUserIdByGroupKey(requestUserId);
-//                for (AuthServerDTO authServerDTO : groupKeyList) {
-//                    if (authServerDTO.getUserId().equals(responseUserId)) {
-//                        msg = "중복_GROUP_KEY";
-//                        data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-//                        return new ResponseEntity<>(data, HttpStatus.OK);
-//                    }
-//                }
+                AuthServerDTO groupUserId = memberMapper.getUserIdByGroupKey(requestUserId);
+                if (groupUserId.getUserId().isEmpty()) {
+                    msg = "중복_GROUP_KEY";
+                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(data, HttpStatus.OK);
+                }
 
-                // TODO: 2. RequestUserId가 가지고 있는 DeviceId 검색
+                // TODO: 2. RequestUserId, ResponseUserId가 가지고 있는 DeviceId 검색
                 List<AuthServerDTO> requestDeviceIdList = memberMapper.getDeviceIdFromRegistTable(requestUserId);
                 params.setRequestUserId(responseUserId);
                 List<AuthServerDTO> responseDeviceIdList = memberMapper.getDeviceIdFromRegistTable(params.getRequestUserId());
@@ -719,51 +714,28 @@ public class UserServiceImpl implements UserService {
                         memberMapper.insertDeviceRegistFromSelect(params);
 
                         // TODO: 3. RequestUserId가 DeviceId를 가지고 있다면 해당 기기의 CNT, SUB 생성
-//                        System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
-//                        mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), params.getResponseUserId());
-//                        mobiusService.createSub(authServerDTO.getDeviceId().substring(33), params.getResponseUserId(), "gw");
+                        System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
+                        mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), responseUserId);
+                        mobiusService.createSub(authServerDTO.getDeviceId().substring(33), responseUserId, "gw");
 
                     }
                 }
 
                 // TODO: 4. 반대로 ResponseUserId가 가지고 있는 DeviceId 검색
-
                 if(!responseDeviceIdList.isEmpty()){
                     for(AuthServerDTO authServerDTO : responseDeviceIdList){
                         params.setDeviceId(authServerDTO.getDeviceId());
-                        params.setHp(params.getResponseHp());
+                        params.setHp(member.get(0).getHp());
                         params.setUserId(requestUserId);
                         params.setTmpRegistKey(requestUserId + common.getCurrentDateTime());
                         params.setRequestUserId(responseUserId);
                         memberMapper.insertDeviceRegistFromSelect(params);
+
+                        System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
+                        mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), requestUserId);
+                        mobiusService.createSub(authServerDTO.getDeviceId().substring(33), requestUserId, "gw");
                     }
                 }
-
-//                params.setTmpRegistKey(responseUserId + common.getCurrentDateTime());
-//                if(memberMapper.insertDeviceRegistFromSelect(params) <= 0){
-//                    msg = "사용자 초대 - 수락 실패";
-//                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-//                    return new ResponseEntity<>(data, HttpStatus.OK);
-//                }
-
-//                deviceInfo = memberMapper.getDeviceIdFromRegistTable(params.getRequestUserId());
-
-//
-//                params.setTmpRegistKey(requestUserId + common.getCurrentDateTime());
-//                // 세대원 -> 세대주 방향으로 기기 등록 이기때문에 RequestUserId를 ResponseUserId로 Setting 한다
-//                params.setRequestUserId(responseUserId);
-//                if(memberMapper.insertDeviceRegistFromSelect(params) <= 0){
-//                    msg = "사용자 초대 - 수락 실패";
-//                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-//                    return new ResponseEntity<>(data, HttpStatus.OK);
-//                }
-//                deviceInfo = memberMapper.getDeviceIdFromRegistTable(params.getResponseUserId());
-//                if(!deviceInfo.getDeviceId().isEmpty()){
-//                    String serialNumber = deviceInfo.getDeviceId().substring(33);
-//                    mobiusService.createCnt(serialNumber, params.getResponseUserId());
-//                    mobiusService.createSub(serialNumber, params.getResponseUserId(), "gw");
-//                }
-
 
             } else if(inviteAcceptYn.equals("N")){
 
