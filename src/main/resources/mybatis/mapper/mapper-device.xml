@@ -415,8 +415,7 @@
             DEVC_CTRL_KEY,
             ATTC_DATM,
             REG_DATM,
-            HOUSE_HOLDER,
-            GROUP_KEY
+            HOUSE_HOLDER
         )
             VALUES
         (
@@ -425,8 +424,7 @@
             #{controlAuthKey},
             now(),
             now(),
-            'N',
-            #{userId}
+            'Y'
         )
     </insert>
 

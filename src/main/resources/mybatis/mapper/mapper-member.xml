@@ -303,7 +303,6 @@
             ATTC_DATM,
             REG_DATM,
             HOUSE_HOLDER,
-            GROUP_KEY
         )
         SELECT
             #{userId},
@@ -312,7 +311,6 @@
             NOW(),
             NOW(),
             #{householder},
-            #{groupId}
         FROM
             TBR_OPR_USER_DEVICE
         WHERE
