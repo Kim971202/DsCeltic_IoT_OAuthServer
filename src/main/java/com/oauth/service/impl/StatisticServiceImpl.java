@@ -52,7 +52,7 @@ public class StatisticServiceImpl implements StatisticService {
             resultMap.put("resultCode", "200");
             resultMap.put("resultMsg", "일별 가동시간 통계조회 조회 성공");
 
-            resultMap.put("push", statsList);
+            resultMap.put("stats", statsList);
             return resultMap;
         } catch (Exception e){
             log.error("", e);
