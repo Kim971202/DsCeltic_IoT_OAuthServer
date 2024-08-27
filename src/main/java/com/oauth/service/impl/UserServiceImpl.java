@@ -619,8 +619,6 @@ public class UserServiceImpl implements UserService {
         String msg;
         AuthServerDTO pushYn;
         AuthServerDTO userHp;
-        List<AuthServerDTO> userDevice;
-        AuthServerDTO registDevice;
         List<AuthServerDTO> deviceIdList;
         List<AuthServerDTO> familyMemberList;
         String requestUserId = params.getRequestUserId();
@@ -664,51 +662,26 @@ public class UserServiceImpl implements UserService {
                 }
 
                 // TODO: 2. 세대원 REGIST TABLE의 USER_ID, HP 세대주 정보로 UPDATE
-
                 params.setHp(userHp.getHp());
-                if(memberMapper.updateRegistTable(params) <= 0){
-                    msg = "사용자 초대 - 수락 실패 : updateRegistTable";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                }
+                memberMapper.updateRegistTable(params);
 
                 // TODO: 3. USER_DEVICE TABLE의 USER_ID 세대주 정보로 UPDATE
-                if(memberMapper.updateUserDeviceTable(params) <= 0){
-                    msg = "사용자 초대 - 수락 실패 : updateUserDeviceTable";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                }
-
                 for(AuthServerDTO authServerDTO : deviceIdList){
                     authServerDTO.setUserId(responseUserId);
                     if(authServerDTO.getUserId().equals(responseUserId)){
-                        if(memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList) <= 0){
-                            msg = "사용자 초대 - 수락 실패 : deleteDuplicateDeviceIdFromUserDevice";
-                            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                        }
+                        memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList);
+                        memberMapper.updateUserDeviceTable(params);
                     }
                 }
 
                 // TODO: 4. ACCOUNT TABLE의 GROUP_KEY = 세대주 명으로 수정
-                if(memberMapper.updateAccountTable(params) <= 0){
-                    msg = "사용자 초대 - 수락 실패 : updateAccountTable";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                }
+                memberMapper.updateAccountTable(params);
 
                 // TODO: 5. USER TABLE의 세대주 여부 UPDATE
-                if(memberMapper.updateUserTable(responseUserId) <= 0){
-                    msg = "사용자 초대 - 수락 실패 : updateUserTable";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                }
+                memberMapper.updateUserTable(responseUserId);
+
                 // TODO: 6. 수락여부에 따른 초대 결과 DB UPDATE
-                if(memberMapper.acceptInvite(params) <= 0){
-                    msg = "사용자 초대 - 수락 실패 : acceptInvite";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                }
+                memberMapper.acceptInvite(params);
 
                 // TODO: 7. 신규 기기에 대한 CNT, SUB 생성 (쿼리 DATA: deviceId, 세대주 ID, 세대원 ID)
                 for(AuthServerDTO authServerDTO : deviceIdList){
@@ -718,9 +691,6 @@ public class UserServiceImpl implements UserService {
                         mobiusService.createSub(authServerDTO.getDeviceId().substring(33), serverDTO.getUserId(), "gw");
                     }
                 }
-
-                // TODO: 8. 세대주와 세대원이 동일한 기기를 가지고 있을 경우 중복 되므로 삭제 한다.
-
 
             } else if(inviteAcceptYn.equals("N")){
 
