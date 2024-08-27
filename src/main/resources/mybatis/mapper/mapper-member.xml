@@ -676,8 +676,6 @@
             HOUSE_HOLDER = 'Y'
         WHERE
             USER_ID = #{responseUserId}
-        AND
-            DEVC_ID =
     </update>
 
     <update id="updateAccountTable" parameterType="com.oauth.dto.AuthServerDTO" >
