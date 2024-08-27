@@ -619,6 +619,8 @@ public class UserServiceImpl implements UserService {
         String msg;
         AuthServerDTO pushYn;
         AuthServerDTO userHp;
+        List<AuthServerDTO> userDevice;
+        AuthServerDTO registDevice;
         List<AuthServerDTO> deviceIdList;
         List<AuthServerDTO> familyMemberList;
         String requestUserId = params.getRequestUserId();
@@ -628,6 +630,14 @@ public class UserServiceImpl implements UserService {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
+
+            deviceIdList = memberMapper.getRegistDeviceIdByUserId(requestUserId);
+            familyMemberList = memberMapper.getFailyMemberByUserId(requestUserId);
+            if(deviceIdList == null || familyMemberList == null){
+                msg = "사용자 초대 - 수락 실패 : deviceIdList||familyMemberList";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
             /*
              * TODO:
@@ -640,6 +650,7 @@ public class UserServiceImpl implements UserService {
              *  6. 수락여부에 따른 초대 결과 DB UPDATE
              *  7. 신규 기기에 대한 CNT, SUB 생성
              *     - 세대주 REGIST TABLE에 있는 모든 기기 ID를 불어온 후 세대회원 전부를 기준으로 생성
+             *  8. 세대주와 세대원이 동일한 기기를 가지고 있을 경우 중복 되므로 삭제 한다.
              * */
 
             if(inviteAcceptYn.equals("Y")){
@@ -653,6 +664,7 @@ public class UserServiceImpl implements UserService {
                 }
 
                 // TODO: 2. 세대원 REGIST TABLE의 USER_ID, HP 세대주 정보로 UPDATE
+
                 params.setHp(userHp.getHp());
                 if(memberMapper.updateRegistTable(params) <= 0){
                     msg = "사용자 초대 - 수락 실패 : updateRegistTable";
@@ -661,10 +673,23 @@ public class UserServiceImpl implements UserService {
                 }
 
                 // TODO: 3. USER_DEVICE TABLE의 USER_ID 세대주 정보로 UPDATE
-                if(memberMapper.updateUserDeviceTable(params) <= 0){
-                    msg = "사용자 초대 - 수락 실패 : updateUserDeviceTable";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                deviceIdList.get(0).setResponseUserId(responseUserId);
+                userDevice = memberMapper.getDuplicateDeviceIdFromUserDevice(deviceIdList);
+                if(userDevice == null){
+                    if(memberMapper.updateUserDeviceTable(params) <= 0){
+                        msg = "사용자 초대 - 수락 실패 : updateUserDeviceTable";
+                        data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                    }
+                } else {
+                    for(AuthServerDTO authServerDTO : userDevice){
+                        authServerDTO.setUserId(responseUserId);
+                        if(memberMapper.deleteDuplicateDeviceIdFromUserDevice(userDevice) <= 0){
+                            msg = "사용자 초대 - 수락 실패 : deleteDuplicateDeviceIdFromUserDevice";
+                            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                        }
+                    }
                 }
 
                 // TODO: 4. ACCOUNT TABLE의 GROUP_KEY = 세대주 명으로 수정
@@ -688,13 +713,6 @@ public class UserServiceImpl implements UserService {
                 }
 
                 // TODO: 7. 신규 기기에 대한 CNT, SUB 생성 (쿼리 DATA: deviceId, 세대주 ID, 세대원 ID)
-                deviceIdList = memberMapper.getRegistDeviceIdByUserId(requestUserId);
-                familyMemberList = memberMapper.getFailyMemberByUserId(requestUserId);
-                if(deviceIdList == null || familyMemberList == null){
-                    msg = "사용자 초대 - 수락 실패 : deviceIdList||familyMemberList";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                }
                 for(AuthServerDTO authServerDTO : deviceIdList){
                     for (AuthServerDTO serverDTO : familyMemberList) {
                         System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
@@ -702,6 +720,9 @@ public class UserServiceImpl implements UserService {
                         mobiusService.createSub(authServerDTO.getDeviceId().substring(33), serverDTO.getUserId(), "gw");
                     }
                 }
+
+                // TODO: 8. 세대주와 세대원이 동일한 기기를 가지고 있을 경우 중복 되므로 삭제 한다.
+
 
             } else if(inviteAcceptYn.equals("N")){
 

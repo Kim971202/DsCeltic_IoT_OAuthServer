@@ -28,6 +28,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getPushYnStatusByUserIds(List<AuthServerDTO> userIds);
     public List<AuthServerDTO> getRegistDeviceIdByUserId(String userIds);
     public List<AuthServerDTO> getFailyMemberByUserId(String requestUserId);
+    public List<AuthServerDTO> getDuplicateDeviceIdFromUserDevice(List<AuthServerDTO> member);
     public AuthServerDTO getPushYnStatus(AuthServerDTO userId);
     public AuthServerDTO getUserByUserId(String userId);
     public AuthServerDTO getAccountByUserId(String userId);
@@ -40,6 +41,7 @@ public interface MemberMapper {
     public AuthServerDTO getHpByUserId(String userId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
+    public int deleteDuplicateDeviceIdFromUserDevice(List<AuthServerDTO> member);
     public int updateRegistTable(AuthServerDTO member);
     public int updateUserTable(String responseUserId);
     public int updateUserDeviceTable(AuthServerDTO member);
