@@ -53,15 +53,6 @@ public class StatisticServiceImpl implements StatisticService {
             resultMap.put("resultMsg", "일별 가동시간 통계조회 조회 성공");
 
             resultMap.put("push", statsList);
-
-            params.setFunctionId("InfoDaily");
-            params.setDeviceId(deviceId);
-            params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                resultMap.put("resultCode", "200");
-                resultMap.put("resultMsg", "DB_ERROR 잠시 후 다시 시도 해주십시오.");
-                return resultMap;
-            }
             return resultMap;
         } catch (Exception e){
             log.error("", e);
