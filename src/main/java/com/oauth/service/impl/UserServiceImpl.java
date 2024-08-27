@@ -513,36 +513,17 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String userId = params.getUserId();
-
+        List<AuthServerDTO> userIdList;
+        HashMap<String, String> user = new HashMap<>();
         try {
 
-            // Device Set 생성
-            Set<String> userIds = new HashSet<>();
-            List<ApiResponse.Data.User> user = new ArrayList<>();
+            userIdList = memberMapper.getFailyMemberByUserId(userId);
 
-            List<AuthServerDTO> deviceIds = memberMapper.getDeviceIdByUserId(userId);
-            if(deviceIds != null){
-                List<AuthServerDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
-                log.info("members: " + members.size());
-                List<AuthServerDTO> memberStream = Common.deduplication(members, AuthServerDTO::getUserId);
-
-                List<String> userIdList = Common.extractJson(memberStream.toString(), "userId");
-                List<String> userNicknameList = Common.extractJson(memberStream.toString(), "userNickname");
-                List<String> householderdList = Common.extractJson(memberStream.toString(), "householder");
-
-                // Mapper실행 후 사용자가 가지고 있는 Member 개수
-                int numMembers = memberStream.size();
-
-                if(userIdList != null && userNicknameList != null && householderdList != null){
-                    // Member 추가
-                    for (int i = 0; i < numMembers; i++) {
-                        ApiResponse.Data.User users = Common.createUsers(
-                                userIdList.get(i),
-                                userNicknameList.get(i),
-                                householderdList.get(i),
-                                userIds);
-                        user.add(users);
-                    }
+            if(userIdList != null){
+                for(AuthServerDTO authServerDTO : userIdList){
+                    user.put("userId", authServerDTO.getUserId());
+                    user.put("userNickname", authServerDTO.getUserNickname());
+                    user.put("householder", authServerDTO.getHouseholder());
                 }
             } else {
                 msg = "계정이 존재하지 않습니다.";
@@ -635,6 +616,9 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         AuthServerDTO pushYn;
+        AuthServerDTO userHp;
+        List<AuthServerDTO> deviceIdList;
+        List<AuthServerDTO> familyMemberList;
         String requestUserId = params.getRequestUserId();
         String responseUserId = params.getResponseUserId();
         String inviteAcceptYn = params.getInviteAcceptYn();
@@ -643,119 +627,77 @@ public class UserServiceImpl implements UserService {
 
         try {
 
-            /* *
-             * 수락시: responseUserId 사용자는 requestUserId 사용자가 가진 DeviceId에 자동으로 mapping된다.
-             * 거부시: TBR_OPR_USER_INVITE_STATUS 수락여부 항목 N UPDATE
-             * 수락시 쿼리 흐름:
-             * 1. TBR_OPR_USER_INVITE_STATUS
-             * 2. TBR_OPR_USER_DEVICE에서 requestUserId 검색
-             * 3. 2번 출력값으로 TBR_OPR_USER_DEVICE에 responseUserId INSERT
-             * */
-
             /*
              * TODO:
-             *  1. ResponseUserId가 RequestUserId의 GROUP_KEY에 속해 있는지 확인
-             *     - 속해 있다면 Reutrn
-             *  2. RequestUserId, ResponseUserId 가지고 있는 DeviceId 검색
-             *     - 있든 없든 3번으로 진행
-             *  3. RequestUserId가 DeviceId를 가지고 있다면 해당 기기의 CNT, SUB 생성
-             *     - 등록한 기기가 없다면 Skip
-             *  4. 등록한 기기가 있다면 RequestUserId에 등록 후 CNT, SUB 등록 과정 진핼 후 로직 종료
+             *  1. 세대주 HP 쿼리
+             *  2. 세대원 REGIST TABLE의 USER_ID, HP 세대주 정보로 UPDATE
+             *  3. USER_DEVICE TABLE의 USER_ID 세대주 정보로 UPDATE
+             *     - HOUSE_HOLDER = Y로 수정
+             *  4. ACCOUNT TABLE의 GROUP_KEY = 세대주 명으로 수정
+             *  5. USER TABLE의 세대주 여부 UPDATE
+             *  6. 수락여부에 따른 초대 결과 DB UPDATE
+             *  7. 신규 기기에 대한 CNT, SUB 생성
+             *     - 세대주 REGIST TABLE에 있는 모든 기기 ID를 불어온 후 세대회원 전부를 기준으로 생성
              * */
 
-            // TODO: 1. ResponseUserId가 RequestUserId의 GROUP_KEY에 속해 있는지 확인
-            AuthServerDTO groupUserId = memberMapper.getUserIdByGroupKey(params);
-            if (groupUserId == null) {
-                msg = "중복_GROUP_KEY";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            List<AuthServerDTO> member;
             if(inviteAcceptYn.equals("Y")){
 
+                // TODO: 1. 세대주 HP 쿼리
+                userHp = memberMapper.getHpByUserId(requestUserId);
+                if(userHp == null){
+                    msg = "사용자 초대 - 수락 실패 : getHpByUserId";
+                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
+
+                // TODO: 2. 세대원 REGIST TABLE의 USER_ID, HP 세대주 정보로 UPDATE
+                params.setHp(userHp.getHp());
+                if(memberMapper.updateRegistTable(params) <= 0){
+                    msg = "사용자 초대 - 수락 실패 : updateRegistTable";
+                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
+
+                // TODO: 3. USER_DEVICE TABLE의 USER_ID 세대주 정보로 UPDATE
+                if(memberMapper.updateUserDeviceTable(params) <= 0){
+                    msg = "사용자 초대 - 수락 실패 : updateUserDeviceTable";
+                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
+
+                // TODO: 4. ACCOUNT TABLE의 GROUP_KEY = 세대주 명으로 수정
+                if(memberMapper.updateAccountTable(params) <= 0){
+                    msg = "사용자 초대 - 수락 실패 : updateAccountTable";
+                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
+
+                // TODO: 5. USER TABLE의 세대주 여부 UPDATE
+                if(memberMapper.updateUserTable(responseUserId) <= 0){
+                    msg = "사용자 초대 - 수락 실패 : updateUserTable";
+                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
+                // TODO: 6. 수락여부에 따른 초대 결과 DB UPDATE
                 if(memberMapper.acceptInvite(params) <= 0){
-                    msg = "사용자 초대 - 수락 실패";
+                    msg = "사용자 초대 - 수락 실패 : acceptInvite";
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
                 }
 
-                // TODO: 2. RequestUserId, ResponseUserId가 가지고 있는 DeviceId 검색
-                List<AuthServerDTO> requestDeviceIdList = memberMapper.getDeviceIdFromRegistTable(requestUserId);
-                params.setRequestUserId(responseUserId);
-                List<AuthServerDTO> responseDeviceIdList = memberMapper.getDeviceIdFromRegistTable(params.getRequestUserId());
-
-                member = memberMapper.getDeviceIdByUserId(requestUserId);
-                if (member == null) {
-                    msg = "계정이 존재하지 않습니다.";
+                // TODO: 7. 신규 기기에 대한 CNT, SUB 생성 (쿼리 DATA: deviceId, 세대주 ID, 세대원 ID)
+                deviceIdList = memberMapper.getRegistDeviceIdByUserId(requestUserId);
+                familyMemberList = memberMapper.getFailyMemberByUserId(requestUserId);
+                if(deviceIdList == null || familyMemberList == null){
+                    msg = "사용자 초대 - 수락 실패 : deviceIdList||familyMemberList";
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
                 }
-                log.info("member: " + member);
-
-                Common.updateMemberDTOList(member, "responseUserId", responseUserId);
-                Common.updateMemberDTOList(member, "householder", "N");
-                Common.updateMemberDTOList(member, "requestUserId", requestUserId);
-
-                // 세대주 -> 세대원 기기정보 저장
-                for(AuthServerDTO authServerDTO : requestDeviceIdList){
-                    params.setHouseholder("N");
-                    params.setDeviceId(authServerDTO.getDeviceId());
-                    params.setUserId(responseUserId);
-                    params.setTargetId(requestUserId);
-                    params.setGroupId(requestUserId);
-                    if(memberMapper.insertNewHouseMember(params) <= 0){
-                        msg = "사용자 초대 - 수락 실패";
-                        data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                    }
-                }
-
-                // 세대원 -> 세대주 기기정보 저장
-                for(AuthServerDTO authServerDTO : responseDeviceIdList){
-                    params.setHouseholder("Y");
-                    params.setDeviceId(authServerDTO.getDeviceId());
-                    params.setUserId(requestUserId);
-                    params.setTargetId(responseUserId);
-                    params.setGroupId(requestUserId);
-                    if(memberMapper.insertNewHouseMember(params) <= 0){
-                        msg = "사용자 초대 - 수락 실패";
-                        data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                    }
-                }
-
-                if(!requestDeviceIdList.isEmpty()){
-                    for(AuthServerDTO authServerDTO : requestDeviceIdList){
-
-                        params.setDeviceId(authServerDTO.getDeviceId());
-                        params.setHp(params.getResponseHp());
-                        params.setUserId(responseUserId);
-                        params.setTmpRegistKey(responseUserId + common.getCurrentDateTime());
-                        params.setRequestUserId(requestUserId);
-                        memberMapper.insertDeviceRegistFromSelect(params);
-
-                        // TODO: 3. RequestUserId가 DeviceId를 가지고 있다면 해당 기기의 CNT, SUB 생성
+                for(AuthServerDTO authServerDTO : deviceIdList){
+                    for (AuthServerDTO serverDTO : familyMemberList) {
                         System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
-                        mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), responseUserId);
-                        mobiusService.createSub(authServerDTO.getDeviceId().substring(33), responseUserId, "gw");
-
-                    }
-                }
-
-                // TODO: 4. 반대로 ResponseUserId가 가지고 있는 DeviceId 검색
-                if(!responseDeviceIdList.isEmpty()){
-                    for(AuthServerDTO authServerDTO : responseDeviceIdList){
-                        params.setDeviceId(authServerDTO.getDeviceId());
-                        params.setHp(member.get(0).getHp());
-                        params.setUserId(requestUserId);
-                        params.setTmpRegistKey(requestUserId + common.getCurrentDateTime());
-                        params.setRequestUserId(responseUserId);
-                        memberMapper.insertDeviceRegistFromSelect(params);
-
-                        System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
-                        mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), requestUserId);
-                        mobiusService.createSub(authServerDTO.getDeviceId().substring(33), requestUserId, "gw");
+                        mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), serverDTO.getUserId());
+                        mobiusService.createSub(authServerDTO.getDeviceId().substring(33), serverDTO.getUserId(), "gw");
                     }
                 }
 

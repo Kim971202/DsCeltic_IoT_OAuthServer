@@ -26,8 +26,8 @@ public interface MemberMapper {
     public List<AuthServerDTO> getWorkTime(AuthServerDTO param);
     public List<AuthServerDTO> getUserIdsByDeviceId(String deviceId);
     public List<AuthServerDTO> getPushYnStatusByUserIds(List<AuthServerDTO> userIds);
-    public List<AuthServerDTO> getDeviceIdFromRegistTable(String userId);
-    public AuthServerDTO getUserIdByGroupKey(AuthServerDTO param);
+    public List<AuthServerDTO> getRegistDeviceIdByUserId(String userIds);
+    public List<AuthServerDTO> getFailyMemberByUserId(String requestUserId);
     public AuthServerDTO getPushYnStatus(AuthServerDTO userId);
     public AuthServerDTO getUserByUserId(String userId);
     public AuthServerDTO getAccountByUserId(String userId);
@@ -40,7 +40,10 @@ public interface MemberMapper {
     public AuthServerDTO getHpByUserId(String userId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
-    public int insertDeviceRegistFromSelect(AuthServerDTO member);
+    public int updateRegistTable(AuthServerDTO member);
+    public int updateUserTable(String responseUserId);
+    public int updateUserDeviceTable(AuthServerDTO member);
+    public int updateAccountTable(AuthServerDTO member);
     public int UpdateSafeAlarmSet(AuthServerDTO member);
     public int insertPushHistory(AuthServerDTO member);
     public int updatePushToken(AuthServerDTO member);

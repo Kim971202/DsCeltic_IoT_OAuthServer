@@ -660,65 +660,66 @@
         </foreach>
     </select>
 
-    <insert id="insertDeviceRegistFromSelect" parameterType="com.oauth.dto.AuthServerDTO">
-        INSERT INTO
+    <update id="updateRegistTable" parameterType="com.oauth.dto.AuthServerDTO" >
+        UPDATE
             TBT_OPR_DEVICE_REGIST
-        (
-            TEMP_DEVC_REG_KEY,  -- 입력 값
-            DEVC_ID,            -- SELECT된 값
-            HP,                 -- 입력 값
-            USER_ID,            -- 입력 값
-            ZIP,                -- SELECT된 값
-            OLD_ADDR,           -- SELECT된 값
-            NEW_ADDR,           -- SELECT된 값
-            DTAIL_ADDR,         -- SELECT된 값
-            LAT,                -- SELECT된 값
-            LON,                -- SELECT된 값
-            DEVC_NICK,          -- SELECT된 값
-            ADDR_NICK,          -- SELECT된 값
-            REG_DATM            -- SELECT된 값
-        )
-            SELECT
-            #{tmpRegistKey},        -- TEMP_DEVC_REG_KEY (입력 값)
-            DEVC_ID,                -- SELECT된 값
-            #{hp},                  -- HP (입력 값)
-            #{userId},              -- USER_ID (입력 값)
-            ZIP,                    -- SELECT된 값
-            OLD_ADDR,               -- SELECT된 값
-            NEW_ADDR,               -- SELECT된 값
-            DTAIL_ADDR,             -- SELECT된 값
-            LAT,                    -- SELECT된 값
-            LON,                    -- SELECT된 값
-            DEVC_NICK,              -- SELECT된 값
-            ADDR_NICK,              -- SELECT된 값
-            NOW()                   -- 현재 시간 (REG_DATM)
-        FROM
-            TBT_OPR_DEVICE_REGIST
+        SET
+            HP = #{hp},
+            USER_ID = #{requestUserId}
         WHERE
-            DEVC_ID = #{deviceId}
-        AND
-            USER_ID = #{requestUserId};
-    </insert>
+            USER_ID = #{responseUserId}
+    </update>
 
-    <select id="getDeviceIdFromRegistTable" parameterType="String" resultMap="member">
+    <update id="updateUserDeviceTable" parameterType="com.oauth.dto.AuthServerDTO" >
+        UPDATE
+            TBR_OPR_USER_DEVICE
+        SET
+            USER_ID = #{requestUserId},
+            HOUSE_HOLDER = 'Y'
+        WHERE
+            USER_ID = #{responseUserId}
+    </update>
+
+    <update id="updateAccountTable" parameterType="com.oauth.dto.AuthServerDTO" >
+        UPDATE
+            TBR_OPR_ACCOUNT
+        SET
+            GROUP_KEY = #{requestUserId}
+        WHERE
+            USER_ID = #{responseUserId}
+    </update>
+
+    <update id="updateUserTable" parameterType="String" >
+        UPDATE
+            TBR_OPR_USER
+        SET
+            HOUSE_HOLDER = 'N'
+        WHERE
+            USER_ID = #{responseUserId}
+    </update>
+
+    <select id="getRegistDeviceIdByUserId" parameterType="String" resultMap="member">
         SELECT
             DEVC_ID AS deviceId
         FROM
             TBT_OPR_DEVICE_REGIST
         WHERE
-            USER_ID = #{requestUserId}
+            USER_ID = #{userId}
     </select>
 
-    <select id="getUserIdByGroupKey" parameterType="String" resultMap="member">
+    <select id="getFailyMemberByUserId" parameterType="String" resultMap="member">
         SELECT
-            USER_ID AS userId
+            a.USER_ID AS userId,
+            b.HP AS hp,
+            b.USER_NICK AS userNickname,
+            b.HOUSE_HOLDER AS householder
         FROM
-            TBR_OPR_USER_DEVICE
+            TBR_OPR_ACCOUNT a
+        INNER JOIN
+            TBR_OPR_USER b
+        ON
+            a.USER_ID = b.USER_ID
         WHERE
-            GROUP_KEY = #{requestUserId}
-        AND
-            USER_ID = #{responseUserId}
-        LIMIT 1
+            GROUP_KEY = ${requestUserId}
     </select>
-
 </mapper>
