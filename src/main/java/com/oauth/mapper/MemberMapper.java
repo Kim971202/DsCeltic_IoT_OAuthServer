@@ -28,7 +28,6 @@ public interface MemberMapper {
     public List<AuthServerDTO> getPushYnStatusByUserIds(List<AuthServerDTO> userIds);
     public List<AuthServerDTO> getRegistDeviceIdByUserId(String userIds);
     public List<AuthServerDTO> getFailyMemberByUserId(String requestUserId);
-    public List<AuthServerDTO> getDuplicateDeviceIdFromUserDevice(List<AuthServerDTO> member);
     public AuthServerDTO getPushYnStatus(AuthServerDTO userId);
     public AuthServerDTO getUserByUserId(String userId);
     public AuthServerDTO getAccountByUserId(String userId);

@@ -673,22 +673,18 @@ public class UserServiceImpl implements UserService {
                 }
 
                 // TODO: 3. USER_DEVICE TABLE의 USER_ID 세대주 정보로 UPDATE
-                deviceIdList.get(0).setResponseUserId(responseUserId);
-                userDevice = memberMapper.getDuplicateDeviceIdFromUserDevice(deviceIdList);
-                if(userDevice == null){
-                    if(memberMapper.updateUserDeviceTable(params) <= 0){
-                        msg = "사용자 초대 - 수락 실패 : updateUserDeviceTable";
+                if(memberMapper.updateUserDeviceTable(params) <= 0){
+                    msg = "사용자 초대 - 수락 실패 : updateUserDeviceTable";
+                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
+
+                for(AuthServerDTO authServerDTO : deviceIdList){
+                    authServerDTO.setUserId(responseUserId);
+                    if(memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList) <= 0){
+                        msg = "사용자 초대 - 수락 실패 : deleteDuplicateDeviceIdFromUserDevice";
                         data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                         return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                    }
-                } else {
-                    for(AuthServerDTO authServerDTO : userDevice){
-                        authServerDTO.setUserId(responseUserId);
-                        if(memberMapper.deleteDuplicateDeviceIdFromUserDevice(userDevice) <= 0){
-                            msg = "사용자 초대 - 수락 실패 : deleteDuplicateDeviceIdFromUserDevice";
-                            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                        }
                     }
                 }
 
