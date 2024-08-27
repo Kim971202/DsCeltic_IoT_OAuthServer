@@ -681,10 +681,12 @@ public class UserServiceImpl implements UserService {
 
                 for(AuthServerDTO authServerDTO : deviceIdList){
                     authServerDTO.setUserId(responseUserId);
-                    if(memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList) <= 0){
-                        msg = "사용자 초대 - 수락 실패 : deleteDuplicateDeviceIdFromUserDevice";
-                        data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                    if(authServerDTO.getUserId().equals(responseUserId)){
+                        if(memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList) <= 0){
+                            msg = "사용자 초대 - 수락 실패 : deleteDuplicateDeviceIdFromUserDevice";
+                            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                        }
                     }
                 }
 
