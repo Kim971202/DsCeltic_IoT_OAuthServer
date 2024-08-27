@@ -514,16 +514,18 @@ public class UserServiceImpl implements UserService {
         String msg;
         String userId = params.getUserId();
         List<AuthServerDTO> userIdList;
-        HashMap<String, String> user = new HashMap<>();
+        List<HashMap<String, String>> user = new ArrayList<>();
         try {
 
             userIdList = memberMapper.getFailyMemberByUserId(userId);
 
             if(userIdList != null){
                 for(AuthServerDTO authServerDTO : userIdList){
-                    user.put("userId", authServerDTO.getUserId());
-                    user.put("userNickname", authServerDTO.getUserNickname());
-                    user.put("householder", authServerDTO.getHouseholder());
+                    HashMap<String, String> userMap = new HashMap<>();
+                    userMap.put("userId", authServerDTO.getUserId());
+                    userMap.put("userNickname", authServerDTO.getUserNickname());
+                    userMap.put("householder", authServerDTO.getHouseholder());
+                    user.add(userMap);  // 리스트에 HashMap 추가
                 }
             } else {
                 msg = "계정이 존재하지 않습니다.";
