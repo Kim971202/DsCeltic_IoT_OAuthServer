@@ -717,7 +717,7 @@
         WHERE
             GROUP_KEY = #{requestUserId}
         AND
-            USER_ID = #{responseId}
+            USER_ID = #{responseUserId}
         LIMIT 1
     </select>
 
