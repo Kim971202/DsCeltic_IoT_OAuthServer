@@ -665,7 +665,7 @@ public class UserServiceImpl implements UserService {
 
             // TODO: 1. ResponseUserId가 RequestUserId의 GROUP_KEY에 속해 있는지 확인
             AuthServerDTO groupUserId = memberMapper.getUserIdByGroupKey(params);
-            if (groupUserId.getUserId() == null) {
+            if (groupUserId == null) {
                 msg = "중복_GROUP_KEY";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
