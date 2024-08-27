@@ -295,26 +295,30 @@
 
     <insert id="insertNewHouseMember" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO
-            TBR_OPR_USER_DEVICE
+        TBR_OPR_USER_DEVICE
         (
             USER_ID,
             DEVC_ID,
             DEVC_CTRL_KEY,
             ATTC_DATM,
+            REG_DATM,
             HOUSE_HOLDER,
             GROUP_KEY
         )
-        VALUES
-        <foreach collection="list" item="item" index="idx" separator=",">
-        (
-            #{item.responseUserId},
-            #{item.deviceId},
-            #{item.controlAuthKey},
-            #{item.authenticationDatetime},
-            #{item.householder},
-            #{item.requestUserId}
-        )
-        </foreach>
+        SELECT
+            #{userId},
+            DEVC_ID,
+            DEVC_CTRL_KEY,
+            NOW(),
+            NOW(),
+            #{householder},
+            #{groupId}
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE
+            USER_ID = #{targetId}
+        AND
+            DEVC_ID = #{deviceId}
     </insert>
 
     <update id="changeHouseholdStatus" parameterType="com.oauth.dto.AuthServerDTO">

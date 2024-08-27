@@ -161,6 +161,9 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String safeAlarmTime;                // 안전안심 시간 (예: 0723 = 7일 23시간)
     private String safeAlarmStatus;              // 안전안심 알람 사용 여부 (Y/N)
 
+    private String groupId;
+    private String targetId;
+
     private String errorCode;
     private String errorMessage;
     private String errorDateTime;
