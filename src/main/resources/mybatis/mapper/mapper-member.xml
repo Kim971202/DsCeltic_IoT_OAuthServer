@@ -536,13 +536,13 @@
     <select id="getWorkTime" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             WORK_TIME AS workTime,
-            INSERT_DATETIME AS workDate
+            DATE_FORMAT(INSERT_DATETIME, '%Y%m%d') AS workDate
         FROM
             TBR_OPR_DEVICE_WORK_DATETIME
         WHERE
             DEVC_ID = #{deviceId}
         AND
-            R_KEY = #{controlAuthKey};
+            INSERT_DATETIME BETWEEN #{startDate} AND #{endDate}
     </select>
 
     <select id="getPushTokenByUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">

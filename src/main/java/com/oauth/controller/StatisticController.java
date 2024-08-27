@@ -39,8 +39,8 @@ public class StatisticController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getStartDatetime()) ||
-                Validator.isNullOrEmpty(params.getEndDatetime())) {
+                Validator.isNullOrEmpty(params.getStartDate()) ||
+                Validator.isNullOrEmpty(params.getEndDate())) {
             throw new CustomException("404", "홈 IoT가동시간 통계조회 값 오류");
         }
 
