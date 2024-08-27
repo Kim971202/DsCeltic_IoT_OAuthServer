@@ -1311,6 +1311,8 @@ public class DeviceServiceImpl implements DeviceService {
         String userId = params.getUserId();
         String uuId = common.getTransactionId();
 
+        AuthServerDTO householdStatus;
+
         List<String> serialNumberList;
         List<String> rKeyList;
         List<String> deviceIdList;
@@ -1326,102 +1328,108 @@ public class DeviceServiceImpl implements DeviceService {
         List<DeviceStatusInfo.Device> devicesStatusInfo;
         try {
 
-            controlAuthKeyByUserIdResult = deviceMapper.getControlAuthKeyByUserId(userId);
-            if (controlAuthKeyByUserIdResult == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
-            deviceNicknameAndDeviceLocNicknameResult = deviceMapper.getDeviceNicknameAndDeviceLocNickname(controlAuthKeyByUserIdResult);
-
-            if (deviceNicknameAndDeviceLocNicknameResult == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-            log.info("deviceNicknameAndDeviceLocNicknameResult: " + deviceNicknameAndDeviceLocNicknameResult);
-
-            multiSerialNumberBydeviceIdResult = deviceMapper.getMultiSerialNumberBydeviceId(controlAuthKeyByUserIdResult);
-            if (multiSerialNumberBydeviceIdResult == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-            log.info("multiSerialNumberBydeviceIdResult: " + multiSerialNumberBydeviceIdResult);
-
-            rKeyList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "controlAuthKey");
-            log.info("rKeyList: " + rKeyList);
-
-            deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
-            log.info("deviceIdList: " + deviceIdList);
-
-            deviceNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "deviceNickname");
-            log.info("deviceNicknameList: " + deviceNicknameList);
-
-            addrNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "addrNickname");
-            log.info("addrNicknameList: " + addrNicknameList);
-
-            serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
-            log.info("serialNumberList: " + serialNumberList);
-
-            regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
-            log.info("regSortList: " + regSortList);
-
-            devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
-            if (devicesStatusInfo == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-            log.info("devicesStatusInfo: " + devicesStatusInfo);
-
-            if(rKeyList == null || deviceIdList == null){
-                msg = "등록된 R/C가 없습니다";
-                result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-
-            if(deviceNicknameList != null && addrNicknameList != null && regSortList != null && serialNumberList != null){
-                for(int i = 0; i < rKeyList.size(); ++i){
-                    Map<String, String> data = new HashMap<>();
-                    data.put("rKey", rKeyList.get(i));
-                    data.put("deviceNickname", deviceNicknameList.get(i));
-                    data.put("addrNickname", addrNicknameList.get(i));
-                    data.put("regSort", regSortList.get(i));
-                    data.put("deviceId", deviceIdList.get(i));
-                    data.put("controlAuthKey", rKeyList.get(i));
-                    data.put("deviceStatus", "1");
-                    data.put("powr", devicesStatusInfo.get(i).getPowr());
-                    data.put("opMd", devicesStatusInfo.get(i).getOpMd());
-                    data.put("htTp", devicesStatusInfo.get(i).getHtTp());
-                    data.put("wtTp", devicesStatusInfo.get(i).getWtTp());
-                    data.put("hwTp", devicesStatusInfo.get(i).getHwTp());
-                    data.put("ftMd", devicesStatusInfo.get(i).getFtMd());
-                    data.put("chTp", devicesStatusInfo.get(i).getChTp());
-                    data.put("mfDt", devicesStatusInfo.get(i).getMfDt());
-                    data.put("hwSt", devicesStatusInfo.get(i).getHwSt());
-                    data.put("fcLc", devicesStatusInfo.get(i).getFcLc());
-                    data.put("type24h", common.readCon(devicesStatusInfo.get(i).getH24(), "serviceMd"));
-                    data.put("slCd", devicesStatusInfo.get(i).getSlCd());
-                    appResponse.add(data);
+            // TODO: 만약 Household 여부가 N인 경우에는 세대주의 USERID 사용
+            householdStatus = memberMapper.getHouseholdByUserId(userId);
+            if(householdStatus.getHouseholder().equals("N")){
+                userId = householdStatus.getGroupId();
+                log.info("만약 Household 여부가 N인 경우에는 세대주의 USERID 사용");
+                log.info("userId: " + userId);
+            } else {
+                controlAuthKeyByUserIdResult = deviceMapper.getControlAuthKeyByUserId(userId);
+                if (controlAuthKeyByUserIdResult == null) {
+                    msg = "기기정보가 없습니다.";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
-                stringObject = "Y";
-            }else stringObject = "N";
 
-            if(stringObject.equals("Y")) {
-                msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 성공";
-                result.setHomeViewValue(appResponse);
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                deviceNicknameAndDeviceLocNicknameResult = deviceMapper.getDeviceNicknameAndDeviceLocNickname(controlAuthKeyByUserIdResult);
+
+                if (deviceNicknameAndDeviceLocNicknameResult == null) {
+                    msg = "기기정보가 없습니다.";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+                log.info("deviceNicknameAndDeviceLocNicknameResult: " + deviceNicknameAndDeviceLocNicknameResult);
+
+                multiSerialNumberBydeviceIdResult = deviceMapper.getMultiSerialNumberBydeviceId(controlAuthKeyByUserIdResult);
+                if (multiSerialNumberBydeviceIdResult == null) {
+                    msg = "기기정보가 없습니다.";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+                log.info("multiSerialNumberBydeviceIdResult: " + multiSerialNumberBydeviceIdResult);
+
+                rKeyList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "controlAuthKey");
+                log.info("rKeyList: " + rKeyList);
+
+                deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
+                log.info("deviceIdList: " + deviceIdList);
+
+                deviceNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "deviceNickname");
+                log.info("deviceNicknameList: " + deviceNicknameList);
+
+                addrNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "addrNickname");
+                log.info("addrNicknameList: " + addrNicknameList);
+
+                serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
+                log.info("serialNumberList: " + serialNumberList);
+
+                regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
+                log.info("regSortList: " + regSortList);
+
+                devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
+                if (devicesStatusInfo == null) {
+                    msg = "기기정보가 없습니다.";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+                log.info("devicesStatusInfo: " + devicesStatusInfo);
+
+                if(rKeyList == null || deviceIdList == null){
+                    msg = "등록된 R/C가 없습니다";
+                    result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
+                if(deviceNicknameList != null && addrNicknameList != null && regSortList != null && serialNumberList != null){
+                    for(int i = 0; i < rKeyList.size(); ++i){
+                        Map<String, String> data = new HashMap<>();
+                        data.put("rKey", rKeyList.get(i));
+                        data.put("deviceNickname", deviceNicknameList.get(i));
+                        data.put("addrNickname", addrNicknameList.get(i));
+                        data.put("regSort", regSortList.get(i));
+                        data.put("deviceId", deviceIdList.get(i));
+                        data.put("controlAuthKey", rKeyList.get(i));
+                        data.put("deviceStatus", "1");
+                        data.put("powr", devicesStatusInfo.get(i).getPowr());
+                        data.put("opMd", devicesStatusInfo.get(i).getOpMd());
+                        data.put("htTp", devicesStatusInfo.get(i).getHtTp());
+                        data.put("wtTp", devicesStatusInfo.get(i).getWtTp());
+                        data.put("hwTp", devicesStatusInfo.get(i).getHwTp());
+                        data.put("ftMd", devicesStatusInfo.get(i).getFtMd());
+                        data.put("chTp", devicesStatusInfo.get(i).getChTp());
+                        data.put("mfDt", devicesStatusInfo.get(i).getMfDt());
+                        data.put("hwSt", devicesStatusInfo.get(i).getHwSt());
+                        data.put("fcLc", devicesStatusInfo.get(i).getFcLc());
+                        data.put("type24h", common.readCon(devicesStatusInfo.get(i).getH24(), "serviceMd"));
+                        data.put("slCd", devicesStatusInfo.get(i).getSlCd());
+                        appResponse.add(data);
+                    }
+                    stringObject = "Y";
+                }else stringObject = "N";
+
+                if(stringObject.equals("Y")) {
+                    msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 성공";
+                    result.setHomeViewValue(appResponse);
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                }
+
+                if(stringObject.equals("N")) {
+                    msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 실패";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
+                redisCommand.deleteValues(uuId);
             }
-
-            if(stringObject.equals("N")) {
-                msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-
-            redisCommand.deleteValues(uuId);
-
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
