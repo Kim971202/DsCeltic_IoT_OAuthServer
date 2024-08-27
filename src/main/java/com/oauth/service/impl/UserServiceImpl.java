@@ -652,6 +652,25 @@ public class UserServiceImpl implements UserService {
              * 3. 2번 출력값으로 TBR_OPR_USER_DEVICE에 responseUserId INSERT
              * */
 
+            /*
+             * TODO:
+             *  1. ResponseUserId가 RequestUserId의 GROUP_KEY에 속해 있는지 확인
+             *     - 속해 있다면 Reutrn
+             *  2. RequestUserId, ResponseUserId 가지고 있는 DeviceId 검색
+             *     - 있든 없든 3번으로 진행
+             *  3. RequestUserId가 DeviceId를 가지고 있다면 해당 기기의 CNT, SUB 생성
+             *     - 등록한 기기가 없다면 Skip
+             *  4. 등록한 기기가 있다면 RequestUserId에 등록 후 CNT, SUB 등록 과정 진핼 후 로직 종료
+             * */
+
+            // TODO: 1. ResponseUserId가 RequestUserId의 GROUP_KEY에 속해 있는지 확인
+            AuthServerDTO groupUserId = memberMapper.getUserIdByGroupKey(requestUserId);
+            if (groupUserId.getUserId().isEmpty()) {
+                msg = "중복_GROUP_KEY";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
             List<AuthServerDTO> member;
             if(inviteAcceptYn.equals("Y")){
 
@@ -660,6 +679,11 @@ public class UserServiceImpl implements UserService {
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
                 }
+
+                // TODO: 2. RequestUserId, ResponseUserId가 가지고 있는 DeviceId 검색
+                List<AuthServerDTO> requestDeviceIdList = memberMapper.getDeviceIdFromRegistTable(requestUserId);
+                params.setRequestUserId(responseUserId);
+                List<AuthServerDTO> responseDeviceIdList = memberMapper.getDeviceIdFromRegistTable(params.getRequestUserId());
 
                 member = memberMapper.getDeviceIdByUserId(requestUserId);
                 if (member == null) {
@@ -673,35 +697,33 @@ public class UserServiceImpl implements UserService {
                 Common.updateMemberDTOList(member, "householder", "N");
                 Common.updateMemberDTOList(member, "requestUserId", requestUserId);
 
-                if(memberMapper.insertNewHouseMember(member) <= 0){
-                    msg = "사용자 초대 - 수락 실패";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                // 세대주 -> 세대원 기기정보 저장
+                for(AuthServerDTO authServerDTO : requestDeviceIdList){
+                    params.setHouseholder("N");
+                    params.setDeviceId(authServerDTO.getDeviceId());
+                    params.setUserId(responseUserId);
+                    params.setTargetId(requestUserId);
+                    params.setGroupId(requestUserId);
+                    if(memberMapper.insertNewHouseMember(params) <= 0){
+                        msg = "사용자 초대 - 수락 실패";
+                        data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                    }
                 }
 
-                /*
-                * TODO:
-                *  1. ResponseUserId가 RequestUserId의 GROUP_KEY에 속해 있는지 확인
-                *     - 속해 있다면 Reutrn
-                *  2. RequestUserId, ResponseUserId 가지고 있는 DeviceId 검색
-                *     - 있든 없든 3번으로 진행
-                *  3. RequestUserId가 DeviceId를 가지고 있다면 해당 기기의 CNT, SUB 생성
-                *     - 등록한 기기가 없다면 Skip
-                *  4. 등록한 기기가 있다면 RequestUserId에 등록 후 CNT, SUB 등록 과정 진핼 후 로직 종료
-                * */
-
-                // TODO: 1. ResponseUserId가 RequestUserId의 GROUP_KEY에 속해 있는지 확인
-                AuthServerDTO groupUserId = memberMapper.getUserIdByGroupKey(requestUserId);
-                if (groupUserId.getUserId().isEmpty()) {
-                    msg = "중복_GROUP_KEY";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(data, HttpStatus.OK);
+                // 세대원 -> 세대주 기기정보 저장
+                for(AuthServerDTO authServerDTO : responseDeviceIdList){
+                    params.setHouseholder("Y");
+                    params.setDeviceId(authServerDTO.getDeviceId());
+                    params.setUserId(requestUserId);
+                    params.setTargetId(responseUserId);
+                    params.setGroupId(requestUserId);
+                    if(memberMapper.insertNewHouseMember(params) <= 0){
+                        msg = "사용자 초대 - 수락 실패";
+                        data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                    }
                 }
-
-                // TODO: 2. RequestUserId, ResponseUserId가 가지고 있는 DeviceId 검색
-                List<AuthServerDTO> requestDeviceIdList = memberMapper.getDeviceIdFromRegistTable(requestUserId);
-                params.setRequestUserId(responseUserId);
-                List<AuthServerDTO> responseDeviceIdList = memberMapper.getDeviceIdFromRegistTable(params.getRequestUserId());
 
                 if(!requestDeviceIdList.isEmpty()){
                     for(AuthServerDTO authServerDTO : requestDeviceIdList){

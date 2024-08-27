@@ -51,7 +51,7 @@ public interface MemberMapper {
     public int updateUserNicknameAndHp(AuthServerDTO member);
     public int inviteHouseMember(AuthServerDTO member);
     public int acceptInvite(AuthServerDTO member);
-    public int insertNewHouseMember(List<AuthServerDTO> members);
+    public int insertNewHouseMember(AuthServerDTO members);
     public int delHouseMember(String userId);
     public int changeHouseholdStatus(AuthServerDTO member);
     public int updatePushCodeStatus(AuthServerDTO params);
