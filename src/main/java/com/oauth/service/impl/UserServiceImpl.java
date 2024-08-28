@@ -670,15 +670,15 @@ public class UserServiceImpl implements UserService {
                 }
 
                 // TODO: 2. 세대원 REGIST TABLE의 USER_ID, HP 세대주 정보로 UPDATE
-                params.setHp(userHp.getHp());
-                memberMapper.updateRegistTable(params);
-
                 // TODO: 3. USER_DEVICE TABLE의 USER_ID 세대주 정보로 UPDATE
+                params.setHp(userHp.getHp());
                 for(AuthServerDTO authServerDTO : deviceIdList){
                     authServerDTO.setUserId(responseUserId);
                     if(authServerDTO.getUserId().equals(responseUserId)){
-                        memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList);
+                        memberMapper.updateRegistTable(params);
+                        memberMapper.deleteDuplicateDeviceIdFromRegist(deviceIdList);
                         memberMapper.updateUserDeviceTable(params);
+                        memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList);
                     }
                 }
 
