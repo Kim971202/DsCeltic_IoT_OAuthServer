@@ -1548,8 +1548,17 @@ public class DeviceServiceImpl implements DeviceService {
         List<Map<String, String>> appResponse = new ArrayList<>();
         List<AuthServerDTO> deviceInfoList;
 
+        AuthServerDTO householdStatus;
+
         try {
 
+            // TODO: 만약 Household 여부가 N인 경우에는 세대주의 USERID 사용
+            householdStatus = memberMapper.getHouseholdByUserId(params.getUserId());
+            if(householdStatus.getHouseholder().equals("N")){
+                log.info("만약 Household 여부가 N인 경우에는 세대주의 USERID 사용");
+                log.info("householdStatus.getGroupId(): " + householdStatus.getGroupId());
+                params.setUserId(householdStatus.getGroupId());
+            }
             deviceInfoList = deviceMapper.getDeviceInfoSearchList(params);
 
             if(!deviceInfoList.isEmpty()){

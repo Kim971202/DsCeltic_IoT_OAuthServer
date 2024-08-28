@@ -42,6 +42,7 @@ public interface MemberMapper {
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
     public int deleteDuplicateDeviceIdFromUserDevice(List<AuthServerDTO> member);
+    public int deleteDuplicateDeviceIdFromRegist(List<AuthServerDTO> member);
     public int updateRegistTable(AuthServerDTO member);
     public int updateUserTable(String responseUserId);
     public int updateUserDeviceTable(AuthServerDTO member);
