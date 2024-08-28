@@ -1588,7 +1588,7 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             if(stringObject.equals("N")) {
-                msg = "홈 IoT 정보 조회 리스트 - 조회 실패";
+                msg = "홈 IoT 정보 조회 리스트 - 조회 결과 없음";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
