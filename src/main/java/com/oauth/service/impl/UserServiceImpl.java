@@ -97,7 +97,6 @@ public class UserServiceImpl implements UserService {
             if(householdStatus.getHouseholder().equals("N")){
                 log.info("만약 Household 여부가 N인 경우에는 세대주의 USERID 사용");
                 log.info("householdStatus.getGroupId(): " + householdStatus.getGroupId());
-                userId = householdStatus.getGroupId();
             }
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
             if (member == null) {
@@ -106,7 +105,7 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else userNickname = member.getUserNickname();
 
-            List<AuthServerDTO> deviceInfoList = memberMapper.getDeviceIdByUserId(userId);
+            List<AuthServerDTO> deviceInfoList = memberMapper.getDeviceIdByUserId(householdStatus.getGroupId());
             if(deviceInfoList == null) {
                 msg = "계정이 존재하지 않습니다.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
