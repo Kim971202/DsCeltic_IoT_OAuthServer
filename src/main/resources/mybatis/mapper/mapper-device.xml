@@ -378,6 +378,7 @@
             <if test="serialNumber != null">SERIAL_NO = #{serialNumber},</if>
             <if test="rKey != null">R_KEY = #{rKey},</if>
             <if test="powr != null">POWR = #{powr},</if>
+            <if test="powr eq 'on'">DVST = '1',</if>
             <if test="opMd != null">OPMD = #{opMd},</if>
             <if test="htTp != null">HTTP = #{htTp},</if>
             <if test="wtTp != null">WTTP = #{wtTp},</if>
@@ -565,5 +566,13 @@
             NOT EXISTS
             (SELECT 1 FROM TBR_IOT_DEVICE WHERE SERIAL_NO = #{serialNumber});
     </select>
+
+    <update id="updateDeviceErrorStatus" parameterType="String">
+        UPDATE
+            TBR_OPR_DEVICE_STATUS
+        SET
+            DVST = '2'
+        WHERE DEVC_ID = #{deviceId}
+    </update>
 
 </mapper>

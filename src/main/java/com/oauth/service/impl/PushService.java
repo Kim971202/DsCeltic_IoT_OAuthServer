@@ -55,6 +55,8 @@ public class PushService {
         List<AuthServerDTO> pushInfo = deviceMapper.getPushinfoByDeviceId(common.readCon(jsonBody, "deviceId"));
         System.out.println(pushInfo);
 
+        deviceMapper.updateDeviceErrorStatus(common.readCon(jsonBody, "deviceId"));
+
         try {
             for (AuthServerDTO authServerDTO : pushInfo) {
                 log.info("authServerDTO.getPushToken(): " + authServerDTO.getPushToken());
