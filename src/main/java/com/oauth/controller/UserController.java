@@ -292,7 +292,7 @@ public class UserController {
         log.info("[사용자(세대원) - 강제탈퇴경]");
 
         if(Validator.isNullOrEmpty(params.getHp()) ||
-                Validator.isNullOrEmpty(params.getUserNickname()) ||
+                Validator.isNullOrEmpty(params.getDelUserId()) ||
                 Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException("404", "사용자(세대원) - 강제탈퇴 값 오류");
         }

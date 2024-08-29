@@ -796,10 +796,10 @@
         UPDATE
             TBD_IOT_GRP_INFO
         SET
-            GRP_NM = #{userId},
-            HOUSE_HOLDER = 'N'
+            GRP_NM = #{delUserId},
+            HOUSE_HOLDER = 'Y'
         WHERE
-            GRP_ID = #{userId}
+            GRP_ID = #{delUserId}
     </update>
 
     <select id="getNextHouseholder" parameterType="String" resultMap="member">
