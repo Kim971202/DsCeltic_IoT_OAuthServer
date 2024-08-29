@@ -771,7 +771,8 @@
         SELECT
             USER_ID AS userId,
             USER_NICK AS userNickname,
-            HOUSE_HOLDER AS householder
+            HOUSE_HOLDER AS householder,
+            GRP_ID AS groupId
         FROM
             TBD_IOT_GRP_INFO
         WHERE
