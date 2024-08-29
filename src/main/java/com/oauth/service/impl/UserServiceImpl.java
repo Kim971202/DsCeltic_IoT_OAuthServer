@@ -838,6 +838,7 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
+        String delUserId = params.getDelUserId();
         AuthServerDTO pushYn;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -849,12 +850,17 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
-            if(memberMapper.updateUserDeviceHousehold(params.getDelUserId()) <= 0){
+            if(memberMapper.updateUserDeviceHousehold(delUserId) <= 0){
                 msg = "사용자(세대원) 강제탈퇴 실패";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
+            if(memberMapper.updateHouseholdTbrOprUserDevice(delUserId) <= 0){
+                msg = "사용자(세대원) 강제탈퇴 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
             msg = "사용자(세대원) - 강제탈퇴 성공";
 
             if(memberMapper.updatePushToken(params) <= 0) {
