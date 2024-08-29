@@ -13,7 +13,6 @@ import com.oauth.utils.CustomException;
 import com.oauth.utils.RedisCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -566,8 +565,9 @@ public class UserServiceImpl implements UserService {
         String stringObject = "N";
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
-        AuthServerDTO pushYn;
         MobiusResponse mobiusCode;
+        AuthServerDTO pushYn;
+        AuthServerDTO userNickname;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -595,9 +595,12 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            userNickname = memberMapper.getUserNickname(params.getRequestUserId());
+
             pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
+            conMap.put("userNickname", userNickname.getUserNickname());
             conMap.put("title", "Add User");
             conMap.put("id", "Add User ID");
             conMap.put("isEnd", "false");
@@ -633,6 +636,7 @@ public class UserServiceImpl implements UserService {
         String msg;
         AuthServerDTO pushYn;
         AuthServerDTO userHp;
+        AuthServerDTO userNickname;
         List<AuthServerDTO> deviceIdList;
         List<AuthServerDTO> familyMemberList;
         String requestUserId = params.getRequestUserId();
@@ -733,9 +737,12 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            userNickname = memberMapper.getUserNickname(responseUserId);
             pushYn = memberMapper.getPushYnStatus(params);
+
             conMap.put("pushYn", pushYn.getFPushYn());
             conMap.put("targetToken", params.getPushToken());
+            conMap.put("userNickname", userNickname.getUserNickname());
             conMap.put("title", "Accept Invite");
             conMap.put("id", "Accept Invite ID");
             conMap.put("isEnd", "false");

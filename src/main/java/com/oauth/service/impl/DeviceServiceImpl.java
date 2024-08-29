@@ -65,6 +65,8 @@ public class DeviceServiceImpl implements DeviceService {
         String serialNumber;
         String responseMessage = null;
 
+        AuthServerDTO userNickname;
+
         MobiusResponse response;
 
         Map<String, String> conMap = new HashMap<>();
@@ -175,14 +177,16 @@ public class DeviceServiceImpl implements DeviceService {
 
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
 
+            userNickname = memberMapper.getUserNickname(userId);
+
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
 
                 conMap.put("targetToken", userIds.get(i).getPushToken());
-                conMap.put("title", "Device ON/OFF");
-                conMap.put("id", "Device ON/OFF ID");
+                conMap.put("title", "powr");
+                conMap.put("powr", params.getPowerStatus());
                 conMap.put("isEnd", "false");
-                conMap.put("userNickname", "TODO");
+                conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("pushYn", memberMapper.getPushYnStatusByUserIds(userIds).get(i).getFPushYn());
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
@@ -453,7 +457,9 @@ public class DeviceServiceImpl implements DeviceService {
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String sleepCode = null;
-        AuthServerDTO pushYn;
+
+        AuthServerDTO userNickname;
+
         if(params.getModeCode().equals("06")) sleepCode = params.getSleepCode();
 
         String responseMessage;
@@ -535,15 +541,30 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Mode Change");
-            conMap.put("id", "Mode Change ID");
-            conMap.put("isEnd", "false");
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+            userNickname = memberMapper.getUserNickname(userId);
 
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
+
+            for(int i = 0; i < userIds.size(); ++i){
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("userNickname", userNickname.getUserNickname());
+                conMap.put("title", "Mode Change");
+                conMap.put("id", "Mode Change ID");
+                conMap.put("isEnd", "false");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+                log.info("jsonString: " + jsonString);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                    msg = "PUSH 메세지 전송 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+            }
+
 
             redisCommand.deleteValues(modeChange.getUuId());
 
@@ -614,12 +635,6 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -641,7 +656,7 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         MobiusResponse response;
         String serialNumber;
-        AuthServerDTO pushYn;
+        AuthServerDTO userNickname;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -716,14 +731,29 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "TemperatureSet");
-            conMap.put("id", "TemperatureSet ID");
-            conMap.put("isEnd", "false");
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+            userNickname = memberMapper.getUserNickname(userId);
 
-            String jsonString = objectMapper.writeValueAsString(conMap);
+            for(int i = 0; i < userIds.size(); ++i){
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+
+                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("userNickname", userNickname.getUserNickname());
+                conMap.put("title", "TemperatureSet");
+                conMap.put("id", "TemperatureSet ID");
+                conMap.put("isEnd", "false");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                    msg = "PUSH 메세지 전송 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+            }
+
             redisCommand.deleteValues(temperatureSet.getUuId());
 
             deviceInfo.setHtTp(params.getTemperture());
@@ -751,12 +781,6 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -778,7 +802,7 @@ public class DeviceServiceImpl implements DeviceService {
         String responseMessage;
         MobiusResponse response;
         String serialNumber;
-        AuthServerDTO pushYn;
+        AuthServerDTO userNickname ;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -853,15 +877,28 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "BoiledWaterTempertureSet");
-            conMap.put("id", "BoiledWaterTempertureSet ID");
-            conMap.put("isEnd", "false");
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+            userNickname = memberMapper.getUserNickname(userId);
 
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
+            for(int i = 0; i < userIds.size(); ++i){
+                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("userNickname", userNickname.getUserNickname());
+                conMap.put("title", "BoiledWaterTempertureSet");
+                conMap.put("id", "BoiledWaterTempertureSet ID");
+                conMap.put("isEnd", "false");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+                log.info("jsonString: " + jsonString);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                    msg = "PUSH 메세지 전송 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+            }
+
             redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
 
             deviceInfo.setWtTp(params.getTemperture());
@@ -887,12 +924,6 @@ public class DeviceServiceImpl implements DeviceService {
                 msg = "PUSH HISTORY INSERT ERROR";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1052,7 +1083,7 @@ public class DeviceServiceImpl implements DeviceService {
         MobiusResponse response;
         String responseMessage;
         String serialNumber;
-        AuthServerDTO pushYn;
+        AuthServerDTO userNickname;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -1127,14 +1158,29 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "FastHotWaterSet");
-            conMap.put("id", "FastHotWaterSet ID");
-            conMap.put("isEnd", "false");
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+            userNickname = memberMapper.getUserNickname(userId);
 
-            String jsonString = objectMapper.writeValueAsString(conMap);
+            for(int i = 0; i < userIds.size(); ++i){
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+
+                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("userNickname", userNickname.getUserNickname());
+                conMap.put("title", "FastHotWaterSet");
+                conMap.put("id", "FastHotWaterSet ID");
+                conMap.put("isEnd", "false");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                    msg = "PUSH 메세지 전송 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+            }
+
             redisCommand.deleteValues(fastHotWaterSet.getUuId());
 
             deviceInfo.setOpMd(params.getModeCode());
@@ -1162,12 +1208,6 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1185,7 +1225,7 @@ public class DeviceServiceImpl implements DeviceService {
         String msg;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
-        AuthServerDTO pushYn;
+        AuthServerDTO userNickname;
 
         String redisValue;
         MobiusResponse response;
@@ -1267,25 +1307,35 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "LockSet");
-            conMap.put("id", "LockSet ID");
-            conMap.put("isEnd", "false");
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+            userNickname = memberMapper.getUserNickname(userId);
 
-            String jsonString = objectMapper.writeValueAsString(conMap);
+            for(int i = 0; i < userIds.size(); ++i){
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+
+                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("userNickname", userNickname.getUserNickname());
+                conMap.put("title", "LockSet");
+                conMap.put("id", "LockSet ID");
+                conMap.put("isEnd", "false");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                    msg = "PUSH 메세지 전송 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+            }
+
+
             redisCommand.deleteValues(lockSet.getUuId());
 
             deviceInfo.setFcLc(params.getLockSet());
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
