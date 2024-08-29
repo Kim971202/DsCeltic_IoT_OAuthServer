@@ -849,6 +849,12 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
+            if(memberMapper.updateUserDeviceHousehold(params.getDelUserId()) <= 0){
+                msg = "사용자(세대원) 강제탈퇴 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
+
             msg = "사용자(세대원) - 강제탈퇴 성공";
 
             if(memberMapper.updatePushToken(params) <= 0) {

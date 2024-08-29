@@ -165,6 +165,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
 
     private String groupId;
     private String targetId;
+    private String delUserId;
 
     private String errorCode;
     private String errorMessage;
