@@ -210,13 +210,19 @@ public class UserServiceImpl implements UserService {
             if(memberMapper.insertAccount(params) <= 0) {
                 msg = "회원가입 실패";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
             if(memberMapper.insertMember(params) <= 0) {
                 msg = "회원가입 실패";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            if(memberMapper.insertHouseholder(params) <= 0) {
+                msg = "회원가입 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
             msg = "회원가입 성공";
@@ -675,15 +681,16 @@ public class UserServiceImpl implements UserService {
                 for(AuthServerDTO authServerDTO : deviceIdList){
                     authServerDTO.setUserId(responseUserId);
                     if(authServerDTO.getUserId().equals(responseUserId)){
-                        memberMapper.updateRegistTable(params);
                         memberMapper.deleteDuplicateDeviceIdFromRegist(deviceIdList);
-                        memberMapper.updateUserDeviceTable(params);
+                        memberMapper.updateRegistTable(params);
                         memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList);
+                        memberMapper.updateUserDeviceTable(params);
+
                     }
                 }
 
-                // TODO: 4. ACCOUNT TABLE의 GROUP_KEY = 세대주 명으로 수정
-                memberMapper.updateAccountTable(params);
+                // TODO: 4. TBD_IOT_GRP_INFO TABLE의 세대원으로 변경
+                memberMapper.updateHouseholdToMember(params);
 
                 // TODO: 5. USER TABLE의 세대주 여부 UPDATE
                 memberMapper.updateUserTable(responseUserId);
@@ -831,12 +838,11 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         AuthServerDTO pushYn;
-        String userId = params.getUserId();
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            if(memberMapper.delHouseMember(userId) <= 0){
+            if(memberMapper.delHouseholdMember(params) <= 0){
                 msg = "사용자(세대원) 강제탈퇴 실패";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
@@ -1005,11 +1011,39 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
-        String nextHouseholdId = null;
+        String userId = params.getUserId();
         AuthServerDTO pushYn;
+        AuthServerDTO nextHouseholder;
+        AuthServerDTO userHp;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+
         try {
+
+            /*
+            * TODO:
+            *  1. 세대주 권한을 넘겨줄 세대원 쿼리
+            *  2. 기존 세대주 관련 GRP 테이블 수정
+            *  3. 쿼리후 해당 세대원의 USERID 기반 하여 REGIST, USERDEVICE 테이블 UPDATE 및 GRP 테이블에 기존 세대원의 세대주 정보 UPDATE
+            *  4. 세대주 권한이양 받은 세대원 Household 항목 Y로 UPDATE
+            * */
+
+            // TODO: 1. 세대주 권한을 넘겨줄 세대원 쿼리
+            nextHouseholder = memberMapper.getNextHouseholder(userId);
+
+            // TODO: 2. 기존 세대주 관련 GRP 테이블 수정
+            userHp = memberMapper.getHpByUserId(userId);
+            params.setHp(userHp.getHp());
+            memberMapper.updateRegistTable(params);
+
+            // TODO: 3. 쿼리후 해당 세대원의 USERID 기반 하여 REGIST, USERDEVICE 테이블 UPDATE 및 GRP 테이블에 기존 세대원의 세대주 정보 UPDATE
+            params.setRequestUserId(nextHouseholder.getUserId());
+            params.setResponseUserId(userId);
+            memberMapper.updateRegistTable(params);
+            memberMapper.updateUserDeviceTable(params);
+
+            // TODO: 4. 세대주 권한이양 받은 세대원 Household 항목 Y로 UPDATE
+            memberMapper.updateUserDeviceHousehold(nextHouseholder.getUserId());
 
             pushYn = memberMapper.getPushYnStatus(params);
             conMap.put("pushYn", pushYn.getFPushYn());
@@ -1020,48 +1054,6 @@ public class UserServiceImpl implements UserService {
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
-
-            List<AuthServerDTO> deviceIds = memberMapper.getDeviceIdByUserId(params.getUserId());
-            if (deviceIds.isEmpty()) {
-                msg = "등록된 존재하지 않습니다.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-
-            List<AuthServerDTO> members = memberMapper.getHouseMembersByUserId(deviceIds);
-            if (members == null) {
-                msg = "등록된 사용자가 존재하지 않습니다.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-            // List에서 요청자 userId 제거
-            members.stream()
-                    .filter(x -> x.getUserId()
-                            .equals(params.getUserId()))
-                    .collect(Collectors.toList())
-                    .forEach(members::remove);
-
-            List<String> userIdList = Common.extractJson(members.toString(), "userId");
-
-            if(userIdList != null) nextHouseholdId = userIdList.get(0);
-
-            if(memberMapper.delHouseMember(params.getUserId()) <= 0){
-                msg = "사용자(세대주) 탈퇴 실패";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-
-            if(memberMapper.updateHouseholdTbrOprUser(nextHouseholdId) <= 0){
-                msg = "사용자(세대주) 탈퇴 실패";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
-
-            if( memberMapper.updateHouseholdTbrOprUserDevice(nextHouseholdId) <= 0){
-                msg = "사용자(세대주) 탈퇴 실패";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
 
             conMap.put("body", "Delete householder OK");
             msg = "사용자(세대주) 탈퇴  실패";
@@ -1203,8 +1195,10 @@ public class UserServiceImpl implements UserService {
         String userId = params.getUserId();
 
         MobiusResponse aeResult;
-        MobiusResponse cntResult;
-        MobiusResponse subResult;
+        MobiusResponse cntResult = null;
+        MobiusResponse subResult = null;
+
+        List<AuthServerDTO> groupMemberList;
 
         try{
 
@@ -1212,12 +1206,19 @@ public class UserServiceImpl implements UserService {
             * 위 API 호출 마다 SerialNum, UserId 정보로 Cin 생성
             * 생성이 정상적으로 동작 후 201을 Return 한다면 해당 AE, CNT는 존재하므로 생성X
             * 하지만 201을 Return 하지 못하는 경우 AE, CNT가 없다 판단하여 신규 생성
+            * TODO: GRP_ID 기준 모든 UserId에 대한 CNT, SUB 생성
             * */
+
+            groupMemberList = memberMapper.getGroupMemberByUserId(userId);
+
             params.setSerialNumber("    " + params.getSerialNumber());
             params.setModelCode(" " + params.getModelCode());
             aeResult = mobiusService.createAe(common.stringToHex(params.getSerialNumber()));
-            cntResult = mobiusService.createCnt(common.stringToHex(params.getSerialNumber()), params.getUserId());
-            subResult = mobiusService.createSub(common.stringToHex(params.getSerialNumber()), params.getUserId(), "gw");
+
+            for(AuthServerDTO authServerDTO : groupMemberList){
+                cntResult = mobiusService.createCnt(common.stringToHex(params.getSerialNumber()), authServerDTO.getUserId());
+                subResult = mobiusService.createSub(common.stringToHex(params.getSerialNumber()), authServerDTO.getUserId(), "gw");
+            }
 
             if(aeResult == null && cntResult == null && subResult == null){
                 msg = "홈 IoT 최초 등록 인증 실패";

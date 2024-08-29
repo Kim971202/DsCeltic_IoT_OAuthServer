@@ -28,6 +28,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getPushYnStatusByUserIds(List<AuthServerDTO> userIds);
     public List<AuthServerDTO> getRegistDeviceIdByUserId(String userIds);
     public List<AuthServerDTO> getFailyMemberByUserId(String requestUserId);
+    public List<AuthServerDTO> getGroupMemberByUserId(String requestUserId);
     public AuthServerDTO getPushYnStatus(AuthServerDTO userId);
     public AuthServerDTO getUserByUserId(String userId);
     public AuthServerDTO getAccountByUserId(String userId);
@@ -35,18 +36,21 @@ public interface MemberMapper {
     public AuthServerDTO getUserByUserIdAndHpAndDeviceId(AuthServerDTO member);
     public AuthServerDTO getPasswordByUserId(String userId);
     public AuthServerDTO accessTokenCheck(AuthServerDTO member);
-    public AuthServerDTO getNextHouseholderUserId(AuthServerDTO member);
     public AuthServerDTO identifyRKey(String deviceId);
     public AuthServerDTO getHpByUserId(String userId);
     public AuthServerDTO getHouseholdByUserId(String userId);
+    public AuthServerDTO getNextHouseholder(String userId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
+    public int updateUserDeviceHousehold(String userId);
+    public int delHouseholdMember(AuthServerDTO member);
+    public int updateHouseholdToMember(AuthServerDTO member);
+    public int insertHouseholder(AuthServerDTO member);
     public int deleteDuplicateDeviceIdFromUserDevice(List<AuthServerDTO> member);
     public int deleteDuplicateDeviceIdFromRegist(List<AuthServerDTO> member);
     public int updateRegistTable(AuthServerDTO member);
     public int updateUserTable(String responseUserId);
     public int updateUserDeviceTable(AuthServerDTO member);
-    public int updateAccountTable(AuthServerDTO member);
     public int UpdateSafeAlarmSet(AuthServerDTO member);
     public int insertPushHistory(AuthServerDTO member);
     public int updatePushToken(AuthServerDTO member);
@@ -58,7 +62,6 @@ public interface MemberMapper {
     public int inviteHouseMember(AuthServerDTO member);
     public int acceptInvite(AuthServerDTO member);
     public int insertNewHouseMember(AuthServerDTO members);
-    public int delHouseMember(String userId);
     public int changeHouseholdStatus(AuthServerDTO member);
     public int updatePushCodeStatus(AuthServerDTO params);
     public int insertInitPushCode(AuthServerDTO member); // Device 등록 시 사용
