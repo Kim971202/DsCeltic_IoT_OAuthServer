@@ -362,11 +362,6 @@
             push.DEVC_ID IN (${deviceIds})
     </select>
 
-    <delete id="delHouseMember" parameterType="com.oauth.dto.AuthServerDTO" >
-        DELETE FROM TBR_OPR_USER_DEVICE
-        WHERE USER_ID = #{userId}
-    </delete>
-
     <select id="getNextHouseholderUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             DEVC_ID as deviceId,
@@ -678,15 +673,6 @@
             USER_ID = #{responseUserId}
     </update>
 
-    <update id="updateAccountTable" parameterType="com.oauth.dto.AuthServerDTO" >
-        UPDATE
-            TBR_OPR_ACCOUNT
-        SET
-            GROUP_KEY = #{requestUserId}
-        WHERE
-            USER_ID = #{responseUserId}
-    </update>
-
     <update id="updateUserTable" parameterType="String" >
         UPDATE
             TBR_OPR_USER
@@ -695,6 +681,38 @@
         WHERE
             USER_ID = #{responseUserId}
     </update>
+
+    <update id="updateHouseholdToMember" parameterType="com.oauth.dto.AuthServerDTO" >
+        UPDATE
+            TBD_IOT_GRP_INFO
+        SET
+            GRP_NM = #{responseUserId},
+            HOUSE_HOLDER = 'N'
+        WHERE
+            GRP_ID = #{responseUserId}
+    </update>
+
+    <insert id="insertHouseholder" parameterType="com.oauth.dto.AuthServerDTO" >
+        INSERT INTO
+            TBD_IOT_GRP_INFO
+        (
+            GRP_ID,
+            USER_ID,
+            GRP_NM,
+            HOUSE_HOLDER,
+            USER_NICK,
+            REG_DATM
+        )
+        VALUES
+        (
+            #{userId},
+            #{userId},
+            #{userId},
+            'Y',
+            #{userNickname},
+            NOW()
+        )
+    </insert>
 
     <delete id="deleteDuplicateDeviceIdFromUserDevice" parameterType="com.oauth.dto.AuthServerDTO" >
         DELETE
@@ -740,34 +758,69 @@
 
     <select id="getFailyMemberByUserId" parameterType="String" resultMap="member">
         SELECT
-            a.USER_ID AS userId,
-            a.GROUP_KEY AS groupId,
-            b.HP AS hp,
-            b.USER_NICK AS userNickname,
-            b.HOUSE_HOLDER AS householder
+            USER_ID AS userId,
+            USER_NICK AS userNickname,
+            HOUSE_HOLDER AS householder
         FROM
-            TBR_OPR_ACCOUNT a
-        INNER JOIN
-            TBR_OPR_USER b
-        ON
-            a.USER_ID = b.USER_ID
+            TBD_IOT_GRP_INFO
         WHERE
-            GROUP_KEY = #{requestUserId}
+            GRP_NM = #{userId}
     </select>
 
     <select id="getHouseholdByUserId" parameterType="String" resultMap="member">
         SELECT
-            a.USER_ID AS userId,
-            a.GROUP_KEY AS groupId,
-            b.HOUSE_HOLDER AS householder
+            USER_ID AS userId,
+            USER_NICK AS userNickname,
+            HOUSE_HOLDER AS householder
         FROM
-            TBR_OPR_ACCOUNT a
-        INNER JOIN
-            TBR_OPR_USER b
-        ON
-            a.USER_ID = b.USER_ID
+            TBD_IOT_GRP_INFO
         WHERE
-            a.USER_ID = #{userId}
+            GRP_ID = #{userId}
+
     </select>
+
+    <select id="getGroupMemberByUserId" parameterType="String" resultMap="member">
+        SELECT
+            GRP_ID AS groupId,
+            USER_ID AS userId,
+            GRP_NM AS groupName,
+            HOUSE_HOLDER AS householder
+        FROM
+            TBD_IOT_GRP_INFO
+        WHERE
+            GRP_ID = #{userId}
+    </select>
+
+    <update id="delHouseholdMember" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBD_IOT_GRP_INFO
+        SET
+            GRP_NM = #{userId},
+            HOUSE_HOLDER = 'N'
+        WHERE
+            GRP_ID = #{userId}
+    </update>
+
+    <select id="getNextHouseholder" parameterType="String" resultMap="member">
+        SELECT
+            GRP_ID AS groupId,
+            USER_ID AS userId,
+            GRP_NM AS groupName,
+            HOUSE_HOLDER AS householder
+        FROM
+        TBD_IOT_GRP_INFO
+        WHERE
+            GRP_NM = #{userId} AND USER_ID != #{userId}
+        LIMIT 1
+    </select>
+
+    <update id="updateUserDeviceHousehold" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_USER_DEVICE
+        SET
+            HOUSE_HOLDER = 'Y'
+        WHERE
+            USER_ID = #{userId}
+    </update>
 
 </mapper>
