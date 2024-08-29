@@ -686,7 +686,7 @@
         UPDATE
             TBD_IOT_GRP_INFO
         SET
-            GRP_NM = #{responseUserId},
+            GRP_NM = #{requestUserId},
             HOUSE_HOLDER = 'N'
         WHERE
             GRP_ID = #{responseUserId}
@@ -772,7 +772,7 @@
             USER_ID AS userId,
             USER_NICK AS userNickname,
             HOUSE_HOLDER AS householder,
-            GRP_ID AS groupId
+            GRP_NM AS groupId
         FROM
             TBD_IOT_GRP_INFO
         WHERE
