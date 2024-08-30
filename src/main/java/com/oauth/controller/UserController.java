@@ -389,10 +389,8 @@ public class UserController {
         log.info("[홈 IoT 컨트롤러 인증]");
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceIdList()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKeyList()) ||
-                Validator.isNullOrEmpty(params.getDeviceTypeList()) ||
-                Validator.isNullOrEmpty(params.getModelCodeList())){
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey())){
             throw new CustomException("404", "홈 IoT 컨트롤러 인증 값 오류");
         }
 
