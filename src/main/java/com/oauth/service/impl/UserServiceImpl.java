@@ -1151,7 +1151,7 @@ public class UserServiceImpl implements UserService {
         String stringObject;
         try{
 
-            if(deviceMapper.checkDeviceStatus(params) == null) {
+            if(deviceMapper.checkDeviceStatus(params).getDeviceId() == null) {
                 msg = "홈 IoT 컨트롤러 인증 실패";
                 stringObject = "N";
                 log.info("msg: " + msg);

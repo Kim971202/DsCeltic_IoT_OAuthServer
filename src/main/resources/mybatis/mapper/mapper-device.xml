@@ -577,7 +577,7 @@
 
     <select id="checkDeviceStatus" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
         SELECT
-            *
+            DEVC_ID AS deviceId
         FROM
             TBR_OPR_DEVICE_STATUS
         WHERE
