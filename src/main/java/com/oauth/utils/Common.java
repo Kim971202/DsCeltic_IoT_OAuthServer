@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -348,9 +349,15 @@ public class Common {
     }
 
     public String stringToHex(String input){
+//        StringBuilder stringBuilder = new StringBuilder();
+//        for(char character : input.toCharArray()){
+//            stringBuilder.append(Integer.toHexString((int) character));
+//        }
+//        return  stringBuilder.toString();
         StringBuilder stringBuilder = new StringBuilder();
-        for(char character : input.toCharArray()){
-            stringBuilder.append(Integer.toHexString((int) character));
+        byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
+        for (byte b : bytes) {
+            stringBuilder.append(String.format("%02x", b));
         }
         return  stringBuilder.toString();
     }
