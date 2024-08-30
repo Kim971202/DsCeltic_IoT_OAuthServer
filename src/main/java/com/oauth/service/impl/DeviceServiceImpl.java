@@ -176,8 +176,9 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
-
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
@@ -187,7 +188,7 @@ public class DeviceServiceImpl implements DeviceService {
                 conMap.put("powr", params.getPowerStatus());
                 conMap.put("isEnd", "false");
                 conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("pushYn", memberMapper.getPushYnStatusByUserIds(userIds).get(i).getFPushYn());
+                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
                 log.info("doPowerOnOff jsonString: " + jsonString);
@@ -544,14 +545,14 @@ public class DeviceServiceImpl implements DeviceService {
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
-
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                 conMap.put("targetToken", userIds.get(i).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "Mode Change");
+                conMap.put("title", "opMd");
                 conMap.put("id", "Mode Change ID");
                 conMap.put("isEnd", "false");
 
@@ -734,6 +735,7 @@ public class DeviceServiceImpl implements DeviceService {
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
@@ -741,7 +743,7 @@ public class DeviceServiceImpl implements DeviceService {
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                 conMap.put("targetToken", userIds.get(i).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "TemperatureSet");
+                conMap.put("title", "htTp");
                 conMap.put("id", "TemperatureSet ID");
                 conMap.put("isEnd", "false");
 
@@ -880,12 +882,13 @@ public class DeviceServiceImpl implements DeviceService {
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                 conMap.put("targetToken", userIds.get(i).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "BoiledWaterTempertureSet");
+                conMap.put("title", "wtTp");
                 conMap.put("id", "BoiledWaterTempertureSet ID");
                 conMap.put("isEnd", "false");
 
@@ -948,7 +951,7 @@ public class DeviceServiceImpl implements DeviceService {
         MobiusResponse response;
         String serialNumber;
         AuthServerDTO pushYn;
-
+        AuthServerDTO userNickname;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
@@ -1021,12 +1024,28 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "WaterTempertureSet");
-            conMap.put("id", "WaterTempertureSet ID");
-            conMap.put("isEnd", "false");
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+            userNickname = memberMapper.getUserNickname(userId);
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+
+            for(int i = 0; i < userIds.size(); ++i){
+                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("userNickname", userNickname.getUserNickname());
+                conMap.put("title", "htTp");
+                conMap.put("id", "WaterTempertureSet ID");
+                conMap.put("isEnd", "false");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+                log.info("jsonString: " + jsonString);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                    msg = "PUSH 메세지 전송 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+            }
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             redisCommand.deleteValues(waterTempertureSet.getUuId());
@@ -1161,6 +1180,7 @@ public class DeviceServiceImpl implements DeviceService {
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
@@ -1310,6 +1330,7 @@ public class DeviceServiceImpl implements DeviceService {
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
