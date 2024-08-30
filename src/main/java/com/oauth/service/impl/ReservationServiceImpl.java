@@ -2,7 +2,6 @@ package com.oauth.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.*;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+
 
 @Slf4j
 @Service
@@ -59,8 +59,11 @@ public class ReservationServiceImpl implements ReservationService{
         MobiusResponse response;
         String responseMessage;
         AuthServerDTO device;
+        AuthServerDTO userNickname;
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<String, Object>();
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
@@ -132,6 +135,30 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+            userNickname = memberMapper.getUserNickname(userId);
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+
+            for(int i = 0; i < userIds.size(); ++i){
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("userNickname", userNickname.getUserNickname());
+                conMap.put("title", "24h");
+                conMap.put("id", "Mode Change ID");
+                conMap.put("isEnd", "false");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+                log.info("jsonString: " + jsonString);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                    msg = "PUSH 메세지 전송 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+            }
+
             deviceInfo.setH24(JSON.toJson(map));
             deviceInfo.setDeviceId(deviceId);
             log.info("setH24: " + JSON.toJson(map));
@@ -174,6 +201,9 @@ public class ReservationServiceImpl implements ReservationService{
         String redisValue;
         MobiusResponse response;
         AuthServerDTO device;
+        AuthServerDTO userNickname;
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         ConcurrentHashMap<String, String> dbMap = new ConcurrentHashMap<String, String>();
         try {
@@ -236,6 +266,30 @@ public class ReservationServiceImpl implements ReservationService{
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+            userNickname = memberMapper.getUserNickname(userId);
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+
+            for(int i = 0; i < userIds.size(); ++i){
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("userNickname", userNickname.getUserNickname());
+                conMap.put("title", "12");
+                conMap.put("id", "Mode Change ID");
+                conMap.put("isEnd", "false");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+                log.info("jsonString: " + jsonString);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                    msg = "PUSH 메세지 전송 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+            }
+
             params.setCodeType("1");
             params.setCommandId("Set12");
             params.setControlCode("12h");
@@ -269,7 +323,6 @@ public class ReservationServiceImpl implements ReservationService{
         AwakeAlarmSet awakeAlarmSet = new AwakeAlarmSet();
         List<HashMap<String, Object>> awakeList = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map = new HashMap<>();
-
         String redisValue;
         MobiusResponse response;
         String responseMessage;
@@ -394,6 +447,8 @@ public class ReservationServiceImpl implements ReservationService{
         String redisValue;
         MobiusResponse response;
         AuthServerDTO device;
+        AuthServerDTO userNickname;
+        Map<String, String> conMap = new HashMap<>();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
 
@@ -466,6 +521,29 @@ public class ReservationServiceImpl implements ReservationService{
             deviceInfo.setWk7(JSON.toJson(weekList));
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+            userNickname = memberMapper.getUserNickname(userId);
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+            for(int i = 0; i < userIds.size(); ++i){
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("userNickname", userNickname.getUserNickname());
+                conMap.put("title", "7wk");
+                conMap.put("id", "Mode Change ID");
+                conMap.put("isEnd", "false");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+                log.info("jsonString: " + jsonString);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                    msg = "PUSH 메세지 전송 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+            }
 
             params.setCodeType("1");
             params.setCommandId("SetWeek");
