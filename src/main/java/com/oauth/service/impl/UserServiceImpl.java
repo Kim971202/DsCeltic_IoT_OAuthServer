@@ -1154,10 +1154,14 @@ public class UserServiceImpl implements UserService {
             if(deviceMapper.checkDeviceStatus(params) == null) {
                 msg = "홈 IoT 컨트롤러 인증 실패";
                 stringObject = "N";
+                log.info("msg: " + msg);
+                log.info("stringObject: " + stringObject);
             }
             else{
                 msg = "홈 IoT 컨트롤러 인증 성공";
                 stringObject = "Y";
+                log.info("msg: " + msg);
+                log.info("stringObject: " + stringObject);
             }
 
             if(stringObject.equals("N")) result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
