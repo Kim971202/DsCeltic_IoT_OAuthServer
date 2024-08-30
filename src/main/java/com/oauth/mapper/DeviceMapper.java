@@ -24,6 +24,7 @@ public interface DeviceMapper {
     public AuthServerDTO deviceTempAuthCheck(List<AuthServerDTO> device);
     public AuthServerDTO getDeviceInfoSearch(AuthServerDTO params);
     public AuthServerDTO getDeviceRegistStatus(String serialNumber);
+    public AuthServerDTO checkDeviceStatus(AuthServerDTO params);
     public DeviceStatusInfo.Device getSingleDeviceStauts(String deviceId);
     public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public int updateDeviceErrorStatus(String deviceId);

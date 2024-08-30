@@ -1148,54 +1148,20 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data result = new ApiResponse.Data();
         String msg;
-        AuthServerDTO pushYn;
-        String userId = params.getUserId();
-        List<AuthServerDTO> deviceIdAndAuthKey;
-        List<AuthServerDTO> deviceAuthCheck;
-        Map<String, String> conMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
-
+        String stringObject;
         try{
-            deviceIdAndAuthKey = deviceMapper.getDeviceAuthCheckValuesByUserId(userId);
-            if(deviceIdAndAuthKey.isEmpty()){
-                msg = "홈 IoT 컨트롤러 인증 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }else {
-                deviceAuthCheck = deviceMapper.deviceAuthCheck(deviceIdAndAuthKey);
-                if(deviceAuthCheck.isEmpty()) {
-                    msg = "홈 IoT 컨트롤러 인증 실패.";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
+
+            if(deviceMapper.checkDeviceStatus(params) == null) {
+                msg = "홈 IoT 컨트롤러 인증 실패";
+                stringObject = "N";
+            }
+            else{
+                msg = "홈 IoT 컨트롤러 인증 성공";
+                stringObject = "Y";
             }
 
-            conMap.put("body", "Device Auth Check OK");
-            msg = "홈 IoT 컨트롤러 인증 성공";
-
-            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Device Auth Check");
-            conMap.put("id", "Device Auth Check ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(stringObject.equals("N")) result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+            else result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);

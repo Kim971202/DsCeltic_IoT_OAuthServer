@@ -575,4 +575,15 @@
         WHERE DEVC_ID = #{deviceId}
     </update>
 
+    <select id="checkDeviceStatus" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        SELECT
+            *
+        FROM
+            TBR_OPR_DEVICE_STATUS
+        WHERE
+            DEVC_ID = #{deviceId}
+        AND
+            R_KEY = #{controlAuthKey}
+    </select>
+
 </mapper>

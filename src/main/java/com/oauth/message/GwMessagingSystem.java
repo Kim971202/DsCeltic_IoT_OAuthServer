@@ -27,7 +27,7 @@ public class GwMessagingSystem implements MessagingSystem {
         BlockingQueue<String> messageQueue = messageQueues.computeIfAbsent(destination, k -> new LinkedBlockingQueue<>());
         log.info("destination: " + destination);
         // 메시지 큐에 메시지 추가
-        messageQueue.offer(message);
+        if(!messageQueue.offer(message)) log.info("!messageQueue.offer(message) IS FALSE");
     }
 
     @Override
