@@ -881,23 +881,23 @@ public class DeviceServiceImpl implements DeviceService {
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
 
-            for(int i = 0; i < userIds.size(); ++i){
-                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("targetToken", userIds.get(i).getPushToken());
-                conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "BoiledWaterTempertureSet");
-                conMap.put("id", "BoiledWaterTempertureSet ID");
-                conMap.put("isEnd", "false");
-
-                String jsonString = objectMapper.writeValueAsString(conMap);
-                log.info("jsonString: " + jsonString);
-
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                    msg = "PUSH 메세지 전송 오류";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
-            }
+//            for(int i = 0; i < userIds.size(); ++i){
+//                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+//                conMap.put("targetToken", userIds.get(i).getPushToken());
+//                conMap.put("userNickname", userNickname.getUserNickname());
+//                conMap.put("title", "BoiledWaterTempertureSet");
+//                conMap.put("id", "BoiledWaterTempertureSet ID");
+//                conMap.put("isEnd", "false");
+//
+//                String jsonString = objectMapper.writeValueAsString(conMap);
+//                log.info("jsonString: " + jsonString);
+//
+//                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+//                    msg = "PUSH 메세지 전송 오류";
+//                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+//                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+//                }
+//            }
 
             redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
 
