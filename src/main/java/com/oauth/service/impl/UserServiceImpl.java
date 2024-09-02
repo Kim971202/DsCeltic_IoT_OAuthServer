@@ -689,7 +689,8 @@ public class UserServiceImpl implements UserService {
                         memberMapper.updateRegistTable(params);
                         memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList);
                         memberMapper.updateUserDeviceTable(params);
-
+                        memberMapper.deleteDuplicateDeviceIdFromDeviceGrpInfo(deviceIdList);
+                        memberMapper.updateGrpInfoTable(params);
                     }
                 }
 
