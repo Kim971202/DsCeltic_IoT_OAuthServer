@@ -73,7 +73,6 @@ public class UserServiceImpl implements UserService {
         String hp;
 
         AuthServerDTO householdStatus;
-
         try {
 
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
@@ -174,6 +173,7 @@ public class UserServiceImpl implements UserService {
             AuthServerDTO params = new AuthServerDTO();
 
             params.setAccessToken(token);
+            params.setPushToken(pushToken);
             params.setUserId(userId);
 
             if(memberMapper.updatePushToken(params) <= 0) {
