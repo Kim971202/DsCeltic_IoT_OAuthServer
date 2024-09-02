@@ -639,6 +639,7 @@ public class UserServiceImpl implements UserService {
         AuthServerDTO pushYn;
         AuthServerDTO userHp;
         AuthServerDTO userNickname;
+        AuthServerDTO pushToken;
         List<AuthServerDTO> deviceIdList;
         List<AuthServerDTO> familyMemberList;
         String requestUserId = params.getRequestUserId();
@@ -740,13 +741,15 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            userNickname = memberMapper.getUserNickname(responseUserId);
+            pushToken = memberMapper.getPushTokenByUserId(requestUserId);
+
+            userNickname = memberMapper.getUserNickname(requestUserId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             pushYn = memberMapper.getPushYnStatus(params);
 
             conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
+            conMap.put("targetToken", pushToken.getPushToken());
             conMap.put("userNickname", userNickname.getUserNickname());
             conMap.put("title", "Accept Invite");
             conMap.put("id", "Accept Invite ID");
