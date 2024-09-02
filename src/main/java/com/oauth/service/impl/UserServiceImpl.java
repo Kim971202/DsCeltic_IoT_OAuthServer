@@ -176,6 +176,12 @@ public class UserServiceImpl implements UserService {
             params.setAccessToken(token);
             params.setUserId(userId);
 
+            if(memberMapper.updatePushToken(params) <= 0) {
+                msg = "구글 FCM TOKEN 갱신 실패.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
             if(memberMapper.updateLoginDatetime(params) <= 0) {
                 msg = "LOGIN_INFO_UPDATE_ERROR";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -565,9 +571,9 @@ public class UserServiceImpl implements UserService {
         String stringObject = "N";
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
-        MobiusResponse mobiusCode;
-        AuthServerDTO pushYn;
         AuthServerDTO userNickname;
+        AuthServerDTO pushToken;
+        AuthServerDTO pushYn;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -579,14 +585,8 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             } else stringObject = "Y";
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Add User OK");
-                msg = "사용자 추가 - 초대 성공";
-            }
-            else {
-                conMap.put("body", "Add User FAIL");
-                msg = "사용자 추가 - 초대 실패";
-            }
+            if(stringObject.equals("Y")) msg = "사용자 추가 - 초대 성공";
+            else msg = "사용자 추가 - 초대 실패";
 
             params.setUserId(params.getRequestUserId());
             if(memberMapper.updatePushToken(params) <= 0) {
@@ -596,29 +596,31 @@ public class UserServiceImpl implements UserService {
             }
 
             userNickname = memberMapper.getUserNickname(params.getRequestUserId());
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
+            pushToken = memberMapper.getPushTokenByUserId(params.getResponseUserId());
+
+            params.setUserId(params.getResponseUserId());
             pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("userNickname", userNickname.getUserNickname());
+
+            conMap.put("targetToken", pushToken.getPushToken());
             conMap.put("title", "Add User");
-            conMap.put("id", "Add User ID");
             conMap.put("isEnd", "false");
+            conMap.put("userNickname", userNickname.getUserNickname());
+            conMap.put("pushYn", pushYn.getFPushYn());
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
+            log.info("Add User jsonString: " + jsonString);
 
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                msg = "PUSH 메세지 전송 오류";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
-
-            mobiusCode = mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
-            if(!mobiusCode.getResponseCode().equals("201")){
-                msg = "PUSH 메세지 전송 오류";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
@@ -739,6 +741,8 @@ public class UserServiceImpl implements UserService {
             }
 
             userNickname = memberMapper.getUserNickname(responseUserId);
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+
             pushYn = memberMapper.getPushYnStatus(params);
 
             conMap.put("pushYn", pushYn.getFPushYn());
@@ -846,9 +850,6 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String delUserId = params.getDelUserId();
-        AuthServerDTO pushYn;
-        Map<String, String> conMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
 
         try {
             if(memberMapper.delHouseholdMember(params) <= 0){
@@ -874,24 +875,6 @@ public class UserServiceImpl implements UserService {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Force Delete Member");
-            conMap.put("body", "Force Delete Member OK");
-            conMap.put("id", "Force Delete Member ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
-
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -1031,12 +1014,10 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
+
         String userId = params.getUserId();
-        AuthServerDTO pushYn;
         AuthServerDTO nextHouseholder;
         AuthServerDTO userHp;
-        Map<String, String> conMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
 
         try {
 
@@ -1065,29 +1046,12 @@ public class UserServiceImpl implements UserService {
             // TODO: 4. 세대주 권한이양 받은 세대원 Household 항목 Y로 UPDATE
             memberMapper.updateUserDeviceHousehold(nextHouseholder.getUserId());
 
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Delete householder");
-            conMap.put("id", "Delete householder ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
-
-            conMap.put("body", "Delete householder OK");
             msg = "사용자(세대주) 탈퇴  실패";
 
             if(memberMapper.updatePushToken(params) <= 0) {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -1304,16 +1268,6 @@ public class UserServiceImpl implements UserService {
 
         try{
 
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "User Device Delete");
-            conMap.put("id", "User Device Delete ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
-
             /* *
              * TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
              * TBR_OPR_USER_DEVICE - 사용자 단말 정보
@@ -1339,12 +1293,6 @@ public class UserServiceImpl implements UserService {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
@@ -1429,11 +1377,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String stringObject = "N";
         String msg;
-        AuthServerDTO pushYn;
-        String userId = params.getUserId();
-        String deviceId = params.getDeviceId();
-        Map<String, String> conMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
+
         try {
 
             // deviceNickname Input 대신 newDeviceNickname을 받아서 Setter 사용
@@ -1450,34 +1394,13 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }else stringObject = "Y";
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Device Nickname Change OK");
-                msg = "기기 별칭 수정 성공";
-            } else {
-                conMap.put("body", "Device Nickname Change FAIL");
-                msg = "기기 별칭 수정 실패";
-            }
+            if(stringObject.equals("Y")) msg = "기기 별칭 수정 성공";
+            else msg = "기기 별칭 수정 실패";
 
             if(memberMapper.updatePushToken(params) <= 0) {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap.put("pushYn", pushYn.getFPushYn());
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Device Nickname Change");
-            conMap.put("id", "Device Nickname Change ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("jsonString: " + jsonString);
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
@@ -1658,10 +1581,6 @@ public class UserServiceImpl implements UserService {
         String stringObject = "N";
         String msg;
 
-        String userId = params.getUserId();
-        String deviceId = params.getDeviceId();
-        Map<String, String> conMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             if(memberMapper.updateDeviceLocationNicknameDeviceDetail(params) <= 0){
@@ -1675,36 +1594,15 @@ public class UserServiceImpl implements UserService {
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             } else stringObject = "Y";
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Update Device Location OK");
-                msg = "기기 설치 위치 별칭 수정 성공";
-            }
-            else {
-                conMap.put("body", "Update Device Location FAIL");
-                msg = "기기 설치 위치 별칭 수정 실패";
-            }
+            if(stringObject.equals("Y")) msg = "기기 설치 위치 별칭 수정 성공";
+            else msg = "기기 설치 위치 별칭 수정 실패";
 
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
             if(memberMapper.updatePushToken(params) <= 0) {
                 msg = "구글 FCM TOKEN 갱신 실패.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-
-            conMap.put("targetToken", params.getPushToken());
-            conMap.put("title", "Device Auth Check");
-            conMap.put("id", "Device Auth Check ID");
-            conMap.put("isEnd", "false");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
             return new ResponseEntity<>(result, HttpStatus.OK);

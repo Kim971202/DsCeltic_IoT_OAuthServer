@@ -543,7 +543,7 @@
             INSERT_DATETIME BETWEEN #{startDate} AND #{endDate}
     </select>
 
-    <select id="getPushTokenByUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+    <select id="getPushTokenByUserId" parameterType="String" resultMap="member">
         SELECT
             PUSH_TOKEN AS pushToken
         FROM
