@@ -632,14 +632,13 @@
 
     <select id="getUserIdsByDeviceId" parameterType="String" resultMap="member">
         SELECT
-            a.USER_ID AS userId,
-            b.PUSH_TOKEN AS pushToken
+            a.USER_ID AS userId
         FROM
-            TBR_OPR_USER_DEVICE a
+            TBD_IOT_GRP_INFO a
         INNER JOIN
-            TBR_OPR_ACCOUNT b
+            TBR_IOT_DEVICE_GRP_INFO b
         WHERE
-            a.USER_ID = b.USER_ID AND DEVC_ID = #{deviceId}
+            a.GRP_NM = b.GRP_ID AND b.DEVC_ID = #{deviceId}
     </select>
 
     <select id="getPushYnStatusByUserIds" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
