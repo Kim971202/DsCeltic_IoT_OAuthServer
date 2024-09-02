@@ -143,6 +143,9 @@ public class MobiusController {
 
                 String fPushYn = memberMapper.getPushYnStatusByUserIds(userIds).get(i).getFPushYn();
                 String pushToken = memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken();
+
+                System.out.println("fPushYn: " + fPushYn);
+                System.out.println("pushToken: " + pushToken);
                 // 변경실시간상태
                 // FCM Token 값 쿼리 필요
                 pushService.sendPushMessage(jsonBody, pushToken, fPushYn, userIds.get(i).getUserId());
