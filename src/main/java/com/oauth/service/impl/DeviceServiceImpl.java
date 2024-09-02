@@ -310,6 +310,12 @@ public class DeviceServiceImpl implements DeviceService {
                     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 }
 
+                if(deviceMapper.insertDeviceGrpInfo(params) <= 0){
+                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+
                 // Push 설정 관련 기본 DB 추가
                 if(memberMapper.insertUserDevicePush(params) <= 0){
                     msg = "사용자 PUSH 정보 등록 실패.";

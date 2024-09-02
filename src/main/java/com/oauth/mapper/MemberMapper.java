@@ -43,11 +43,13 @@ public interface MemberMapper {
     public AuthServerDTO getUserNickname(String userId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
+    public int updateGrpInfoTable(AuthServerDTO member);
     public int updateUserDeviceHousehold(String userId);
     public int delHouseholdMember(AuthServerDTO member);
     public int updateHouseholdToMember(AuthServerDTO member);
     public int insertHouseholder(AuthServerDTO member);
     public int deleteDuplicateDeviceIdFromUserDevice(List<AuthServerDTO> member);
+    public int deleteDuplicateDeviceIdFromDeviceGrpInfo(List<AuthServerDTO> member);
     public int deleteDuplicateDeviceIdFromRegist(List<AuthServerDTO> member);
     public int updateRegistTable(AuthServerDTO member);
     public int updateUserTable(String responseUserId);
