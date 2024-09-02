@@ -860,4 +860,17 @@
             GRP_ID = #{userId}
     </select>
 
+    <select id="getPushYnStatusByDeviceIdAndUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            PUSH_YN_01 AS fPushYn,
+            PUSH_YN_02 AS sPushYn,
+            PUSH_YN_03 AS tPushYn
+        FROM
+            TBR_OPR_USER_DEVICE_PUSH
+        WHERE
+            DEVC_ID = #{deviceId}
+        AND
+            USER_ID = #{userId}
+    </select>
+
 </mapper>

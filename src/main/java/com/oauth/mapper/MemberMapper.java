@@ -42,6 +42,7 @@ public interface MemberMapper {
     public AuthServerDTO getNextHouseholder(String userId);
     public AuthServerDTO getUserNickname(String userId);
     public AuthServerDTO getPushTokenByUserId(String userId);
+    public AuthServerDTO getPushYnStatusByDeviceIdAndUserId(AuthServerDTO info);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
     public int updateGrpInfoTable(AuthServerDTO member);

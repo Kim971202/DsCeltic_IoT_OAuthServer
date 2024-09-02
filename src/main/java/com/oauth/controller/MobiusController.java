@@ -137,18 +137,23 @@ public class MobiusController {
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
-            
-            for (int i = 0; i < userIds.size(); ++i) {
-                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
 
-                String fPushYn = memberMapper.getPushYnStatusByUserIds(userIds).get(i).getFPushYn();
-                String pushToken = memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken();
+            AuthServerDTO info = new AuthServerDTO();
+
+            for (AuthServerDTO id : userIds) {
+                log.info("쿼리한 UserId: " + id.getUserId());
+
+                info.setUserId(id.getUserId());
+                info.setDeviceId(common.readCon(jsonBody, "deviceId"));
+
+                String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
+                String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
 
                 System.out.println("fPushYn: " + fPushYn);
                 System.out.println("pushToken: " + pushToken);
                 // 변경실시간상태
                 // FCM Token 값 쿼리 필요
-                pushService.sendPushMessage(jsonBody, pushToken, fPushYn, userIds.get(i).getUserId());
+                pushService.sendPushMessage(jsonBody, pushToken, fPushYn, id.getUserId());
 
                 AuthServerDTO params = new AuthServerDTO();
                 Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
@@ -168,7 +173,7 @@ public class MobiusController {
                 params.setCodeType("1");
                 params.setCommandFlow("1");
                 params.setDeviceId(deviceInfo.getDeviceId());
-                params.setUserId(userIds.get(i).getUserId());
+                params.setUserId(id.getUserId());
                 int insertCommandHistoryResult = memberMapper.insertCommandHistory(params);
                 log.info("insertCommandHistoryResult: " + insertCommandHistoryResult);
             }
