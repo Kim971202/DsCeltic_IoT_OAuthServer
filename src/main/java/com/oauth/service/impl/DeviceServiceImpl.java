@@ -183,7 +183,7 @@ public class DeviceServiceImpl implements DeviceService {
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
 
-                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("title", "powr");
                 conMap.put("powr", params.getPowerStatus());
                 conMap.put("isEnd", "false");
@@ -556,7 +556,7 @@ public class DeviceServiceImpl implements DeviceService {
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "opMd");
                 conMap.put("id", "Mode Change ID");
@@ -747,7 +747,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
 
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "htTp");
                 conMap.put("id", "TemperatureSet ID");
@@ -892,7 +892,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             for(int i = 0; i < userIds.size(); ++i){
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "wtTp");
                 conMap.put("id", "BoiledWaterTempertureSet ID");
@@ -1037,7 +1037,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             for(int i = 0; i < userIds.size(); ++i){
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "htTp");
                 conMap.put("id", "WaterTempertureSet ID");
@@ -1192,7 +1192,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
 
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "FastHotWaterSet");
                 conMap.put("id", "FastHotWaterSet ID");
@@ -1342,7 +1342,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
 
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "LockSet");
                 conMap.put("id", "LockSet ID");

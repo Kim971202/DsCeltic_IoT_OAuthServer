@@ -143,7 +143,7 @@ public class ReservationServiceImpl implements ReservationService{
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "24h");
                 conMap.put("id", "Mode Change ID");
@@ -274,7 +274,7 @@ public class ReservationServiceImpl implements ReservationService{
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "12");
                 conMap.put("id", "Mode Change ID");
@@ -529,7 +529,7 @@ public class ReservationServiceImpl implements ReservationService{
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("targetToken", userIds.get(i).getPushToken());
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "7wk");
                 conMap.put("id", "Mode Change ID");
