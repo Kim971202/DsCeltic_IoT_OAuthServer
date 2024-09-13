@@ -408,6 +408,9 @@ public class Common {
     }
 
     public void setCommandParams(Map<String, Object> nonNullField, AuthServerDTO params) {
+
+        System.out.println("Map<String, Object> nonNullField: " + nonNullField);
+
         // 필드 이름을 키로, 그에 따른 Command 설정을 값으로 갖는 Map 생성
         Map<String, String[]> commandMap = new HashMap<>();
         commandMap.put("powr", new String[]{"powerOnOff", "powr", "전원 ON/OFF"});
@@ -422,6 +425,9 @@ public class Common {
         commandMap.put("mwk", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
         commandMap.put("reSt", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
         commandMap.put("mfAr", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
+
+        System.out.println("commandMap");
+        System.out.println(commandMap);
 
         // nonNullField에서 해당 필드가 존재하는지 확인하고, 해당 Command 설정 적용
         for (Map.Entry<String, String[]> entry : commandMap.entrySet()) {
