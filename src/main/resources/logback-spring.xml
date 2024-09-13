@@ -25,4 +25,7 @@
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
+    <!-- 특정 패키지 로그 레벨 설정 -->
+    <logger name="org.springframework" level="warn" />
+    <logger name="com.zaxxer.hikari" level="warn" />
 </configuration>
