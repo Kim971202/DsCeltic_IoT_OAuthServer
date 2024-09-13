@@ -159,6 +159,7 @@ public class MobiusController {
                 Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
                 System.out.println("Non-null fields: " + nonNullFields);
 
+                System.out.println("common.setCommandParams(nonNullFields, params);");
                 common.setCommandParams(nonNullFields, params);
 
                 // 결과 출력
