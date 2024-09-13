@@ -62,8 +62,8 @@ app:
 logging:
   level:
     com.zaxxer.hikari.HikariConfig: INFO
-    com.zaxxer.hikari: INFO
-    org.mybatis: TRACE
+    com.zaxxer.hikari: TRACE
+    org.mybatis: DEBUG
     org.apache.ibatis: TRACE
   file:
     path: /home/ubuntu/DsCeltic_IoT_OAuthServer/logs
