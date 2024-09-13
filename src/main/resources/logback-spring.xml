@@ -21,7 +21,7 @@
     </appender>
 
     <!-- Root Logger -->
-    <root level="info">
+    <root level="warn">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
