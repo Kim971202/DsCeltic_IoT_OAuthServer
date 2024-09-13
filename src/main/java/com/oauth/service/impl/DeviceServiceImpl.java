@@ -169,6 +169,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             params.setPushTitle("기기제어");
             params.setPushContent("전원 ON/OFF");
+            params.setDeviceId(deviceId);
             if(memberMapper.insertPushHistory(params) <= 0) {
                 msg = "PUSH HISTORY INSERT ERROR";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -362,12 +363,6 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setPushContent("기기정보 수정");
             else if(registYn.equals("Y"))
                 params.setPushContent("신규기기 등록");
-
-            if(memberMapper.insertPushHistory(params) <= 0) {
-                msg = "PUSH HISTORY INSERT ERROR";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CustomException e){
@@ -636,6 +631,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             params.setPushTitle("기기제어");
             params.setPushContent("모드변경");
+            params.setDeviceId(deviceId);
             if(memberMapper.insertPushHistory(params) <= 0) {
                 msg = "PUSH HISTORY INSERT ERROR";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -783,6 +779,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             params.setPushTitle("기기제어");
             params.setPushContent("실내온도 설정");
+            params.setDeviceId(deviceId);
             if(memberMapper.insertPushHistory(params) <= 0) {
                 msg = "PUSH HISTORY INSERT ERROR";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -929,6 +926,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             params.setPushTitle("기기제어");
             params.setPushContent("난방수온도 설정");
+            params.setDeviceId(deviceId);
             if(memberMapper.insertPushHistory(params) <= 0) {
                 msg = "PUSH HISTORY INSERT ERROR";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -1075,6 +1073,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             params.setPushTitle("기기제어");
             params.setPushContent("온수온도 설정");
+            params.setDeviceId(deviceId);
             if(memberMapper.insertPushHistory(params) <= 0) {
                 msg = "PUSH HISTORY INSERT ERROR";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -1228,6 +1227,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             params.setPushTitle("기기제어");
             params.setPushContent("빠른온수 설정");
+            params.setDeviceId(deviceId);
             if(memberMapper.insertPushHistory(params) <= 0) {
                 msg = "PUSH HISTORY INSERT ERROR";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);

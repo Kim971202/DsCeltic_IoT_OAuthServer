@@ -406,6 +406,7 @@ public class Common {
         }
         return nonNullFields;
     }
+
     public void setCommandParams(Map<String, Object> nonNullField, AuthServerDTO params) {
         // 필드 이름을 키로, 그에 따른 Command 설정을 값으로 갖는 Map 생성
         Map<String, String[]> commandMap = new HashMap<>();
@@ -415,7 +416,7 @@ public class Common {
         commandMap.put("wtTp", new String[]{"BoiledWaterTempertureSet", "wtTp", "난방수 온도 설정"});
         commandMap.put("hwTp", new String[]{"WaterTempertureSet", "hwTp", "온수 온도 설정"});
         commandMap.put("ftMd", new String[]{"FastHotWaterSet", "ftMd", "빠른 온수 설정"});
-        commandMap.put("24h", new String[]{"Set24", "24h", "24시간 예약"});
+        commandMap.put("h24", new String[]{"Set24", "24h", "24시간 예약"});
         commandMap.put("7wk", new String[]{"SetWeek", "7wk", "주간 예약"});
         commandMap.put("fwh", new String[]{"AwakeAlarmSet", "fwh", "빠른온수 예약"});
         commandMap.put("mwk", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});

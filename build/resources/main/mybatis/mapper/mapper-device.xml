@@ -5,6 +5,30 @@
     <resultMap id="device" type="com.oauth.dto.AuthServerDTO"> </resultMap>
     <resultMap id="dr910w" type="com.oauth.dto.gw.DeviceStatusInfo$Device"> </resultMap>
 
+    <select id="getDeviceInfoSearchList" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        SELECT
+            device.DEVC_MODL_CD AS modelCode,
+            device.ATTC_ID AS controlAuthKey,
+            device.DEVC_ID AS deviceId,
+            regist.DEVC_NICK AS deviceNickname,
+            regist.ADDR_NICK AS addrNickname,
+            regist.ZIP AS zipCode,
+            regist.OLD_ADDR AS oldAddr,
+            regist.NEW_ADDR AS newAddr,
+            regist.DTAIL_ADDR AS addrDetail,
+            regist.LAT AS latitude,
+            regist.LON AS longitude,
+            ROW_NUMBER() OVER () AS regSort
+        FROM
+            TBR_IOT_DEVICE AS device
+        INNER JOIN
+            TBT_OPR_DEVICE_REGIST AS regist
+        ON
+            device.DEVC_ID = regist.DEVC_ID
+        WHERE
+            regist.USER_ID = #{userId}
+    </select>
+
     <select id="getSingleSerialNumberBydeviceId" parameterType="String" resultMap="device">
         SELECT
             SERIAL_NO AS serialNumber
@@ -94,6 +118,20 @@
             )
     </insert>
 
+    <insert id="insertDeviceGrpInfo" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_IOT_DEVICE_GRP_INFO
+            (
+                DEVC_ID,
+                GRP_ID
+            )
+            VALUES
+            (
+                #{deviceId},
+                #{userId}
+            )
+    </insert>
+
     <insert id="insertDevice" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO TBR_IOT_DEVICE
             (
@@ -137,7 +175,8 @@
                 LAT,
                 LON,
                 DEVC_NICK,
-                REG_DATM
+                REG_DATM,
+                ADDR_NICK
             )
         VALUES
             (
@@ -152,7 +191,8 @@
                 #{latitude},
                 #{longitude},
                 #{deviceNickname},
-                now()
+                now(),
+                #{addrNickname}
             )
     </insert>
 
@@ -167,7 +207,8 @@
                 DTAIL_ADDR,
                 DEVC_STAT_JSON,
                 DEVC_NICK,
-                DEVC_REG_DATM
+                DEVC_REG_DATM,
+                ADDR_NICK
             )
         VALUES
             (
@@ -179,16 +220,29 @@
                 #{addrDetail},
                 'empty',
                 #{deviceNickname},
-                now()
+                now(),
+                #{addrNickname}
             )
     </insert>
+
+    <update id="changeDeviceNicknameTemp" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBT_OPR_DEVICE_REGIST
+        SET
+            DEVC_NICK = #{deviceNickname}
+        WHERE
+            DEVC_ID = #{deviceId}
+    </update>
 
     <update id="updateDeviceRegistLocation" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBT_OPR_DEVICE_REGIST
         SET
             LAT = #{latitude},
-            LON = #{longitude}
+            LON = #{longitude},
+            DEVC_NICK = #{deviceNickname},
+            ADDR_NICK = #{addrNickname},
+            DTAIL_ADDR = #{addrDetail}
         WHERE
             TEMP_DEVC_REG_KEY = #{tmpRegistKey}
         AND
@@ -201,7 +255,9 @@
         SET
             OLD_ADDR = #{oldAddr},
             NEW_ADDR = #{newAddr},
-            DTAIL_ADDR = #{addrDetail}
+            DTAIL_ADDR = #{addrDetail},
+            ADDR_NICK = #{addrNickname},
+            DEVC_NICK = #{deviceNickname}
         WHERE
             DEVC_ID = #{deviceId}
     </update>
@@ -209,10 +265,12 @@
     <select id="getControlAuthKeyByUserId" parameterType="String" resultMap="device">
         SELECT
             DEVC_CTRL_KEY AS controlAuthKey,
-            DEVC_ID AS deviceId
+            DEVC_ID AS deviceId,
+            USER_ID AS userId
         FROM
             TBR_OPR_USER_DEVICE
-        WHERE USER_ID = #{userId}
+        WHERE
+            USER_ID = #{userId}
     </select>
 
     <select id="getDeviceNicknameAndDeviceLocNickname" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
@@ -226,6 +284,11 @@
             DEVC_ID IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.deviceId}
+        </foreach>
+        AND
+            USER_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.userId}
         </foreach>
     </select>
 
@@ -247,49 +310,54 @@
         ON
             device.DEVC_ID = regist.DEVC_ID
         WHERE
-            device.DEVC_ID = #{deviceId};
+            device.DEVC_ID =  #{deviceId} AND regist.USER_ID = #{userId};
     </select>
 
     <insert id="insertDeviceStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
-        INSERT INTO
-            TBR_OPR_DEVICE_STATUS
-        (
-            DEVC_ID,
-            SERIAL_NO,
-            R_KEY,
-            POWR,
-            OPMD,
-            HTTP,
-            WTTP,
-            HWTP,
-            FTMD,
-            BCDT,
-            CHTP,
-            CWTP,
-            HWST,
-            RSCF,
-            SLCD,
-            MFDT
-        )
-            VALUES
-        (
-            #{deviceId},
-            #{serialNumber},
-            #{rKey},
-            #{powr},
-            #{opMd},
-            #{htTp},
-            #{wtTp},
-            #{hwTp},
-            #{ftMd},
-            #{bCdt},
-            #{chTp},
-            #{cwTp},
-            #{hwSt},
-            #{stringRsCf},
-            #{slCd},
-            #{mfDt}
-        )
+        INSERT INTO TBR_OPR_DEVICE_STATUS
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">DEVC_ID,</if>
+            <if test="serialNumber != null">SERIAL_NO,</if>
+            <if test="rKey != null">R_KEY,</if>
+            <if test="powr != null">POWR,</if>
+            <if test="opMd != null">OPMD,</if>
+            <if test="htTp != null">HTTP,</if>
+            <if test="wtTp != null">WTTP,</if>
+            <if test="hwTp != null">HWTP,</if>
+            <if test="ftMd != null">FTMD,</if>
+            <if test="bCdt != null">BCDT,</if>
+            <if test="chTp != null">CHTP,</if>
+            <if test="cwTp != null">CWTP,</if>
+            <if test="hwSt != null">HWST,</if>
+            <if test="slCd != null">SLCD,</if>
+            <if test="mfDt != null">MFDT,</if>
+            <if test="h12 != null">12H,</if>
+            <if test="h24 != null">24H,</if>
+            <if test="wk7 != null">7WK,</if>
+            <if test="fwh != null">FWH,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="serialNumber != null">#{serialNumber},</if>
+            <if test="rKey != null">#{rKey},</if>
+            <if test="powr != null">#{powr},</if>
+            <if test="opMd != null">#{opMd},</if>
+            <if test="htTp != null">#{htTp},</if>
+            <if test="wtTp != null">#{wtTp},</if>
+            <if test="hwTp != null">#{hwTp},</if>
+            <if test="ftMd != null">#{ftMd},</if>
+            <if test="bCdt != null">#{bCdt},</if>
+            <if test="chTp != null">#{chTp},</if>
+            <if test="cwTp != null">#{cwTp},</if>
+            <if test="hwSt != null">#{hwSt},</if>
+            <if test="slCd != null">#{slCd},</if>
+            <if test="mfDt != null">#{mfDt},</if>
+            <if test="h12 != null">#{h12},</if>
+            <if test="h24 != null">#{h24},</if>
+            <if test="wk7 != null">#{wk7},</if>
+            <if test="fwh != null">#{fwh},</if>
+        </trim>
     </insert>
 
     <update id="updateDeviceStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
@@ -308,11 +376,40 @@
                     CHTP = #{chTp},
                     CWTP = #{cwTp},
                     HWST = #{hwSt},
-                    RSCF = #{stringRsCf},
+                    7WK = #{wk7},
+                    12H = #{h12},
+                    24H = #{h24},
+                    <if test="fwh != null">FWH = #{fwh},</if>
                     SLCD = #{slCd},
                     MFDT = #{mfDt}
         WHERE
             DEVC_ID = #{deviceId}
+    </update>
+
+    <update id="updateDeviceStatusFromApplication" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE TBR_OPR_DEVICE_STATUS
+        <set>
+            <if test="serialNumber != null">SERIAL_NO = #{serialNumber},</if>
+            <if test="rKey != null">R_KEY = #{rKey},</if>
+            <if test="powr != null">POWR = #{powr},</if>
+            <if test="powr eq 'on'">DVST = '1',</if>
+            <if test="opMd != null">OPMD = #{opMd},</if>
+            <if test="htTp != null">HTTP = #{htTp},</if>
+            <if test="wtTp != null">WTTP = #{wtTp},</if>
+            <if test="hwTp != null">HWTP = #{hwTp},</if>
+            <if test="ftMd != null">FTMD = #{ftMd},</if>
+            <if test="bCdt != null">BCDT = #{bCdt},</if>
+            <if test="chTp != null">CHTP = #{chTp},</if>
+            <if test="cwTp != null">CWTP = #{cwTp},</if>
+            <if test="hwSt != null">HWST = #{hwSt},</if>
+            <if test="wk7 != null">7WK = #{wk7},</if>
+            <if test="h12 != null">12H = #{h12},</if>
+            <if test="h24 != null">24H = #{h24},</if>
+            <if test="fwh != null">FWH = #{fwh},</if>
+            <if test="slCd != null">SLCD = #{slCd},</if>
+            <if test="mfDt != null">MFDT = #{mfDt},</if>
+        </set>
+        WHERE DEVC_ID = #{deviceId}
     </update>
 
     <select id="getDeviceStautsByDeviceId" parameterType="String" resultMap="dr910w">
@@ -342,25 +439,58 @@
             #{controlAuthKey},
             now(),
             now(),
-            'N'
+            'Y'
         )
     </insert>
 
     <select id="getPushinfoByDeviceId" parameterType="String" resultMap="device">
         SELECT
             a.USER_ID AS userId,
-            a.PUSH_TOKEN AS pushToken,
-            b.DEVC_ID AS deviceId
+            a.DEVC_ID AS deviceId,
+            MAX(a.PUSH_YN_02) AS sPushYn,
+            MAX(b.PUSH_TOKEN) AS pushToken -- PUSH_TOKEN의 중복을 제거
         FROM
-            TBR_OPR_ACCOUNT a
+            TBR_OPR_USER_DEVICE_PUSH a
         INNER JOIN
-            TBR_OPR_USER_DEVICE b
+            TBR_OPR_ACCOUNT b ON a.USER_ID = b.USER_ID
         WHERE
-            a.USER_ID = b.USER_ID AND DEVC_ID = #{deviceId}
-        LIMIT 1
+            a.DEVC_ID = #{deviceId}
+        GROUP BY
+            a.USER_ID, a.DEVC_ID;
     </select>
 
     <select id="getDeviceStauts" parameterType="java.util.List" resultMap="dr910w">
+        SELECT
+            IFNULL(DEVC_ID, '') AS deviceId,
+            IFNULL(SERIAL_NO, '') AS serialNumber,
+            IFNULL(R_KEY, 0) AS rKey,
+            IFNULL(POWR, '') AS powr,
+            IFNULL(OPMD, 0) AS opMd,
+            IFNULL(HTTP, 0.0) AS htTp,
+            IFNULL(WTTP, 0.0) AS wtTp,
+            IFNULL(HWTP, 0.0) AS hwTp,
+            IFNULL(FTMD, '') AS ftMd,
+            IFNULL(CHTP, 0.0) AS chTp,
+            IFNULL(12H, '') AS h12,
+            IFNULL(24H, '') AS h24,
+            IFNULL(7WK, '') AS wk7,
+            IFNULL(FWH, '') AS fwh,
+            IFNULL(HWST, '') AS hwSt,
+            IFNULL(FCLC, '') AS fcLc,
+            IFNULL(MFDT, '') AS mfDt,
+            IFNULL(SLCD, '') AS slCd,
+            IFNULL(BCDT, '') AS bCdt,
+            IFNULL(CWTP, 0.0) AS cwTp
+        FROM
+            TBR_OPR_DEVICE_STATUS
+        WHERE
+            SERIAL_NO IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getSingleDeviceStauts" parameterType="java.util.List" resultMap="dr910w">
         SELECT
             DEVC_ID AS deviceId,
             SERIAL_NO AS serialNumber,
@@ -372,7 +502,10 @@
             HWTP AS hwTp,
             FTMD AS ftMd,
             CHTP AS chTp,
-            RSCF AS stringRsCf,
+            12H AS h12,
+            24H AS h24,
+            7WK AS wk7,
+            FWH AS fwh,
             HWST AS hwSt,
             FCLC AS fcLc,
             MFDT AS mfDt,
@@ -382,10 +515,7 @@
         FROM
             TBR_OPR_DEVICE_STATUS
         WHERE
-            SERIAL_NO IN
-        <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+            DEVC_ID = #{deviceId}
     </select>
 
     <insert id="insertErrorInfo" parameterType="com.oauth.dto.AuthServerDTO">
@@ -422,5 +552,52 @@
             SERIAL_NO = #{serialNumber}
     </select>
 
+    <insert id="insertJson" parameterType="String">
+        INSERT INTO
+            GW_TEST_TABLE
+        (
+            JSONBODY
+        )
+        VALUES
+        (
+            #{jsonbody}
+        )
+    </insert>
+
+    <select id="getDeviceRegistStatus" parameterType="String" resultMap="device">
+        SELECT
+            COALESCE(DEVC_ID, 'EMPTY') AS deviceId
+        FROM
+            TBR_IOT_DEVICE
+        WHERE
+            SERIAL_NO = #{serialNumber}
+
+        UNION ALL
+
+        SELECT
+            'EMPTY' AS deviceId
+        WHERE
+            NOT EXISTS
+            (SELECT 1 FROM TBR_IOT_DEVICE WHERE SERIAL_NO = #{serialNumber});
+    </select>
+
+    <update id="updateDeviceErrorStatus" parameterType="String">
+        UPDATE
+            TBR_OPR_DEVICE_STATUS
+        SET
+            DVST = '2'
+        WHERE DEVC_ID = #{deviceId}
+    </update>
+
+    <select id="checkDeviceStatus" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        SELECT
+            DEVC_ID AS deviceId
+        FROM
+            TBR_OPR_DEVICE_STATUS
+        WHERE
+            DEVC_ID = #{deviceId}
+        AND
+            R_KEY = #{controlAuthKey}
+    </select>
 
 </mapper>
