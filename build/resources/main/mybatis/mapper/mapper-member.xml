@@ -5,49 +5,139 @@
     <resultMap id="member" type="com.oauth.dto.AuthServerDTO"> </resultMap>
 
     <select id="getUserByUserId" parameterType="String" resultMap="member">
-        SELECT HP AS hp, USER_ID AS userId, USER_NICK AS userNickname, API_ATTC_KEY AS accessToken
-        FROM TBR_OPR_USER
-        WHERE USER_ID = #{userId}
+        SELECT
+            HP AS hp,
+            USER_ID AS userId,
+            USER_NICK AS userNickname,
+            API_ATTC_KEY AS accessToken,
+            HOUSE_HOLDER AS  householder
+        FROM
+            TBR_OPR_USER
+        WHERE
+            USER_ID = #{userId}
     </select>
 
     <select id="getAccountByUserId" parameterType="String" resultMap="member">
-        SELECT USER_ID AS userId, PW as userPassword
-        FROM TBR_OPR_ACCOUNT
-        WHERE USER_ID = #{value}
+        SELECT
+            USER_ID AS userId,
+            PW AS userPassword,
+            REGIST_USER_TYPE AS registUserType
+        FROM
+            TBR_OPR_ACCOUNT
+        WHERE
+            USER_ID = #{value}
     </select>
 
     <insert id="insertMember" parameterType="com.oauth.dto.AuthServerDTO">
-        INSERT INTO TBR_OPR_USER (HP, USER_ID, USER_NICK)
-        VALUES (#{hp}, #{userId}, #{userNickname})
+        INSERT INTO
+            TBR_OPR_USER
+        (
+            HP,
+            USER_ID,
+            USER_NICK
+        )
+        VALUES
+        (
+            #{hp},
+            #{userId},
+            #{userNickname}
+        )
     </insert>
 
     <insert id="insertAccount" parameterType="com.oauth.dto.AuthServerDTO">
-        INSERT INTO TBR_OPR_ACCOUNT (USER_ID, PW, REG_DATM, PUSH_TOKEN)
-        VALUES (#{userId}, #{userPassword}, now(), #{pushToken})
+        INSERT INTO
+            TBR_OPR_ACCOUNT
+        (
+            USER_ID,
+            PW,
+            REG_DATM,
+            PUSH_TOKEN,
+            REGIST_USER_TYPE,
+            GOOGLE_HOME_STATUS
+        )
+        VALUES
+        (
+            #{userId},
+            #{userPassword},
+            now(),
+            #{pushToken},
+            #{registUserType},
+            '01'
+        )
     </insert>
 
     <select id="getUserByHp" parameterType="String" resultMap="member">
-        SELECT HP AS hp, USER_ID AS userId, USER_NICK AS userNick
-        FROM TBR_OPR_USER
-        WHERE HP = #{value}
+        SELECT
+            a.HP AS hp,
+            a.USER_ID AS userId,
+            a.USER_NICK AS userNick,
+            b.REGIST_USER_TYPE AS registUserType
+        FROM
+            TBR_OPR_USER a
+        INNER JOIN
+            TBR_OPR_ACCOUNT b
+        ON
+            a.USER_ID = b.USER_ID
+        WHERE
+            a.HP = #{hp}
     </select>
 
     <select id="getUserByDeviceId" parameterType="String" resultMap="member">
-        SELECT USER_ID AS userId
-        FROM TBR_OPR_USER_DEVICE
-        WHERE DEVC_ID = #{value}
+        SELECT
+            USER_ID AS userId
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
+    <select id="getDeviceIdListByUserId" parameterType="String" resultMap="member">
+        SELECT
+            DEVC_ID AS deviceId
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE
+            USER_ID = #{userId}
     </select>
 
     <select id="getUserByUserIdAndHp" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
-        SELECT *
-        FROM TBR_OPR_USER
-        WHERE HP = #{hp} AND USER_ID = #{userId};
+        SELECT
+            a.HP AS hp,
+            a.USER_ID AS userId,
+            a.USER_NICK AS userNick,
+            b.REGIST_USER_TYPE AS registUserType
+        FROM
+            TBR_OPR_USER a
+        INNER JOIN
+            TBR_OPR_ACCOUNT b
+        ON
+            a.USER_ID = b.USER_ID
+        WHERE
+            a.USER_ID = #{userId} AND a.HP = #{hp}
     </select>
 
     <select id="getUserByUserIdAndHpAndDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
-        SELECT *
-        FROM TBT_OPR_DEVICE_REGIST
-        WHERE DEVC_ID = #{deviceId} AND HP = #{hp} AND USER_ID = #{userId};
+        SELECT
+            a.HP AS hp,
+            a.USER_ID AS userId,
+            b.REGIST_USER_TYPE AS registUserType
+        FROM
+            TBT_OPR_DEVICE_REGIST a
+        INNER JOIN
+            TBR_OPR_ACCOUNT b
+        ON
+            a.USER_ID = b.USER_ID
+        WHERE
+            a.HP = #{hp}
+        AND
+            a.USER_ID = #{userId}
+        <if test="deviceId != null">
+        AND
+            a.DEVC_ID = #{deviceId}
+        </if>
+        <if test="deviceId == null">
+            LIMIT 1
+        </if>
     </select>
 
     <update id="updatePassword" parameterType="com.oauth.dto.AuthServerDTO">
@@ -66,14 +156,25 @@
     </select>
 
     <update id="updateUserNicknameAndHp" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE TBR_OPR_USER SET HP = #{newHp}, USER_NICK = #{userNickname}
-        WHERE USER_ID = #{userId}
+        UPDATE
+            TBR_OPR_USER
+        SET
+            HP = #{newHp},
+            USER_NICK = #{userNickname}
+        WHERE
+            USER_ID = #{userId}
     </update>
 
     <select id="accessTokenCheck" parameterType="String" resultMap="member">
-        SELECT USER_ID AS userId, API_ATTC_KEY AS accessToken
-        FROM TBR_OPR_USER
-        WHERE USER_ID = #{userId} AND API_ATTC_KEY = #{accessToken};
+        SELECT
+            USER_ID AS userId,
+            API_ATTC_KEY AS accessToken
+        FROM
+            TBR_OPR_USER
+        WHERE
+            USER_ID = #{userId}
+        AND
+            API_ATTC_KEY = #{accessToken};
     </select>
 
     <select id="getHouseMembersByUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
@@ -99,11 +200,14 @@
             a.DEVC_ID AS deviceId,
             a.HOUSE_HOLDER AS householder,
             a.DEVC_CTRL_KEY AS controlAuthKey,
-            a.ATTC_DATM AS authenticationDatetime,
+            MAX(a.ATTC_DATM) AS authenticationDatetime,  -- 최근 인증 날짜를 선택
+            b.ADDR_NICK AS addrNickname,
             b.DEVC_NICK AS deviceNickname,
             c.TEMP_DEVC_REG_KEY AS tmpRegistKey,
             c.LAT AS latitude,
             c.LON AS longitude,
+            c.HP AS hp,
+            MAX(a.REG_DATM) AS REG_DATM,  -- 가장 최근의 등록 날짜를 선택
             ROW_NUMBER() OVER () AS regSort
         FROM
             TBR_OPR_USER_DEVICE a
@@ -112,9 +216,20 @@
         INNER JOIN
             TBT_OPR_DEVICE_REGIST c ON c.DEVC_ID = b.DEVC_ID
         WHERE
-            a.DEVC_ID = b.DEVC_ID AND a.USER_ID = #{userId}
+            a.USER_ID = #{userId} AND c.USER_ID = #{userId}
+        GROUP BY
+            a.USER_ID,
+            a.DEVC_ID,
+            a.HOUSE_HOLDER,
+            a.DEVC_CTRL_KEY,
+            b.ADDR_NICK,
+            b.DEVC_NICK,
+            c.TEMP_DEVC_REG_KEY,
+            c.LAT,
+            c.LON,
+            c.HP
         ORDER BY
-            a.REG_DATM ASC
+            MAX(a.REG_DATM) ASC
     </select>
 
     <insert id="inviteHouseMember" parameterType="com.oauth.dto.AuthServerDTO">
@@ -142,25 +257,30 @@
     </insert>
 
     <update id="updateInviteHouseMember" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE TBR_OPR_USER_INVITE_STATUS SET
-        INVITE_ACCEPT_YN = #{inviteAcceptYn},
-        INVITE_ACCEPT_DATE = #{inviteAcceptDate}
-        WHERE RESPONSE_USER_ID = #{userId}
+        UPDATE
+            TBR_OPR_USER_INVITE_STATUS
+        SET
+            INVITE_ACCEPT_YN = #{inviteAcceptYn},
+            INVITE_ACCEPT_DATE = #{inviteAcceptDate}
+        WHERE
+            RESPONSE_USER_ID = #{userId}
     </update>
 
     <select id="getInvitationList" parameterType="String" resultMap="member">
         SELECT
-        INVITATION_IDX AS invitationIdx,
-        REQUEST_USER_ID AS requestUserId,
-        RESPONSE_USER_ID AS responseUserId,
-        RESPONSE_USER_HP AS responseHp,
-        INVITE_START_DATE AS inviteStartDate,
-        INVITE_END_DATE AS inviteEndDate,
-        INVITE_ACCEPT_YN AS inviteAcceptYn,
-        REQUEST_USER_NICK AS requestUserNick,
-        RESPONSE_USER_NICK AS responseUserNick
-        FROM TBR_OPR_USER_INVITE_STATUS
-        WHERE REQUEST_USER_ID = #{responseUserId};
+            INVITATION_IDX AS invitationIdx,
+            REQUEST_USER_ID AS requestUserId,
+            RESPONSE_USER_ID AS responseUserId,
+            RESPONSE_USER_HP AS responseHp,
+            INVITE_START_DATE AS inviteStartDate,
+            INVITE_END_DATE AS inviteEndDate,
+            INVITE_ACCEPT_YN AS inviteAcceptYn,
+            REQUEST_USER_NICK AS requestUserNick,
+            RESPONSE_USER_NICK AS responseUserNick
+        FROM
+            TBR_OPR_USER_INVITE_STATUS
+        WHERE
+            REQUEST_USER_ID = #{responseUserId} OR RESPONSE_USER_ID = #{responseUserId};
     </select>
     
     <update id="acceptInvite" parameterType="com.oauth.dto.AuthServerDTO">
@@ -169,55 +289,78 @@
         SET
             INVITE_ACCEPT_YN = #{inviteAcceptYn},
             INVITE_ACCEPT_DATE = now(),
-            RESPONSE_USER_NICK = #{responseUserNick}
+            RESPONSE_USER_NICK = #{responseNickname}
         WHERE INVITATION_IDX = #{invitationIdx}
     </update>
 
     <insert id="insertNewHouseMember" parameterType="com.oauth.dto.AuthServerDTO">
-        INSERT INTO TBR_OPR_USER_DEVICE
-        (USER_ID, DEVC_ID, DEVC_CTRL_KEY, ATTC_DATM, HOUSE_HOLDER)
-        VALUES
-        <foreach collection="list" item="item" index="idx" separator=",">
+        INSERT INTO
+        TBR_OPR_USER_DEVICE
         (
-            #{item.responseUserId},
-            #{item.deviceId},
-            #{item.controlAuthKey},
-            #{item.authenticationDatetime},
-            #{item.householder}
+            USER_ID,
+            DEVC_ID,
+            DEVC_CTRL_KEY,
+            ATTC_DATM,
+            REG_DATM,
+            HOUSE_HOLDER,
         )
-        </foreach>
+        SELECT
+            #{userId},
+            DEVC_ID,
+            DEVC_CTRL_KEY,
+            NOW(),
+            NOW(),
+            #{householder},
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE
+            USER_ID = #{targetId}
+        AND
+            DEVC_ID = #{deviceId}
     </insert>
 
     <update id="changeHouseholdStatus" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE TBR_OPR_USER_DEVICE
-        SET HOUSE_HOLDER = #{householder}
-        WHERE USER_ID = #{userId}
-        AND DEVC_ID = #{deviceId}
+        UPDATE
+            TBR_OPR_USER_DEVICE
+        SET
+            HOUSE_HOLDER = #{householder}
+        WHERE
+            USER_ID = #{userId}
+        AND
+            DEVC_ID = #{deviceId}
     </update>
 
-    <update id="updatePushCodeStatus" parameterType="hashmap">
-        <foreach collection="list" item="item">
-            UPDATE
-                TBR_OPR_USER_DEVICE_PUSH
-            SET
-                PUSH_YN_01 = #{item.fPushYn},
-                PUSH_YN_02 = #{item.sPshYn},
-                PUSH_YN_03 = #{item.tPushYn}
-            WHERE
-                USER_ID = #{item.userId} AND DEVC_ID = #{item.deviceId}
-        </foreach>
+    <update id="updatePushCodeStatus" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_USER_DEVICE_PUSH
+        <set>
+            <if test="fPushYn != null">PUSH_YN_01 = #{fPushYn},</if>
+            <if test="sPushYn != null">PUSH_YN_02 = #{sPushYn},</if>
+            <if test="tPushYn != null">PUSH_YN_03 = #{tPushYn},</if>
+        </set>
+        WHERE
+            USER_ID = #{userId} AND DEVC_ID = #{deviceId}
     </update>
 
-    <select id="getPushCodeStatus" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
-        SELECT PUSH_YN_01 AS fPushYn, PUSH_YN_02 AS sPushYn, PUSH_YN_03 AS tPushYn
-        FROM TBR_OPR_USER_DEVICE_PUSH
-        WHERE USER_ID = #{userId} AND DEVC_ID = #{deviceId};
+    <select id="getPushCodeStatus" parameterType="map" resultMap="member">
+        SELECT
+            push.PUSH_YN_01 AS fPushYn,
+            push.PUSH_YN_02 AS sPushYn,
+            push.PUSH_YN_03 AS tPushYn,
+            push.DEVC_ID AS deviceId,
+            device.ATTC_ID AS controlAuthKey,
+            device.DEVC_MODL_CD AS modelCode
+        FROM
+            TBR_OPR_USER_DEVICE_PUSH AS push
+        INNER JOIN
+            TBR_IOT_DEVICE AS device
+        ON
+            push.DEVC_ID = device.DEVC_ID
+        WHERE
+            push.USER_ID = #{userId}
+        AND
+            push.DEVC_ID IN (${deviceIds})
     </select>
-
-    <delete id="delHouseMember" parameterType="com.oauth.dto.AuthServerDTO" >
-        DELETE FROM TBR_OPR_USER_DEVICE
-        WHERE USER_ID = #{userId}
-    </delete>
 
     <select id="getNextHouseholderUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
@@ -236,10 +379,13 @@
         WHERE USER_ID = #{userId}
     </update>
 
-    <update id="updateHouseholdTbrOprUserDevice" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE TBR_OPR_USER_DEVICE
-        SET HOUSE_HOLDER = "Y"
-        WHERE USER_ID = #{userId}
+    <update id="updateHouseholdTbrOprUserDevice" parameterType="String">
+        UPDATE
+            TBR_OPR_USER_DEVICE
+        SET
+            HOUSE_HOLDER = "Y"
+        WHERE
+            USER_ID = #{userId}
     </update>
 
     <select id="deleteMemberFromService" parameterType="String" resultType="String">
@@ -247,26 +393,38 @@
     </select>
 
     <select id="deleteControllerMapping" parameterType="com.oauth.dto.AuthServerDTO" resultType="String">
-        CALL deleteUserFromService(#{deviceId}, #{userId}, #{controlAuthKey})
+        CALL
+            deleteControllerMapping
+                (
+                    #{deviceId},
+                    #{userId},
+                    #{controlAuthKey}
+                )
     </select>
 
-    <select id="getPushInfoList" parameterType="String" resultMap="member">
+    <select id="getPushInfoList" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             PUSH_IDX AS pushIdx,
             PUSH_TITLE AS pushTitle,
             PUSH_CONTENT AS pushContent,
             (
-            CASE WHEN PUSH_TYPE = '01' THEN '보일러'
+            CASE WHEN PUSH_TYPE = '00' THEN '전체'
+                 WHEN PUSH_TYPE = '01' THEN '보일러'
                  WHEN PUSH_TYPE = '02' THEN '환기'
                  WHEN PUSH_TYPE = '03' THEN '각방'
                  ELSE '-'
             END
             ) AS pushType,
-            DATE_FORMAT(PUSH_DATETIME, '%Y-%m-%d %h:%i:%s') AS pushDateTime
+            DATE_FORMAT(PUSH_DATETIME, '%Y-%m-%d %H:%i:%s') AS pushDateTime
         FROM
-            tbr_opr_user_device_push_info
+            TBR_OPR_USER_DEVICE_PUSH_INFO
         WHERE
-            USER_ID = #{userId};
+            USER_ID = #{userId}
+        AND
+            PUSH_DATETIME BETWEEN #{startDatetime} AND #{endDatetime}
+        <if test="deviceType != 00">
+            AND PUSH_TYPE = #{deviceType}
+        </if>
     </select>
 
     <select id="getNoticeList" resultMap="member">
@@ -295,9 +453,12 @@
     </update>
 
     <update id="updateDeviceLocationNicknameDeviceRegist" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE TBT_OPR_DEVICE_REGIST
-        SET ADDR_NICK = #{newDeviceLocNickname}
-        WHERE DEVC_ID = #{deviceId}
+        UPDATE
+            TBT_OPR_DEVICE_REGIST
+        SET
+            ADDR_NICK = #{newDeviceLocNickname}
+        WHERE
+            DEVC_ID = #{deviceId}
     </update>
 
     <select id="getUserIdByUserId" resultMap="member">
@@ -313,19 +474,25 @@
         INSERT INTO
             TBR_IOT_CTRL_REQ
         (
-            CTRL_NM,
-            REG_DATM,
-            LAST_COLEC_DATM,
-            DEVC_ID,
-            USER_ID
+            CD_TYPE,
+            COMD_ID,
+            CTRL_CD,
+            CTRL_CD_NM,
+            COMD_FLOW,
+            COMD_DATM,
+            USER_ID,
+            DEVC_ID
         )
             VALUES
         (
-            #{functionId},
+            #{codeType},
+            #{commandId},
+            #{controlCode},
+            #{controlCodeName},
+            #{commandFlow},
             now(),
-            now(),
-            #{deviceId},
-            #{userId}
+            #{userId},
+            #{deviceId}
         )
     </insert>
 
@@ -361,7 +528,349 @@
         FROM
             TBR_OPR_USER
         WHERE
-            USER_ID = #{userID}
+            USER_ID = #{userId}
+    </select>
+
+    <select id="getWorkTime" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            WORK_TIME AS workTime,
+            DATE_FORMAT(INSERT_DATETIME, '%Y%m%d') AS workDate
+        FROM
+            TBR_OPR_DEVICE_WORK_DATETIME
+        WHERE
+            DEVC_ID = #{deviceId}
+        AND
+            INSERT_DATETIME BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <select id="getPushTokenByUserId" parameterType="String" resultMap="member">
+        SELECT
+            PUSH_TOKEN AS pushToken
+        FROM
+            TBR_OPR_ACCOUNT
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
+    <update id="updatePushToken" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_ACCOUNT
+        SET
+            PUSH_TOKEN = #{pushToken}
+        WHERE
+            USER_ID = #{userId}
+    </update>
+
+    <insert id="insertUserDevicePush" parameterType="com.oauth.dto.AuthServerDTO" >
+        INSERT INTO
+            TBR_OPR_USER_DEVICE_PUSH
+            (
+                USER_ID,
+                DEVC_ID,
+                HP,
+                PUSH_YN_01,
+                PUSH_YN_02,
+                PUSH_YN_03
+            )
+                VALUES
+            (
+                #{userId},
+                #{deviceId},
+                #{hp},
+                'N',
+                'N',
+                'N'
+            )
+    </insert>
+
+    <insert id="insertPushHistory" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_OPR_USER_DEVICE_PUSH_INFO
+        (
+            USER_ID,
+            PUSH_TITLE,
+            PUSH_CONTENT,
+            PUSH_TYPE,
+            PUSH_DATETIME
+        )
+        VALUES
+        (
+            #{userId},
+            #{pushTitle},
+            #{pushContent},
+            '01',
+            now()
+        )
+    </insert>
+
+    <update id="UpdateSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_USER
+        SET
+            SAFE_ALARM_TIME = #{safeAlarmTime},
+            SAFE_ALARM_STATUS = #{safeAlarmStatus}
+        WHERE
+            USER_ID = #{userId}
+    </update>
+
+    <select id="getPushYnStatus" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            PUSH_YN_01 AS fPushYn,
+            PUSH_YN_02 AS sPushYn,
+            PUSH_YN_03 AS tPushYn
+        FROM
+            TBR_OPR_USER_DEVICE_PUSH
+        WHERE
+            USER_ID = #{userId}
+        <if test="deviceId != null">
+            AND DEVC_ID = #{deviceId}
+        </if>
+        <if test="deviceId == null">
+            LIMIT 1
+        </if>
+    </select>
+
+    <select id="getUserIdsByDeviceId" parameterType="String" resultMap="member">
+        SELECT
+            a.USER_ID AS userId
+        FROM
+            TBD_IOT_GRP_INFO a
+        INNER JOIN
+            TBR_IOT_DEVICE_GRP_INFO b
+        WHERE
+            a.GRP_NM = b.GRP_ID AND b.DEVC_ID = #{deviceId}
+    </select>
+
+    <select id="getPushYnStatusByUserIds" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+        PUSH_YN_01 AS fPushYn,
+        PUSH_YN_02 AS sPushYn,
+        PUSH_YN_03 AS tPushYn
+        FROM
+        TBR_OPR_USER_DEVICE_PUSH
+        WHERE
+        USER_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.userId}
+        </foreach>
+    </select>
+
+    <update id="updateRegistTable" parameterType="com.oauth.dto.AuthServerDTO" >
+        UPDATE
+            TBT_OPR_DEVICE_REGIST
+        SET
+            HP = #{hp},
+            USER_ID = #{requestUserId}
+        WHERE
+            USER_ID = #{responseUserId}
+    </update>
+
+    <update id="updateUserDeviceTable" parameterType="com.oauth.dto.AuthServerDTO" >
+        UPDATE
+            TBR_OPR_USER_DEVICE
+        SET
+            USER_ID = #{requestUserId},
+            HOUSE_HOLDER = 'Y'
+        WHERE
+            USER_ID = #{responseUserId}
+    </update>
+
+    <update id="updateUserTable" parameterType="String" >
+        UPDATE
+            TBR_OPR_USER
+        SET
+            HOUSE_HOLDER = 'N'
+        WHERE
+            USER_ID = #{responseUserId}
+    </update>
+
+    <update id="updateGrpInfoTable" parameterType="com.oauth.dto.AuthServerDTO" >
+        UPDATE
+            TBR_IOT_DEVICE_GRP_INFO
+        SET
+            GRP_ID = #{requestUserId}
+        WHERE
+            GRP_ID = #{responseUserId}
+    </update>
+
+    <update id="updateHouseholdToMember" parameterType="com.oauth.dto.AuthServerDTO" >
+        UPDATE
+            TBD_IOT_GRP_INFO
+        SET
+            GRP_NM = #{requestUserId},
+            HOUSE_HOLDER = 'N'
+        WHERE
+            GRP_ID = #{responseUserId}
+    </update>
+
+    <insert id="insertHouseholder" parameterType="com.oauth.dto.AuthServerDTO" >
+        INSERT INTO
+            TBD_IOT_GRP_INFO
+        (
+            GRP_ID,
+            USER_ID,
+            GRP_NM,
+            HOUSE_HOLDER,
+            USER_NICK,
+            REG_DATM
+        )
+        VALUES
+        (
+            #{userId},
+            #{userId},
+            #{userId},
+            'Y',
+            #{userNickname},
+            NOW()
+        )
+    </insert>
+
+    <delete id="deleteDuplicateDeviceIdFromUserDevice" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBR_OPR_USER_DEVICE
+        WHERE
+            DEVC_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.deviceId}
+        </foreach>
+        AND
+            USER_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.userId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteDuplicateDeviceIdFromRegist" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            DEVC_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.deviceId}
+        </foreach>
+        AND
+            USER_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.userId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteDuplicateDeviceIdFromDeviceGrpInfo" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBR_IOT_DEVICE_GRP_INFO
+        WHERE
+            DEVC_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.deviceId}
+        </foreach>
+        AND
+            GRP_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.userId}
+        </foreach>
+    </delete>
+
+    <select id="getRegistDeviceIdByUserId" parameterType="String" resultMap="member">
+        SELECT
+            DEVC_ID AS deviceId,
+            USER_ID AS userId
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
+    <select id="getFailyMemberByUserId" parameterType="String" resultMap="member">
+        SELECT
+            USER_ID AS userId,
+            USER_NICK AS userNickname,
+            HOUSE_HOLDER AS householder
+        FROM
+            TBD_IOT_GRP_INFO
+        WHERE
+            GRP_NM = #{userId}
+    </select>
+
+    <select id="getHouseholdByUserId" parameterType="String" resultMap="member">
+        SELECT
+            USER_ID AS userId,
+            USER_NICK AS userNickname,
+            HOUSE_HOLDER AS householder,
+            GRP_NM AS groupId
+        FROM
+            TBD_IOT_GRP_INFO
+        WHERE
+            GRP_ID = #{userId}
+
+    </select>
+
+    <select id="getGroupMemberByUserId" parameterType="String" resultMap="member">
+        SELECT
+            GRP_ID AS groupId,
+            USER_ID AS userId,
+            GRP_NM AS groupName,
+            HOUSE_HOLDER AS householder
+        FROM
+            TBD_IOT_GRP_INFO
+        WHERE
+            GRP_ID = #{userId}
+    </select>
+
+    <update id="delHouseholdMember" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBD_IOT_GRP_INFO
+        SET
+            GRP_NM = #{delUserId},
+            HOUSE_HOLDER = 'Y'
+        WHERE
+            GRP_ID = #{delUserId}
+    </update>
+
+    <select id="getNextHouseholder" parameterType="String" resultMap="member">
+        SELECT
+            GRP_ID AS groupId,
+            USER_ID AS userId,
+            GRP_NM AS groupName,
+            HOUSE_HOLDER AS householder
+        FROM
+        TBD_IOT_GRP_INFO
+        WHERE
+            GRP_NM = #{userId} AND USER_ID != #{userId}
+        LIMIT 1
+    </select>
+
+    <update id="updateUserDeviceHousehold" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_USER_DEVICE
+        SET
+            HOUSE_HOLDER = 'Y'
+        WHERE
+            USER_ID = #{userId}
+    </update>
+
+    <select id="getUserNickname" parameterType="String" resultMap="member">
+        SELECT
+            USER_NICK AS userNickname
+        FROM
+            TBD_IOT_GRP_INFO
+        WHERE
+            GRP_ID = #{userId}
+    </select>
+
+    <select id="getPushYnStatusByDeviceIdAndUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            PUSH_YN_01 AS fPushYn,
+            PUSH_YN_02 AS sPushYn,
+            PUSH_YN_03 AS tPushYn
+        FROM
+            TBR_OPR_USER_DEVICE_PUSH
+        WHERE
+            DEVC_ID = #{deviceId}
+        AND
+            USER_ID = #{userId}
     </select>
 
 </mapper>

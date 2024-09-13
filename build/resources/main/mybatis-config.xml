@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+	<settings>
+		<setting name="logImpl" value="STDOUT_LOGGING"/>
+	</settings>
 
 	<typeAliases>
 		<package name="com.oauth.dto" />
 	</typeAliases>
-	
-	<environments default="">
-		<environment id="">
+
+	<environments default="development">
+		<environment id="development">
 			<transactionManager type="JDBC"/>
-			<!-- 커넥션풀을 이용한 DB 연결 -->
 			<dataSource type="POOLED">
 				<property name="driver" value="com.mysql.cj.jdbc.Driver"/>
 				<property name="url" value="jdbc:mysql://10.22.8.164:3306/dsiot?characterEncoding=UTF-8"/>
@@ -21,8 +23,8 @@
 			</dataSource>
 		</environment>
 	</environments>
-	
-	<mappers>	
+
+	<mappers>
 		<mapper resource="mybatis/mapper/mapper-member.xml"/>
 		<mapper resource="mybatis/mapper/mapper-device.xml"/>
 	</mappers>

@@ -591,7 +591,9 @@
             PUSH_TITLE,
             PUSH_CONTENT,
             PUSH_TYPE,
-            PUSH_DATETIME
+            PUSH_DATETIME,
+            DEVC_ID,
+            DEVC_TYPE
         )
         VALUES
         (
@@ -599,7 +601,9 @@
             #{pushTitle},
             #{pushContent},
             '01',
-            now()
+            now(),
+            #{deviceId},
+            '보일러'
         )
     </insert>
 

@@ -166,9 +166,6 @@ public class ReservationServiceImpl implements ReservationService{
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
             params.setCodeType("1");
-            params.setCommandId("Set24");
-            params.setControlCode("24h");
-            params.setControlCodeName("24시간 예약");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
@@ -453,7 +450,7 @@ public class ReservationServiceImpl implements ReservationService{
         try {
 
             if(params.getOnOffFlag().equals("of")){
-                msg = "최초 빠른온수 설정";
+                msg = "최초 주간 예약 설정";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
