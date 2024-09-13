@@ -426,6 +426,10 @@ public class Common {
         // nonNullField에서 해당 필드가 존재하는지 확인하고, 해당 Command 설정 적용
         for (Map.Entry<String, String[]> entry : commandMap.entrySet()) {
             if (nonNullField.get(entry.getKey()) != null) {
+                System.out.println("entry.getValue()[0]: " + entry.getValue()[0]);
+                System.out.println("entry.getValue()[1]: " + entry.getValue()[1]);
+                System.out.println("entry.getValue()[2]: " + entry.getValue()[2]);
+
                 params.setCommandId(entry.getValue()[0]);
                 params.setControlCode(entry.getValue()[1]);
                 params.setControlCodeName(entry.getValue()[2]);
