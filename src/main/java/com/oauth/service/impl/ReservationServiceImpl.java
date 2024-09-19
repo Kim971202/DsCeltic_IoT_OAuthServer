@@ -166,6 +166,9 @@ public class ReservationServiceImpl implements ReservationService{
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
             params.setCodeType("1");
+            params.setCommandId("Set24");
+            params.setControlCode("24h");
+            params.setControlCodeName("24시간 예약");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
