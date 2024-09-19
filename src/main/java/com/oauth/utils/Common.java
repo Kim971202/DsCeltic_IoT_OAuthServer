@@ -420,6 +420,7 @@ public class Common {
         commandMap.put("hwTp", new String[]{"WaterTempertureSet", "hwTp", "온수 온도 설정"});
         commandMap.put("ftMd", new String[]{"FastHotWaterSet", "ftMd", "빠른 온수 설정"});
         commandMap.put("h24", new String[]{"Set24", "24h", "24시간 예약"});
+        commandMap.put("h12", new String[]{"Set12", "12h", "12시간 예약"});
         commandMap.put("wk7", new String[]{"SetWeek", "7wk", "주간 예약"});
         commandMap.put("fwh", new String[]{"AwakeAlarmSet", "fwh", "빠른온수 예약"});
         commandMap.put("mwk", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
