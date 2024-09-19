@@ -173,6 +173,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String controlCodeName;              // 제어코드명 (예: 실내난방)
     private String commandFlow;                  // 명령방향: 0 = APP -> 제어기기, 1 = 제어기기 -> APP
 
+    private String fanSpeed;                     // 단수 [1~3], 0단은 자동 모드 변경 시 설정됨
 
     private Role role = Role.USER;
 

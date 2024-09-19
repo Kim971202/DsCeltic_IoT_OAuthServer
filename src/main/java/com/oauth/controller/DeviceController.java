@@ -273,4 +273,23 @@ public class DeviceController {
         return deviceService.doDeviceInfoSearchList(params);
     }
 
+    /**	홈 IoT 컨트롤러 풍량 단수 설정  */
+    @PostMapping(value = "/ventilationFanSpeedSet")
+    @ResponseBody
+    public ResponseEntity<?> doVentilationFanSpeedSet(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws Exception {
+
+        String logStep = "[홈 IoT 정보 조회 - 리스트]";
+        log.info("[홈 IoT 정보 조회 - 리스트]");
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getFanSpeed()) ||
+                Validator.isNullOrEmpty(params.getModelCode())){
+            throw new CustomException("404", "홈 IoT 정보 조회 - 리스트 값 오류");
+        }
+        return deviceService.doVentilationFanSpeedSet(params);
+    }
+
 }
