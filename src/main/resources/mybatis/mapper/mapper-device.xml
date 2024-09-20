@@ -387,7 +387,7 @@
                     <if test="fcLc != null">FCLC = #{fcLc},</if>
                     <if test="blCf != null">BLCF = #{blCf},</if>
                     SLCD = #{slCd},
-                    MFDT = #{mfDt}
+                    MFDT = now()
         WHERE
             DEVC_ID = #{deviceId}
     </update>
