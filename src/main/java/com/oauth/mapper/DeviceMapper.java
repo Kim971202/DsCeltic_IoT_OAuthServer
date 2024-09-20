@@ -44,6 +44,6 @@ public interface DeviceMapper {
     public int updateDeviceStatusFromApplication(DeviceStatusInfo.Device device);
     public int insertJson(String jsonBody);
 
-
+    public int updateSleepMode(AuthServerDTO params);
 
 }

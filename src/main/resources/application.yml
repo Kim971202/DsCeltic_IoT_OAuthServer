@@ -43,7 +43,7 @@ server:
 # \uAE30\uAE30 Model Code (\uAD6C\uD615, \uC2E0\uD615)
 device:
   model:
-    code: "{oldModel: ' ESCeco13S', newModel: ' DCR-91/WF' }"
+    code: "{oldModel: ' ESCeco13S', newModel: ' DCR-91/WF', ventilation: ' DCR-47W' }"
 
 # Server Token
 app:

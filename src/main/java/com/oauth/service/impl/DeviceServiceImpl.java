@@ -141,11 +141,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             redisCommand.deleteValues(powerOnOff.getUuId());
 
@@ -161,20 +157,12 @@ public class DeviceServiceImpl implements DeviceService {
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");
             params.setPushContent("전원 ON/OFF");
             params.setDeviceId(deviceId);
-            if(memberMapper.insertPushHistory(params) <= 0) {
-                msg = "PUSH HISTORY INSERT ERROR";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
@@ -194,11 +182,8 @@ public class DeviceServiceImpl implements DeviceService {
                 String jsonString = objectMapper.writeValueAsString(conMap);
                 log.info("doPowerOnOff jsonString: " + jsonString);
 
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                    msg = "PUSH 메세지 전송 오류";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                    log.info("PUSH 메세지 전송 오류");
             }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -348,11 +333,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             params.setUserId(userId);
             params.setPushTitle("기기제어");
@@ -537,11 +518,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
@@ -560,14 +537,10 @@ public class DeviceServiceImpl implements DeviceService {
                 String jsonString = objectMapper.writeValueAsString(conMap);
                 log.info("jsonString: " + jsonString);
 
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                    msg = "PUSH 메세지 전송 오류";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                    log.info("PUSH 메세지 전송 오류");
+
             }
-
-
             redisCommand.deleteValues(modeChange.getUuId());
 
             deviceInfo.setOpMd(modeCode);
@@ -623,20 +596,12 @@ public class DeviceServiceImpl implements DeviceService {
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");
             params.setPushContent("모드변경");
             params.setDeviceId(deviceId);
-            if(memberMapper.insertPushHistory(params) <= 0) {
-                msg = "PUSH HISTORY INSERT ERROR";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
@@ -728,11 +693,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
@@ -751,11 +712,8 @@ public class DeviceServiceImpl implements DeviceService {
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
 
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                    msg = "PUSH 메세지 전송 오류";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                    log.info("PUSH 메세지 전송 오류");
             }
 
             redisCommand.deleteValues(temperatureSet.getUuId());
@@ -771,20 +729,12 @@ public class DeviceServiceImpl implements DeviceService {
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");
             params.setPushContent("실내온도 설정");
             params.setDeviceId(deviceId);
-            if(memberMapper.insertPushHistory(params) <= 0) {
-                msg = "PUSH HISTORY INSERT ERROR";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -1022,11 +972,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
@@ -1044,11 +990,9 @@ public class DeviceServiceImpl implements DeviceService {
                 String jsonString = objectMapper.writeValueAsString(conMap);
                 log.info("jsonString: " + jsonString);
 
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                    msg = "PUSH 메세지 전송 오류";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                    log.info("PUSH 메세지 전송 오류");
+
             }
 
             String jsonString = objectMapper.writeValueAsString(conMap);
@@ -1065,26 +1009,15 @@ public class DeviceServiceImpl implements DeviceService {
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");
             params.setPushContent("온수온도 설정");
             params.setDeviceId(deviceId);
-            if(memberMapper.insertPushHistory(params) <= 0) {
-                msg = "PUSH HISTORY INSERT ERROR";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                log.info("PUSH 메세지 전송 오류");
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -1176,11 +1109,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
@@ -1199,11 +1128,8 @@ public class DeviceServiceImpl implements DeviceService {
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
 
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                    msg = "PUSH 메세지 전송 오류";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                    log.info("PUSH 메세지 전송 오류");
             }
 
             redisCommand.deleteValues(fastHotWaterSet.getUuId());
@@ -1219,20 +1145,12 @@ public class DeviceServiceImpl implements DeviceService {
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");
             params.setPushContent("빠른온수 설정");
             params.setDeviceId(deviceId);
-            if(memberMapper.insertPushHistory(params) <= 0) {
-                msg = "PUSH HISTORY INSERT ERROR";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){

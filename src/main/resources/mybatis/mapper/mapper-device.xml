@@ -600,4 +600,27 @@
             R_KEY = #{controlAuthKey}
     </select>
 
+    <update id="updateSleepMode" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE TBR_OPR_VENTI_DEVICE_STATUS
+        <set>
+            <if test="serialNumber != null">SERIAL_NO = #{serialNumber},</if>
+            <if test="rKey != null">R_KEY = #{rKey},</if>
+            <if test="powr != null">POWR = #{powr},</if>
+            <if test="powr eq 'on'">DVST = '1',</if>
+            <if test="opMd != null">OPMD = #{opMd},</if>
+            <if test="vtSp != null">VTSP = #{vtSp},</if>
+            <if test="onHour != null">ONHOUR = #{onHour},</if>
+            <if test="onMinute != null">ONMINUTE = #{onMinute},</if>
+            <if test="offHour != null">OFFHOUR = #{offHour},</if>
+            <if test="offMinute != null">OFFMINUTE = #{offMinute},</if>
+            <if test="pw != null">PW = #{pw},</if>
+            <if test="hr != null">HR = #{hr},</if>
+            <if test="mn != null">MN = #{mn},</if>
+            <if test="ven7Wk != null">7WK = #{ven7Wk},</if>
+            <if test="mfDt != null">MFDT = #{mfDt},</if>
+        </set>
+        WHERE
+            DEVC_ID = #{deviceId}
+    </update>
+
 </mapper>

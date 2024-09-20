@@ -82,6 +82,16 @@ public class DeviceStatusInfo {
       private String deviceStatus;
       private String addrNickname;
       private String serialNumber;
-
+      
+      private String vtSp;
+      private String onHour;
+      private String onMinute;
+      private String offHour;
+      private String offMinute;
+      private String pw;                  // 전원ON/OFF예약
+      private String hr;                  // 전원ON/OFF예약 시간 타이머
+      private String mn;                  // 전원ON/OFF예약 분 타이머
+      private String ven7Wk;
+      
    }
 }

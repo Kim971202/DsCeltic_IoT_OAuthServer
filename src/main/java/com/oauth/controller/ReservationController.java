@@ -111,4 +111,28 @@ public class ReservationController {
 
         return reservationService.doSetWeek(params);
     }
+
+    /** 환기 취침 모드  */
+    @PostMapping(value = "/setSleepMode")
+    @ResponseBody
+    public ResponseEntity<?> doSetSleepMode(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        String logStep = "[환기 취침 모드]";
+        log.info("[환기 취침 모드]");
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getOnHour()) ||
+                Validator.isNullOrEmpty(params.getOnMinute()) ||
+                Validator.isNullOrEmpty(params.getOffHour()) ||
+                Validator.isNullOrEmpty(params.getOffMinute()) ||
+                Validator.isNullOrEmpty(params.getOnOffFlag())){
+            throw new CustomException("404", "환기 취침 모드 값 오류");
+        }
+
+        return reservationService.doSetSleepMode(params);
+    }
+
 }

@@ -18,4 +18,6 @@ public interface ReservationService {
     /** 주간 예약  */
     ResponseEntity<?> doSetWeek(AuthServerDTO params) throws CustomException;
 
+    /** 환기 취침 모드  */
+    ResponseEntity<?> doSetSleepMode(AuthServerDTO params) throws CustomException;
 }

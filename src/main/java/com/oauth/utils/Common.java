@@ -423,6 +423,10 @@ public class Common {
         commandMap.put("h12", new String[]{"Set12", "12h", "12시간 예약"});
         commandMap.put("wk7", new String[]{"SetWeek", "7wk", "주간 예약"});
         commandMap.put("fwh", new String[]{"AwakeAlarmSet", "fwh", "빠른온수 예약"});
+        commandMap.put("bCdt", new String[]{"BCDT", "bCdt", "보일러 연소 상태"});
+        commandMap.put("chTp", new String[]{"CHTP", "chTp", "현재 실내 온도"});
+        commandMap.put("cwTp", new String[]{"CWTP", "cwTp", "현재 난방수 온도"});
+        commandMap.put("slCd", new String[]{"SLCD", "slCd", "취침 난방 모드 설정"});
         commandMap.put("mwk", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
         commandMap.put("reSt", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
         commandMap.put("mfAr", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});

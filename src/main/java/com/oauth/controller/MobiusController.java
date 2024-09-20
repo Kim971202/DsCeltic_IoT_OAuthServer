@@ -42,7 +42,6 @@ public class MobiusController {
     GwMessagingSystem gwMessagingSystem;
     @Autowired
     PushService pushService;
-
     @Value("#{${device.model.code}}")
     Map<String, String> modelCodeMap;
 
@@ -240,6 +239,9 @@ public class MobiusController {
                 dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt")); // 온수사용상태 정보
                 dr910WDevice.setSlCd(common.readCon(jsonBody, "slCd")); // 취침모드 코드
                 dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt")); // 변경 시간
+
+            // 신형 환기 RC
+            }else if(common.hexToString(modelCode[5]).equals(modelCodeMap.get("ventilation"))){
 
             }
             mobiusService.rtstHandler(dr910WDevice);
