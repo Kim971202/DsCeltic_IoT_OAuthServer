@@ -335,6 +335,8 @@
             <if test="h24 != null">24H,</if>
             <if test="wk7 != null">7WK,</if>
             <if test="fwh != null">FWH,</if>
+            <if test="fcLc != null">FCLC,</if>
+            <if test="blCf != null">BLCF,</if>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -357,6 +359,8 @@
             <if test="h24 != null">#{h24},</if>
             <if test="wk7 != null">#{wk7},</if>
             <if test="fwh != null">#{fwh},</if>
+            <if test="fcLc != null">#{fcLc},</if>
+            <if test="blCf != null">#{blCf},</if>
         </trim>
     </insert>
 
@@ -380,6 +384,8 @@
                     12H = #{h12},
                     24H = #{h24},
                     <if test="fwh != null">FWH = #{fwh},</if>
+                    <if test="fcLc != null">FCLC = #{fcLc},</if>
+                    <if test="blCf != null">BLCF = #{blCf},</if>
                     SLCD = #{slCd},
                     MFDT = #{mfDt}
         WHERE

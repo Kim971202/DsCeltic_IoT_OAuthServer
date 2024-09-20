@@ -335,12 +335,7 @@ public class UserServiceImpl implements UserService {
             else
                 msg = "비밀번호 찾기 - 초기화 실패";
 
-
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
@@ -456,11 +451,7 @@ public class UserServiceImpl implements UserService {
                 msg = "회원 별칭(이름) 및 전화번호 변경 성공";
             }
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -512,11 +503,7 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e) {
@@ -589,11 +576,7 @@ public class UserServiceImpl implements UserService {
             else msg = "사용자 추가 - 초대 실패";
 
             params.setUserId(params.getRequestUserId());
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             userNickname = memberMapper.getUserNickname(params.getRequestUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
@@ -612,11 +595,8 @@ public class UserServiceImpl implements UserService {
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("Add User jsonString: " + jsonString);
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                log.info("PUSH 메세지 전송 오류");
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
@@ -735,12 +715,7 @@ public class UserServiceImpl implements UserService {
             // params에 userId 추가
             params.setUserId(params.getRequestUserId());
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
             pushToken = memberMapper.getPushTokenByUserId(requestUserId);
 
             userNickname = memberMapper.getUserNickname(requestUserId);
@@ -758,11 +733,8 @@ public class UserServiceImpl implements UserService {
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("jsonString: " + jsonString);
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            }
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                log.info("PUSH 메세지 전송 오류");
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -874,11 +846,7 @@ public class UserServiceImpl implements UserService {
             }
             msg = "사용자(세대원) - 강제탈퇴 성공";
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -895,8 +863,6 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
-        String userId = params.getUserId();
-        String deviceId = params.getDeviceId();
         List<String> pushCode = params.getPushCd();
         List<String> pushYn = params.getPushYn();
 
@@ -919,11 +885,7 @@ public class UserServiceImpl implements UserService {
                     }
                 }
                 System.out.println("params: " + params);
-                if(memberMapper.updatePushCodeStatus(params) <= 0){
-                    msg = "홈 IoT 컨트롤러 알림 설정 실패";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                }
+                if(memberMapper.updatePushCodeStatus(params) <= 0) log.info("홈 IoT 컨트롤러 알림 설정 실패");
 
                 msg = "홈 IoT 컨트롤러 알림 설정 성공";
 
@@ -941,7 +903,6 @@ public class UserServiceImpl implements UserService {
             throws CustomException{
 
         String userId = params.getUserId();
-        String deviceId = params.getDeviceId();
         HashMap<String, Object> resultMap = new LinkedHashMap<String, Object>();
         List<AuthServerDTO> deviceIdList;
 
@@ -1051,11 +1012,7 @@ public class UserServiceImpl implements UserService {
 
             msg = "사용자(세대주) 탈퇴  실패";
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -1099,7 +1056,6 @@ public class UserServiceImpl implements UserService {
             }
 
             msg = "홈IoT 서비스 회원 탈퇴 성공";
-
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -1191,11 +1147,7 @@ public class UserServiceImpl implements UserService {
                 msg = "최초 인증 실패";
             }
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             result.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
@@ -1292,11 +1244,7 @@ public class UserServiceImpl implements UserService {
                 msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 실패";
             }
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
@@ -1400,11 +1348,7 @@ public class UserServiceImpl implements UserService {
             if(stringObject.equals("Y")) msg = "기기 별칭 수정 성공";
             else msg = "기기 별칭 수정 실패";
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             data.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
@@ -1484,11 +1428,7 @@ public class UserServiceImpl implements UserService {
             msg = "기기 밝기 수정 성공";
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             pushYn = memberMapper.getPushYnStatus(params);
             conMap1.put("pushYn", pushYn.getFPushYn());
@@ -1502,11 +1442,9 @@ public class UserServiceImpl implements UserService {
 
             redisCommand.deleteValues(uuId);
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201")) {
-                msg = "PUSH 메세지 전송 오류";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201"))
+                log.info("PUSH 메세지 전송 오류");
+
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1602,11 +1540,7 @@ public class UserServiceImpl implements UserService {
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -1655,11 +1589,7 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_2002, msg);
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){

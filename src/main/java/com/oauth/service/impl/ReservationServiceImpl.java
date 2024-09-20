@@ -172,11 +172,8 @@ public class ReservationServiceImpl implements ReservationService{
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             redisCommand.deleteValues(set24.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -297,11 +294,8 @@ public class ReservationServiceImpl implements ReservationService{
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             redisCommand.deleteValues(set12.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -389,17 +383,15 @@ public class ReservationServiceImpl implements ReservationService{
             if(stringObject.equals("Y")) {
                 msg = "빠른 온수 예약 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            }
-            else if(stringObject.equals("N")) {
+            } else if(stringObject.equals("N")) {
                 msg = "빠른 온수 예약 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-            else {
+            } else {
                 msg = "응답이 없거나 시간 초과";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            dbMap.put("hs", params.getHours().toString());
+            dbMap.put("hs", params.getHours());
             dbMap.put("md", params.getType24h());
 
             deviceInfo.setH24(common.convertToJsonString(JSON.toJson(dbMap)));
@@ -413,11 +405,8 @@ public class ReservationServiceImpl implements ReservationService{
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             redisCommand.deleteValues(awakeAlarmSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -606,8 +595,6 @@ public class ReservationServiceImpl implements ReservationService{
                "ofTm":{"hr":"08", "mn":"00"}
             }
             */
-
-
 
             // onOffFlag가 on인 경우에만 기기제어
             if(onOffFlag.equals("on")){
