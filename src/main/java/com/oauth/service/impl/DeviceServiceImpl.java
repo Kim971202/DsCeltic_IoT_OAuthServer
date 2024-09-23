@@ -1275,7 +1275,6 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             }
 
-
             redisCommand.deleteValues(lockSet.getUuId());
 
             deviceInfo.setFcLc(params.getLockSet());

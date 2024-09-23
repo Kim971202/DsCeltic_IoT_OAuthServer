@@ -413,6 +413,8 @@
             <if test="h24 != null">24H = #{h24},</if>
             <if test="fwh != null">FWH = #{fwh},</if>
             <if test="slCd != null">SLCD = #{slCd},</if>
+            <if test="ecOp != null">ECOP = #{ecOp},</if>
+            <if test="fcLc != null">FCLC = #{fcLc},</if>
             <if test="mfDt != null">MFDT = #{mfDt},</if>
         </set>
         WHERE DEVC_ID = #{deviceId}
