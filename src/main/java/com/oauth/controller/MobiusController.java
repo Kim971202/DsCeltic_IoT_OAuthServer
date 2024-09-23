@@ -239,11 +239,21 @@ public class MobiusController {
                 dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt")); // 온수사용상태 정보
                 dr910WDevice.setSlCd(common.readCon(jsonBody, "slCd")); // 취침모드 코드
                 dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt")); // 변경 시간
-                dr910WDevice.setMfDt(common.readCon(jsonBody, "blCf")); // LCD 1~5단계 설정
+                dr910WDevice.setBlCf(common.readCon(jsonBody, "blCf")); // LCD 1~5단계 설정
 
             // 신형 환기 RC
             }else if(common.hexToString(modelCode[5]).equals(modelCodeMap.get("ventilation"))){
+                dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));
+                dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
+                dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
 
+                dr910WDevice.setPowr(common.readCon(jsonBody, "powr")); // 전원 ON/OF
+                dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd")); // 홈 IoT 모드
+                dr910WDevice.setVtSp(common.readCon(jsonBody, "vtSp")); // Ventilation fan speed
+//                dr910WDevice.setI(common.readCon(jsonBody, "inAq")); // 실내 공기질 (실내온도, 실내습도, PM10, PM2.5)
+//                dr910WDevice.setHwTp(common.readCon(jsonBody, "otHm")); // 실외온도, 실외습도
+//                dr910WDevice.setFtMd(common.readCon(jsonBody, "ptAq")); // 포터블 공기질
+//                dr910WDevice.setBCdt(common.readCon(jsonBody, "mfDt")); // 변경 일시
             }
             mobiusService.rtstHandler(dr910WDevice);
         } else {
