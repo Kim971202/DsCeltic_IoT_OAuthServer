@@ -1396,8 +1396,9 @@ public class UserServiceImpl implements UserService {
 
             redisValue = userId + "," + "blCf";
             redisCommand.setValues(uuId, redisValue);
+
             String jsonString = objectMapper.writeValueAsString(conMap);
-            mobiusResponse = mobiusService.createCin(serialNumber.getSerialNumber(), userId, jsonString);
+            mobiusResponse = mobiusService.createCin(common.stringToHex("    " + serialNumber.getSerialNumber()), userId, jsonString);
             if(!mobiusResponse.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
