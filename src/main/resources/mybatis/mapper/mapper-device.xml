@@ -486,7 +486,8 @@
             IFNULL(MFDT, '') AS mfDt,
             IFNULL(SLCD, '') AS slCd,
             IFNULL(BCDT, '') AS bCdt,
-            IFNULL(CWTP, 0.0) AS cwTp
+            IFNULL(CWTP, 0.0) AS cwTp,
+            IFNULL(BLCF, 0.0) AS blCf
         FROM
             TBR_OPR_DEVICE_STATUS
         WHERE
