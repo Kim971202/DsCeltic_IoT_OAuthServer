@@ -1387,6 +1387,8 @@ public class UserServiceImpl implements UserService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+            System.out.println("params.getBrightnessLevel(): " + params.getBrightnessLevel());
+
             conMap.put("controlAuthKey", params.getControlAuthKey());
             conMap.put("deviceId", params.getDeviceId());
             conMap.put("deviceType", params.getDeviceType());
