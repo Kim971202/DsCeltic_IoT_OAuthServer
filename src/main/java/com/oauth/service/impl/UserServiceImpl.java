@@ -1395,6 +1395,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("modelCode", params.getModelCode());
             conMap.put("brightnessLevel", params.getBrightnessLevel());
             conMap.put("functionId", "blCf");
+            conMap.put("uuId", uuId);
 
             redisValue = userId + "," + "blCf";
             redisCommand.setValues(uuId, redisValue);
