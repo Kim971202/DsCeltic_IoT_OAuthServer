@@ -510,6 +510,8 @@ public class UserController {
         String logStep = "[기기 밝기 조절]";
         log.info("[기기 밝기 조절]");
 
+        System.out.println("params.getBrightnessLevel(): " + params.getBrightnessLevel());
+
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
