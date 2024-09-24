@@ -357,6 +357,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             redisValue = userId + "," + awakeAlarmSet.getFunctionId();
             redisCommand.setValues(awakeAlarmSet.getUuId(), redisValue);
+            System.out.println("JSON.toJson(awakeAlarmSet): " + JSON.toJson(awakeAlarmSet));
             response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(awakeAlarmSet));
 
             if(!response.getResponseCode().equals("201")){

@@ -1080,7 +1080,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
-                responseMessage = gwMessagingSystem.waitForResponse("opMd" + fastHotWaterSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                responseMessage = gwMessagingSystem.waitForResponse("ftMd" + fastHotWaterSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if(responseMessage == null) stringObject = "T";
                 else {
                     if (responseMessage.equals("0")) stringObject = "Y";
