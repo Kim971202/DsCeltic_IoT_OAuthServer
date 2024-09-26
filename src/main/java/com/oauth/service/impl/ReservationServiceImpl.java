@@ -734,4 +734,161 @@ public class ReservationServiceImpl implements ReservationService{
 
         return null;
     }
+
+    /** 환기 꺼짐/켜짐 예약 */
+    @Override
+    public ResponseEntity<?> doSetOnOffPower(AuthServerDTO params) throws CustomException {
+
+        SetOnOffPower setOnOffPower = new SetOnOffPower();
+        ApiResponse.Data result = new ApiResponse.Data();
+
+        String stringObject;
+        String msg;
+        String userId = params.getUserId();
+        String deviceId = params.getDeviceId();
+        String controlAuthKey = params.getControlAuthKey();
+        String redisValue;
+        String serialNumber;
+        String responseMessage = null;
+
+        String power = params.getPowerStatus();
+        String waitHour = params.getWaitHour();
+        String waitMinute = params.getWaitMinute();
+
+        AuthServerDTO userNickname;
+
+        MobiusResponse response;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
+
+        try {
+
+            setOnOffPower.setUserId(userId);
+            setOnOffPower.setDeviceId(deviceId);
+            setOnOffPower.setControlAuthkey(controlAuthKey);
+            setOnOffPower.setFunctionId("rsPw");
+            setOnOffPower.setUuId(common.getTransactionId());
+
+            // onOffTimerList 객체 생성
+            Map<String, String> onOffTimerList = new HashMap<>();
+            onOffTimerList.put("pw", power);
+            onOffTimerList.put("hr", waitHour);
+            onOffTimerList.put("mn", waitMinute);
+
+            setOnOffPower.setOnOffTimerList(onOffTimerList);
+
+            redisValue = userId + "," + setOnOffPower.getFunctionId();
+            redisCommand.setValues(setOnOffPower.getUuId(), redisValue);
+
+            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
+
+            if (device == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            } else serialNumber = device.getSerialNumber();
+
+            if(serialNumber == null) {
+                msg = "환기 꺼짐/켜짐 예약 실패";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }else {
+                stringObject = "Y";
+                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(setOnOffPower));
+                if (!response.getResponseCode().equals("201")) {
+                    msg = "중계서버 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+            }
+
+            try {
+                // 메시징 시스템을 통해 응답 메시지 대기
+                gwMessagingSystem.printMessageQueues();
+                log.info("responseMessage: rsPw" + setOnOffPower.getUuId());
+                responseMessage = gwMessagingSystem.waitForResponse("rsPw" + setOnOffPower.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                if (responseMessage != null) {
+                    // 응답 처리
+                    log.info("receiveCin에서의 응답: " + responseMessage);
+                    if (responseMessage.equals("0")) stringObject = "Y";
+                    else stringObject = "N";
+                } else {
+                    // 타임아웃이나 응답 없음 처리
+                    stringObject = "T";
+                    log.info("응답이 없거나 시간 초과");
+                }
+            } catch (InterruptedException e) {
+                // 대기 중 인터럽트 처리
+                log.error("", e);
+            }
+
+            gwMessagingSystem.removeMessageQueue("rsPw" + setOnOffPower.getUuId());
+
+            if(stringObject.equals("Y")) {
+                conMap.put("body", "Device ON/OFF OK");
+                msg = "환기 꺼짐/켜짐 예약 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                result.setTestVariable(responseMessage);
+            }
+            else {
+                conMap.put("body", "Service TIME-OUT");
+                msg = "응답이 없거나 시간 초과";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            }
+
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+
+            redisCommand.deleteValues(setOnOffPower.getUuId());
+
+            deviceInfo.setPowr(params.getPowerStatus());
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+
+            params.setCodeType("1");
+            params.setCommandId("SetOnOffPower");
+            params.setControlCode("rsPw");
+            params.setControlCodeName("환기 꺼짐/켜짐 예약");
+            params.setCommandFlow("0");
+            params.setDeviceId(deviceId);
+            params.setUserId(userId);
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+
+            params.setPushTitle("기기제어");
+            params.setPushContent("환기 꺼짐/켜짐 예약");
+            params.setDeviceId(deviceId);
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+            userNickname = memberMapper.getUserNickname(userId);
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+
+            for(int i = 0; i < userIds.size(); ++i){
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                conMap.put("title", "rsPw");
+                conMap.put("rsPw", params.getPowerStatus());
+                conMap.put("isEnd", "false");
+                conMap.put("userNickname", userNickname.getUserNickname());
+                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+                log.info("doPowerOnOff jsonString: " + jsonString);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                    log.info("PUSH 메세지 전송 오류");
+            }
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+
+        } catch (Exception e){
+            log.error("", e);
+        }
+        return null;
+    }
 }

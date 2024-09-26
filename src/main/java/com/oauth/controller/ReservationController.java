@@ -135,4 +135,27 @@ public class ReservationController {
         return reservationService.doSetSleepMode(params);
     }
 
+    /** 환기 꺼짐/켜짐 예약 */
+    @PostMapping(value = "/setOnOffPower")
+    @ResponseBody
+    public ResponseEntity<?> doSetOnOffPower(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        String logStep = "[환기 꺼짐/켜짐 예약]";
+        log.info("[환기 꺼짐/켜짐 예약]");
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getOnHour()) ||
+                Validator.isNullOrEmpty(params.getPowerStatus()) ||
+                Validator.isNullOrEmpty(params.getWaitHour()) ||
+                Validator.isNullOrEmpty(params.getWaitMinute()) ||
+                Validator.isNullOrEmpty(params.getOnOffFlag())){
+            throw new CustomException("404", "환기 꺼짐/켜짐 예약 값 오류");
+        }
+
+        return reservationService.doSetOnOffPower(params);
+    }
+
 }

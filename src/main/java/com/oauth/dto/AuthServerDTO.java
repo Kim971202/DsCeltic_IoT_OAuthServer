@@ -179,6 +179,9 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String offHour;                      // 꺼짐 시간
     private String offMinute;                    // 꺼짐 분
 
+    private String waitHour;                     // 대기 시간
+    private String waitMinute;                   // 대기 분
+
     private Role role = Role.USER;
 
     private boolean accountNonExpired = true;

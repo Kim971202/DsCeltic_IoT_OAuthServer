@@ -1064,7 +1064,7 @@ public class DeviceServiceImpl implements DeviceService {
             fastHotWaterSet.setUserId(userId);
             fastHotWaterSet.setDeviceId(params.getDeviceId());
             fastHotWaterSet.setControlAuthKey(params.getControlAuthKey());
-            fastHotWaterSet.setModeCode(params.getModeCode());
+            fastHotWaterSet.setFtMdSet(params.getModeCode());
             fastHotWaterSet.setFunctionId("ftMd");
             fastHotWaterSet.setUuId(common.getTransactionId());
 

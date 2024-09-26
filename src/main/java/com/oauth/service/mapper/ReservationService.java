@@ -20,4 +20,7 @@ public interface ReservationService {
 
     /** 환기 취침 모드  */
     ResponseEntity<?> doSetSleepMode(AuthServerDTO params) throws CustomException;
+
+    /** 환기 꺼짐/켜짐 예약 */
+    ResponseEntity<?> doSetOnOffPower(AuthServerDTO params) throws CustomException;
 }
