@@ -147,7 +147,6 @@ public class ReservationController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getOnHour()) ||
                 Validator.isNullOrEmpty(params.getPowerStatus()) ||
                 Validator.isNullOrEmpty(params.getWaitHour()) ||
                 Validator.isNullOrEmpty(params.getWaitMinute()) ||
