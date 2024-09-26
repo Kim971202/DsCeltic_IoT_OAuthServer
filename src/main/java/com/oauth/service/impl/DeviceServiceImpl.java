@@ -1626,7 +1626,7 @@ public class DeviceServiceImpl implements DeviceService {
             fanSpeedSet.setControlAuthKey(controlAuthKey);
             fanSpeedSet.setModelCode(common.stringToHex(modelCode));
             fanSpeedSet.setFanSpeed(fanSpeed);
-            fanSpeedSet.setFunctionId("fanSpeed");
+            fanSpeedSet.setFunctionId("vtSp");
             fanSpeedSet.setUuId(common.getTransactionId());
 
             redisValue = userId + "," + "VentilationFanSpeedSet";
