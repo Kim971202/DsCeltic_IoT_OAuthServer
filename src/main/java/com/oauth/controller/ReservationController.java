@@ -144,6 +144,8 @@ public class ReservationController {
         String logStep = "[환기 꺼짐/켜짐 예약]";
         log.info("[환기 꺼짐/켜짐 예약]");
 
+        System.out.println(params);
+
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
