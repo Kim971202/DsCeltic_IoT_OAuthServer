@@ -182,8 +182,8 @@ public class MobiusController {
 
 
         } else if (functionId.equals("rtSt")) {
-            // 주기상태보고
 
+            // 주기상태보고
             DeviceStatusInfo.Device dr910WDevice = new DeviceStatusInfo.Device();
 
             // DeviceId로 ModelCode 확인

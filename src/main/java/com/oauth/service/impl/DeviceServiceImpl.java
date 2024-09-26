@@ -545,8 +545,9 @@ public class DeviceServiceImpl implements DeviceService {
 
             deviceInfo.setOpMd(modeCode);
             deviceInfo.setDeviceId(deviceId);
-            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+            if(params.getModeCode().equals("06")) deviceInfo.setSlCd(sleepCode);
 
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
             switch (modeCode){
                 case "01":
