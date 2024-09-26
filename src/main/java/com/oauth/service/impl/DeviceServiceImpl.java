@@ -1676,7 +1676,6 @@ public class DeviceServiceImpl implements DeviceService {
 
             gwMessagingSystem.removeMessageQueue("VentilationFanSpeedSet" + fanSpeedSet.getUuId());
 
-
             if(stringObject.equals("Y")) {
                 conMap.put("body", "Device ON/OFF OK");
                 msg = "풍량 단수 설정 성공";

@@ -603,7 +603,7 @@ public class ReservationServiceImpl implements ReservationService{
                 setSleepMode.setUserId(userId);
                 setSleepMode.setDeviceId(deviceId);
                 setSleepMode.setControlAuthKey(controlAuthKey);
-                setSleepMode.setFunctionId("setSleepMode");
+                setSleepMode.setFunctionId("slSt");
                 setSleepMode.setUuId(common.getTransactionId());
 
                 // onTm 객체 생성
