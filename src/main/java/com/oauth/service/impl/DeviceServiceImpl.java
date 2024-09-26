@@ -1626,7 +1626,7 @@ public class DeviceServiceImpl implements DeviceService {
             fanSpeedSet.setControlAuthKey(controlAuthKey);
             fanSpeedSet.setModelCode(common.stringToHex(modelCode));
             fanSpeedSet.setFanSpeed(fanSpeed);
-            fanSpeedSet.setFunctionId("VentilationFanSpeedSet");
+            fanSpeedSet.setFunctionId("fanSpeed");
             fanSpeedSet.setUuId(common.getTransactionId());
 
             redisValue = userId + "," + "VentilationFanSpeedSet";
@@ -1697,7 +1697,7 @@ public class DeviceServiceImpl implements DeviceService {
 
 
             params.setCodeType("1");
-            params.setCommandId("fanSpeed");
+            params.setCommandId("VentilationFanSpeedSet");
             params.setControlCode("vtSp");
             params.setControlCodeName("풍량 단수 설정");
             params.setCommandFlow("0");
@@ -1720,7 +1720,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
 
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                conMap.put("title", "powr");
+                conMap.put("title", "VentilationFanSpeedSet");
                 conMap.put("powr", params.getPowerStatus());
                 conMap.put("isEnd", "false");
                 conMap.put("userNickname", userNickname.getUserNickname());
