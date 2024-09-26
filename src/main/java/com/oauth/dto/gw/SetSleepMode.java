@@ -13,9 +13,8 @@ public class SetSleepMode {
     private String userId;
     private String deviceId;
     private String controlAuthKey;
-    private String timeMap;
     private String onOffFlag;
-    private Map<String, Map<String, String>> timeSchedule;
+    private Map<String, Map<String, String>> sleepTimerList;
     private String functionId;
     private String uuId;
 

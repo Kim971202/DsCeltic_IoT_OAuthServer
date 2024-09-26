@@ -621,7 +621,7 @@ public class ReservationServiceImpl implements ReservationService{
                 timeMap.put("onTm", onTm);
                 timeMap.put("ofTm", ofTm);
 
-                setSleepMode.setTimeSchedule(timeMap);
+                setSleepMode.setSleepTimerList(timeMap);
 
                 redisValue = userId + "," + "setSleepMode";
                 redisCommand.setValues(setSleepMode.getUuId(), redisValue);
