@@ -1697,7 +1697,7 @@ public class DeviceServiceImpl implements DeviceService {
 
 
             params.setCodeType("1");
-            params.setCommandId("VentilationFanSpeedSet");
+            params.setCommandId("fanSpeed");
             params.setControlCode("vtSp");
             params.setControlCodeName("풍량 단수 설정");
             params.setCommandFlow("0");
