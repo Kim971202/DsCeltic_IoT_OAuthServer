@@ -291,6 +291,7 @@
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.userId}
         </foreach>
+        ORDER BY DEVC_ID
     </select>
 
     <select id="getDeviceInfoSearch" parameterType="String" resultMap="device">
