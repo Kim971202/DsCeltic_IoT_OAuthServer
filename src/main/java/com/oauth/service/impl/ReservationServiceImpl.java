@@ -349,7 +349,7 @@ public class ReservationServiceImpl implements ReservationService{
             awakeAlarmSet.setUuId(common.getTransactionId());
             log.info("params.getAwakeList(): " + params.getAwakeList());
 
-            JsonNode jsonNode = objectMapper.readTree(common.convertToJsonString(params.getWeekList()));
+            JsonNode jsonNode = objectMapper.readTree(common.convertToJsonString(params.getAwakeList()));
             // awakeList 배열을 순회하며 처리
             for (int i = 0; i < jsonNode.path("awakeList").size(); ++i) {
                 // hr과 mn 처리
