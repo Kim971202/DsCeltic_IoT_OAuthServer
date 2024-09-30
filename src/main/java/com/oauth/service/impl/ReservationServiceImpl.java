@@ -318,7 +318,7 @@ public class ReservationServiceImpl implements ReservationService{
         String deviceId = params.getDeviceId();
         AwakeAlarmSet awakeAlarmSet = new AwakeAlarmSet();
         List<HashMap<String, Object>> awakeList = new ArrayList<HashMap<String, Object>>();
-        HashMap<String, Object> map = new HashMap<>();
+        HashMap<String, Object> map = new LinkedHashMap<>();
         String redisValue;
         MobiusResponse response;
         String responseMessage;
