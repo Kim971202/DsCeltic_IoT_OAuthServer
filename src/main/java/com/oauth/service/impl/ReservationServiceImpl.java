@@ -353,7 +353,7 @@ public class ReservationServiceImpl implements ReservationService{
 //                awakeList.add(map);
 //                map = new HashMap<>();
 //            }
-
+//
 //            awakeAlarmSet.setAwakeList(awakeList);
 
             redisValue = userId + "," + awakeAlarmSet.getFunctionId();
