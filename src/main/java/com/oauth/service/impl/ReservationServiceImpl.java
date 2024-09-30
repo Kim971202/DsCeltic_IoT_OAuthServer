@@ -348,26 +348,29 @@ public class ReservationServiceImpl implements ReservationService{
             awakeAlarmSet.setUuId(common.getTransactionId());
             log.info("params.getAwakeList(): " + params.getAwakeList());
 
-            // JSON 배열로 파싱
-            JSONArray jsonArray = new JSONArray(params.getAwakeList());
+            // JSON 문자열에서 최상위 JSONArray를 생성하고 첫 번째 요소를 가져옴
+            JSONObject jsonObject = new JSONArray(params.getAwakeList()).getJSONObject(0);
 
-            // 첫 번째 요소를 가져옴
-            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            // "awakeList" 키의 JSONArray를 가져옴
+            JSONArray awakeListArray = jsonObject.getJSONArray("awakeList");
 
-            // awakeList 가져오기
-            JSONArray newAwakeList = jsonObject.getJSONArray("awakeList");
-            log.info("newAwakeList: " + newAwakeList);
+            // 결과를 저장할 List<HashMap<String, Object>>
+            List<HashMap<String, Object>> newAwakeList = new ArrayList<>();
+
+            // awakeListArray를 순회하며 데이터를 HashMap으로 변환
+            for (int i = 0; i < awakeListArray.length(); i++) {
+                JSONObject item = awakeListArray.getJSONObject(i);
+
+                HashMap<String, Object> listMap = new HashMap<>();
+                listMap.put("hr", item.getString("hr"));
+                listMap.put("mn", item.getString("mn"));
+                listMap.put("ws", item.getJSONArray("ws").toList());
+
+                // 생성한 map을 newAwakeList에 추가
+                newAwakeList.add(listMap);
+            }
 
             awakeAlarmSet.setAwakeList(newAwakeList);
-//            for(int i = 0 ; i < params.getAwakeList().size(); ++i){
-//                map.put("ws", Arrays.asList(params.getWs()[i]));
-//                map.put("mn", params.getMn()[i]);
-//                map.put("hr", params.getHr()[i]);
-//                awakeList.add(map);
-//                map = new HashMap<>();
-//            }
-//
-//            awakeAlarmSet.setAwakeList(awakeList);
 
             redisValue = userId + "," + awakeAlarmSet.getFunctionId();
             redisCommand.setValues(awakeAlarmSet.getUuId(), redisValue);

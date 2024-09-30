@@ -136,7 +136,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String onOffFlag;                    // on: 단말 제어 of: 시간정보만 서버저장
     private String workPeriod;                   // 가동주기(시), "00"~"12"
     private String workTime;                     // 가동시간(분), "01"~"60"
-    private List<Map<String, Object>> awakeList; // 기상모드 설정 리스트 아이템
+    private List<String> awakeList; // 기상모드 설정 리스트 아이템
     private String[][] ws;
     private String[] hr;
     private String[] mn;
