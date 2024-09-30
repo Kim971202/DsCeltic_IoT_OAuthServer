@@ -214,6 +214,7 @@ public class DeviceServiceImpl implements DeviceService {
         log.info("registYn: " + registYn);
 
         AuthServerDTO deviceRegistStatus;
+        AuthServerDTO checkDeviceAuthkeyExist;
 
         try {
             // 수정
@@ -277,6 +278,10 @@ public class DeviceServiceImpl implements DeviceService {
                         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                     }
                 }
+
+                checkDeviceAuthkeyExist = deviceMapper.checkDeviceAuthkeyExist(params);
+                System.out.println(checkDeviceAuthkeyExist);
+//                if(checkDeviceAuthkeyExist.getControlAuthKey().equals("EMPTY"))
 
                 if(deviceMapper.insertDeviceRegist(params) <= 0){
                     msg = "홈 IoT 컨트롤러 정보 등록 실패.";
@@ -1408,6 +1413,8 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("fcLc", devicesStatusInfo.get(i).getFcLc());
                     data.put("type24h", common.readCon(devicesStatusInfo.get(i).getH24(), "serviceMd"));
                     data.put("slCd", devicesStatusInfo.get(i).getSlCd());
+                    data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
+                    data.put("inAq", devicesStatusInfo.get(i).getInAq());
                     appResponse.add(data);
                 }
                 stringObject = "Y";

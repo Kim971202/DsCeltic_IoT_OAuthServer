@@ -92,6 +92,8 @@ public class DeviceStatusInfo {
       private String hr;                  // 전원ON/OFF예약 시간 타이머
       private String mn;                  // 전원ON/OFF예약 분 타이머
       private String ven7Wk;
-      
+      private String rsSl;
+      private String rsPw;
+      private String inAq;
    }
 }

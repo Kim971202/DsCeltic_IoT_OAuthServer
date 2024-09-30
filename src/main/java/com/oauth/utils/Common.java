@@ -261,6 +261,10 @@ public class Common {
                 return serializeAndClean(conNode.path("rsCf").path("12h"), objectMapper);
             case "7wk":
                 return serializeAndClean(conNode.path("rsCf").path("7wk"), objectMapper);
+            case "rsSl":
+                return serializeAndClean(conNode.path("rsCf").path("rsSl"), objectMapper);
+            case "rsPw":
+                return serializeAndClean(conNode.path("rsCf").path("rsPw"), objectMapper);
             case "24h_old":
                 return serializeAndClean(jsonNode.path("24h"), objectMapper);
             case "12h_old":

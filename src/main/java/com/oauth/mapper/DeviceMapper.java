@@ -43,7 +43,7 @@ public interface DeviceMapper {
     public int insertErrorInfo(AuthServerDTO device);
     public int updateDeviceStatusFromApplication(DeviceStatusInfo.Device device);
     public int insertJson(String jsonBody);
-
     public int updateSleepMode(AuthServerDTO params);
+    public AuthServerDTO checkDeviceAuthkeyExist(AuthServerDTO params);
 
 }

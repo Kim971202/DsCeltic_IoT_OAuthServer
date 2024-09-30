@@ -249,13 +249,15 @@ public class MobiusController {
                 dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
                 dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
 
+                dr910WDevice.setRsSl(common.convertToJsonString(common.readCon(jsonBody, "rsSl"))); // 취침 예약
+                dr910WDevice.setRsPw(common.convertToJsonString(common.readCon(jsonBody, "rsPw"))); // 전원 예약
+                dr910WDevice.setVen7Wk(common.convertToJsonString(common.readCon(jsonBody, "7wk"))); // 주간 예약
+
                 dr910WDevice.setPowr(common.readCon(jsonBody, "powr")); // 전원 ON/OF
                 dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd")); // 홈 IoT 모드
                 dr910WDevice.setVtSp(common.readCon(jsonBody, "vtSp")); // Ventilation fan speed
-//                dr910WDevice.setI(common.readCon(jsonBody, "inAq")); // 실내 공기질 (실내온도, 실내습도, PM10, PM2.5)
-//                dr910WDevice.setHwTp(common.readCon(jsonBody, "otHm")); // 실외온도, 실외습도
-//                dr910WDevice.setFtMd(common.readCon(jsonBody, "ptAq")); // 포터블 공기질
-//                dr910WDevice.setBCdt(common.readCon(jsonBody, "mfDt")); // 변경 일시
+                dr910WDevice.setInAq(common.readCon(jsonBody, "inAq")); // 실내 공기질
+                dr910WDevice.setBCdt(common.readCon(jsonBody, "mfDt")); // 변경 일시
             }
             mobiusService.rtstHandler(dr910WDevice);
         } else {

@@ -339,6 +339,12 @@
             <if test="fwh != null">FWH,</if>
             <if test="fcLc != null">FCLC,</if>
             <if test="blCf != null">BLCF,</if>
+
+            <if test="rsSl != null">RSSL,</if>
+            <if test="rsPw != null">RSPW,</if>
+            <if test="inAq != null">INAQ,</if>
+            <if test="ven7Wk != null">7WK,</if>
+            <if test="vtSp != null">VTSP,</if>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -363,6 +369,12 @@
             <if test="fwh != null">#{fwh},</if>
             <if test="fcLc != null">#{fcLc},</if>
             <if test="blCf != null">#{blCf},</if>
+
+            <if test="rsSl != null">#{rsSl},</if>
+            <if test="rsPw != null">#{rsPw},</if>
+            <if test="inAq != null">#{inAq},</if>
+            <if test="ven7Wk != null">#{ven7Wk},</if>
+            <if test="vtSp != null">#{vtSp},</if>
         </trim>
     </insert>
 
@@ -633,5 +645,35 @@
         WHERE
             DEVC_ID = #{deviceId}
     </update>
+
+    <select id="checkDeviceAuthkeyExist" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        SELECT
+            COALESCE(a.DEVC_CTRL_KEY, 'EMPTY') AS controlAuthKey
+        FROM
+            TBR_OPR_DEVICE_DETAIL a
+        LEFT JOIN
+            TBR_OPR_USER_DEVICE b
+        ON
+            a.DEVC_ID = b.DEVC_ID
+        WHERE
+            b.DEVC_ID = #{deviceId}
+        AND
+            b.USER_ID = #{userId}
+        UNION ALL
+        SELECT 'EMPTY' AS controlAuthKey
+        WHERE NOT EXISTS (
+        SELECT 1
+        FROM
+            TBR_OPR_DEVICE_DETAIL a
+        INNER JOIN
+            TBR_OPR_USER_DEVICE b
+        ON
+            a.DEVC_ID = b.DEVC_ID
+        WHERE
+            b.DEVC_ID = #{deviceId}
+        AND
+            b.USER_ID = #{userId}
+        );
+    </select>
 
 </mapper>
