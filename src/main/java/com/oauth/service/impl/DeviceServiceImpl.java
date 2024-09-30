@@ -285,6 +285,8 @@ public class DeviceServiceImpl implements DeviceService {
                     // TODO: Return 값이 EMPTY가 아닌 경우 이미 같은 값을 가진 기기가 있으므로 Rkey값을 UPDATE 한다.
                     deviceMapper.updateUserDevice(params);
                     params.setNewControlAuthKey(controlAuthKey);
+                    // 이전에 등록한 RKey를 기존 ControlAuthKey에 Set
+                    params.setControlAuthKey(checkDeviceAuthkeyExist.getControlAuthKey());
                     deviceMapper.updateDeviceDetail(params);
                     deviceMapper.updateDeviceRegist(params);
                 } else {

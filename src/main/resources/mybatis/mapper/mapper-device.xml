@@ -200,7 +200,6 @@
         UPDATE
             TBT_OPR_DEVICE_REGIST
         SET
-            DEVC_CTRL_KEY = #{newControlAuthKey},
             ZIP = #{zipCode},
             OLD_ADDR = #{oldAddr},
             NEW_ADDR = #{newAddr},
