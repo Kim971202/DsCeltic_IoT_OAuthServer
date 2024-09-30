@@ -45,5 +45,6 @@ public interface DeviceMapper {
     public int insertJson(String jsonBody);
     public int updateSleepMode(AuthServerDTO params);
     public AuthServerDTO checkDeviceAuthkeyExist(AuthServerDTO params);
-
+    public int updateUserDevice(AuthServerDTO params);
+    public int updateDeviceDetail(AuthServerDTO params);
 }

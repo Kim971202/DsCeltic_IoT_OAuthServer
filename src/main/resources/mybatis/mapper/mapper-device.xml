@@ -225,6 +225,17 @@
             )
     </insert>
 
+    <update id="updateDeviceDetail" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE
+            TBR_OPR_DEVICE_DETAIL
+        SET
+            DEVC_CTRL_KEY = #{newControlAuthKey}
+        WHERE
+            DEVC_CTRL_KEY = #{controlAuthKey}
+        AND
+            DEVC_ID = #{deviceId}
+    </update>
+
     <update id="changeDeviceNicknameTemp" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBT_OPR_DEVICE_REGIST
@@ -464,6 +475,17 @@
             'Y'
         )
     </insert>
+
+    <update id="updateUserDevice" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE
+            TBR_OPR_USER_DEVICE
+        SET
+            DEVC_CTRL_KEY = #{controlAuthKey}
+        WHERE
+            USER_ID = #{userId}
+        AND
+            DEVC_ID = #{deviceId}
+    </update>
 
     <select id="getPushinfoByDeviceId" parameterType="String" resultMap="device">
         SELECT

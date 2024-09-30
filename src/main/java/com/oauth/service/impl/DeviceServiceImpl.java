@@ -280,40 +280,44 @@ public class DeviceServiceImpl implements DeviceService {
                 }
 
                 checkDeviceAuthkeyExist = deviceMapper.checkDeviceAuthkeyExist(params);
-                System.out.println(checkDeviceAuthkeyExist);
-//                if(checkDeviceAuthkeyExist.getControlAuthKey().equals("EMPTY"))
+                log.info("checkDeviceAuthkeyExist: " + checkDeviceAuthkeyExist.getControlAuthKey());
+                if(!checkDeviceAuthkeyExist.getControlAuthKey().equals("EMPTY")){
+                    // TODO: Return 값이 EMPTY가 아닌 경우 이미 같은 값을 가진 기기가 있으므로 Rkey값을 UPDATE 한다.
+                    deviceMapper.updateUserDevice(params);
+                    params.setNewControlAuthKey(controlAuthKey);
+                    deviceMapper.updateDeviceDetail(params);
+                } else {
+                    if(deviceMapper.insertDeviceRegist(params) <= 0){
+                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                        result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    }
 
-                if(deviceMapper.insertDeviceRegist(params) <= 0){
-                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    if(deviceMapper.insertDeviceDetail(params) <= 0){
+                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                        result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    }
+
+                    if(deviceMapper.insertUserDevice(params) <= 0){
+                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                        result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    }
+
+                    if(deviceMapper.insertDeviceGrpInfo(params) <= 0){
+                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                        result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    }
+
+                    // Push 설정 관련 기본 DB 추가
+                    if(memberMapper.insertUserDevicePush(params) <= 0){
+                        msg = "사용자 PUSH 정보 등록 실패.";
+                        result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    } else stringObject = "Y";
                 }
-
-                if(deviceMapper.insertDeviceDetail(params) <= 0){
-                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
-
-                if(deviceMapper.insertUserDevice(params) <= 0){
-                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
-
-                if(deviceMapper.insertDeviceGrpInfo(params) <= 0){
-                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
-
-                // Push 설정 관련 기본 DB 추가
-                if(memberMapper.insertUserDevicePush(params) <= 0){
-                    msg = "사용자 PUSH 정보 등록 실패.";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                } else stringObject = "Y";
-
             }
 
             log.info("stringObject: " + stringObject);
