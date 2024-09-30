@@ -286,6 +286,7 @@ public class DeviceServiceImpl implements DeviceService {
                     deviceMapper.updateUserDevice(params);
                     params.setNewControlAuthKey(controlAuthKey);
                     deviceMapper.updateDeviceDetail(params);
+                    deviceMapper.updateDeviceRegist(params);
                 } else {
                     if(deviceMapper.insertDeviceRegist(params) <= 0){
                         msg = "홈 IoT 컨트롤러 정보 등록 실패.";

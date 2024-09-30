@@ -196,6 +196,28 @@
             )
     </insert>
 
+    <update id="updateDeviceRegist" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE
+            TBT_OPR_DEVICE_REGIST
+        SET
+            DEVC_CTRL_KEY = #{newControlAuthKey},
+            ZIP = #{zipCode},
+            OLD_ADDR = #{oldAddr},
+            NEW_ADDR = #{newAddr},
+            DTAIL_ADDR = #{addrDetail},
+            LAT = #{latitude},
+            LON = #{longitude},
+            DEVC_NICK = #{deviceNickname},
+            DEVC_REG_DATM = now(),
+            ADDR_NICK = #{addrNickname}
+        WHERE
+            DEVC_ID = #{deviceId}
+        AND
+            HP = #{hp}
+        AND
+            USER_ID = #{userId}
+    </update>
+
     <insert id="insertDeviceDetail" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO TBR_OPR_DEVICE_DETAIL
             (
@@ -229,7 +251,14 @@
         UPDATE
             TBR_OPR_DEVICE_DETAIL
         SET
-            DEVC_CTRL_KEY = #{newControlAuthKey}
+            DEVC_CTRL_KEY = #{newControlAuthKey},
+            ZIP = #{zipCode},
+            OLD_ADDR = #{oldAddr},
+            NEW_ADDR = #{newAddr},
+            DTAIL_ADDR = #{addrDetail},
+            DEVC_NICK = #{deviceNickname},
+            DEVC_REG_DATM = now(),
+            ADDR_NICK = #{addrNickname}
         WHERE
             DEVC_CTRL_KEY = #{controlAuthKey}
         AND

@@ -47,4 +47,5 @@ public interface DeviceMapper {
     public AuthServerDTO checkDeviceAuthkeyExist(AuthServerDTO params);
     public int updateUserDevice(AuthServerDTO params);
     public int updateDeviceDetail(AuthServerDTO params);
+    public int updateDeviceRegist(AuthServerDTO params);
 }
