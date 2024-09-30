@@ -207,7 +207,7 @@
             LAT = #{latitude},
             LON = #{longitude},
             DEVC_NICK = #{deviceNickname},
-            DEVC_REG_DATM = now(),
+            REG_DATM = now(),
             ADDR_NICK = #{addrNickname}
         WHERE
             DEVC_ID = #{deviceId}
