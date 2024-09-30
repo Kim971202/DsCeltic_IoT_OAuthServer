@@ -344,16 +344,17 @@ public class ReservationServiceImpl implements ReservationService{
             awakeAlarmSet.setControlAuthKey(params.getControlAuthKey());
             awakeAlarmSet.setFunctionId("ftMd");
             awakeAlarmSet.setUuId(common.getTransactionId());
+            log.info("params.getAwakeList(): " + params.getAwakeList());
+            awakeAlarmSet.setAwakeList(params.getAwakeList());
+//            for(int i = 0 ; i < params.getAwakeList().size(); ++i){
+//                map.put("ws", Arrays.asList(params.getWs()[i]));
+//                map.put("mn", params.getMn()[i]);
+//                map.put("hr", params.getHr()[i]);
+//                awakeList.add(map);
+//                map = new HashMap<>();
+//            }
 
-            for(int i = 0 ; i < params.getAwakeList().size(); ++i){
-                map.put("ws", Arrays.asList(params.getWs()[i]));
-                map.put("mn", params.getMn()[i]);
-                map.put("hr", params.getHr()[i]);
-                awakeList.add(map);
-                map = new HashMap<>();
-            }
-
-            awakeAlarmSet.setAwakeList(awakeList);
+//            awakeAlarmSet.setAwakeList(awakeList);
 
             redisValue = userId + "," + awakeAlarmSet.getFunctionId();
             redisCommand.setValues(awakeAlarmSet.getUuId(), redisValue);
