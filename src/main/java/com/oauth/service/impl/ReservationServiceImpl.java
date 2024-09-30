@@ -352,9 +352,6 @@ public class ReservationServiceImpl implements ReservationService{
             JsonNode jsonNode = objectMapper.readTree(common.convertToJsonString(params.getAwakeList()));
             // awakeList 배열을 순회하며 처리
             for (int i = 0; i < jsonNode.path("awakeList").size(); ++i) {
-                // hr과 mn 처리
-                map.put("hr", jsonNode.path("awakeList").get(i).path("hr").asText());
-                map.put("mn", jsonNode.path("awakeList").get(i).path("mn").asText());
 
                 // ws를 처리하여 List<String>으로 변환
                 List<String> wsList = new ArrayList<>();
@@ -368,6 +365,10 @@ public class ReservationServiceImpl implements ReservationService{
 
                 // ws 값을 map에 추가
                 map.put("ws", wsList);
+
+                // hr과 mn 처리
+                map.put("hr", jsonNode.path("awakeList").get(i).path("hr").asText());
+                map.put("mn", jsonNode.path("awakeList").get(i).path("mn").asText());
 
                 // 완성된 map을 awakeList에 추가
                 awakeList.add(map);
