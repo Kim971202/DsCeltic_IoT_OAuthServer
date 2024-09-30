@@ -348,11 +348,17 @@ public class ReservationServiceImpl implements ReservationService{
             awakeAlarmSet.setUuId(common.getTransactionId());
             log.info("params.getAwakeList(): " + params.getAwakeList());
 
-            JSONObject jsonObject = new JSONObject(params.getAwakeList());
-            JSONArray modifiedJson = jsonObject.getJSONArray("awakeList");
-            log.info("modifiedJson: " + modifiedJson);
+            // JSON 배열로 파싱
+            JSONArray jsonArray = new JSONArray(params.getAwakeList());
 
-            awakeAlarmSet.setAwakeList(modifiedJson);
+            // 첫 번째 요소를 가져옴
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+
+            // awakeList 가져오기
+            JSONArray newAwakeList = jsonObject.getJSONArray("awakeList");
+            log.info("newAwakeList: " + newAwakeList);
+
+            awakeAlarmSet.setAwakeList(newAwakeList);
 //            for(int i = 0 ; i < params.getAwakeList().size(); ++i){
 //                map.put("ws", Arrays.asList(params.getWs()[i]));
 //                map.put("mn", params.getMn()[i]);
