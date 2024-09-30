@@ -245,6 +245,7 @@ public class MobiusController {
 
             // 신형 환기 RC
             }else if(common.hexToString(modelCode[5]).equals(modelCodeMap.get("ventilation"))){
+                System.out.println("ventilation called");
                 dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));
                 dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
                 dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
@@ -257,7 +258,7 @@ public class MobiusController {
                 dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd")); // 홈 IoT 모드
                 dr910WDevice.setVtSp(common.readCon(jsonBody, "vtSp")); // Ventilation fan speed
                 dr910WDevice.setInAq(common.readCon(jsonBody, "inAq")); // 실내 공기질
-                dr910WDevice.setBCdt(common.readCon(jsonBody, "mfDt")); // 변경 일시
+                dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt")); // 변경 일시
             }
             mobiusService.rtstHandler(dr910WDevice);
         } else {

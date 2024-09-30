@@ -84,6 +84,8 @@ public class ReservationController {
         String logStep = "[빠른 온수 예약]";
         log.info("[빠른 온수 예약]");
 
+        System.out.println(params);
+
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey())){
