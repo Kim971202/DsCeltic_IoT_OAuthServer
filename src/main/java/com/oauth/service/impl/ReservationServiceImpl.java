@@ -345,7 +345,7 @@ public class ReservationServiceImpl implements ReservationService{
             awakeAlarmSet.setFunctionId("ftMd");
             awakeAlarmSet.setUuId(common.getTransactionId());
 
-            for(int i = 0 ; i < params.getWs().length; ++i){
+            for(int i = 0 ; i < params.getAwakeList().size(); ++i){
                 map.put("ws", Arrays.asList(params.getWs()[i]));
                 map.put("mn", params.getMn()[i]);
                 map.put("hr", params.getHr()[i]);
