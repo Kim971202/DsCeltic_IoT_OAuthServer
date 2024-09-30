@@ -2,6 +2,7 @@ package com.oauth.dto.gw;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public class AwakeAlarmSet {
     private String deviceId;
     private String controlAuthKey;
 
-    private List<String> awakeList;
+    private JSONArray awakeList;
 
     private String functionId;
     private String uuId;

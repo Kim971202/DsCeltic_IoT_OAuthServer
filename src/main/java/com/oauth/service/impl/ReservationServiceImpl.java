@@ -12,6 +12,8 @@ import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.ReservationService;
 import com.oauth.utils.*;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -345,7 +347,12 @@ public class ReservationServiceImpl implements ReservationService{
             awakeAlarmSet.setFunctionId("fwh");
             awakeAlarmSet.setUuId(common.getTransactionId());
             log.info("params.getAwakeList(): " + params.getAwakeList());
-            awakeAlarmSet.setAwakeList(params.getAwakeList());
+
+            JSONObject jsonObject = new JSONObject(params.getAwakeList());
+            JSONArray modifiedJson = jsonObject.getJSONArray("awakeList");
+            log.info("modifiedJson: " + modifiedJson);
+
+            awakeAlarmSet.setAwakeList(modifiedJson);
 //            for(int i = 0 ; i < params.getAwakeList().size(); ++i){
 //                map.put("ws", Arrays.asList(params.getWs()[i]));
 //                map.put("mn", params.getMn()[i]);
