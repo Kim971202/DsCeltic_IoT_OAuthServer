@@ -15,7 +15,9 @@ public class AwakeAlarmSet {
     private String userId;
     private String deviceId;
     private String controlAuthKey;
-    private String fwh;
+
+    private List<HashMap<String, Object>> awakeList;
+
     private String functionId;
     private String uuId;
 }
