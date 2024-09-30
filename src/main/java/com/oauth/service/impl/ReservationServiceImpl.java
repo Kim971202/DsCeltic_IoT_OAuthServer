@@ -348,26 +348,27 @@ public class ReservationServiceImpl implements ReservationService{
             awakeAlarmSet.setUuId(common.getTransactionId());
             log.info("params.getAwakeList(): " + params.getAwakeList());
 
-            // JSON 문자열에서 최상위 JSONArray를 생성하고 첫 번째 요소를 가져옴
-            JSONObject jsonObject = new JSONArray(params.getAwakeList()).getJSONObject(0);
+            // JSON 문자열을 JSONObject로 변환
+            JSONObject jsonObject = new JSONObject(params.getAwakeList());
 
-            // "awakeList" 키의 JSONArray를 가져옴
+            // "awakeList"라는 키로 JSONArray를 가져옴
             JSONArray awakeListArray = jsonObject.getJSONArray("awakeList");
 
             // 결과를 저장할 List<HashMap<String, Object>>
             List<HashMap<String, Object>> newAwakeList = new ArrayList<>();
 
-            // awakeListArray를 순회하며 데이터를 HashMap으로 변환
+            // 결과를 저장할 List<HashMap<String, Object>>
             for (int i = 0; i < awakeListArray.length(); i++) {
                 JSONObject item = awakeListArray.getJSONObject(i);
 
-                HashMap<String, Object> listMap = new HashMap<>();
-                listMap.put("hr", item.getString("hr"));
-                listMap.put("mn", item.getString("mn"));
-                listMap.put("ws", item.getJSONArray("ws").toList());
+                // HashMap을 생성하고 데이터를 추가
+                HashMap<String, Object> newMap = new HashMap<>();
+                newMap.put("hr", item.getString("hr"));
+                newMap.put("mn", item.getString("mn"));
+                newMap.put("ws", item.getJSONArray("ws").toList());
 
                 // 생성한 map을 newAwakeList에 추가
-                newAwakeList.add(listMap);
+                newAwakeList.add(newMap);
             }
 
             awakeAlarmSet.setAwakeList(newAwakeList);
