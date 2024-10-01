@@ -420,7 +420,7 @@ public class DeviceServiceImpl implements DeviceService {
                             eleMap.put("7wk", value.getWk7());
 
                             if(value.getFwh() == null) eleMap.put("fwt", "null");
-                            else eleMap.put("fwt", value.getFwh());
+                            else eleMap.put("fwh", value.getFwh());
                             // 외부 맵에 내부 맵 추가
                             put("rsCf", eleMap);
                         }};

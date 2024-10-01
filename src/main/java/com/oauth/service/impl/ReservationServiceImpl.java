@@ -332,7 +332,6 @@ public class ReservationServiceImpl implements ReservationService{
         AuthServerDTO household;
         AuthServerDTO userNickname;
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
-        ConcurrentHashMap<String, String> dbMap = new ConcurrentHashMap<String, String>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 
@@ -382,6 +381,8 @@ public class ReservationServiceImpl implements ReservationService{
 
                 // 완성된 map을 awakeList에 추가
                 awakeList.add(map);
+                System.out.println("JSON.toJson(map)");
+                System.out.println(JSON.toJson(map));
             }
 
             awakeAlarmSet.setAwakeList(awakeList);
