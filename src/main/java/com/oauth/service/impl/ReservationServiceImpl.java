@@ -381,8 +381,7 @@ public class ReservationServiceImpl implements ReservationService{
 
                 // 완성된 map을 awakeList에 추가
                 awakeList.add(map);
-                System.out.println("JSON.toJson(map)");
-                System.out.println(JSON.toJson(map));
+                deviceInfo.setFwh(JSON.toJson(map));
             }
 
             awakeAlarmSet.setAwakeList(awakeList);
@@ -424,7 +423,6 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            deviceInfo.setFwh(params.getAwakeList());
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
