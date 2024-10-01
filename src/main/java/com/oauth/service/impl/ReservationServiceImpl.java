@@ -62,6 +62,7 @@ public class ReservationServiceImpl implements ReservationService{
         String responseMessage;
         AuthServerDTO device;
         AuthServerDTO userNickname;
+        AuthServerDTO household;
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<String, Object>();
         Map<String, String> conMap = new HashMap<>();
@@ -137,7 +138,9 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
@@ -148,7 +151,7 @@ public class ReservationServiceImpl implements ReservationService{
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "24h");
-                conMap.put("id", "Mode Change ID");
+                conMap.put("id", "Set24 ID");
                 conMap.put("isEnd", "false");
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
@@ -201,6 +204,7 @@ public class ReservationServiceImpl implements ReservationService{
         MobiusResponse response;
         AuthServerDTO device;
         AuthServerDTO userNickname;
+        AuthServerDTO household;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
@@ -265,7 +269,9 @@ public class ReservationServiceImpl implements ReservationService{
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
@@ -275,8 +281,8 @@ public class ReservationServiceImpl implements ReservationService{
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "12");
-                conMap.put("id", "Mode Change ID");
+                conMap.put("title", "Set12");
+                conMap.put("id", "Set12 ID");
                 conMap.put("isEnd", "false");
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
@@ -318,10 +324,13 @@ public class ReservationServiceImpl implements ReservationService{
         String deviceId = params.getDeviceId();
         AwakeAlarmSet awakeAlarmSet = new AwakeAlarmSet();
         List<HashMap<String, Object>> awakeList = new ArrayList<HashMap<String, Object>>();
+        Map<String, String> conMap = new HashMap<>();
         String redisValue;
         MobiusResponse response;
         String responseMessage;
         AuthServerDTO device;
+        AuthServerDTO household;
+        AuthServerDTO userNickname;
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         ConcurrentHashMap<String, String> dbMap = new ConcurrentHashMap<String, String>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -353,7 +362,7 @@ public class ReservationServiceImpl implements ReservationService{
             for (int i = 0; i < jsonNode.path("awakeList").size(); i++) {
 
                 HashMap<String, Object> map = new LinkedHashMap<>();
-                
+
                 // ws를 처리하여 List<String>으로 변환
                 List<String> wsList = new ArrayList<>();
                 JsonNode wsNode = jsonNode.path("awakeList").get(i).path("ws");
@@ -421,6 +430,32 @@ public class ReservationServiceImpl implements ReservationService{
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+            userNickname = memberMapper.getUserNickname(userId);
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+
+            for(int i = 0; i < userIds.size(); ++i){
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                conMap.put("userNickname", userNickname.getUserNickname());
+                conMap.put("title", "AwakeAlarmSet");
+                conMap.put("id", "AwakeAlarmSet ID");
+                conMap.put("isEnd", "false");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+                log.info("jsonString: " + jsonString);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                    msg = "PUSH 메세지 전송 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+            }
+
             params.setCodeType("1");
             params.setCommandId("AwakeAlarmSet");
             params.setControlCode("fwh");
@@ -454,7 +489,7 @@ public class ReservationServiceImpl implements ReservationService{
         List<HashMap<String, Object>> weekList = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-
+        AuthServerDTO household;
         String responseMessage;
         String redisValue;
         MobiusResponse response;
@@ -534,7 +569,9 @@ public class ReservationServiceImpl implements ReservationService{
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
@@ -605,7 +642,7 @@ public class ReservationServiceImpl implements ReservationService{
         MobiusResponse response;
         String responseMessage = null;
         AuthServerDTO userNickname;
-
+        AuthServerDTO household;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -726,7 +763,9 @@ public class ReservationServiceImpl implements ReservationService{
             params.setDeviceId(deviceId);
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
@@ -778,7 +817,7 @@ public class ReservationServiceImpl implements ReservationService{
         String waitMinute = params.getWaitMinute();
 
         AuthServerDTO userNickname;
-
+        AuthServerDTO household;
         MobiusResponse response;
 
         Map<String, String> conMap = new HashMap<>();
@@ -884,7 +923,9 @@ public class ReservationServiceImpl implements ReservationService{
             params.setDeviceId(deviceId);
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));

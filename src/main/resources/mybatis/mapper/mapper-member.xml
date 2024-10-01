@@ -634,7 +634,7 @@
         </if>
     </select>
 
-    <select id="getUserIdsByDeviceId" parameterType="String" resultMap="member">
+    <select id="getUserIdsByDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             a.USER_ID AS userId
         FROM
@@ -643,17 +643,28 @@
             TBR_IOT_DEVICE_GRP_INFO b
         WHERE
             a.GRP_NM = b.GRP_ID AND b.DEVC_ID = #{deviceId}
+        AND
+            a.GRP_NM = #{groupId}
+    </select>
+
+    <select id="getAllUserIdsByDeviceId" parameterType="String" resultMap="member">
+        SELECT
+            GRP_ID AS userId
+        FROM
+            TBR_IOT_DEVICE_GRP_INFO
+        WHERE
+            DEVC_ID = #{deviceId}
     </select>
 
     <select id="getPushYnStatusByUserIds" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
-        PUSH_YN_01 AS fPushYn,
-        PUSH_YN_02 AS sPushYn,
-        PUSH_YN_03 AS tPushYn
+            PUSH_YN_01 AS fPushYn,
+            PUSH_YN_02 AS sPushYn,
+            PUSH_YN_03 AS tPushYn
         FROM
-        TBR_OPR_USER_DEVICE_PUSH
+            TBR_OPR_USER_DEVICE_PUSH
         WHERE
-        USER_ID IN
+            USER_ID IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.userId}
         </foreach>

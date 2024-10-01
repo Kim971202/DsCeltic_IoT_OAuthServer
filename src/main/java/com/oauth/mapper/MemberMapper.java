@@ -24,7 +24,8 @@ public interface MemberMapper {
     public List<AuthServerDTO> getNoticeList();
     public List<AuthServerDTO> getPushCodeStatus(@Param("userId") String params, @Param("deviceIds") String deviceIds);
     public List<AuthServerDTO> getWorkTime(AuthServerDTO param);
-    public List<AuthServerDTO> getUserIdsByDeviceId(String deviceId);
+    public List<AuthServerDTO> getUserIdsByDeviceId(AuthServerDTO params);
+    public List<AuthServerDTO> getAllUserIdsByDeviceId(String deviceId);
     public List<AuthServerDTO> getPushYnStatusByUserIds(List<AuthServerDTO> userIds);
     public List<AuthServerDTO> getRegistDeviceIdByUserId(String userIds);
     public List<AuthServerDTO> getFailyMemberByUserId(String requestUserId);

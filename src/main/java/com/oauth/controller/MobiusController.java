@@ -71,7 +71,8 @@ public class MobiusController {
         String userId;
         String functionId = common.readCon(jsonBody, "functionId");
         String redisValue = "false";
-        if(!functionId.equals("rtSt")) redisValue = redisCommand.getValues(uuId);
+
+        if(!functionId.equals("rtSt") && !functionId.equals("mfSt")) redisValue = redisCommand.getValues(uuId);
 
         log.info("functionId: " + functionId);
         log.info("redisValue: " + redisValue);
@@ -138,7 +139,7 @@ public class MobiusController {
             log.info("rcUpdateResult: " + rcUpdateResult);
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
+            List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
 
             AuthServerDTO info = new AuthServerDTO();
 

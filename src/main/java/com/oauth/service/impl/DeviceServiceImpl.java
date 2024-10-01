@@ -66,6 +66,7 @@ public class DeviceServiceImpl implements DeviceService {
         String responseMessage = null;
 
         AuthServerDTO userNickname;
+        AuthServerDTO household;
 
         MobiusResponse response;
 
@@ -164,7 +165,9 @@ public class DeviceServiceImpl implements DeviceService {
             params.setDeviceId(deviceId);
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
@@ -454,6 +457,7 @@ public class DeviceServiceImpl implements DeviceService {
         String sleepCode = null;
 
         AuthServerDTO userNickname;
+        AuthServerDTO household;
 
         if(params.getModeCode().equals("06")) sleepCode = params.getSleepCode();
 
@@ -532,7 +536,9 @@ public class DeviceServiceImpl implements DeviceService {
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
@@ -638,6 +644,7 @@ public class DeviceServiceImpl implements DeviceService {
         MobiusResponse response;
         String serialNumber;
         AuthServerDTO userNickname;
+        AuthServerDTO household;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -708,7 +715,9 @@ public class DeviceServiceImpl implements DeviceService {
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
@@ -770,7 +779,8 @@ public class DeviceServiceImpl implements DeviceService {
         String responseMessage;
         MobiusResponse response;
         String serialNumber;
-        AuthServerDTO userNickname ;
+        AuthServerDTO userNickname;
+        AuthServerDTO household;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -845,7 +855,9 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
@@ -917,7 +929,7 @@ public class DeviceServiceImpl implements DeviceService {
         String responseMessage;
         MobiusResponse response;
         String serialNumber;
-        AuthServerDTO pushYn;
+        AuthServerDTO household;
         AuthServerDTO userNickname;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -987,7 +999,9 @@ public class DeviceServiceImpl implements DeviceService {
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
@@ -1054,6 +1068,7 @@ public class DeviceServiceImpl implements DeviceService {
         String responseMessage;
         String serialNumber;
         AuthServerDTO userNickname;
+        AuthServerDTO household;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -1124,7 +1139,9 @@ public class DeviceServiceImpl implements DeviceService {
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
@@ -1183,6 +1200,7 @@ public class DeviceServiceImpl implements DeviceService {
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         AuthServerDTO userNickname;
+        AuthServerDTO household;
 
         String redisValue;
         MobiusResponse response;
@@ -1264,7 +1282,9 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
@@ -1625,6 +1645,8 @@ public class DeviceServiceImpl implements DeviceService {
 
         String responseMessage = null;
         AuthServerDTO userNickname;
+        AuthServerDTO household;
+
         MobiusResponse response;
 
         Map<String, String> conMap = new HashMap<>();
@@ -1725,7 +1747,9 @@ public class DeviceServiceImpl implements DeviceService {
             params.setDeviceId(deviceId);
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(deviceId);
+            household = memberMapper.getHouseholdByUserId(userId);
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
             userNickname = memberMapper.getUserNickname(userId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
