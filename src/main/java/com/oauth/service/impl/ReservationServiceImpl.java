@@ -318,7 +318,6 @@ public class ReservationServiceImpl implements ReservationService{
         String deviceId = params.getDeviceId();
         AwakeAlarmSet awakeAlarmSet = new AwakeAlarmSet();
         List<HashMap<String, Object>> awakeList = new ArrayList<HashMap<String, Object>>();
-        HashMap<String, Object> map = new LinkedHashMap<>();
         String redisValue;
         MobiusResponse response;
         String responseMessage;
@@ -351,8 +350,10 @@ public class ReservationServiceImpl implements ReservationService{
 
             JsonNode jsonNode = objectMapper.readTree(common.convertToJsonString(params.getAwakeList()));
             // awakeList 배열을 순회하며 처리
-            for (int i = 0; i < jsonNode.path("awakeList").size(); ++i) {
+            for (int i = 0; i < jsonNode.path("awakeList").size(); i++) {
 
+                HashMap<String, Object> map = new LinkedHashMap<>();
+                
                 // ws를 처리하여 List<String>으로 변환
                 List<String> wsList = new ArrayList<>();
                 JsonNode wsNode = jsonNode.path("awakeList").get(i).path("ws");
@@ -373,6 +374,7 @@ public class ReservationServiceImpl implements ReservationService{
                 // 완성된 map을 awakeList에 추가
                 awakeList.add(map);
             }
+
             awakeAlarmSet.setAwakeList(awakeList);
 
             redisValue = userId + "," + awakeAlarmSet.getFunctionId();
