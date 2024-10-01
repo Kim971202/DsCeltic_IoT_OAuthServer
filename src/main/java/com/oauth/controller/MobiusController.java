@@ -208,6 +208,9 @@ public class MobiusController {
                 dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
                 dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
 
+                System.out.println("common.readCon(jsonBody, \"fwh\")");
+                System.out.println(common.readCon(jsonBody, "fwh"));
+
                 dr910WDevice.setH12(common.convertToJsonString(common.readCon(jsonBody, "12h"))); // 12시간 예약
                 dr910WDevice.setWk7(common.convertToJsonString(common.readCon(jsonBody, "7wk"))); // 주간 예약
                 dr910WDevice.setFwh(common.convertToJsonString(common.readCon(jsonBody, "fwh"))); // 빠른온수 예약
