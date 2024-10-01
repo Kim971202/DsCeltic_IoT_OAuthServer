@@ -73,7 +73,7 @@ public class MobiusController {
         String redisValue = "false";
 
         if(functionId == null) return "FUNCTION ID NULL";
-        
+
         if(!functionId.equals("rtSt") && !functionId.equals("mfSt")) redisValue = redisCommand.getValues(uuId);
 
         log.info("functionId: " + functionId);
@@ -210,6 +210,7 @@ public class MobiusController {
 
                 dr910WDevice.setH12(common.convertToJsonString(common.readCon(jsonBody, "12h"))); // 12시간 예약
                 dr910WDevice.setWk7(common.convertToJsonString(common.readCon(jsonBody, "7wk"))); // 주간 예약
+                dr910WDevice.setFwh(common.convertToJsonString(common.readCon(jsonBody, "fwh"))); // 빠른온수 예약
                 dr910WDevice.setPowr(common.readCon(jsonBody, "powr")); // 전원 ON/OF
                 dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd")); // 홈 IoT 모드
                 dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp")); // 실내온도 설정
