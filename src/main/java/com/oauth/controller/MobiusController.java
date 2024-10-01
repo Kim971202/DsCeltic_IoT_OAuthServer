@@ -208,6 +208,9 @@ public class MobiusController {
                 dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
                 dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
 
+                System.out.println("common.readCon(jsonBody, \"12h\")");
+                System.out.println(common.readCon(jsonBody, "12h"));
+
                 System.out.println("common.readCon(jsonBody, \"fwh\")");
                 System.out.println(common.readCon(jsonBody, "fwh"));
 
