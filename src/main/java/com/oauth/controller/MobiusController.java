@@ -74,7 +74,7 @@ public class MobiusController {
 
         if(functionId == null) return "FUNCTION ID NULL";
 
-        if(!functionId.equals("rtSt") && !functionId.equals("mfSt")) redisValue = redisCommand.getValues(uuId);
+        if(!functionId.equals("rtSt") && !functionId.equals("mfSt") && !functionId.equals("opIf")) redisValue = redisCommand.getValues(uuId);
 
         log.info("functionId: " + functionId);
         log.info("redisValue: " + redisValue);
@@ -84,6 +84,7 @@ public class MobiusController {
         }
 
         List<String> redisValueList;
+
         if (!redisValue.equals("false")) {
             redisValueList = common.getUserIdAndFunctionId(redisCommand.getValues(uuId));
             userId = redisValueList.get(0);
@@ -93,6 +94,7 @@ public class MobiusController {
             log.info("errorCode: " + errorCode);
             log.info("replyErrorCode: " + replyErrorCode);
             gwMessagingSystem.sendMessage(functionId + uuId, errorCode);
+
         } else if (errorCode != null && errorDateTime != null) {
             AuthServerDTO errorInfo = new AuthServerDTO();
             errorInfo.setErrorCode(errorCode);
@@ -272,7 +274,12 @@ public class MobiusController {
                 dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt")); // 변경 일시
             }
             mobiusService.rtstHandler(dr910WDevice);
-        } else {
+        } else if(functionId.equals("opIf")){
+            AuthServerDTO opTmInfo = new AuthServerDTO();
+            System.out.println("functionId.equals(\"opIf\") CALLED");
+            System.out.println(common.readCon(jsonBody, "wkTm"));
+            System.out.println(common.readCon(jsonBody, "msDt"));
+        }else {
             return "0x0106-Devices 상태 보고 요청";
         }
         return null;

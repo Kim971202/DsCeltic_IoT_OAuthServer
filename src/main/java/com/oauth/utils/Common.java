@@ -247,6 +247,10 @@ public class Common {
                 return serializeAndClean(conNode.path("deviceId"), objectMapper);
             case "userId":
                 return serializeAndClean(conNode.path("userId"), objectMapper);
+            case "wkTm":
+                return serializeAndClean(conNode.path("wkTm"), objectMapper);
+            case "msDt":
+                return serializeAndClean(conNode.path("msDt"), objectMapper);
             case "con":
                 return serializeAndClean(baseNode, objectMapper);
             case "sur":
