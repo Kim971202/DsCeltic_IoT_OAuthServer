@@ -454,4 +454,16 @@ public class Common {
             }
         }
     }
+
+    public String getModelCode(String modelCode){
+        // 01: 보일러
+        // 05: 각방
+        // 07: 환기
+        String code = "";
+
+        if(modelCode.equals("ESCeco13S") || modelCode.equals("DCR-91/WF")) code = "01";
+        else if(modelCode.equals("DCR-47/WF")) code = "07";
+
+        return code;
+    }
 }

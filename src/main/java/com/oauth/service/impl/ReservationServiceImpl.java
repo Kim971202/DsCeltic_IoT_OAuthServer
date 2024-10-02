@@ -757,6 +757,7 @@ public class ReservationServiceImpl implements ReservationService{
             params.setPushTitle("기기제어");
             params.setPushContent("환기 취침 모드");
             params.setDeviceId(deviceId);
+            params.setDeviceType("07");
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             household = memberMapper.getHouseholdByUserId(userId);
@@ -917,6 +918,7 @@ public class ReservationServiceImpl implements ReservationService{
             params.setPushTitle("기기제어");
             params.setPushContent("환기 꺼짐/켜짐 예약");
             params.setDeviceId(deviceId);
+            params.setDeviceType("07");
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             household = memberMapper.getHouseholdByUserId(userId);
