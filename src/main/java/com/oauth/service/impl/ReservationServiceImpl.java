@@ -180,6 +180,11 @@ public class ReservationServiceImpl implements ReservationService{
 
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
+            params.setPushTitle("기기제어");
+            params.setPushContent("24시간 예약");
+            params.setDeviceType("01");
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+
             redisCommand.deleteValues(set24.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -304,6 +309,11 @@ public class ReservationServiceImpl implements ReservationService{
             params.setUserId(userId);
 
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+
+            params.setPushTitle("기기제어");
+            params.setPushContent("12시간 예약");
+            params.setDeviceType("01");
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             redisCommand.deleteValues(set12.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -462,6 +472,11 @@ public class ReservationServiceImpl implements ReservationService{
 
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
+            params.setPushTitle("기기제어");
+            params.setPushContent("빠른온수 예약");
+            params.setDeviceType("01");
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+
             redisCommand.deleteValues(awakeAlarmSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -597,11 +612,12 @@ public class ReservationServiceImpl implements ReservationService{
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
             params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+
+            params.setPushTitle("기기제어");
+            params.setPushContent("주간 예약");
+            params.setDeviceType("01");
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             params.setWeekList("");
 
