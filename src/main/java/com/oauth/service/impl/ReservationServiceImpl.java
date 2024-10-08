@@ -376,7 +376,14 @@ public class ReservationServiceImpl implements ReservationService{
                 List<String> wsList = new ArrayList<>();
                 JsonNode wsNode = jsonNode.path("awakeList").get(i).path("ws");
 
-                if (wsNode.isArray()) {
+                // ws가 문자열로 처리된 경우 배열로 변환하는 로직 추가
+                if (wsNode.isTextual()) {
+                    String wsString = wsNode.asText();
+                    // 문자열을 제거하고 배열로 변환
+                    wsString = wsString.replace("[", "").replace("]", "").replace("\"", "");
+                    String[] wsArray = wsString.split(", ");
+                    wsList.addAll(Arrays.asList(wsArray));
+                } else if (wsNode.isArray()) {
                     for (JsonNode wsElement : wsNode) {
                         wsList.add(wsElement.asText());
                     }
@@ -394,10 +401,10 @@ public class ReservationServiceImpl implements ReservationService{
 
                 System.out.println("map");
                 System.out.println(JSON.toJson(map));
+                deviceInfo.setFwh(JSON.toJson(map));
 
                 System.out.println("awakeList");
                 System.out.println(awakeList);
-//                deviceInfo.setFwh(awakeList);
             }
             awakeAlarmSet.setAwakeList(awakeList);
 
