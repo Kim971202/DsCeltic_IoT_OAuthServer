@@ -274,6 +274,7 @@ public class MobiusController {
                 dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt")); // 변경 일시
             }
             mobiusService.rtstHandler(dr910WDevice);
+
         } else if(functionId.equals("opIf")){
             AuthServerDTO opTmInfo = new AuthServerDTO();
             System.out.println("functionId.equals(\"opIf\") CALLED");
