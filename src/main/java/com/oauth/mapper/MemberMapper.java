@@ -72,7 +72,6 @@ public interface MemberMapper {
     public int updatePushCodeStatus(AuthServerDTO params);
     public int insertInitPushCode(AuthServerDTO member); // Device 등록 시 사용
     public int updateHouseholdTbrOprUser(String userId);
-    public int updateHouseholdTbrOprUserDevice(String userId);
     public int updateDeviceLocationNicknameDeviceDetail(AuthServerDTO member);
     public int updateDeviceLocationNicknameDeviceRegist(AuthServerDTO member);
     public int insertCommandHistory(AuthServerDTO member);
