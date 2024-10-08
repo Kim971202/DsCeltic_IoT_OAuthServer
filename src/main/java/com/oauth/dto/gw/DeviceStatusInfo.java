@@ -64,7 +64,7 @@ public class DeviceStatusInfo {
       private String h12;
       private String h24;
       private String wk7;
-      private List<HashMap<String, Object>> fwh;
+      private String fwh;
 
       private String new24h;
       private String new12h;
