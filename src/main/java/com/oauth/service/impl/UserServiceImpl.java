@@ -688,7 +688,11 @@ public class UserServiceImpl implements UserService {
 
                 // TODO: 7. 신규 기기에 대한 CNT, SUB 생성 (쿼리 DATA: deviceId, 세대주 ID, 세대원 ID)
                 for(AuthServerDTO authServerDTO : deviceIdList){
+                    System.out.println("deviceIdList");
+                    System.out.println(deviceIdList);
                     for (AuthServerDTO serverDTO : familyMemberList) {
+                        System.out.println("familyMemberList");
+                        System.out.println(familyMemberList);
                         System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
                         mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), serverDTO.getUserId());
                         mobiusService.createSub(authServerDTO.getDeviceId().substring(33), serverDTO.getUserId(), "gw");
