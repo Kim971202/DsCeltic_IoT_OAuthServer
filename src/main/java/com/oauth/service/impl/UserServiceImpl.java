@@ -1369,7 +1369,6 @@ public class UserServiceImpl implements UserService {
         String msg;
         AuthServerDTO serialNumber;
         String userId = params.getUserId();
-        String deviceId = params.getDeviceId();
         String uuId = common.getTransactionId();
         String redisValue;
         AuthServerDTO pushYn;
@@ -1427,6 +1426,9 @@ public class UserServiceImpl implements UserService {
                 // 대기 중 인터럽트 처리
                 log.error("", e);
             }
+
+            gwMessagingSystem.removeMessageQueue("blCf" + uuId);
+            redisCommand.deleteValues(uuId);
 
             conMap1.put("body", "Brightness Control OK");
             msg = "기기 밝기 수정 성공";

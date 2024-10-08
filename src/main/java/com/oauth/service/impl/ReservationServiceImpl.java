@@ -125,6 +125,9 @@ public class ReservationServiceImpl implements ReservationService{
                 log.error("", e);
             }
 
+            gwMessagingSystem.removeMessageQueue(set24.getFunctionId() + set24.getUuId());
+            redisCommand.deleteValues(set24.getUuId());
+
             if(stringObject.equals("Y")) {
                 msg = "24시간 예약 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -185,7 +188,6 @@ public class ReservationServiceImpl implements ReservationService{
             params.setDeviceType("01");
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
-            redisCommand.deleteValues(set24.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -254,6 +256,9 @@ public class ReservationServiceImpl implements ReservationService{
                 log.error("", e);
             }
 
+            gwMessagingSystem.removeMessageQueue(set12.getFunctionId() + set12.getUuId());
+            redisCommand.deleteValues(set12.getUuId());
+
             if(stringObject.equals("Y")) {
                 msg = "12시간 예약 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -315,7 +320,6 @@ public class ReservationServiceImpl implements ReservationService{
             params.setDeviceType("01");
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
-            redisCommand.deleteValues(set12.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -434,6 +438,9 @@ public class ReservationServiceImpl implements ReservationService{
                 log.error("", e);
             }
 
+            gwMessagingSystem.removeMessageQueue(awakeAlarmSet.getFunctionId() + awakeAlarmSet.getUuId());
+            redisCommand.deleteValues(awakeAlarmSet.getUuId());
+
             if(stringObject.equals("Y")) {
                 msg = "빠른 온수 예약 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -489,7 +496,6 @@ public class ReservationServiceImpl implements ReservationService{
             params.setDeviceType("01");
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
-            redisCommand.deleteValues(awakeAlarmSet.getUuId());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -574,6 +580,9 @@ public class ReservationServiceImpl implements ReservationService{
                 // 대기 중 인터럽트 처리
                 log.error("", e);
             }
+
+            gwMessagingSystem.removeMessageQueue(setWeek.getFunctionId() + setWeek.getUuId());
+            redisCommand.deleteValues(setWeek.getUuId());
 
             if(stringObject.equals("Y")) {
                 msg = "주간 예약 성공";

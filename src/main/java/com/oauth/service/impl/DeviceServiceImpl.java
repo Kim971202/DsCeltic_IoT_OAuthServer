@@ -129,7 +129,9 @@ public class DeviceServiceImpl implements DeviceService {
                     log.error("", e);
                 }
             }
+
              gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
+            redisCommand.deleteValues(powerOnOff.getUuId());
 
             if(stringObject.equals("Y")) {
                 conMap.put("body", "Device ON/OFF OK");
@@ -144,8 +146,6 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
-
-            redisCommand.deleteValues(powerOnOff.getUuId());
 
             deviceInfo.setPowr(params.getPowerStatus());
             deviceInfo.setDeviceId(deviceId);
@@ -521,6 +521,9 @@ public class DeviceServiceImpl implements DeviceService {
                 log.error("", e);
             }
 
+            gwMessagingSystem.removeMessageQueue("opMd" + modeChange.getUuId());
+            redisCommand.deleteValues(modeChange.getUuId());
+
             if(stringObject.equals("Y")) {
                 conMap.put("body", "Mode Change OK");
                 msg = "모드변경 성공";
@@ -562,7 +565,6 @@ public class DeviceServiceImpl implements DeviceService {
                     log.info("PUSH 메세지 전송 오류");
 
             }
-            redisCommand.deleteValues(modeChange.getUuId());
 
             deviceInfo.setOpMd(modeCode);
             deviceInfo.setDeviceId(deviceId);
@@ -701,6 +703,9 @@ public class DeviceServiceImpl implements DeviceService {
                 log.error("", e);
             }
 
+            gwMessagingSystem.removeMessageQueue("htTp" + temperatureSet.getUuId());
+            redisCommand.deleteValues(temperatureSet.getUuId());
+
             if(stringObject.equals("Y")) {
                 conMap.put("body", "TemperatureSet OK");
                 msg = "실내온도 설정 성공";
@@ -741,8 +746,6 @@ public class DeviceServiceImpl implements DeviceService {
                 if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
                     log.info("PUSH 메세지 전송 오류");
             }
-
-            redisCommand.deleteValues(temperatureSet.getUuId());
 
             deviceInfo.setHtTp(params.getTemperture());
             deviceInfo.setDeviceId(params.getDeviceId());
@@ -838,6 +841,9 @@ public class DeviceServiceImpl implements DeviceService {
                 log.error("", e);
             }
 
+            gwMessagingSystem.removeMessageQueue("wtTp" + boiledWaterTempertureSet.getUuId());
+            redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
+
             if(stringObject.equals("Y")) {
                 conMap.put("body", "BoiledWaterTempertureSet OK");
                 msg = "난방수온도 설정 성공";
@@ -884,8 +890,6 @@ public class DeviceServiceImpl implements DeviceService {
                     new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 }
             }
-
-            redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
 
             deviceInfo.setWtTp(params.getTemperture());
             deviceInfo.setDeviceId(deviceId);
@@ -987,6 +991,9 @@ public class DeviceServiceImpl implements DeviceService {
                 log.error("", e);
             }
 
+            gwMessagingSystem.removeMessageQueue("hwTp" + waterTempertureSet.getUuId());
+            redisCommand.deleteValues(waterTempertureSet.getUuId());
+
             if(stringObject.equals("Y")) {
                 conMap.put("body", "WaterTempertureSet OK");
                 msg = "온수온도 설정 성공";
@@ -1029,7 +1036,6 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            redisCommand.deleteValues(waterTempertureSet.getUuId());
 
             deviceInfo.setHwTp(params.getTemperture());
             deviceInfo.setDeviceId(deviceId);
@@ -1128,6 +1134,9 @@ public class DeviceServiceImpl implements DeviceService {
                 log.error("", e);
             }
 
+            gwMessagingSystem.removeMessageQueue("ftMd" + fastHotWaterSet.getUuId());
+            redisCommand.deleteValues(fastHotWaterSet.getUuId());
+
             if(stringObject.equals("Y")) {
                 conMap.put("body", "FastHotWaterSet OK");
                 msg = "빠른온수 설정 성공";
@@ -1168,8 +1177,6 @@ public class DeviceServiceImpl implements DeviceService {
                 if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
                     log.info("PUSH 메세지 전송 오류");
             }
-
-            redisCommand.deleteValues(fastHotWaterSet.getUuId());
 
             deviceInfo.setOpMd(params.getModeCode());
             deviceInfo.setDeviceId(deviceId);
@@ -1268,6 +1275,9 @@ public class DeviceServiceImpl implements DeviceService {
                 log.error("", e);
             }
 
+            gwMessagingSystem.removeMessageQueue("fcLc" + lockSet.getUuId());
+            redisCommand.deleteValues(lockSet.getUuId());
+
             if(stringObject.equals("Y")) {
                 conMap.put("body", "LockSet OK");
                 msg = "잠금 모드 설정 성공";
@@ -1315,8 +1325,6 @@ public class DeviceServiceImpl implements DeviceService {
                     new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 }
             }
-
-            redisCommand.deleteValues(lockSet.getUuId());
 
             deviceInfo.setFcLc(params.getLockSet());
             deviceInfo.setDeviceId(deviceId);
@@ -1702,7 +1710,7 @@ public class DeviceServiceImpl implements DeviceService {
                     // 메시징 시스템을 통해 응답 메시지 대기
                     gwMessagingSystem.printMessageQueues();
                     log.info("responseMessage: VentilationFanSpeedSet" + fanSpeedSet.getUuId());
-                    responseMessage = gwMessagingSystem.waitForResponse("powr" + fanSpeedSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                    responseMessage = gwMessagingSystem.waitForResponse("VentilationFanSpeedSet" + fanSpeedSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                     if (responseMessage != null) {
                         // 응답 처리
                         log.info("receiveCin에서의 응답: " + responseMessage);
@@ -1720,6 +1728,7 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             gwMessagingSystem.removeMessageQueue("VentilationFanSpeedSet" + fanSpeedSet.getUuId());
+            redisCommand.deleteValues(fanSpeedSet.getUuId());
 
             if(stringObject.equals("Y")) {
                 conMap.put("body", "Device ON/OFF OK");
@@ -1738,7 +1747,6 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfo.setPowr(params.getPowerStatus());
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
-
 
             params.setCodeType("1");
             params.setCommandId("VentilationFanSpeedSet");
