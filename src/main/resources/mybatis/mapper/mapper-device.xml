@@ -727,4 +727,20 @@
         LIMIT 1;
     </select>
 
+    <insert id="insertFristDeviceUser" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_FIRST_DEVICE_USER
+        (
+            DEVC_ID,
+            USER_ID,
+            GRP_ID
+        )
+            VALUES
+        (
+            #{deviceId},
+            #{userId},
+            #{groupId}
+        )
+    </insert>
+
 </mapper>

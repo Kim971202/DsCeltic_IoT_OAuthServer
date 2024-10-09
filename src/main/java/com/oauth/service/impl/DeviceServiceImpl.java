@@ -260,6 +260,7 @@ public class DeviceServiceImpl implements DeviceService {
                  *
                  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                  * 1. Push 설정 관련 기본 DB 추가 (기본값: Y)
+                 * 2. IOT_DEVICE 테이블 등록 시 최초 기기 등록자 ID도 같이 등록
                  * */
 
                 params.setModelCode(" " + params.getModelCode());
@@ -276,8 +277,14 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceRegistStatus = deviceMapper.getDeviceRegistStatus(serialNumber);
                 log.info("deviceRegistStatus: " + deviceRegistStatus.getDeviceId());
 
+                params.setGroupId(userId);
                 if(deviceRegistStatus.getDeviceId().equals("EMPTY")){
                     if(deviceMapper.insertDevice(params) <= 0){
+                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                        result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    }
+                    if(deviceMapper.insertFristDeviceUser(params) <= 0){
                         msg = "홈 IoT 컨트롤러 정보 등록 실패.";
                         result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);

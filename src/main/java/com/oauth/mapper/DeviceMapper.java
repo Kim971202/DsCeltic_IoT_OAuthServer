@@ -48,4 +48,6 @@ public interface DeviceMapper {
     public int updateUserDevice(AuthServerDTO params);
     public int updateDeviceDetail(AuthServerDTO params);
     public int updateDeviceRegist(AuthServerDTO params);
+    public int insertFristDeviceUser(AuthServerDTO params);
+    // TBR_FIRST_DEVICE_USER
 }
