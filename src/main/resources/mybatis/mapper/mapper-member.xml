@@ -880,4 +880,15 @@
             USER_ID = #{userId}
     </select>
 
+    <select id="getFirstDeviceUser" parameterType="String" resultMap="member">
+        SELECT
+            DEVC_ID AS deviceId,
+            USER_ID AS userId,
+            GRP_ID AS groupId
+        FROM
+            TBR_FIRST_DEVICE_USER
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
 </mapper>

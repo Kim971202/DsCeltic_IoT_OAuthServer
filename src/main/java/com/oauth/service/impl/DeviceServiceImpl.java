@@ -68,7 +68,8 @@ public class DeviceServiceImpl implements DeviceService {
 
         AuthServerDTO userNickname;
         AuthServerDTO household;
-
+        AuthServerDTO householdStatus;
+        AuthServerDTO firstDeviceUser;
         MobiusResponse response;
 
         Map<String, String> conMap = new HashMap<>();
@@ -77,6 +78,16 @@ public class DeviceServiceImpl implements DeviceService {
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
 
         try {
+
+            // TODO: 만약 Household 여부가 N인 경우에는 세대주의 USERID 사용
+            householdStatus = memberMapper.getHouseholdByUserId(userId);
+            if(householdStatus.getHouseholder().equals("N")){
+                firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+                userId = firstDeviceUser.getUserId();
+                log.info("만약 Household 여부가 N인 경우에는 최초 기기 등록자의 USERID 사용");
+                log.info("userId: " + userId);
+            }
+
             powerOnOff.setUserId(params.getUserId());
             powerOnOff.setDeviceId(params.getDeviceId());
             powerOnOff.setControlAuthKey(params.getControlAuthKey());
