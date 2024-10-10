@@ -553,28 +553,6 @@
             USER_ID = #{userId}
     </update>
 
-    <insert id="insertUserDevicePush" parameterType="com.oauth.dto.AuthServerDTO" >
-        INSERT INTO
-            TBR_OPR_USER_DEVICE_PUSH
-            (
-                USER_ID,
-                DEVC_ID,
-                HP,
-                PUSH_YN_01,
-                PUSH_YN_02,
-                PUSH_YN_03
-            )
-                VALUES
-            (
-                #{userId},
-                #{deviceId},
-                #{hp},
-                'N',
-                'N',
-                'N'
-            )
-    </insert>
-
     <insert id="insertPushHistory" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO
             TBR_OPR_USER_DEVICE_PUSH_INFO
@@ -889,6 +867,42 @@
             TBR_FIRST_DEVICE_USER
         WHERE
             DEVC_ID = #{deviceId}
+    </select>
+
+    <insert id="insertUserDevicePush" parameterType="com.oauth.dto.AuthServerDTO" >
+        INSERT INTO
+        TBR_OPR_USER_DEVICE_PUSH
+        (
+        USER_ID,
+        DEVC_ID,
+        HP,
+        PUSH_YN_01,
+        PUSH_YN_02,
+        PUSH_YN_03
+        )
+        VALUES
+        (
+        #{userId},
+        #{deviceId},
+        #{hp},
+        'N',
+        'N',
+        'N'
+        )
+    </insert>
+
+    <select id="getDeviceCount" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS deviceCount
+        FROM
+            TBR_OPR_USER_DEVICE_PUSH
+        WHERE
+            DEVC_ID IN
+            <foreach collection="list" item="item" open="(" separator="," close=")">
+                #{item.deviceId}
+            </foreach>
+        AND
+            USER_ID = #{userId}  <!-- 단일 userId 사용 -->
     </select>
 
 </mapper>

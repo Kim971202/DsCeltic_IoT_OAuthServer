@@ -630,6 +630,7 @@ public class UserServiceImpl implements UserService {
 
         try {
 
+            // 세대주가 가지고 있는 기기 정보 List
             deviceIdList = memberMapper.getRegistDeviceIdByUserId(requestUserId);
             familyMemberList = memberMapper.getFailyMemberByUserId(requestUserId);
             if(deviceIdList == null || familyMemberList == null){
@@ -647,8 +648,7 @@ public class UserServiceImpl implements UserService {
              *  4. ACCOUNT TABLE의 GROUP_KEY = 세대주 명으로 수정
              *  5. USER TABLE의 세대주 여부 UPDATE
              *  6. 수락여부에 따른 초대 결과 DB UPDATE
-             *  7. 신규 기기에 대한 CNT, SUB 생성
-             *     - 세대주 REGIST TABLE에 있는 모든 기기 ID를 불어온 후 세대회원 전부를 기준으로 생성
+             *  7. TBR_OPR_USER_DEVICE_PUSH 테이블에 각 세대주/세대원/신규 세대원에 값 생성
              *  8. 세대주와 세대원이 동일한 기기를 가지고 있을 경우 중복 되므로 삭제 한다.
              * */
 
@@ -686,18 +686,24 @@ public class UserServiceImpl implements UserService {
                 // TODO: 6. 수락여부에 따른 초대 결과 DB UPDATE
                 memberMapper.acceptInvite(params);
 
-                // TODO: 7. 신규 기기에 대한 CNT, SUB 생성 (쿼리 DATA: deviceId, 세대주 ID, 세대원 ID)
-                for(AuthServerDTO authServerDTO : deviceIdList){
-                    System.out.println("deviceIdList");
-                    System.out.println(deviceIdList);
-                    for (AuthServerDTO serverDTO : familyMemberList) {
-                        System.out.println("familyMemberList");
-                        System.out.println(familyMemberList);
-                        System.out.println("authServerDTO.getDeviceId().substring(33): " + authServerDTO.getDeviceId().substring(33));
-                        mobiusService.createCnt(authServerDTO.getDeviceId().substring(33), serverDTO.getUserId());
-                        mobiusService.createSub(authServerDTO.getDeviceId().substring(33), serverDTO.getUserId(), "gw");
-                    }
-                }
+                /*
+                * TODO: 7. TBR_OPR_USER_DEVICE_PUSH 테이블에 각 세대주/세대원/신규 세대원에 값 생성
+                *  필요한 변수 목록
+                * 1. 세대주 deviceId List
+                * 2. 세대주 + 세대원 userId List
+                * 3. 신규 세대원 deviceId List
+                * 4. 신규 세대원 userId
+                * */
+
+                // 1. 세대주 기준 PUSH Y/N 정보 있는지 확인
+                params.setUserId(params.getRequestUserId());
+                params.setDeviceIdList(deviceIdList);
+                memberMapper.getDeviceCount(params);
+                // 2. 세대주 정보가 테이블에 없을 경우 세대주 + 세대원 INSERT
+
+                // 3. 신규 세대원 기준 PUSH Y/N 정보 있는지 확인
+
+                // 4. 신규 세대원 정보가 테이블에 없을 경우 세대주 + 세대원 INSERT
 
             } else if(inviteAcceptYn.equals("N")){
 

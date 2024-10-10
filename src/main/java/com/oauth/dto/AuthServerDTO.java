@@ -183,6 +183,8 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String waitHour;                     // 대기 시간
     private String waitMinute;                   // 대기 분
     private String newControlAuthKey;            // 신규 RKey
+    private String deviceCount;
+    private List<AuthServerDTO> deviceIdList;
 
     private Role role = Role.USER;
 
