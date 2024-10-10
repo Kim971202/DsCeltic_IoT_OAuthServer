@@ -54,7 +54,7 @@ public class ReservationServiceImpl implements ReservationService{
         Set24 set24 = new Set24();
         String stringObject = null;
         String msg;
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         String hoursString = params.getHours();
         String redisValue;
@@ -63,11 +63,16 @@ public class ReservationServiceImpl implements ReservationService{
         AuthServerDTO device;
         AuthServerDTO userNickname;
         AuthServerDTO household;
+        AuthServerDTO firstDeviceUser;
+
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<String, Object>();
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
 
             device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
 
@@ -101,7 +106,7 @@ public class ReservationServiceImpl implements ReservationService{
             System.out.println(map);
             System.out.println(JSON.toJson(map));
 
-            redisValue = userId + "," + set24.getFunctionId();
+            redisValue = params.getUserId() + "," + set24.getFunctionId();
             redisCommand.setValues(set24.getUuId(), redisValue);
             response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(set24));
 
@@ -141,11 +146,11 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
             }
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
@@ -179,7 +184,7 @@ public class ReservationServiceImpl implements ReservationService{
             params.setControlCodeName("24시간 예약");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
+            params.setUserId(params.getUserId());
 
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
@@ -204,7 +209,7 @@ public class ReservationServiceImpl implements ReservationService{
         String stringObject = null;
         String msg;
 
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         String responseMessage;
         String redisValue;
@@ -212,16 +217,21 @@ public class ReservationServiceImpl implements ReservationService{
         AuthServerDTO device;
         AuthServerDTO userNickname;
         AuthServerDTO household;
+        AuthServerDTO firstDeviceUser;
+
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         ConcurrentHashMap<String, String> dbMap = new ConcurrentHashMap<String, String>();
         try {
 
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
+
             device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
 
             set12.setAccessToken(params.getAccessToken());
-            set12.setUserId(userId);
+            set12.setUserId(params.getUserId());
             set12.setDeviceId(deviceId);
             set12.setControlAuthKey(params.getControlAuthKey());
             set12.setWorkPeriod(params.getWorkPeriod());
@@ -231,7 +241,7 @@ public class ReservationServiceImpl implements ReservationService{
             set12.setFunctionId("12h");
             set12.setUuId(common.getTransactionId());
 
-            redisValue = userId + "," + set12.getFunctionId();
+            redisValue = params.getUserId() + "," + set12.getFunctionId();
             redisCommand.setValues(set12.getUuId(), redisValue);
             response = mobiusResponse = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(set12));
 
@@ -279,11 +289,11 @@ public class ReservationServiceImpl implements ReservationService{
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
@@ -311,7 +321,7 @@ public class ReservationServiceImpl implements ReservationService{
             params.setControlCodeName("12시간 예약");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
+            params.setUserId(params.getUserId());
 
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
@@ -334,7 +344,7 @@ public class ReservationServiceImpl implements ReservationService{
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = null;
         String msg;
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         AwakeAlarmSet awakeAlarmSet = new AwakeAlarmSet();
         List<HashMap<String, Object>> awakeList = new ArrayList<HashMap<String, Object>>();
@@ -345,9 +355,14 @@ public class ReservationServiceImpl implements ReservationService{
         AuthServerDTO device;
         AuthServerDTO household;
         AuthServerDTO userNickname;
+        AuthServerDTO firstDeviceUser;
+
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
 
             device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
 
@@ -362,7 +377,7 @@ public class ReservationServiceImpl implements ReservationService{
              *      }
              * ]
              * */
-            awakeAlarmSet.setUserId(userId);
+            awakeAlarmSet.setUserId(params.getUserId());
             awakeAlarmSet.setAccessToken(params.getAccessToken());
             awakeAlarmSet.setDeviceId(deviceId);
             awakeAlarmSet.setControlAuthKey(params.getControlAuthKey());
@@ -412,7 +427,7 @@ public class ReservationServiceImpl implements ReservationService{
             }
             awakeAlarmSet.setAwakeList(awakeList);
 
-            redisValue = userId + "," + awakeAlarmSet.getFunctionId();
+            redisValue = params.getUserId() + "," + awakeAlarmSet.getFunctionId();
             redisCommand.setValues(awakeAlarmSet.getUuId(), redisValue);
             System.out.println("JSON.toJson(awakeAlarmSet): " + JSON.toJson(awakeAlarmSet));
             response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(awakeAlarmSet));
@@ -455,11 +470,11 @@ public class ReservationServiceImpl implements ReservationService{
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
@@ -487,7 +502,7 @@ public class ReservationServiceImpl implements ReservationService{
             params.setControlCodeName("빠른온수 예약");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
+            params.setUserId(params.getUserId());
 
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
@@ -512,7 +527,7 @@ public class ReservationServiceImpl implements ReservationService{
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = null;
         String msg;
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         SetWeek setWeek = new SetWeek();
         List<HashMap<String, Object>> weekList = new ArrayList<HashMap<String, Object>>();
@@ -524,6 +539,8 @@ public class ReservationServiceImpl implements ReservationService{
         MobiusResponse response;
         AuthServerDTO device;
         AuthServerDTO userNickname;
+        AuthServerDTO firstDeviceUser;
+
         Map<String, String> conMap = new HashMap<>();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
@@ -533,6 +550,9 @@ public class ReservationServiceImpl implements ReservationService{
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
 
             device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
 
@@ -553,7 +573,7 @@ public class ReservationServiceImpl implements ReservationService{
                 map = new HashMap<>();
             }
             setWeek.setWeekList(weekList);
-            redisValue = userId + "," + setWeek.getFunctionId();
+            redisValue = params.getUserId() + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
 
             log.info("JSON.toJson(setWeek, true): " + JSON.toJson(setWeek, true));
@@ -601,11 +621,11 @@ public class ReservationServiceImpl implements ReservationService{
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
@@ -632,7 +652,7 @@ public class ReservationServiceImpl implements ReservationService{
             params.setControlCodeName("주간 예약");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
+            params.setUserId(params.getUserId());
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");

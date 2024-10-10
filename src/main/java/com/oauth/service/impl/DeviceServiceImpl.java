@@ -59,7 +59,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         String stringObject;
         String msg;
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         String deviceType = params.getDeviceType();
         String redisValue;
@@ -68,7 +68,6 @@ public class DeviceServiceImpl implements DeviceService {
 
         AuthServerDTO userNickname;
         AuthServerDTO household;
-        AuthServerDTO householdStatus;
         AuthServerDTO firstDeviceUser;
         MobiusResponse response;
 
@@ -79,14 +78,8 @@ public class DeviceServiceImpl implements DeviceService {
 
         try {
 
-            // TODO: 만약 Household 여부가 N인 경우에는 세대주의 USERID 사용
-            householdStatus = memberMapper.getHouseholdByUserId(userId);
-            if(householdStatus.getHouseholder().equals("N")){
-                firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
-                userId = firstDeviceUser.getUserId();
-                log.info("만약 Household 여부가 N인 경우에는 최초 기기 등록자의 USERID 사용");
-                log.info("userId: " + userId);
-            }
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
 
             powerOnOff.setUserId(params.getUserId());
             powerOnOff.setDeviceId(params.getDeviceId());
@@ -97,7 +90,7 @@ public class DeviceServiceImpl implements DeviceService {
             powerOnOff.setFunctionId("powr");
             powerOnOff.setUuId(common.getTransactionId());
 
-            redisValue = userId + "," + powerOnOff.getFunctionId();
+            redisValue = params.getUserId() + "," + powerOnOff.getFunctionId();
             redisCommand.setValues(powerOnOff.getUuId(), redisValue);
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
@@ -169,7 +162,7 @@ public class DeviceServiceImpl implements DeviceService {
             params.setControlCodeName("전원 ON/OFF");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
+            params.setUserId(params.getUserId());
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");
@@ -178,11 +171,11 @@ public class DeviceServiceImpl implements DeviceService {
             params.setDeviceType(deviceType);
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
@@ -472,13 +465,14 @@ public class DeviceServiceImpl implements DeviceService {
         String msg;
         String serialNumber;
         String modeCode = params.getModeCode();
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         String modelCode = params.getModelCode();
         String sleepCode = null;
 
         AuthServerDTO userNickname;
         AuthServerDTO household;
+        AuthServerDTO firstDeviceUser;
 
         if(params.getModeCode().equals("06")) sleepCode = params.getSleepCode();
 
@@ -489,6 +483,9 @@ public class DeviceServiceImpl implements DeviceService {
         ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try  {
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             if (device == null) {
@@ -514,9 +511,9 @@ public class DeviceServiceImpl implements DeviceService {
             modeChange.setFunctionId("opMd");
             modeChange.setUuId(common.getTransactionId());
             log.info("modeChange.getUuid(): " + modeChange.getUuId());
-            redisValue = userId + "," + modeChange.getFunctionId();
+            redisValue = params.getUserId() + "," + modeChange.getFunctionId();
             redisCommand.setValues(modeChange.getUuId(), redisValue);
-            response = mobiusService.createCin(common.stringToHex("    " + serialNumber), params.getUserId(), JSON.toJson(modeChange));
+            response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(modeChange));
 
             if(!response.getResponseCode().equals("201")){
                 msg = "중계서버 오류";
@@ -560,11 +557,11 @@ public class DeviceServiceImpl implements DeviceService {
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
@@ -637,7 +634,7 @@ public class DeviceServiceImpl implements DeviceService {
             params.setControlCode(modeCode);
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
+            params.setUserId(params.getUserId());
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");
@@ -662,18 +659,22 @@ public class DeviceServiceImpl implements DeviceService {
         String stringObject = "N";
         String msg;
         String responseMessage;
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         String redisValue;
         MobiusResponse response;
         String serialNumber;
         AuthServerDTO userNickname;
         AuthServerDTO household;
+        AuthServerDTO firstDeviceUser;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             if (device == null) {
@@ -689,14 +690,14 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            temperatureSet.setUserId(userId);
+            temperatureSet.setUserId(params.getUserId());
             temperatureSet.setDeviceId(params.getDeviceId());
             temperatureSet.setControlAuthKey(params.getControlAuthKey());
             temperatureSet.setTemperature(params.getTemperture());
             temperatureSet.setFunctionId("htTp");
             temperatureSet.setUuId(common.getTransactionId());
 
-            redisValue = userId + "," + temperatureSet.getFunctionId();
+            redisValue = params.getUserId() + "," + temperatureSet.getFunctionId();
             redisCommand.setValues(temperatureSet.getUuId(), redisValue);
             response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(temperatureSet));
 
@@ -742,11 +743,11 @@ public class DeviceServiceImpl implements DeviceService {
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
@@ -775,7 +776,7 @@ public class DeviceServiceImpl implements DeviceService {
             params.setControlCodeName("실내 온도 설정");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
+            params.setUserId(params.getUserId());
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");
@@ -799,7 +800,7 @@ public class DeviceServiceImpl implements DeviceService {
         BoiledWaterTempertureSet boiledWaterTempertureSet = new BoiledWaterTempertureSet();
         String stringObject = "N";
         String msg;
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         String redisValue;
         String responseMessage;
@@ -807,11 +808,15 @@ public class DeviceServiceImpl implements DeviceService {
         String serialNumber;
         AuthServerDTO userNickname;
         AuthServerDTO household;
+        AuthServerDTO firstDeviceUser;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             if (device == null) {
@@ -827,14 +832,14 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            boiledWaterTempertureSet.setUserId(userId);
+            boiledWaterTempertureSet.setUserId(params.getUserId());
             boiledWaterTempertureSet.setDeviceId(params.getDeviceId());
             boiledWaterTempertureSet.setControlAuthKey(params.getControlAuthKey());
             boiledWaterTempertureSet.setTemperature(params.getTemperture());
             boiledWaterTempertureSet.setFunctionId("wtTp");
             boiledWaterTempertureSet.setUuId(common.getTransactionId());
 
-            redisValue = userId + "," + boiledWaterTempertureSet.getFunctionId();
+            redisValue = params.getUserId() + "," + boiledWaterTempertureSet.getFunctionId();
             redisCommand.setValues(boiledWaterTempertureSet.getUuId(), redisValue);
             response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(boiledWaterTempertureSet));
 
@@ -884,11 +889,11 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
@@ -919,7 +924,7 @@ public class DeviceServiceImpl implements DeviceService {
             params.setControlCodeName("난방수 온도 설정");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
+            params.setUserId(params.getUserId());
             if(memberMapper.insertCommandHistory(params) <= 0) {
                 msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -951,7 +956,7 @@ public class DeviceServiceImpl implements DeviceService {
         WaterTempertureSet waterTempertureSet = new WaterTempertureSet();
         String stringObject = "N";
         String msg;
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         String redisValue;
         String responseMessage;
@@ -959,10 +964,15 @@ public class DeviceServiceImpl implements DeviceService {
         String serialNumber;
         AuthServerDTO household;
         AuthServerDTO userNickname;
+        AuthServerDTO firstDeviceUser;
+
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             if (device == null) {
@@ -977,14 +987,14 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
-            waterTempertureSet.setUserId(userId);
+            waterTempertureSet.setUserId(params.getUserId());
             waterTempertureSet.setDeviceId(params.getDeviceId());
             waterTempertureSet.setControlAuthKey(params.getControlAuthKey());
             waterTempertureSet.setTemperature(params.getTemperture());
             waterTempertureSet.setFunctionId("hwTp");
             waterTempertureSet.setUuId(common.getTransactionId());
 
-            redisValue = userId + "," + waterTempertureSet.getFunctionId();
+            redisValue = params.getUserId() + "," + waterTempertureSet.getFunctionId();
             redisCommand.setValues(waterTempertureSet.getUuId(), redisValue);
             response = mobiusResponse = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(waterTempertureSet));
 
@@ -1030,11 +1040,11 @@ public class DeviceServiceImpl implements DeviceService {
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
@@ -1065,7 +1075,7 @@ public class DeviceServiceImpl implements DeviceService {
             params.setControlCodeName("온수 온도 설정");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
+            params.setUserId(params.getUserId());
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");
@@ -1092,7 +1102,7 @@ public class DeviceServiceImpl implements DeviceService {
         FastHotWaterSet fastHotWaterSet = new FastHotWaterSet();
         String stringObject = "N";
         String msg;
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         String redisValue;
         MobiusResponse response;
@@ -1100,11 +1110,15 @@ public class DeviceServiceImpl implements DeviceService {
         String serialNumber;
         AuthServerDTO userNickname;
         AuthServerDTO household;
+        AuthServerDTO firstDeviceUser;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             if (device == null) {
@@ -1120,14 +1134,14 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            fastHotWaterSet.setUserId(userId);
+            fastHotWaterSet.setUserId(params.getUserId());
             fastHotWaterSet.setDeviceId(params.getDeviceId());
             fastHotWaterSet.setControlAuthKey(params.getControlAuthKey());
             fastHotWaterSet.setFtMdSet(params.getModeCode());
             fastHotWaterSet.setFunctionId("ftMd");
             fastHotWaterSet.setUuId(common.getTransactionId());
 
-            redisValue = userId + "," + fastHotWaterSet.getFunctionId();
+            redisValue = params.getUserId() + "," + fastHotWaterSet.getFunctionId();
             redisCommand.setValues(fastHotWaterSet.getUuId(), redisValue);
             response = mobiusResponse = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(fastHotWaterSet));
 
@@ -1173,11 +1187,11 @@ public class DeviceServiceImpl implements DeviceService {
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
@@ -1206,7 +1220,7 @@ public class DeviceServiceImpl implements DeviceService {
             params.setControlCodeName("빠른 온수 설정");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
+            params.setUserId(params.getUserId());
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");
@@ -1230,10 +1244,11 @@ public class DeviceServiceImpl implements DeviceService {
         LockSet lockSet = new LockSet();
         String stringObject = "N";
         String msg;
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         AuthServerDTO userNickname;
         AuthServerDTO household;
+        AuthServerDTO firstDeviceUser;
 
         String redisValue;
         MobiusResponse response;
@@ -1244,6 +1259,9 @@ public class DeviceServiceImpl implements DeviceService {
         ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             if (device == null) {
@@ -1259,7 +1277,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
 
-            lockSet.setUserId(userId);
+            lockSet.setUserId(params.getUserId());
             lockSet.setDeviceId(params.getDeviceId());
             lockSet.setControlAuthKey(params.getControlAuthKey());
             lockSet.setLockSet(params.getLockSet());
@@ -1267,7 +1285,7 @@ public class DeviceServiceImpl implements DeviceService {
             lockSet.setUuId(common.getTransactionId());
 
 
-            redisValue = userId + "," + lockSet.getFunctionId();
+            redisValue = params.getUserId() + "," + lockSet.getFunctionId();
             redisCommand.setValues(lockSet.getUuId(), redisValue);
             response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(lockSet));
 
@@ -1318,11 +1336,11 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
@@ -1671,7 +1689,7 @@ public class DeviceServiceImpl implements DeviceService {
         String stringObject;
         String msg;
 
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         String controlAuthKey = params.getControlAuthKey();
         String fanSpeed = params.getFanSpeed();
@@ -1680,6 +1698,7 @@ public class DeviceServiceImpl implements DeviceService {
         String responseMessage = null;
         AuthServerDTO userNickname;
         AuthServerDTO household;
+        AuthServerDTO firstDeviceUser;
 
         MobiusResponse response;
 
@@ -1692,7 +1711,11 @@ public class DeviceServiceImpl implements DeviceService {
         String serialNumber;
 
         try{
-            fanSpeedSet.setUserId(userId);
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
+
+            fanSpeedSet.setUserId(params.getUserId());
             fanSpeedSet.setDeviceId(deviceId);
             fanSpeedSet.setControlAuthKey(controlAuthKey);
             fanSpeedSet.setModelCode(common.stringToHex(modelCode));
@@ -1700,7 +1723,7 @@ public class DeviceServiceImpl implements DeviceService {
             fanSpeedSet.setFunctionId("vtSp");
             fanSpeedSet.setUuId(common.getTransactionId());
 
-            redisValue = userId + "," + "VentilationFanSpeedSet";
+            redisValue = params.getUserId() + "," + "VentilationFanSpeedSet";
             redisCommand.setValues(fanSpeedSet.getUserId(), redisValue);
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
@@ -1772,7 +1795,7 @@ public class DeviceServiceImpl implements DeviceService {
             params.setControlCodeName("풍량 단수 설정");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
+            params.setUserId(params.getUserId());
 
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
@@ -1782,11 +1805,11 @@ public class DeviceServiceImpl implements DeviceService {
             params.setDeviceType("07");
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){

@@ -1366,10 +1366,13 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data result = new ApiResponse.Data();
         String msg;
         AuthServerDTO serialNumber;
-        String userId = params.getUserId();
+        String userId;
+        String deviceId = params.getDeviceId();
         String uuId = common.getTransactionId();
         String redisValue;
         AuthServerDTO pushYn;
+        AuthServerDTO firstDeviceUser;
+
         Map<String, Object> conMap = new HashMap<>();
         Map<String, Object> conMap1 = new HashMap<>();
         MobiusResponse mobiusResponse;
@@ -1377,6 +1380,9 @@ public class UserServiceImpl implements UserService {
         String responseMessage;
 
         try{
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
 
             serialNumber = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             if(serialNumber.getSerialNumber() == null){
@@ -1394,7 +1400,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("functionId", "blCf");
             conMap.put("uuId", uuId);
 
-            redisValue = userId + "," + "blCf";
+            redisValue = params.getUserId() + "," + "blCf";
             redisCommand.setValues(uuId, redisValue);
 
             String jsonString = objectMapper.writeValueAsString(conMap);
