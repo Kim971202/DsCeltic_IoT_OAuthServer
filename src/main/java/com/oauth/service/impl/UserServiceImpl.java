@@ -698,6 +698,7 @@ public class UserServiceImpl implements UserService {
                 // 1. 세대주 기준 PUSH Y/N 정보 있는지 확인
                 params.setUserId(params.getRequestUserId());
                 params.setDeviceIdList(deviceIdList);
+                System.out.println(params);
                 memberMapper.getDeviceCount(params);
                 // 2. 세대주 정보가 테이블에 없을 경우 세대주 + 세대원 INSERT
 
