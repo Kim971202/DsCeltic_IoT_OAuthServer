@@ -696,10 +696,12 @@ public class UserServiceImpl implements UserService {
                 * */
 
                 // 1. 세대주 기준 PUSH Y/N 정보 있는지 확인
-                params.setUserId(params.getRequestUserId());
-                params.setDeviceIdList(deviceIdList);
-                System.out.println(params);
-                memberMapper.getDeviceCount(params);
+                HashMap<String, Object> deviceMap = new HashMap<String, Object>();
+                for(AuthServerDTO authServerDTO : deviceIdList){
+                    deviceMap.put("deviceId", authServerDTO.getDeviceId());
+                    deviceMap.put("userId", authServerDTO.getUserId());
+                }
+                memberMapper.getDeviceCount(deviceMap);
                 // 2. 세대주 정보가 테이블에 없을 경우 세대주 + 세대원 INSERT
 
                 // 3. 신규 세대원 기준 PUSH Y/N 정보 있는지 확인
