@@ -899,10 +899,10 @@
         WHERE
             DEVC_ID IN
             <foreach collection="deviceIdList" item="deviceId" open="(" separator="," close=")">
-                #{deviceId}
+                #{deviceId, jdbcType=VARCHAR} <!-- deviceId 타입 명시 -->
             </foreach>
         AND
-            USER_ID = #{userId}  <!-- 단일 userId 사용 -->
+            USER_ID = #{userId, jdbcType=VARCHAR}
     </select>
 
 </mapper>
