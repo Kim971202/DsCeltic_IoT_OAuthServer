@@ -701,6 +701,7 @@ public class UserServiceImpl implements UserService {
                     deviceMap.put("deviceId", authServerDTO.getDeviceId());
                     deviceMap.put("userId", authServerDTO.getUserId());
                 }
+                System.out.println(deviceMap);
                 memberMapper.getDeviceCount(deviceMap);
                 // 2. 세대주 정보가 테이블에 없을 경우 세대주 + 세대원 INSERT
 
