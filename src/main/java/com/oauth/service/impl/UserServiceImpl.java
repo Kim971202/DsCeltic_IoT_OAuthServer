@@ -668,23 +668,23 @@ public class UserServiceImpl implements UserService {
                 for(AuthServerDTO authServerDTO : deviceIdList){
                     authServerDTO.setUserId(responseUserId);
                     if(authServerDTO.getUserId().equals(responseUserId)){
-                        memberMapper.deleteDuplicateDeviceIdFromRegist(deviceIdList);
-                        memberMapper.updateRegistTable(params);
-                        memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList);
-                        memberMapper.updateUserDeviceTable(params);
-                        memberMapper.deleteDuplicateDeviceIdFromDeviceGrpInfo(deviceIdList);
-                        memberMapper.updateGrpInfoTable(params);
+//                        memberMapper.deleteDuplicateDeviceIdFromRegist(deviceIdList);
+//                        memberMapper.updateRegistTable(params);
+//                        memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList);
+//                        memberMapper.updateUserDeviceTable(params);
+//                        memberMapper.deleteDuplicateDeviceIdFromDeviceGrpInfo(deviceIdList);
+//                        memberMapper.updateGrpInfoTable(params);
                     }
                 }
 
                 // TODO: 4. TBD_IOT_GRP_INFO TABLE의 세대원으로 변경
-                memberMapper.updateHouseholdToMember(params);
+//                memberMapper.updateHouseholdToMember(params);
 
                 // TODO: 5. USER TABLE의 세대주 여부 UPDATE
-                memberMapper.updateUserTable(responseUserId);
+//                memberMapper.updateUserTable(responseUserId);
 
                 // TODO: 6. 수락여부에 따른 초대 결과 DB UPDATE
-                memberMapper.acceptInvite(params);
+//                memberMapper.acceptInvite(params);
 
                 /*
                 * TODO: 7. TBR_OPR_USER_DEVICE_PUSH 테이블에 각 세대주/세대원/신규 세대원에 값 생성
