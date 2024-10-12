@@ -698,11 +698,14 @@ public class UserServiceImpl implements UserService {
                 // 1. 세대주 기준 PUSH Y/N 정보 있는지 확인
                 HashMap<String, Object> deviceMap = new HashMap<String, Object>();
                 HashMap<String, Object> deviceMap2 = new HashMap<String, Object>();
+                List<HashMap<String, Object>> deviceList = new ArrayList<>();
+
                 for(AuthServerDTO authServerDTO : deviceIdList){
                     deviceMap.put("deviceId", authServerDTO.getDeviceId());
                     deviceMap.put("userId", authServerDTO.getUserId());
+                    deviceList.add(deviceMap);
                 }
-                deviceMap2.put("list", deviceMap);
+                deviceMap2.put("list", deviceList);
                 System.out.println(deviceIdList);
                 System.out.println(deviceMap);
                 System.out.println(deviceMap2);
