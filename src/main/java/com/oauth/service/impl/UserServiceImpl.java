@@ -700,6 +700,9 @@ public class UserServiceImpl implements UserService {
                 HashMap<String, Object> deviceMap2 = new HashMap<String, Object>();
                 List<HashMap<String, Object>> deviceList = new ArrayList<>();
 
+                // 신규 세대원이 가지고 있는 기기로 List 쿼리
+                deviceIdList = memberMapper.getRegistDeviceIdByUserId(responseUserId);
+
                 for(AuthServerDTO authServerDTO : deviceIdList){
                     // 세대주 ID로 Set
                     authServerDTO.setUserId(requestUserId);
