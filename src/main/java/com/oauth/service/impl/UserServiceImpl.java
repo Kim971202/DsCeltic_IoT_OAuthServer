@@ -701,17 +701,16 @@ public class UserServiceImpl implements UserService {
                 List<HashMap<String, Object>> deviceList = new ArrayList<>();
 
                 for(AuthServerDTO authServerDTO : deviceIdList){
+                    // 세대주 ID로 Set
+                    authServerDTO.setUserId(requestUserId);
                     deviceMap.put("deviceId", authServerDTO.getDeviceId());
                     deviceMap.put("userId", authServerDTO.getUserId());
                     deviceList.add(deviceMap);
                 }
                 deviceMap2.put("list", deviceList);
-                System.out.println(deviceIdList);
-                System.out.println(deviceMap);
-                System.out.println(deviceMap2);
-                memberMapper.getDeviceCount(deviceMap2);
                 // 2. 세대주 정보가 테이블에 없을 경우 세대주 + 세대원 INSERT
-
+                if(memberMapper.getDeviceCount(deviceMap2).getDeviceCount().equals("0")) System.out.println("THIS IS 0");
+                else System.out.println("THIS IS NOT 0");
                 // 3. 신규 세대원 기준 PUSH Y/N 정보 있는지 확인
 
                 // 4. 신규 세대원 정보가 테이블에 없을 경우 세대주 + 세대원 INSERT
