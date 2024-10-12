@@ -729,14 +729,8 @@ public class UserServiceImpl implements UserService {
                             inputList.add(newDevice);
                         }
                     }
-
                     System.out.println(inputList);
-
-                    // 쿼리 결과 값이 0 이면 기기 PUSH 정보가 없음
-//                    for(int i = 0; i < familyMemberList.size(); ++i){
-//                        deviceIdList.get(i).setUserId(familyMemberList.get(i).getUserId());
-//                        memberMapper.insertUserDevicePushByList(deviceIdList);
-//                    }
+                    memberMapper.insertUserDevicePushByList(inputList);
 
                 }
 
