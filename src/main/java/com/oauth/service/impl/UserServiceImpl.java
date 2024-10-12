@@ -723,7 +723,7 @@ public class UserServiceImpl implements UserService {
                             AuthServerDTO newDevice = new AuthServerDTO();
                             // 각 사용자의 ID와 각 기기의 ID를 설정
                             newDevice.setDeviceId(deviceIdList.get(i).getDeviceId());
-                            newDevice.setHp(familyMemberList.get(i).getHp());
+                            newDevice.setHp(familyMemberList.get(j).getHp());
                             newDevice.setUserId(familyMemberList.get(j).getUserId());
                             // 리스트에 추가
                             inputList.add(newDevice);
