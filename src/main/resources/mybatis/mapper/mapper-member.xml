@@ -761,7 +761,8 @@
     <select id="getRegistDeviceIdByUserId" parameterType="String" resultMap="member">
         SELECT
             DEVC_ID AS deviceId,
-            USER_ID AS userId
+            USER_ID AS userId,
+            HP AS hp
         FROM
             TBT_OPR_DEVICE_REGIST
         WHERE
@@ -907,5 +908,29 @@
                 #{item.userId}
             </foreach>
     </select>
+
+    <insert id="insertUserDevicePushByList" parameterType="java.util.List" >
+        INSERT INTO
+            TBR_OPR_USER_DEVICE_PUSH
+        (
+                USER_ID,
+                DEVC_ID,
+                HP,
+                PUSH_YN_01,
+                PUSH_YN_02,
+                PUSH_YN_03
+        )
+            VALUES
+        <foreach collection="list" item="item" separator=",">
+        (
+            #{item.userId},
+            #{item.deviceId},
+            #{item.hp},
+            'N',
+            'N',
+            'N'
+        )
+        </foreach>
+    </insert>
 
 </mapper>

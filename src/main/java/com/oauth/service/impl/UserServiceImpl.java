@@ -711,9 +711,34 @@ public class UserServiceImpl implements UserService {
                     deviceList.add(deviceMap);
                 }
                 deviceMap2.put("list", deviceList);
+
                 // 2. 세대주 정보가 테이블에 없을 경우 세대주 + 세대원 INSERT
-                if(memberMapper.getDeviceCount(deviceMap2).getDeviceCount().equals("0")) System.out.println("THIS IS 0");
-                else System.out.println("THIS IS NOT 0");
+                if(memberMapper.getDeviceCount(deviceMap2).getDeviceCount().equals("0")){
+
+                    // 사용자 + 기기 : 1 대 1 List를 생성해야함
+                    List<AuthServerDTO> inputList = new ArrayList<>();
+                    for (int j = 0; j < familyMemberList.size(); ++j) {
+                        for (int i = 0; i < deviceIdList.size(); ++i) {
+                            // 새로운 AuthServerDTO 객체 생성
+                            AuthServerDTO newDevice = new AuthServerDTO();
+                            // 각 사용자의 ID와 각 기기의 ID를 설정
+                            newDevice.setDeviceId(deviceIdList.get(i).getDeviceId());
+                            newDevice.setUserId(familyMemberList.get(j).getUserId());
+                            // 리스트에 추가
+                            inputList.add(newDevice);
+                        }
+                    }
+
+                    System.out.println(inputList);
+
+                    // 쿼리 결과 값이 0 이면 기기 PUSH 정보가 없음
+//                    for(int i = 0; i < familyMemberList.size(); ++i){
+//                        deviceIdList.get(i).setUserId(familyMemberList.get(i).getUserId());
+//                        memberMapper.insertUserDevicePushByList(deviceIdList);
+//                    }
+
+                }
+
                 // 3. 신규 세대원 기준 PUSH Y/N 정보 있는지 확인
 
                 // 4. 신규 세대원 정보가 테이블에 없을 경우 세대주 + 세대원 INSERT

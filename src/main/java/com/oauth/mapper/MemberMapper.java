@@ -63,6 +63,7 @@ public interface MemberMapper {
     public int insertPushHistory(AuthServerDTO member);
     public int updatePushToken(AuthServerDTO member);
     public int insertUserDevicePush(AuthServerDTO member);
+    public int insertUserDevicePushByList(List<AuthServerDTO> member);
     public int insertMember(AuthServerDTO member);
     public int insertAccount(AuthServerDTO member);
     public int updatePassword(AuthServerDTO member);
