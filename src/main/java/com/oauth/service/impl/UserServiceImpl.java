@@ -624,6 +624,7 @@ public class UserServiceImpl implements UserService {
         List<AuthServerDTO> familyMemberList;
         String requestUserId = params.getRequestUserId();
         String responseUserId = params.getResponseUserId();
+        String responseHp = params.getResponseHp();
         String inviteAcceptYn = params.getInviteAcceptYn();
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -717,26 +718,55 @@ public class UserServiceImpl implements UserService {
 
                     // 사용자 + 기기 : 1 대 1 List를 생성해야함
                     List<AuthServerDTO> inputList = new ArrayList<>();
-                    for (int j = 0; j < familyMemberList.size(); ++j) {
-                        for (int i = 0; i < deviceIdList.size(); ++i) {
+
+                    for (AuthServerDTO authServerDTO : familyMemberList) {
+                        for (AuthServerDTO serverDTO : deviceIdList) {
                             // 새로운 AuthServerDTO 객체 생성
                             AuthServerDTO newDevice = new AuthServerDTO();
                             // 각 사용자의 ID와 각 기기의 ID를 설정
-                            newDevice.setDeviceId(deviceIdList.get(i).getDeviceId());
-                            newDevice.setHp(familyMemberList.get(j).getHp());
-                            newDevice.setUserId(familyMemberList.get(j).getUserId());
+                            newDevice.setDeviceId(serverDTO.getDeviceId());
+                            newDevice.setHp(authServerDTO.getHp());
+                            newDevice.setUserId(authServerDTO.getUserId());
                             // 리스트에 추가
                             inputList.add(newDevice);
                         }
                     }
-                    System.out.println(inputList);
                     memberMapper.insertUserDevicePushByList(inputList);
-
                 }
 
                 // 3. 신규 세대원 기준 PUSH Y/N 정보 있는지 확인
+                deviceMap.clear();
+                deviceMap2.clear();
+                deviceList.clear();
+                // 세대주가 가지고 있는 기기로 List 쿼리
+                deviceIdList = memberMapper.getRegistDeviceIdByUserId(requestUserId);
+
+                for(AuthServerDTO authServerDTO : deviceIdList){
+                    // 신규 세대원 ID로 Set
+                    authServerDTO.setUserId(responseUserId);
+                    deviceMap.put("deviceId", authServerDTO.getDeviceId());
+                    deviceMap.put("userId", authServerDTO.getUserId());
+                    deviceList.add(deviceMap);
+                }
+                deviceMap2.put("list", deviceList);
 
                 // 4. 신규 세대원 정보가 테이블에 없을 경우 세대주 + 세대원 INSERT
+                if(memberMapper.getDeviceCount(deviceMap2).getDeviceCount().equals("0")){
+
+                    List<AuthServerDTO> inputList = new ArrayList<>();
+
+                    for (AuthServerDTO serverDTO : deviceIdList) {
+                        // 새로운 AuthServerDTO 객체 생성
+                        AuthServerDTO newDevice = new AuthServerDTO();
+                        // 각 사용자의 ID와 HP는 동일, 기기의 ID는 각기 다른 값 설정
+                        newDevice.setDeviceId(serverDTO.getDeviceId());
+                        newDevice.setHp(responseHp);
+                        newDevice.setUserId(responseUserId);
+                        // 리스트에 추가
+                        inputList.add(newDevice);
+                    }
+                    memberMapper.insertUserDevicePushByList(inputList);
+                }
 
             } else if(inviteAcceptYn.equals("N")){
 
