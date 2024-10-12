@@ -724,6 +724,7 @@ public class UserServiceImpl implements UserService {
                             // 각 사용자의 ID와 각 기기의 ID를 설정
                             newDevice.setDeviceId(deviceIdList.get(i).getDeviceId());
                             newDevice.setUserId(familyMemberList.get(j).getUserId());
+                            newDevice.setHp(familyMemberList.get(j).getHp());
                             // 리스트에 추가
                             inputList.add(newDevice);
                         }
