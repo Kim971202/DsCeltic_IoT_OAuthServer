@@ -286,7 +286,14 @@ public class Common {
         if (node == null || node.isMissingNode()) {
             return null;
         }
+
         String serializedValue = mapper.writeValueAsString(node);
+
+        // 빈 문자열은 따옴표를 제거하지 않도록 처리
+        if (serializedValue.equals("\"\"")) {
+            return "";
+        }
+
         return serializedValue.replace("\"", "");
     }
 
