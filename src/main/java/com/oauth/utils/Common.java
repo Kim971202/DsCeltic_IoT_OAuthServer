@@ -294,6 +294,11 @@ public class Common {
             return "";
         }
 
+        // 노드가 문자열일 경우, 그냥 텍스트 값을 반환
+        if (node.isTextual()) {
+            return node.asText(); // 따옴표를 제거하지 않고 텍스트 값만 반환
+        }
+
         return serializedValue.replace("\"", "");
     }
 
