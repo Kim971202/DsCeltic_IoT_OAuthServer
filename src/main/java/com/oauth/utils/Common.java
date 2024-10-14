@@ -240,63 +240,58 @@ public class Common {
 
         switch (value) {
             case "functionId":
-                return serializeAndClean(conNode.path("functionId"), objectMapper);
+                return serializeAndClean(conNode.path("functionId"), objectMapper, "functionId");
             case "value":
-                return serializeAndClean(conNode.path("value"), objectMapper);
+                return serializeAndClean(conNode.path("value"), objectMapper, "value");
             case "deviceId":
-                return serializeAndClean(conNode.path("deviceId"), objectMapper);
+                return serializeAndClean(conNode.path("deviceId"), objectMapper, "deviceId");
             case "userId":
-                return serializeAndClean(conNode.path("userId"), objectMapper);
+                return serializeAndClean(conNode.path("userId"), objectMapper, "userId");
             case "wkTm":
-                return serializeAndClean(conNode.path("wkTm"), objectMapper);
+                return serializeAndClean(conNode.path("wkTm"), objectMapper, "wkTm");
             case "msDt":
-                return serializeAndClean(conNode.path("msDt"), objectMapper);
+                return serializeAndClean(conNode.path("msDt"), objectMapper, "msDt");
             case "con":
-                return serializeAndClean(baseNode, objectMapper);
+                return serializeAndClean(baseNode, objectMapper, "con");
             case "sur":
-                return serializeAndClean(surNode, objectMapper);
+                return serializeAndClean(surNode, objectMapper, "sur");
             case "md":
-                return serializeAndClean(conNode.path("rsCf").path("24h").path("md"), objectMapper);
+                return serializeAndClean(conNode.path("rsCf").path("24h").path("md"), objectMapper, "md");
             case "serviceMd":
-                return serializeAndClean(serviceNode, objectMapper);
+                return serializeAndClean(serviceNode, objectMapper, "serviceMd");
             case "24h":
-                return serializeAndClean(conNode.path("rsCf").path("24h"), objectMapper);
+                return serializeAndClean(conNode.path("rsCf").path("24h"), objectMapper, "24h");
             case "12h":
-                return serializeAndClean(conNode.path("rsCf").path("12h"), objectMapper);
+                return serializeAndClean(conNode.path("rsCf").path("12h"), objectMapper, "12h");
             case "7wk":
-                return serializeAndClean(conNode.path("rsCf").path("7wk"), objectMapper);
+                return serializeAndClean(conNode.path("rsCf").path("7wk"), objectMapper, "7wk");
             case "fwh":
-                return serializeAndClean(conNode.path("rsCf").path("fwh"), objectMapper);
+                return serializeAndClean(conNode.path("rsCf").path("fwh"), objectMapper, "fwh");
             case "rsSl":
-                return serializeAndClean(conNode.path("rsCf").path("rsSl"), objectMapper);
+                return serializeAndClean(conNode.path("rsCf").path("rsSl"), objectMapper, "rsSl");
             case "rsPw":
-                return serializeAndClean(conNode.path("rsCf").path("rsPw"), objectMapper);
+                return serializeAndClean(conNode.path("rsCf").path("rsPw"), objectMapper, "rsPw");
             case "24h_old":
-                return serializeAndClean(jsonNode.path("24h"), objectMapper);
+                return serializeAndClean(jsonNode.path("24h"), objectMapper, "24h_old");
             case "12h_old":
-                return serializeAndClean(jsonNode.path("12h"), objectMapper);
+                return serializeAndClean(jsonNode.path("12h"), objectMapper, "12h_old");
             case "7wk_old":
-                return serializeAndClean(jsonNode.path("7wk"), objectMapper);
+                return serializeAndClean(jsonNode.path("7wk"), objectMapper, "7wk_old");
             default:
-                return serializeAndClean(conNode.path(value), objectMapper);
+                return serializeAndClean(conNode.path(value), objectMapper, "DEFAULT");
         }
     }
 
-    private String serializeAndClean(JsonNode node, ObjectMapper mapper) throws Exception {
+    private String serializeAndClean(JsonNode node, ObjectMapper mapper, String key) throws Exception {
         if (node == null || node.isMissingNode()) {
             return null;
         }
 
         String serializedValue = mapper.writeValueAsString(node);
 
-        // 빈 문자열은 따옴표를 제거하지 않도록 처리
-        if (serializedValue.equals("\"\"")) {
-            return "";
-        }
-
-        // 노드가 문자열일 경우, 그냥 텍스트 값을 반환
-        if (node.isTextual()) {
-            return node.asText(); // 따옴표를 제거하지 않고 텍스트 값만 반환
+        // fwh인 경우 그대로 반환
+        if ("fwh".equals(key)) {
+            return serializedValue;  // 변형 없이 그대로 반환
         }
 
         return serializedValue.replace("\"", "");
