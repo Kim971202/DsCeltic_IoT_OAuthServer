@@ -423,12 +423,13 @@ public class ReservationServiceImpl implements ReservationService{
 
                 System.out.println("map");
                 System.out.println(JSON.toJson(map));
-                deviceInfo.setFwh(JSON.toJson(map));
 
                 System.out.println("awakeList");
                 System.out.println(awakeList);
             }
+
             awakeAlarmSet.setAwakeList(awakeList);
+            deviceInfo.setFwh(JSON.toJson(awakeList));
 
             redisValue = params.getUserId() + "," + awakeAlarmSet.getFunctionId();
             redisCommand.setValues(awakeAlarmSet.getUuId(), redisValue);
