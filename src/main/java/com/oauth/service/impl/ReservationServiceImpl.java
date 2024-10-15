@@ -370,7 +370,7 @@ public class ReservationServiceImpl implements ReservationService{
              * “awakeList” :
              * [
              *      {
-             *          "ws":["1","2","3"], "hr" : "06", "mn" : "30"
+             *         tf ,"ws":["1","2","3"], "hr" : "06", "mn" : "30"
              *      },
              *      {
              *          "ws":["4","5","6"], "hr" : "07", "mn": "30"
@@ -391,6 +391,7 @@ public class ReservationServiceImpl implements ReservationService{
 
                 HashMap<String, Object> map = new LinkedHashMap<>();
 
+
                 // ws를 처리하여 List<String>으로 변환
                 List<String> wsList = new ArrayList<>();
                 JsonNode wsNode = jsonNode.path("awakeList").get(i).path("ws");
@@ -407,6 +408,8 @@ public class ReservationServiceImpl implements ReservationService{
                         wsList.add(wsElement.asText());
                     }
                 }
+
+                map.put("tf", jsonNode.path("awakeList").get(i).path("tf").asText());
 
                 // ws 값을 map에 추가
                 map.put("ws", wsList);
