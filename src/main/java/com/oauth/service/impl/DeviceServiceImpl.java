@@ -389,12 +389,14 @@ public class DeviceServiceImpl implements DeviceService {
         String msg;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
+        String modelCode = params.getModelCode();
         String uuId = common.getTransactionId();
         AuthServerDTO serialNumber;
         Map<String, String> resultMap = new HashMap<>();
         List<DeviceStatusInfo.Device> device;
 
         try {
+
             serialNumber = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             if(serialNumber == null) {
                 msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
@@ -407,9 +409,9 @@ public class DeviceServiceImpl implements DeviceService {
                     msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                } else {
-                    resultMap.put("modelCategoryCode", "01");
+                } else if(modelCode.equals("ESCeco13S") || modelCode.equals("DCR-91/WF")) {
                     resultMap.put("deviceStatus", "01");
+                    resultMap.put("modelCategoryCode", "01");
                     for (DeviceStatusInfo.Device value : device) {
                         resultMap.put("rKey", value.getRKey());
                         resultMap.put("powr", value.getPowr());
@@ -427,6 +429,7 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("hwSt", value.getHwSt());
                         resultMap.put("fcLc", value.getFcLc());
                         ConcurrentHashMap<String, ConcurrentHashMap<String, String>> rscfMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, String>>() {{
+
                             // 내부 맵 생성 및 초기화
                             ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
                             eleMap.put("24h", value.getH24());
@@ -435,6 +438,29 @@ public class DeviceServiceImpl implements DeviceService {
 
                             if(value.getFwh() == null) eleMap.put("fwt", "null");
                             else eleMap.put("fwh", value.getFwh());
+                            // 외부 맵에 내부 맵 추가
+                            put("rsCf", eleMap);
+                        }};
+                        resultMap.put("rsCf", JSON.toJson(rscfMap));
+                    }
+                } else if(modelCode.equals("DCR-47/WF")){
+                    resultMap.put("deviceStatus", "01");
+                    resultMap.put("modelCategoryCode", "07");
+                    for (DeviceStatusInfo.Device value : device) {
+                        resultMap.put("rKey", value.getRKey());
+                        resultMap.put("powr", value.getPowr());
+                        resultMap.put("opMd", value.getOpMd());
+                        resultMap.put("vtSp", value.getFcLc());
+                        resultMap.put("inAq", value.getInAq());
+                        resultMap.put("mfDt", value.getMfDt());
+
+                        ConcurrentHashMap<String, ConcurrentHashMap<String, String>> rscfMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, String>>() {{
+
+                            // 내부 맵 생성 및 초기화
+                            ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
+                            eleMap.put("rsSl", value.getRsSl());
+                            eleMap.put("rsPw", value.getRsPw());
+
                             // 외부 맵에 내부 맵 추가
                             put("rsCf", eleMap);
                         }};

@@ -440,6 +440,10 @@
                     <if test="fcLc != null">FCLC = #{fcLc},</if>
                     <if test="blCf != null">BLCF = #{blCf},</if>
                     SLCD = #{slCd},
+                    VTSP = #{vtSp},
+                    <if test="rsSl != null">RSSL = #{rsSl},</if>
+                    <if test="rsPw != null">RSPW = #{rsPw},</if>
+                    INAQ = #{inAq},
                     MFDT = now()
         WHERE
             DEVC_ID = #{deviceId}
@@ -553,7 +557,11 @@
             IFNULL(SLCD, '') AS slCd,
             IFNULL(BCDT, '') AS bCdt,
             IFNULL(CWTP, 0.0) AS cwTp,
-            IFNULL(BLCF, 0.0) AS blCf
+            IFNULL(BLCF, 0.0) AS blCf,
+            IFNULL(VTSP, 0.0) AS vtSp,
+            IFNULL(RSSL, 0.0) AS rsSl,
+            IFNULL(RSPW, 0.0) AS rsPw,
+            IFNULL(INAQ, 0.0) AS inAq
         FROM
             TBR_OPR_DEVICE_STATUS
         WHERE

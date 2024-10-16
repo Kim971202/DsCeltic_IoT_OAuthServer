@@ -256,9 +256,16 @@ public class MobiusController {
                 dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
                 dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
 
+                System.out.println("common.readCon(jsonBody, rsSl)");
+                System.out.println(common.readCon(jsonBody, "rsSl"));
+                System.out.println("common.readCon(jsonBody, rsPw)");
+                System.out.println(common.readCon(jsonBody, "rsPw"));
+                System.out.println("==================================================================");
+                System.out.println(common.convertToJsonString(common.readCon(jsonBody, "rsSl")));
+                System.out.println(common.convertToJsonString(common.readCon(jsonBody, "rsPw")));
+
                 dr910WDevice.setRsSl(common.convertToJsonString(common.readCon(jsonBody, "rsSl"))); // 취침 예약
                 dr910WDevice.setRsPw(common.convertToJsonString(common.readCon(jsonBody, "rsPw"))); // 전원 예약
-                dr910WDevice.setVen7Wk(common.convertToJsonString(common.readCon(jsonBody, "7wk"))); // 주간 예약
 
                 dr910WDevice.setPowr(common.readCon(jsonBody, "powr")); // 전원 ON/OF
                 dr910WDevice.setOpMd(common.readCon(jsonBody, "opMd")); // 홈 IoT 모드
