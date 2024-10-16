@@ -289,8 +289,8 @@ public class Common {
 
         String serializedValue = mapper.writeValueAsString(node);
 
-        // fwh인 경우 그대로 반환
-        if ("fwh".equals(key)) {
+        // fwh, rsSl, rsPw 인 경우 그대로 반환
+        if ("fwh".equals(key) || "rsSl".equals(key) || "rsPw".equals(key)) {
             return serializedValue;  // 변형 없이 그대로 반환
         }
 
