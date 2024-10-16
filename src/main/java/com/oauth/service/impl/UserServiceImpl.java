@@ -660,46 +660,14 @@ public class UserServiceImpl implements UserService {
 
             if(inviteAcceptYn.equals("Y")){
 
-                // TODO: 1. 세대주 HP 쿼리
-                userHp = memberMapper.getHpByUserId(requestUserId);
-                if(userHp == null){
-                    msg = "사용자 초대 - 수락 실패 : getHpByUserId";
-                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-                }
-
-                // TODO: 2. 세대원 REGIST TABLE의 USER_ID, HP 세대주 정보로 UPDATE
-                // TODO: 3. USER_DEVICE TABLE의 USER_ID 세대주 정보로 UPDATE
-                params.setHp(userHp.getHp());
-                for(AuthServerDTO authServerDTO : deviceIdList){
-                    authServerDTO.setUserId(responseUserId);
-                    if(authServerDTO.getUserId().equals(responseUserId)){
-                        memberMapper.deleteDuplicateDeviceIdFromRegist(deviceIdList);
-                        memberMapper.updateRegistTable(params);
-                        memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList);
-                        memberMapper.updateUserDeviceTable(params);
-                        memberMapper.deleteDuplicateDeviceIdFromDeviceGrpInfo(deviceIdList);
-                        memberMapper.updateGrpInfoTable(params);
-                    }
-                }
-
-                // TODO: 4. TBD_IOT_GRP_INFO TABLE의 세대원으로 변경
-                memberMapper.updateHouseholdToMember(params);
-
-                // TODO: 5. USER TABLE의 세대주 여부 UPDATE
-                memberMapper.updateUserTable(responseUserId);
-
-                // TODO: 6. 수락여부에 따른 초대 결과 DB UPDATE
-                memberMapper.acceptInvite(params);
-
                 /*
-                * TODO: 7. TBR_OPR_USER_DEVICE_PUSH 테이블에 각 세대주/세대원/신규 세대원에 값 생성
-                *  필요한 변수 목록
-                * 1. 세대주 deviceId List
-                * 2. 세대주 + 세대원 userId List
-                * 3. 신규 세대원 deviceId List
-                * 4. 신규 세대원 userId
-                * */
+                 * TODO: 7. TBR_OPR_USER_DEVICE_PUSH 테이블에 각 세대주/세대원/신규 세대원에 값 생성
+                 *  필요한 변수 목록
+                 * 1. 세대주 deviceId List
+                 * 2. 세대주 + 세대원 userId List
+                 * 3. 신규 세대원 deviceId List
+                 * 4. 신규 세대원 userId
+                 * */
 
                 // 1. 세대주 기준 PUSH Y/N 정보 있는지 확인
                 HashMap<String, Object> deviceMap = new HashMap<String, Object>();
@@ -772,6 +740,38 @@ public class UserServiceImpl implements UserService {
                     }
                     memberMapper.insertUserDevicePushByList(inputList);
                 }
+
+                // TODO: 1. 세대주 HP 쿼리
+                userHp = memberMapper.getHpByUserId(requestUserId);
+                if(userHp == null){
+                    msg = "사용자 초대 - 수락 실패 : getHpByUserId";
+                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                }
+
+                // TODO: 2. 세대원 REGIST TABLE의 USER_ID, HP 세대주 정보로 UPDATE
+                // TODO: 3. USER_DEVICE TABLE의 USER_ID 세대주 정보로 UPDATE
+                params.setHp(userHp.getHp());
+                for(AuthServerDTO authServerDTO : deviceIdList){
+                    authServerDTO.setUserId(responseUserId);
+                    if(authServerDTO.getUserId().equals(responseUserId)){
+                        memberMapper.deleteDuplicateDeviceIdFromRegist(deviceIdList);
+                        memberMapper.updateRegistTable(params);
+                        memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList);
+                        memberMapper.updateUserDeviceTable(params);
+                        memberMapper.deleteDuplicateDeviceIdFromDeviceGrpInfo(deviceIdList);
+                        memberMapper.updateGrpInfoTable(params);
+                    }
+                }
+
+                // TODO: 4. TBD_IOT_GRP_INFO TABLE의 세대원으로 변경
+                memberMapper.updateHouseholdToMember(params);
+
+                // TODO: 5. USER TABLE의 세대주 여부 UPDATE
+                memberMapper.updateUserTable(responseUserId);
+
+                // TODO: 6. 수락여부에 따른 초대 결과 DB UPDATE
+                memberMapper.acceptInvite(params);
 
             } else if(inviteAcceptYn.equals("N")){
 
