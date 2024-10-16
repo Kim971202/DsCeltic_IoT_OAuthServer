@@ -391,7 +391,6 @@ public class ReservationServiceImpl implements ReservationService{
 
                 HashMap<String, Object> map = new LinkedHashMap<>();
 
-
                 // ws를 처리하여 List<String>으로 변환
                 List<String> wsList = new ArrayList<>();
                 JsonNode wsNode = jsonNode.path("awakeList").get(i).path("ws");
@@ -417,6 +416,7 @@ public class ReservationServiceImpl implements ReservationService{
                 // hr과 mn 처리
                 map.put("hr", jsonNode.path("awakeList").get(i).path("hr").asText());
                 map.put("mn", jsonNode.path("awakeList").get(i).path("mn").asText());
+                map.put("i", i + 1);
 
                 // 완성된 map을 awakeList에 추가
                 awakeList.add(map);
