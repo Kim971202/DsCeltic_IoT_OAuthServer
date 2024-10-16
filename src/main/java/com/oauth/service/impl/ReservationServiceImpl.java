@@ -416,7 +416,7 @@ public class ReservationServiceImpl implements ReservationService{
                 // hr과 mn 처리
                 map.put("hr", jsonNode.path("awakeList").get(i).path("hr").asText());
                 map.put("mn", jsonNode.path("awakeList").get(i).path("mn").asText());
-                map.put("i", i + 1);
+                map.put("i", jsonNode.path("awakeList").get(i).path("i").asText());
 
                 // 완성된 map을 awakeList에 추가
                 awakeList.add(map);
