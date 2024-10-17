@@ -477,4 +477,9 @@ public class Common {
 
         return code;
     }
+
+    public String getModelCodeFromDeviceId(String deviceId){
+        String[] modelCode = deviceId.split("\\.");
+        return hexToString(modelCode[5]);
+    }
 }

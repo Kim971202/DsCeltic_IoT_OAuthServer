@@ -62,6 +62,7 @@ public class DeviceServiceImpl implements DeviceService {
         String userId;
         String deviceId = params.getDeviceId();
         String deviceType = params.getDeviceType();
+        String modelCode = params.getModelCode();
         String redisValue;
         String serialNumber;
         String responseMessage = null;
@@ -187,6 +188,7 @@ public class DeviceServiceImpl implements DeviceService {
                 conMap.put("isEnd", "false");
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", modelCode);
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
                 log.info("doPowerOnOff jsonString: " + jsonString);
@@ -597,6 +599,7 @@ public class DeviceServiceImpl implements DeviceService {
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", modelCode);
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "opMd");
@@ -784,6 +787,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
 
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "htTp");
@@ -928,6 +932,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             for(int i = 0; i < userIds.size(); ++i){
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "wtTp");
@@ -1079,6 +1084,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             for(int i = 0; i < userIds.size(); ++i){
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "htTp");
@@ -1228,6 +1234,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
 
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "FastHotWaterSet");
@@ -1377,6 +1384,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
 
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "LockSet");
@@ -1851,6 +1859,7 @@ public class DeviceServiceImpl implements DeviceService {
                 conMap.put("isEnd", "false");
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", modelCode);
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
                 log.info("doPowerOnOff jsonString: " + jsonString);

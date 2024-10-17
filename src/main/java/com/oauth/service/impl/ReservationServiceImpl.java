@@ -154,6 +154,7 @@ public class ReservationServiceImpl implements ReservationService{
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "24h");
@@ -297,6 +298,7 @@ public class ReservationServiceImpl implements ReservationService{
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "Set12");
@@ -482,6 +484,7 @@ public class ReservationServiceImpl implements ReservationService{
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "AwakeAlarmSet");
@@ -632,6 +635,7 @@ public class ReservationServiceImpl implements ReservationService{
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("title", "7wk");
@@ -835,6 +839,7 @@ public class ReservationServiceImpl implements ReservationService{
                 conMap.put("isEnd", "false");
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
                 log.info("doPowerOnOff jsonString: " + jsonString);
@@ -996,6 +1001,7 @@ public class ReservationServiceImpl implements ReservationService{
                 conMap.put("isEnd", "false");
                 conMap.put("userNickname", userNickname.getUserNickname());
                 conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
                 log.info("doPowerOnOff jsonString: " + jsonString);

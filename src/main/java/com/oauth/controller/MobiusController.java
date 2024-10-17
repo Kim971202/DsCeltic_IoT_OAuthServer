@@ -83,6 +83,17 @@ public class MobiusController {
             return "NULL RECEIVED";
         }
 
+        // DeviceId로 ModelCode 확인
+        String deviceId = common.readCon(jsonBody, "deviceId");
+
+        System.out.println("deviceId: " + deviceId);
+
+        String[] modelCode = deviceId.split("\\.");
+
+        System.out.println("modelCode: " + Arrays.toString(modelCode));
+        System.out.println("modelCode[5]: " + modelCode[5]);
+        System.out.println("common.hexToString(modelCode[5]): " + common.hexToString(modelCode[5]));
+
         List<String> redisValueList;
 
         if (!redisValue.equals("false")) {
@@ -159,9 +170,10 @@ public class MobiusController {
 
                 System.out.println("fPushYn: " + fPushYn);
                 System.out.println("pushToken: " + pushToken);
+                System.out.println("modelCode: " + common.hexToString(modelCode[5]));
                 // 변경실시간상태
                 // FCM Token 값 쿼리 필요
-                pushService.sendPushMessage(jsonBody, pushToken, fPushYn, id.getUserId());
+                pushService.sendPushMessage(jsonBody, pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]));
 
                 AuthServerDTO params = new AuthServerDTO();
                 Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
@@ -192,17 +204,6 @@ public class MobiusController {
 
             // 주기상태보고
             DeviceStatusInfo.Device dr910WDevice = new DeviceStatusInfo.Device();
-
-            // DeviceId로 ModelCode 확인
-            String deviceId = common.readCon(jsonBody, "deviceId");
-
-            System.out.println("deviceId: " + deviceId);
-
-            String[] modelCode = deviceId.split("\\.");
-
-            System.out.println("modelCode: " + Arrays.toString(modelCode));
-            System.out.println("modelCode[5]: " + modelCode[5]);
-            System.out.println("common.hexToString(modelCode[5]): " + common.hexToString(modelCode[5]));
 
             // 신형 보일러 RC
             if(common.hexToString(modelCode[5]).equals(modelCodeMap.get("newModel"))){
