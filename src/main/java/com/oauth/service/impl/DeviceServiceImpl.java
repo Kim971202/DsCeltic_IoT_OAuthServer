@@ -450,7 +450,7 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("rKey", value.getRKey());
                         resultMap.put("powr", value.getPowr());
                         resultMap.put("opMd", value.getOpMd());
-                        resultMap.put("vtSp", value.getFcLc());
+                        resultMap.put("vtSp", value.getVtSp());
                         resultMap.put("inAq", value.getInAq());
                         resultMap.put("mfDt", value.getMfDt());
 
