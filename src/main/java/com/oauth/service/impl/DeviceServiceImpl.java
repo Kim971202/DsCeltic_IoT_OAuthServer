@@ -168,6 +168,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             params.setPushTitle("기기제어");
             params.setPushContent("전원 ON/OFF");
+
             params.setDeviceId(deviceId);
             params.setDeviceType(deviceType);
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");

@@ -400,10 +400,10 @@
             PUSH_TITLE AS pushTitle,
             PUSH_CONTENT AS pushContent,
             (
-            CASE WHEN PUSH_TYPE = '00' THEN '전체'
-                 WHEN PUSH_TYPE = '01' THEN '보일러'
-                 WHEN PUSH_TYPE = '02' THEN '환기'
-                 WHEN PUSH_TYPE = '03' THEN '각방'
+            CASE
+                 WHEN DEVC_TYPE = '01' THEN '보일러'
+                 WHEN DEVC_TYPE = '05' THEN '각방'
+                 WHEN DEVC_TYPE = '07' THEN '환기'
                  ELSE '-'
             END
             ) AS pushType,
