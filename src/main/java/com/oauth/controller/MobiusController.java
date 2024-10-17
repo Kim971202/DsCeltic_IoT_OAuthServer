@@ -123,6 +123,7 @@ public class MobiusController {
             deviceInfo.setHwSt(common.readCon(jsonBody, "hwSt"));
             deviceInfo.setEcOp(common.readCon(jsonBody, "ecOp"));
             deviceInfo.setFcLc(common.readCon(jsonBody, "fcLc"));
+            deviceInfo.setBlCf(common.readCon(jsonBody, "blCf"));
 
             if(common.readCon(jsonBody, "7wk") != null){
                 deviceInfo.setWk7(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")));

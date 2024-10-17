@@ -277,12 +277,6 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setModelCode(params.getModelCode().replaceAll(" ", ""));
                 params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
 
-                if(deviceMapper.insertDeviceGrpInfo(params) <= 0){
-                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
-                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                }
-
                 // SerialNumber가 등록된 기기 일 경우 TBR_IOT_DEVICE Table에 INSERT 스킵
                 deviceRegistStatus = deviceMapper.getDeviceRegistStatus(serialNumber);
                 log.info("deviceRegistStatus: " + deviceRegistStatus.getDeviceId());
@@ -311,6 +305,7 @@ public class DeviceServiceImpl implements DeviceService {
                     params.setControlAuthKey(checkDeviceAuthkeyExist.getControlAuthKey());
                     deviceMapper.updateDeviceDetail(params);
                     deviceMapper.updateDeviceRegist(params);
+                    stringObject = "Y";
                 } else {
 
                     if(deviceMapper.insertDeviceRegist(params) <= 0){
@@ -336,7 +331,15 @@ public class DeviceServiceImpl implements DeviceService {
                         msg = "사용자 PUSH 정보 등록 실패.";
                         result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-                    } else stringObject = "Y";
+                    }
+
+                    if(deviceMapper.insertDeviceGrpInfo(params) <= 0){
+                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                        result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    }
+
+                    stringObject = "Y";
                 }
             }
 
