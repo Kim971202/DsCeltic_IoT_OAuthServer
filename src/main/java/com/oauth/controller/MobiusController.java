@@ -180,31 +180,32 @@ public class MobiusController {
                 // 변경실시간상태
                 // FCM Token 값 쿼리 필요
                 pushService.sendPushMessage(jsonBody, pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]));
-
-                AuthServerDTO params = new AuthServerDTO();
-                Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
-                System.out.println("Non-null fields: " + nonNullFields);
-
-                System.out.println("common.setCommandParams(nonNullFields, params);");
-                common.setCommandParams(nonNullFields, params);
-
-                // 결과 출력
-                System.out.println("CommandId: " + params.getCommandId());
-                System.out.println("ControlCode: " + params.getControlCode());
-                System.out.println("ControlCodeName: " + params.getControlCodeName());
-
-                params.setCommandId(params.getCommandId());
-                params.setControlCode(params.getControlCode());
-                params.setControlCodeName(params.getControlCodeName());
-
-                params.setCodeType("1");
-                params.setCommandFlow("1");
-                params.setDeviceId(deviceInfo.getDeviceId());
-                params.setUserId(id.getUserId());
-                int insertCommandHistoryResult = memberMapper.insertCommandHistory(params);
-                log.info("insertCommandHistoryResult: " + insertCommandHistoryResult);
             }
 
+            AuthServerDTO params = new AuthServerDTO();
+
+            Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
+            System.out.println("Non-null fields: " + nonNullFields);
+
+            System.out.println("common.setCommandParams(nonNullFields, params);");
+            common.setCommandParams(nonNullFields, params);
+
+            // 결과 출력
+            System.out.println("CommandId: " + params.getCommandId());
+            System.out.println("ControlCode: " + params.getControlCode());
+            System.out.println("ControlCodeName: " + params.getControlCodeName());
+
+            params.setCommandId(params.getCommandId());
+            params.setControlCode(params.getControlCode());
+            params.setControlCodeName(params.getControlCodeName());
+
+            params.setCodeType("1");
+            params.setCommandFlow("1");
+            params.setDeviceId(deviceInfo.getDeviceId());
+            params.setUserId("RC");
+
+            int insertCommandHistoryResult = memberMapper.insertCommandHistory(params);
+            log.info("insertCommandHistoryResult: " + insertCommandHistoryResult);
 
         } else if (functionId.equals("rtSt")) {
 
