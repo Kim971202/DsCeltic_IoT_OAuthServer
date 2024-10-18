@@ -447,6 +447,8 @@ public class Common {
         commandMap.put("mwk", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
         commandMap.put("reSt", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
         commandMap.put("mfAr", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
+        commandMap.put("vtSp", new String[]{"VentilationSpeed", "vtSp", "환기 풍량 설정"});
+        commandMap.put("rsPw", new String[]{"VentilationOnOffSet", "rsPw", "환기 켜짐 꺼짐 예약"});
 
         System.out.println("commandMap");
         System.out.println(commandMap);
