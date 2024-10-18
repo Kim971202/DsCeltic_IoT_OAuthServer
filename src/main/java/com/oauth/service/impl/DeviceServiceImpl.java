@@ -1823,7 +1823,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisCommand.deleteValues(fanSpeedSet.getUuId());
 
-            deviceInfo.setPowr(params.getPowerStatus());
+            deviceInfo.setVtSp(fanSpeed);
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
