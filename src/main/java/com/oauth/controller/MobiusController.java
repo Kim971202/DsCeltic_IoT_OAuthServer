@@ -136,6 +136,12 @@ public class MobiusController {
             deviceInfo.setFcLc(common.readCon(jsonBody, "fcLc"));
             deviceInfo.setBlCf(common.readCon(jsonBody, "blCf"));
 
+            deviceInfo.setVtSp(common.readCon(jsonBody, "vtSp"));
+
+            if(common.readCon(jsonBody, "rsPw") != null){
+                deviceInfo.setRsPw(common.convertToJsonFormat(common.readCon(jsonBody, "rsPw")));
+            }
+
             if(common.readCon(jsonBody, "7wk") != null){
                 deviceInfo.setWk7(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")));
             }
