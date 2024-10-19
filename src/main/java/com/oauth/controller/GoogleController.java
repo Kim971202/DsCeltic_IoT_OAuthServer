@@ -144,7 +144,7 @@ public class GoogleController {
             try {
                 JsonNode jsonNode = objectMapper.readTree(deviceInfo.getH24());
                 md = jsonNode.get("md").asText();
-                hs = jsonNode.get("md").asText();
+                hs = jsonNode.get("hs").asText();
 
             } catch (Exception e){
                 log.error("", e);
