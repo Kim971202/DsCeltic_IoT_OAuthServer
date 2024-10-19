@@ -6,12 +6,12 @@ spring:
       suffix: .jsp
 
   datasource:
-    url: jdbc:mysql://3.37.23.88:3306/dsiot?characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
-#    url: jdbc:mysql://127.0.0.1:3306/dsiot?characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
-    username: dsiotAppServer
-#    username: root
-    password: bZGPt9zQZ7aAtv+T]6}(*EfDONfO.R
-#    password: 1234
+#    url: jdbc:mysql://3.37.23.88:3306/dsiot?characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/dsiot?characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
+#    username: dsiotAppServer
+    username: root
+#    password: bZGPt9zQZ7aAtv+T]6}(*EfDONfO.R
+    password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 200
@@ -56,13 +56,13 @@ app:
   server: # Server Address
     address:
       short:
-#        gw: 127.0.0.1:7579
-        gw: 172.31.50.223:7579
+        gw: 127.0.0.1:7579
+#        gw: 172.31.50.223:7579
       long:
-#        gw: http://127.0.0.1:10010/AppToGwServer
-        gw: http://172.31.50.223:10010/AppToGwServer
-#      push: http://127.0.0.1:8082/AppServerToPushServer
-      push: http://172.31.50.223:8082/AppServerToPushServer
+        gw: http://127.0.0.1:10010/AppToGwServer
+#        gw: http://172.31.50.223:10010/AppToGwServer
+      push: http://127.0.0.1:8082/AppServerToPushServer
+#      push: http://172.31.50.223:8082/AppServerToPushServer
 
 # Logging
 logging:

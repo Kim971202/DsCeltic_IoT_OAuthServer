@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.DeviceStatusInfo;
+import com.oauth.dto.gw.Set12;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.service.impl.MobiusService;
 import com.oauth.utils.Common;
@@ -81,30 +82,7 @@ public class GoogleController {
                 conMap.put("sleepCode", slCd);
             }
 
-            if(value.equals("11")){
-                DeviceStatusInfo.Device deviceInfo = deviceMapper.getSingleDeviceStauts(deviceId);
-
-                // ObjectMapper 인스턴스 생성
-                ObjectMapper objectMapper = new ObjectMapper();
-
-                try {
-                    JsonNode jsonNode = objectMapper.readTree(deviceInfo.getH12());
-
-                    workPeriod = jsonNode.get("hr").asText();
-                    workTime = jsonNode.get("mn").asText();
-
-                } catch (Exception e){
-                    log.error("", e);
-                }
-                conMap.put("functionId", "12h");
-                conMap.put("workPeriod", workPeriod);
-                conMap.put("workTime", workTime);
-                mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
-            }
-
         }
-
-
 
         conMap.put("userId", userId);
         conMap.put("deviceId", deviceId);
@@ -120,6 +98,39 @@ public class GoogleController {
         String redisValue = userId + "," + "functionCode";
         // redisCommand.setValues(conMap.get("uuId"), redisValue);
         mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
+
+        // TODO: 예약의 경우 opMd 후 예약 SET 까지 처리 해야 RC 화면 변경 가능 (구형 기준)
+        // 10 - 24시간
+        // 11 - 반복예약
+        // 12 - 주간예약
+        if(value.equals("11")){
+            DeviceStatusInfo.Device deviceInfo = deviceMapper.getSingleDeviceStauts(deviceId);
+            Set12 set12 = new Set12();
+
+            // ObjectMapper 인스턴스 생성
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            try {
+                JsonNode jsonNode = objectMapper.readTree(deviceInfo.getH12());
+
+                workPeriod = jsonNode.get("hr").asText();
+                workTime = jsonNode.get("mn").asText();
+
+            } catch (Exception e){
+                log.error("", e);
+            }
+            set12.setAccessToken(common.getTransactionId());
+            set12.setUserId(userId);
+            set12.setDeviceId(deviceId);
+            set12.setControlAuthKey("0000");
+            set12.setWorkPeriod(workPeriod);
+            set12.setWorkTime(workTime);
+            set12.setOnOffFlag("of");
+            set12.setFunctionId("12h");
+            set12.setUuId(common.getTransactionId());
+
+            mobiusService.createCin(deviceArray[6], userId, JSON.toJson(set12));
+        }
 
         return "OK";
     }
