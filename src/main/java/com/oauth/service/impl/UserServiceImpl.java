@@ -591,14 +591,15 @@ public class UserServiceImpl implements UserService {
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("Add User jsonString: " + jsonString);
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")){
                 log.info("PUSH 메세지 전송 오류");
-
-            if(memberMapper.inviteHouseMember(params) <= 0){
-                msg = "사용자 추가 - 초대 실패";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            } else stringObject = "Y";
+            } else {
+                if(memberMapper.inviteHouseMember(params) <= 0){
+                    msg = "사용자 추가 - 초대 실패";
+                    data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                } else stringObject = "Y";
+            }
 
             if(stringObject.equals("Y")) msg = "사용자 추가 - 초대 성공";
             else msg = "사용자 추가 - 초대 실패";

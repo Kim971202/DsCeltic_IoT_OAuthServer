@@ -249,7 +249,7 @@
                 DATE_FORMAT(now(), "%y-%m-%d %H:%i:%S"),
                 DATE_ADD(DATE_FORMAT(now(), "%y-%m-%d %H:%i:%S"),
                 INTERVAL 3 DAY),
-                'N',
+                'D',
                 #{requestUserNick}
             );
     </insert>
