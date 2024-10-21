@@ -13,9 +13,10 @@ import java.util.List;
 @Component
 public class ScheduledSafeAlarm {
 
-    private static MemberMapper memberMapper;
+    @Autowired
+    private MemberMapper memberMapper;
 
-    public static void checkUserSafeAlarm(){
+    public void checkUserSafeAlarm(){
         List<AuthServerDTO> userInfo = new ArrayList<>();
 
         userInfo = memberMapper.getSafeAlarmSet();
