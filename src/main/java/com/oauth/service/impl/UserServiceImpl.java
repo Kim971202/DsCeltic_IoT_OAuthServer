@@ -792,7 +792,7 @@ public class UserServiceImpl implements UserService {
             msg = "사용자 초대 - 수락여부 성공";
 
             // params에 userId 추가
-            params.setUserId(params.getRequestUserId());
+            params.setUserId(params.getResponseUserId());
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
             pushToken = memberMapper.getPushTokenByUserId(requestUserId);
