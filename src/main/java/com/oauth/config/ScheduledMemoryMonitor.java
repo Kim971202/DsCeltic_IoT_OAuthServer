@@ -11,4 +11,10 @@ public class ScheduledMemoryMonitor {
     public void monitorMemory() {
         MemoryMonitor.logMemoryUsage();
     }
+
+    // 10초마다 메모리 상태를 출력
+    @Scheduled(fixedRate = 10000)
+    public void monitorSafeAlarm() {
+        ScheduledSafeAlarm.checkUserSafeAlarm();
+    }
 }
