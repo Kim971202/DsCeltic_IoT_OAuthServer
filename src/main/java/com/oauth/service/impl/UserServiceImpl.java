@@ -571,15 +571,6 @@ public class UserServiceImpl implements UserService {
 
         try {
 
-            if(memberMapper.inviteHouseMember(params) <= 0){
-                msg = "사용자 추가 - 초대 실패";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
-            } else stringObject = "Y";
-
-            if(stringObject.equals("Y")) msg = "사용자 추가 - 초대 성공";
-            else msg = "사용자 추가 - 초대 실패";
-
             params.setUserId(params.getRequestUserId());
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
@@ -602,6 +593,15 @@ public class UserServiceImpl implements UserService {
 
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
                 log.info("PUSH 메세지 전송 오류");
+
+            if(memberMapper.inviteHouseMember(params) <= 0){
+                msg = "사용자 추가 - 초대 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            } else stringObject = "Y";
+
+            if(stringObject.equals("Y")) msg = "사용자 추가 - 초대 성공";
+            else msg = "사용자 추가 - 초대 실패";
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200

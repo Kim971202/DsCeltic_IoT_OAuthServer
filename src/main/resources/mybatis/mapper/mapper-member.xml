@@ -619,9 +619,14 @@
 
     <select id="getAllUserIdsByDeviceId" parameterType="String" resultMap="member">
         SELECT
-            GRP_ID AS userId
+            a.USER_ID AS userId,
+            b.DEVC_ID AS deviceId
         FROM
-            TBR_IOT_DEVICE_GRP_INFO
+            TBD_IOT_GRP_INFO a
+        INNER JOIN
+            TBR_IOT_DEVICE_GRP_INFO b
+        ON
+            a.GRP_NM = b.GRP_ID
         WHERE
             DEVC_ID = #{deviceId}
     </select>
