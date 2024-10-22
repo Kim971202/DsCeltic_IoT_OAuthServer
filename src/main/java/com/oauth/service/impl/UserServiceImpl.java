@@ -976,6 +976,7 @@ public class UserServiceImpl implements UserService {
             throws CustomException{
 
         String userId = params.getUserId();
+        String householderId;
         HashMap<String, Object> resultMap = new LinkedHashMap<String, Object>();
         List<AuthServerDTO> deviceIdList;
 
@@ -983,7 +984,10 @@ public class UserServiceImpl implements UserService {
         List<Map<String, String>> pushList = new ArrayList<>();
         try{
 
-            deviceIdList = memberMapper.getDeviceIdByUserId(userId);
+            // TDOD: 세대주 ID 쿼리
+            householderId = memberMapper.getHouseholdByUserId(userId).getGroupId();
+
+            deviceIdList = memberMapper.getDeviceIdByUserId(householderId);
 
             // deviceIds를 쉼표로 구분된 String으로 변환
             String deviceIds = deviceIdList.stream()
