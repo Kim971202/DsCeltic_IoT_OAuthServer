@@ -317,6 +317,8 @@
             DEVC_NICK AS deviceNickname,
             ADDR_NICK AS addrNickname,
             DEVC_ID AS deviceId,
+            LAT AS latitude,
+            LON AS longitude,
             ROW_NUMBER() OVER () AS regSort
         FROM
             TBT_OPR_DEVICE_REGIST

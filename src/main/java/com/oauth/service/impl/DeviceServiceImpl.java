@@ -1435,6 +1435,8 @@ public class DeviceServiceImpl implements DeviceService {
         List<String> deviceIdList;
         List<String> deviceNicknameList;
         List<String> addrNicknameList;
+        List<String> latitudeList;
+        List<String> longitudeList;
         List<String> regSortList;
 
         List<Map<String, String>> appResponse = new ArrayList<>();
@@ -1452,6 +1454,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.info("만약 Household 여부가 N인 경우에는 세대주의 USERID 사용");
                 log.info("userId: " + userId);
             }
+
             controlAuthKeyByUserIdResult = deviceMapper.getControlAuthKeyByUserId(userId);
             if (controlAuthKeyByUserIdResult == null) {
                 msg = "기기정보가 없습니다.";
@@ -1494,6 +1497,12 @@ public class DeviceServiceImpl implements DeviceService {
             regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
             log.info("regSortList: " + regSortList);
 
+            latitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "latitude");
+            log.info("latitudeList: " + latitudeList);
+
+            longitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "longitude");
+            log.info("longitudeList: " + longitudeList);
+
             devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
             if (devicesStatusInfo == null) {
                 msg = "기기정보가 없습니다.";
@@ -1516,6 +1525,8 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("addrNickname", addrNicknameList.get(i));
                     data.put("regSort", regSortList.get(i));
                     data.put("deviceId", deviceIdList.get(i));
+                    data.put("latitude", latitudeList.get(i));
+                    data.put("longitude", longitudeList.get(i));
                     data.put("controlAuthKey", rKeyList.get(i));
                     data.put("deviceStatus", "1");
                     data.put("powr", devicesStatusInfo.get(i).getPowr());
