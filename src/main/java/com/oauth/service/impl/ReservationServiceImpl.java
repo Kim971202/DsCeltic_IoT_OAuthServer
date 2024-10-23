@@ -676,7 +676,7 @@ public class ReservationServiceImpl implements ReservationService{
         return null;
     }
 
-    /** 환기 취침 모드  */
+    /** 환기 취침 예약  */
     @Override
     public ResponseEntity<?> doSetSleepMode(AuthServerDTO params) throws CustomException {
 
@@ -866,7 +866,7 @@ public class ReservationServiceImpl implements ReservationService{
 
         String stringObject;
         String msg;
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         String controlAuthKey = params.getControlAuthKey();
         String redisValue;
@@ -879,6 +879,7 @@ public class ReservationServiceImpl implements ReservationService{
 
         AuthServerDTO userNickname;
         AuthServerDTO household;
+        AuthServerDTO firstDeviceUser;
         MobiusResponse response;
 
         Map<String, String> conMap = new HashMap<>();
@@ -888,7 +889,10 @@ public class ReservationServiceImpl implements ReservationService{
 
         try {
 
-            setOnOffPower.setUserId(userId);
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
+            
+            setOnOffPower.setUserId(params.getUserId());
             setOnOffPower.setDeviceId(deviceId);
             setOnOffPower.setControlAuthkey(controlAuthKey);
             setOnOffPower.setFunctionId("rsPw");
@@ -902,7 +906,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             setOnOffPower.setOnOffTimerList(onOffTimerList);
 
-            redisValue = userId + "," + setOnOffPower.getFunctionId();
+            redisValue = params.getUserId() + "," + setOnOffPower.getFunctionId();
             redisCommand.setValues(setOnOffPower.getUuId(), redisValue);
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
@@ -976,7 +980,7 @@ public class ReservationServiceImpl implements ReservationService{
             params.setControlCodeName("환기 꺼짐/켜짐 예약");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
-            params.setUserId(userId);
+            params.setUserId(params.getUserId());
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");
@@ -985,11 +989,11 @@ public class ReservationServiceImpl implements ReservationService{
             params.setDeviceType("07");
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
-            household = memberMapper.getHouseholdByUserId(userId);
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
             params.setGroupId(household.getGroupId());
             List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
             List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(userId);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
