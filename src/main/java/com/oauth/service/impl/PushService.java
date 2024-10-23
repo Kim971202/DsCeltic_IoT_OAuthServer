@@ -49,7 +49,7 @@ public class PushService {
         }
     }
 
-    public void sendPushMessage(String jsonBody, String errroCode, String errorMesssage) throws Exception {
+    public void sendPushMessage(String jsonBody, String errroCode, String errorMesssage, String modelCode) throws Exception {
         log.info("sendPushMessage jsonBody: " + jsonBody);
 
         HashMap<String, String> pushMap = new HashMap<>();
@@ -65,9 +65,11 @@ public class PushService {
                 log.info("authServerDTO.getSPushYn(): " + authServerDTO.getSPushYn());
 
                 AuthServerDTO params = new AuthServerDTO();
+                params.setUserId(authServerDTO.getUserId());
                 params.setPushTitle(errroCode);
                 params.setPushContent(errorMesssage);
-                params.setUserId(authServerDTO.getUserId());
+                params.setDeviceId(common.readCon(jsonBody, "deviceId"));
+                params.setDeviceType(common.getModelCode(modelCode));
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH ERROR HISTORY INSERT ERROR");
 
                 pushMap.put("targetToken", authServerDTO.getPushToken());

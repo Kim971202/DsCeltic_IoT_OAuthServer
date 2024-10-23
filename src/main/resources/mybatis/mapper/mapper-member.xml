@@ -415,7 +415,7 @@
         AND
             PUSH_DATETIME BETWEEN #{startDatetime} AND #{endDatetime}
         <if test="deviceType != 00">
-            AND PUSH_TYPE = #{deviceType}
+            AND DEVC_TYPE = #{deviceType}
         </if>
     </select>
 
