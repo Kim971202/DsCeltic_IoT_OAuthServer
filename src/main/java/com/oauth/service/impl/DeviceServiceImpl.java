@@ -556,8 +556,13 @@ public class DeviceServiceImpl implements DeviceService {
             modeChange.setModeCode(modeCode);
 
             if(modeCode.equals("06")) modeChange.setSleepCode(sleepCode);
+            if(modeCode.equals("on") || modeCode.equals("of")){
+                modeChange.setFunctionId("ftMd");
+                modeChange.setModeCode(modeCode);
+            }
+            else modeChange.setFunctionId("opMd");
 
-            modeChange.setFunctionId("opMd");
+
             modeChange.setUuId(common.getTransactionId());
             log.info("modeChange.getUuid(): " + modeChange.getUuId());
             redisValue = params.getUserId() + "," + modeChange.getFunctionId();
@@ -674,6 +679,7 @@ public class DeviceServiceImpl implements DeviceService {
                 case "12":
                     params.setControlCodeName("예약난방-주간");
                     break;
+                    // TODO: 환기도 추가
                 default:
                     params.setControlCodeName("NONE_MODE");
                     break;
