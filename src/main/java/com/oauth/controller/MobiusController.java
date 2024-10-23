@@ -233,6 +233,7 @@ public class MobiusController {
                 dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt")); // 온수사용상태 정보
                 dr910WDevice.setMfDt(common.readCon(jsonBody, "mfDt")); // 변경 시간
                 dr910WDevice.setFcLc(common.readCon(jsonBody, "fcLc")); // 화면 잠금 On/Off
+                dr910WDevice.setBlCf(common.readCon(jsonBody, "blCf")); // 화면 밝기 단계 1~5
 
             // 구형 보일러 RC
             }else if(common.hexToString(modelCode[5]).equals(modelCodeMap.get("oldModel"))){
