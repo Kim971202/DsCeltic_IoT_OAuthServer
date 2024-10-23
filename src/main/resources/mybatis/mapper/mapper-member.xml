@@ -958,4 +958,12 @@
         </foreach>
     </insert>
 
+    <delete id="deleteUserDevicePush" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBR_OPR_USER_DEVICE_PUSH
+        WHERE
+            USER_ID = #{userId}
+    </delete>
+
 </mapper>

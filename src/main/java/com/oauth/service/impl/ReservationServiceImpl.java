@@ -301,7 +301,7 @@ public class ReservationServiceImpl implements ReservationService{
                 conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "Set12");
+                conMap.put("title", "12h");
                 conMap.put("id", "Set12 ID");
                 conMap.put("isEnd", "false");
 
@@ -487,7 +487,7 @@ public class ReservationServiceImpl implements ReservationService{
                 conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "AwakeAlarmSet");
+                conMap.put("title", "fwh");
                 conMap.put("id", "AwakeAlarmSet ID");
                 conMap.put("isEnd", "false");
 

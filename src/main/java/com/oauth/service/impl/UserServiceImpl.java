@@ -912,6 +912,13 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
 
+            // TODO: TBR_OPR_USER_DEVICE_PUSH 테이블 삭제
+            if(memberMapper.deleteUserDevicePush(delUserId) <= 0){
+                msg = "사용자(세대원) 강제탈퇴 실패";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            }
+
             if(memberMapper.updateHouseholdTbrOprUser(delUserId) <= 0){
                 msg = "사용자(세대원) 강제탈퇴 실패";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
