@@ -556,12 +556,8 @@ public class DeviceServiceImpl implements DeviceService {
             modeChange.setModeCode(modeCode);
 
             if(modeCode.equals("06")) modeChange.setSleepCode(sleepCode);
-            if(modeCode.equals("on") || modeCode.equals("of")){
-                modeChange.setFunctionId("ftMd");
-                modeChange.setModeCode(modeCode);
-            }
-            else modeChange.setFunctionId("opMd");
 
+            modeChange.setFunctionId("opMd");
 
             modeChange.setUuId(common.getTransactionId());
             log.info("modeChange.getUuid(): " + modeChange.getUuId());
@@ -1270,7 +1266,7 @@ public class DeviceServiceImpl implements DeviceService {
                     log.info("PUSH 메세지 전송 오류");
             }
 
-            deviceInfo.setOpMd(params.getModeCode());
+            deviceInfo.setFtMd(params.getModeCode());
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
