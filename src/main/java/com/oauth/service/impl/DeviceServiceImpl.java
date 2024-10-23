@@ -227,6 +227,8 @@ public class DeviceServiceImpl implements DeviceService {
         AuthServerDTO deviceRegistStatus;
         AuthServerDTO checkDeviceAuthkeyExist;
 
+        List<AuthServerDTO> familyMemberList;
+
         try {
             // 수정
             if(registYn.equals("N")){
@@ -279,6 +281,8 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setModelCode(params.getModelCode().replaceAll(" ", ""));
                 params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
 
+                familyMemberList = memberMapper.getFailyMemberByUserId(memberMapper.getHouseholdByUserId(userId).getGroupId());
+
                 // SerialNumber가 등록된 기기 일 경우 TBR_IOT_DEVICE Table에 INSERT 스킵
                 deviceRegistStatus = deviceMapper.getDeviceRegistStatus(serialNumber);
                 log.info("deviceRegistStatus: " + deviceRegistStatus.getDeviceId());
@@ -329,7 +333,21 @@ public class DeviceServiceImpl implements DeviceService {
                     }
 
                     // Push 설정 관련 기본 DB 추가
-                    if(memberMapper.insertUserDevicePush(params) <= 0){
+                    // TODO: 세대주 포함 모든 세대원에 추가
+                    List<AuthServerDTO> inputList = new ArrayList<>();
+                    for (AuthServerDTO authServerDTO : familyMemberList){
+                        // 새로운 AuthServerDTO 객체 생성
+                        AuthServerDTO memberInfo = new AuthServerDTO();
+                        // 한개의 기기만 추가
+                        memberInfo.setDeviceId(deviceId);
+                        // 각 사용자의 ID와 HP 설정
+                        memberInfo.setHp(authServerDTO.getHp());
+                        memberInfo.setUserId(authServerDTO.getUserId());
+                        // 리스트에 추가
+                        inputList.add(memberInfo);
+                    }
+
+                    if(memberMapper.insertUserDevicePushByList(inputList) <= 0){
                         msg = "사용자 PUSH 정보 등록 실패.";
                         result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
@@ -340,7 +358,6 @@ public class DeviceServiceImpl implements DeviceService {
                         result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                     }
-
                     stringObject = "Y";
                 }
             }
