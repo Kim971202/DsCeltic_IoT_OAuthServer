@@ -3,6 +3,7 @@ package com.oauth.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
+import com.oauth.dto.gw.DeviceStatusInfo;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.message.GwMessagingSystem;
@@ -1461,6 +1462,7 @@ public class UserServiceImpl implements UserService {
 
         Map<String, Object> conMap = new HashMap<>();
         Map<String, Object> conMap1 = new HashMap<>();
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         MobiusResponse mobiusResponse;
         ObjectMapper objectMapper = new ObjectMapper();
         String responseMessage;
@@ -1525,6 +1527,10 @@ public class UserServiceImpl implements UserService {
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+
+            deviceInfo.setBlCf(params.getBrightnessLevel());
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
             pushYn = memberMapper.getPushYnStatus(params);
             conMap1.put("pushYn", pushYn.getFPushYn());
