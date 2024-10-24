@@ -662,7 +662,7 @@
 
     <update id="updateGrpInfoTableHousehold" parameterType="com.oauth.dto.AuthServerDTO" >
         UPDATE
-            TBR_IOT_GRP_INFO
+            TBD_IOT_GRP_INFO
         SET
             HOUSE_HOLDER = #{householder}
         WHERE
@@ -671,7 +671,7 @@
 
     <update id="updateGrpInfoTableForNewHousehold" parameterType="com.oauth.dto.AuthServerDTO" >
         UPDATE
-            TBR_IOT_GRP_INFO
+            TBD_IOT_GRP_INFO
         SET
             GRP_NM = #{userId}
         WHERE
