@@ -660,6 +660,24 @@
         </foreach>
     </select>
 
+    <update id="updateGrpInfoTableHousehold" parameterType="com.oauth.dto.AuthServerDTO" >
+        UPDATE
+            TBR_IOT_DEVICE_GRP_INFO
+        SET
+            HOUSE_HOLDER = #{householder}
+        WHERE
+            USER_ID = #{userId}
+    </update>
+
+    <update id="updateGrpInfoTableForNewHousehold" parameterType="com.oauth.dto.AuthServerDTO" >
+        UPDATE
+            TBR_IOT_DEVICE_GRP_INFO
+        SET
+            GRP_NM = #{userId}
+        WHERE
+            GRP_NM = #{groupId}
+    </update>
+
     <update id="updateRegistTable" parameterType="com.oauth.dto.AuthServerDTO" >
         UPDATE
             TBT_OPR_DEVICE_REGIST
@@ -680,11 +698,11 @@
             USER_ID = #{responseUserId}
     </update>
 
-    <update id="updateUserTable" parameterType="String" >
+    <update id="updateUserTable" parameterType="com.oauth.dto.AuthServerDTO" >
         UPDATE
             TBR_OPR_USER
         SET
-            HOUSE_HOLDER = 'N'
+            HOUSE_HOLDER = #{householder}
         WHERE
             USER_ID = #{responseUserId}
     </update>
@@ -853,7 +871,7 @@
         LIMIT 1
     </select>
 
-    <update id="updateUserDeviceHousehold" parameterType="com.oauth.dto.AuthServerDTO">
+    <update id="updateUserDeviceHousehold" parameterType="String">
         UPDATE
             TBR_OPR_USER_DEVICE
         SET

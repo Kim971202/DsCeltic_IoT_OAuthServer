@@ -770,7 +770,8 @@ public class UserServiceImpl implements UserService {
                 memberMapper.updateHouseholdToMember(params);
 
                 // TODO: 5. USER TABLE의 세대주 여부 UPDATE
-                memberMapper.updateUserTable(responseUserId);
+                params.setHouseholder("N");
+                memberMapper.updateUserTable(params);
 
                 // TODO: 6. 수락여부에 따른 초대 결과 DB UPDATE
                 memberMapper.acceptInvite(params);
@@ -907,7 +908,7 @@ public class UserServiceImpl implements UserService {
         String delUserId = params.getDelUserId();
 
         try {
-            if(memberMapper.delHouseholdMember(params) <= 0){
+            if(memberMapper.delHouseholdMember(delUserId) <= 0){
                 msg = "사용자(세대원) 강제탈퇴 실패";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
@@ -1072,30 +1073,56 @@ public class UserServiceImpl implements UserService {
 
             /*
             * TODO:
-            *  1. 세대주 권한을 넘겨줄 세대원 쿼리
-            *  2. 기존 세대주 관련 GRP 테이블 수정
-            *  3. 쿼리후 해당 세대원의 USERID 기반 하여 REGIST, USERDEVICE 테이블 UPDATE 및 GRP 테이블에 기존 세대원의 세대주 정보 UPDATE
-            *  4. 세대주 권한이양 받은 세대원 Household 항목 Y로 UPDATE
+            *  1. TBR_IOT_DEVICE_GRP_INFO : GRP_ID => 신규 세대주 ID로 변경
+            *  2. TBD_IOT_GRP_INFO : 기존 새대원의 GRP_NM 신규 세대주 ID로 변경, 세대주 여부 N으로 변경
+            *  3. TBT_OPR_DEVICE_REGIST : USER_ID, HP => 신규 세대주 ID로 변경
+            *  4. TBR_OPR_USER_DEVICE : USER_ID => 신규 세대주 ID로 변경
+            *  5. TBR_OPR_USER_DEVICE : 세대주 여부 Y로 변경
+            *  6. TBR_OPR_ACCOUNT : 세대주 여부 Y로 변경
             * */
 
             // TODO: 1. 세대주 권한을 넘겨줄 세대원 쿼리
             nextHouseholder = memberMapper.getNextHouseholder(userId);
+            params.setGroupId(userId);
 
-            // TODO: 2. 기존 세대주 관련 GRP 테이블 수정
+            // TODO: 2. TBR_IOT_DEVICE_GRP_INFO : GRP_ID => 신규 세대주 ID로 변경 (HOUSE_HOLD 포함)
+            memberMapper.updateGrpInfoTableForNewHousehold(params);
+            params.setHouseholder("Y");
+            memberMapper.updateGrpInfoTableHousehold(params);
+
+            // TODO: 3. TBD_IOT_GRP_INFO : 기존 새대원의 GRP_NM 신규 세대주 ID로 변경
+            params.setDelUserId(userId);
+            memberMapper.delHouseholdMember(params.getDelUserId());
+
+            /*
+            * TODO: 4. TBT_OPR_DEVICE_REGIST : USER_ID, HP => 신규 세대주 ID로 변경
+            *  requestUserId: 신규 세대주
+            *  responseUserId: 이전 세대주
+            * */
+            params.setRequestUserId(nextHouseholder.getUserId());
+            params.setResponseUserId(userId);
             userHp = memberMapper.getHpByUserId(userId);
             params.setHp(userHp.getHp());
             memberMapper.updateRegistTable(params);
 
-            // TODO: 3. 쿼리후 해당 세대원의 USERID 기반 하여 REGIST, USERDEVICE 테이블 UPDATE 및 GRP 테이블에 기존 세대원의 세대주 정보 UPDATE
-            params.setRequestUserId(nextHouseholder.getUserId());
-            params.setResponseUserId(userId);
-            memberMapper.updateRegistTable(params);
+            /*
+            * TODO: 5. TBR_OPR_USER_DEVICE : USER_ID => 신규 세대주 ID로 변경
+            *  requestUserId: 신규 세대주
+            *  responseUserId: 이전 세대주
+            * */
             memberMapper.updateUserDeviceTable(params);
 
-            // TODO: 4. 세대주 권한이양 받은 세대원 Household 항목 Y로 UPDATE
+            // TODO: 6. 세대주 권한이양 받은 세대원 Household 항목 Y로 UPDATE
             memberMapper.updateUserDeviceHousehold(nextHouseholder.getUserId());
 
-            msg = "사용자(세대주) 탈퇴  실패";
+            /* 
+            * TODO: 7. 
+            *  신규 세대주 TBR_OPR_USER HOUSE_HOLD Y
+            * */
+            params.setResponseUserId(nextHouseholder.getUserId());
+            memberMapper.updateUserTable(params);
+
+            msg = "사용자(세대주) 탈퇴 성공";
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
