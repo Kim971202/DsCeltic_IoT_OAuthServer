@@ -1087,6 +1087,7 @@ public class UserServiceImpl implements UserService {
 
             // TODO: 2. TBR_IOT_DEVICE_GRP_INFO : GRP_ID => 신규 세대주 ID로 변경 (HOUSE_HOLD 포함)
             memberMapper.updateGrpInfoTableForNewHousehold(params);
+            memberMapper.updateGrpDeviceInfoTableForNewHousehold(params);
             params.setHouseholder("Y");
             memberMapper.updateGrpInfoTableHousehold(params);
 

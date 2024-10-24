@@ -49,6 +49,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getSafeAlarmSet();
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
+    public int updateGrpDeviceInfoTableForNewHousehold(AuthServerDTO member);
     public int updateGrpInfoTableHousehold(AuthServerDTO member);
     public int updateGrpInfoTableForNewHousehold(AuthServerDTO member);
     public int deleteUserDevicePush(String userId);
