@@ -96,6 +96,12 @@ public class MobiusController {
 
         List<String> redisValueList;
 
+        if(replyErrorCode.equals("2")) {
+            gwMessagingSystem.sendMessage(functionId + uuId, replyErrorCode);
+            return "";
+        }
+
+
         if (!redisValue.equals("false")) {
             redisValueList = common.getUserIdAndFunctionId(redisCommand.getValues(uuId));
             userId = redisValueList.get(0);

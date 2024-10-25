@@ -161,6 +161,7 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String safeAlarmStatus;              // 안전안심 알람 사용 여부 (Y/N)
 
     private String groupId;
+    private String groupName;
     private String targetId;
     private String delUserId;
 

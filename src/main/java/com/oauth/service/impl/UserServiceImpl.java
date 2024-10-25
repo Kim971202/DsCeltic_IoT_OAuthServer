@@ -1083,12 +1083,20 @@ public class UserServiceImpl implements UserService {
 
             // TODO: 1. 세대주 권한을 넘겨줄 세대원 쿼리
             nextHouseholder = memberMapper.getNextHouseholder(userId);
-            params.setGroupId(userId);
+
+            /*
+            * nextHouseholder RESULT
+            * groupId : clspecial@naver.com
+            * userId : clspecial@naver.com
+            * groupName : yohan1202
+            * householder : N
+            * */
 
             // TODO: 2. TBR_IOT_DEVICE_GRP_INFO : GRP_ID => 신규 세대주 ID로 변경 (HOUSE_HOLD 포함)
-            memberMapper.updateGrpInfoTableForNewHousehold(params);
-            memberMapper.updateGrpDeviceInfoTableForNewHousehold(params);
+            memberMapper.updateGrpInfoTableForNewHousehold(nextHouseholder);
+            memberMapper.updateGrpDeviceInfoTableForNewHousehold(nextHouseholder);
             params.setHouseholder("Y");
+            params.setGroupId(nextHouseholder.getUserId());
             memberMapper.updateGrpInfoTableHousehold(params);
 
             // TODO: 3. TBD_IOT_GRP_INFO : 기존 새대원의 GRP_NM 신규 세대주 ID로 변경
@@ -1096,13 +1104,13 @@ public class UserServiceImpl implements UserService {
             memberMapper.delHouseholdMember(params.getDelUserId());
 
             /*
-            * TODO: 4. TBT_OPR_DEVICE_REGIST : USER_ID, HP => 신규 세대주 ID로 변경
-            *  requestUserId: 신규 세대주
-            *  responseUserId: 이전 세대주
+            *  TODO: 4. TBT_OPR_DEVICE_REGIST : USER_ID, HP => 신규 세대주 ID로 변경
+            *   requestUserId: 신규 세대주
+            *   responseUserId: 이전 세대주
             * */
             params.setRequestUserId(nextHouseholder.getUserId());
             params.setResponseUserId(userId);
-            userHp = memberMapper.getHpByUserId(userId);
+            userHp = memberMapper.getHpByUserId(nextHouseholder.getUserId());
             params.setHp(userHp.getHp());
             memberMapper.updateRegistTable(params);
 

@@ -666,25 +666,25 @@
         SET
             HOUSE_HOLDER = #{householder}
         WHERE
-            USER_ID = #{userId}
+            USER_ID = #{groupId}
     </update>
 
     <update id="updateGrpInfoTableForNewHousehold" parameterType="com.oauth.dto.AuthServerDTO" >
         UPDATE
             TBD_IOT_GRP_INFO
         SET
-            GRP_NM = #{userId}
+            GRP_NM = #{groupName} <!-- yohan1202 -->
         WHERE
-            GRP_NM = #{groupId}
+            GRP_NM = #{userId} <!-- yohan971202 -->
     </update>
 
     <update id="updateGrpDeviceInfoTableForNewHousehold" parameterType="com.oauth.dto.AuthServerDTO" >
         UPDATE
             TBR_IOT_DEVICE_GRP_INFO
         SET
-            GRP_ID = #{userId}
+            GRP_ID = #{groupName}
         WHERE
-            GRP_ID = #{groupId}
+            GRP_ID = #{userId}
     </update>
 
     <update id="updateRegistTable" parameterType="com.oauth.dto.AuthServerDTO" >

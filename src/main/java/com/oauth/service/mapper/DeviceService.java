@@ -51,4 +51,6 @@ public interface DeviceService {
     /**	홈 IoT 컨트롤러 풍량 단수 설정  */
     ResponseEntity<?> doVentilationFanSpeedSet(AuthServerDTO params) throws CustomException;
 
+    /**	홈 IoT 컨트롤러 활성/비활성 정보 요청  */
+    ResponseEntity<?> doActiveStatus(AuthServerDTO params) throws CustomException;
 }

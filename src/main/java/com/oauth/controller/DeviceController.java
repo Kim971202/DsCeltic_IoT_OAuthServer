@@ -292,4 +292,21 @@ public class DeviceController {
         return deviceService.doVentilationFanSpeedSet(params);
     }
 
+    /**	홈 IoT 컨트롤러 활성/비활성 정보 요청  */
+    @PostMapping(value = "/activeStatus")
+    @ResponseBody
+    public ResponseEntity<?> doActiveStatus(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws Exception {
+
+        String logStep = "[홈 IoT 컨트롤러 활성/비활성 정보 요청]";
+        log.info("[홈 IoT 컨트롤러 활성/비활성 정보 요청]");
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey())){
+            throw new CustomException("404", "홈 IoT 컨트롤러 활성/비활성 정보 요청 오류");
+        }
+        return deviceService.doVentilationFanSpeedSet(params);
+    }
+
 }

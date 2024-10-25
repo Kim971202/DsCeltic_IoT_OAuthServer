@@ -135,19 +135,25 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             }
 
-             gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
+            gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
             redisCommand.deleteValues(powerOnOff.getUuId());
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Device ON/OFF OK");
-                msg = "전원 On/Off 성공";
+            if(responseMessage.equals("2")){
+                conMap.put("body", "RemoteController WIFI ERROR");
+                msg = "RC WIFI 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                result.setTestVariable(responseMessage);
-            }
-            else {
-                conMap.put("body", "Service TIME-OUT");
-                msg = "응답이 없거나 시간 초과";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+            } else {
+                if(stringObject.equals("Y")) {
+                    conMap.put("body", "Device ON/OFF OK");
+                    msg = "전원 On/Off 성공";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    result.setTestVariable(responseMessage);
+                }
+                else {
+                    conMap.put("body", "Service TIME-OUT");
+                    msg = "응답이 없거나 시간 초과";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                }
             }
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
@@ -155,7 +161,6 @@ public class DeviceServiceImpl implements DeviceService {
             deviceInfo.setPowr(params.getPowerStatus());
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
-
 
             params.setCodeType("1");
             params.setCommandId("PowerOnOff");
@@ -1904,6 +1909,36 @@ public class DeviceServiceImpl implements DeviceService {
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
+            log.error("", e);
+        }
+        return null;
+    }
+
+    /**	홈 IoT 컨트롤러 활성/비활성 정보 요청  */
+    @Override
+    public ResponseEntity<?> doActiveStatus(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        String stringObject;
+        String msg;
+        String userId = params.getUserId();
+        String deviceId = params.getDeviceId();
+        String controlAuthKey = params.getControlAuthKey();
+        AuthServerDTO device;
+        try {
+
+
+
+            device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
+
+            if (device == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
             log.error("", e);
         }
         return null;
