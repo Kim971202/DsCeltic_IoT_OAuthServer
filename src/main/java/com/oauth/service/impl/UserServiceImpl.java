@@ -1501,7 +1501,7 @@ public class UserServiceImpl implements UserService {
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         MobiusResponse mobiusResponse;
         ObjectMapper objectMapper = new ObjectMapper();
-        String responseMessage;
+        String responseMessage = null;
 
         try{
 
@@ -1558,30 +1558,40 @@ public class UserServiceImpl implements UserService {
             gwMessagingSystem.removeMessageQueue("blCf" + uuId);
             redisCommand.deleteValues(uuId);
 
-            conMap1.put("body", "Brightness Control OK");
-            msg = "기기 밝기 수정 성공";
-            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            deviceInfo.setBlCf(params.getBrightnessLevel());
-            deviceInfo.setDeviceId(deviceId);
-            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+            if(responseMessage.equals("2")){
+                conMap.put("body", "RemoteController WIFI ERROR");
+                msg = "RC WIFI 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap1.put("pushYn", pushYn.getFPushYn());
-            conMap1.put("targetToken", params.getPushToken());
-            conMap1.put("title", "Reset Password");
-            conMap1.put("id", "Reset Password ID");
-            conMap1.put("isEnd", "false");
+                // TODO: RC WIFI 오류일 경우 어떻게 처리 할지 앱과 협의
 
-            String jsonString1 = objectMapper.writeValueAsString(conMap1);
-            log.info("jsonString1: " + jsonString1);
+            } else {
+                conMap1.put("body", "Brightness Control OK");
+                msg = "기기 밝기 수정 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            redisCommand.deleteValues(uuId);
+                deviceInfo.setBlCf(params.getBrightnessLevel());
+                deviceInfo.setDeviceId(deviceId);
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201"))
-                log.info("PUSH 메세지 전송 오류");
+                pushYn = memberMapper.getPushYnStatus(params);
+                conMap1.put("pushYn", pushYn.getFPushYn());
+                conMap1.put("targetToken", params.getPushToken());
+                conMap1.put("title", "Reset Password");
+                conMap1.put("id", "Reset Password ID");
+                conMap1.put("isEnd", "false");
+
+                String jsonString1 = objectMapper.writeValueAsString(conMap1);
+                log.info("jsonString1: " + jsonString1);
+
+                redisCommand.deleteValues(uuId);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201"))
+                    log.info("PUSH 메세지 전송 오류");
+
+            }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){

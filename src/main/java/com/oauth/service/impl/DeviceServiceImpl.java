@@ -142,6 +142,9 @@ public class DeviceServiceImpl implements DeviceService {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "RC WIFI 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+
+                // TODO: RC WIFI 오류일 경우 어떻게 처리 할지 앱과 협의
+
             } else {
                 if(stringObject.equals("Y")) {
                     conMap.put("body", "Device ON/OFF OK");
@@ -530,7 +533,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         if(params.getModeCode().equals("06")) sleepCode = params.getSleepCode();
 
-        String responseMessage;
+        String responseMessage = null;
         String redisValue;
         MobiusResponse response;
         Map<String, String> conMap = new HashMap<>();
@@ -594,112 +597,121 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("opMd" + modeChange.getUuId());
             redisCommand.deleteValues(modeChange.getUuId());
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Mode Change OK");
-                msg = "모드변경 성공";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            }
-            else if(stringObject.equals("N")) {
-                conMap.put("body", "Mode Change FAIL");
-                msg = "모드변경 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-            else {
-                conMap.put("body", "Service TIME-OUT");
-                msg = "응답이 없거나 시간 초과";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            household = memberMapper.getHouseholdByUserId(params.getUserId());
-            params.setGroupId(household.getGroupId());
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
-            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(params.getUserId());
-            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+            if(responseMessage != null && responseMessage.equals("2")){
+                conMap.put("body", "RemoteController WIFI ERROR");
+                msg = "RC WIFI 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            for(int i = 0; i < userIds.size(); ++i){
-                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("modelCode", modelCode);
-                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "opMd");
-                conMap.put("id", "Mode Change ID");
-                conMap.put("isEnd", "false");
+                // TODO: RC WIFI 오류일 경우 어떻게 처리 할지 앱과 협의
 
-                String jsonString = objectMapper.writeValueAsString(conMap);
-                log.info("jsonString: " + jsonString);
+            } else {
+                if(stringObject.equals("Y")) {
+                    conMap.put("body", "Mode Change OK");
+                    msg = "모드변경 성공";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                }
+                else if(stringObject.equals("N")) {
+                    conMap.put("body", "Mode Change FAIL");
+                    msg = "모드변경 실패";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
+                else {
+                    conMap.put("body", "Service TIME-OUT");
+                    msg = "응답이 없거나 시간 초과";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
 
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                    log.info("PUSH 메세지 전송 오류");
+                household = memberMapper.getHouseholdByUserId(params.getUserId());
+                params.setGroupId(household.getGroupId());
+                List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
+                List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+                userNickname = memberMapper.getUserNickname(params.getUserId());
+                userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-            }
+                for(int i = 0; i < userIds.size(); ++i){
+                    log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                    conMap.put("modelCode", modelCode);
+                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                    conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("title", "opMd");
+                    conMap.put("id", "Mode Change ID");
+                    conMap.put("isEnd", "false");
 
-            deviceInfo.setOpMd(modeCode);
-            deviceInfo.setDeviceId(deviceId);
-            if(params.getModeCode().equals("06")) deviceInfo.setSlCd(sleepCode);
+                    String jsonString = objectMapper.writeValueAsString(conMap);
+                    log.info("jsonString: " + jsonString);
 
-            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                        log.info("PUSH 메세지 전송 오류");
 
-            switch (modeCode){
-                case "01":
-                    params.setControlCodeName("실내난방");
-                    break;
-                case "02":
-                    params.setControlCodeName("온돌난방");
-                    break;
-                case "03":
-                    params.setControlCodeName("외출");
-                    break;
-                case "04":
-                    params.setControlCodeName("자동");
-                    break;
-                case "05":
-                    params.setControlCodeName("절약난방");
-                    break;
-                case "06":
-                    params.setControlCodeName("취침");
-                    break;
-                case "07":
-                    params.setControlCodeName("온수전용");
-                    break;
-                case "08":
-                    params.setControlCodeName("온수-빠른온수");
-                    break;
-                case "09":
-                    params.setControlCodeName("귀가");
-                    break;
-                case "10":
-                    params.setControlCodeName("예약난방-24시간");
-                    break;
-                case "11":
-                    params.setControlCodeName("예약난방-반복(12시간)");
-                    break;
-                case "12":
-                    params.setControlCodeName("예약난방-주간");
-                    break;
+                }
+
+                deviceInfo.setOpMd(modeCode);
+                deviceInfo.setDeviceId(deviceId);
+                if(params.getModeCode().equals("06")) deviceInfo.setSlCd(sleepCode);
+
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+                switch (modeCode){
+                    case "01":
+                        params.setControlCodeName("실내난방");
+                        break;
+                    case "02":
+                        params.setControlCodeName("온돌난방");
+                        break;
+                    case "03":
+                        params.setControlCodeName("외출");
+                        break;
+                    case "04":
+                        params.setControlCodeName("자동");
+                        break;
+                    case "05":
+                        params.setControlCodeName("절약난방");
+                        break;
+                    case "06":
+                        params.setControlCodeName("취침");
+                        break;
+                    case "07":
+                        params.setControlCodeName("온수전용");
+                        break;
+                    case "08":
+                        params.setControlCodeName("온수-빠른온수");
+                        break;
+                    case "09":
+                        params.setControlCodeName("귀가");
+                        break;
+                    case "10":
+                        params.setControlCodeName("예약난방-24시간");
+                        break;
+                    case "11":
+                        params.setControlCodeName("예약난방-반복(12시간)");
+                        break;
+                    case "12":
+                        params.setControlCodeName("예약난방-주간");
+                        break;
                     // TODO: 환기도 추가
-                default:
-                    params.setControlCodeName("NONE_MODE");
-                    break;
+                    default:
+                        params.setControlCodeName("NONE_MODE");
+                        break;
+                }
+
+                params.setCodeType("0");
+                params.setCommandId("ModeChange");
+                params.setControlCode(modeCode);
+                params.setCommandFlow("0");
+                params.setDeviceId(deviceId);
+                params.setUserId(params.getUserId());
+                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+
+                params.setPushTitle("기기제어");
+                params.setPushContent("모드변경");
+                params.setDeviceId(deviceId);
+                params.setDeviceType(common.getModelCode(modelCode));
+                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
-
-            params.setCodeType("0");
-            params.setCommandId("ModeChange");
-            params.setControlCode(modeCode);
-            params.setCommandFlow("0");
-            params.setDeviceId(deviceId);
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-
-            params.setPushTitle("기기제어");
-            params.setPushContent("모드변경");
-            params.setDeviceId(deviceId);
-            params.setDeviceType(common.getModelCode(modelCode));
-            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
-
+            
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -715,7 +727,7 @@ public class DeviceServiceImpl implements DeviceService {
         TemperatureSet temperatureSet = new TemperatureSet();
         String stringObject = "N";
         String msg;
-        String responseMessage;
+        String responseMessage = null;
         String userId;
         String deviceId = params.getDeviceId();
         String redisValue;
@@ -782,66 +794,75 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("htTp" + temperatureSet.getUuId());
             redisCommand.deleteValues(temperatureSet.getUuId());
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "TemperatureSet OK");
-                msg = "실내온도 설정 성공";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            }
-            else if(stringObject.equals("N")) {
-                conMap.put("body", "TemperatureSet OK");
-                msg = "실내온도 설정 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-            else {
-                conMap.put("body", "Service TIME-OUT");
-                msg = "응답이 없거나 시간 초과";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            household = memberMapper.getHouseholdByUserId(params.getUserId());
-            params.setGroupId(household.getGroupId());
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
-            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(params.getUserId());
-            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+            if(responseMessage != null && responseMessage.equals("2")){
+                conMap.put("body", "RemoteController WIFI ERROR");
+                msg = "RC WIFI 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            for(int i = 0; i < userIds.size(); ++i){
-                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                // TODO: RC WIFI 오류일 경우 어떻게 처리 할지 앱과 협의
 
-                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
-                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "htTp");
-                conMap.put("id", "TemperatureSet ID");
-                conMap.put("isEnd", "false");
+            } else {
+                if(stringObject.equals("Y")) {
+                    conMap.put("body", "TemperatureSet OK");
+                    msg = "실내온도 설정 성공";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                }
+                else if(stringObject.equals("N")) {
+                    conMap.put("body", "TemperatureSet OK");
+                    msg = "실내온도 설정 실패";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
+                else {
+                    conMap.put("body", "Service TIME-OUT");
+                    msg = "응답이 없거나 시간 초과";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
 
-                String jsonString = objectMapper.writeValueAsString(conMap);
+                household = memberMapper.getHouseholdByUserId(params.getUserId());
+                params.setGroupId(household.getGroupId());
+                List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
+                List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+                userNickname = memberMapper.getUserNickname(params.getUserId());
+                userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                    log.info("PUSH 메세지 전송 오류");
+                for(int i = 0; i < userIds.size(); ++i){
+                    log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+
+                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
+                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                    conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("title", "htTp");
+                    conMap.put("id", "TemperatureSet ID");
+                    conMap.put("isEnd", "false");
+
+                    String jsonString = objectMapper.writeValueAsString(conMap);
+
+                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                        log.info("PUSH 메세지 전송 오류");
+                }
+
+                deviceInfo.setHtTp(params.getTemperture());
+                deviceInfo.setDeviceId(params.getDeviceId());
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+                params.setCodeType("1");
+                params.setCommandId("TemperatureSet");
+                params.setControlCode("htTp");
+                params.setControlCodeName("실내 온도 설정");
+                params.setCommandFlow("0");
+                params.setDeviceId(deviceId);
+                params.setUserId(params.getUserId());
+                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+
+                params.setPushTitle("기기제어");
+                params.setPushContent("실내온도 설정");
+                params.setDeviceId(deviceId);
+                params.setDeviceType("01");
+                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
-
-            deviceInfo.setHtTp(params.getTemperture());
-            deviceInfo.setDeviceId(params.getDeviceId());
-            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
-
-            params.setCodeType("1");
-            params.setCommandId("TemperatureSet");
-            params.setControlCode("htTp");
-            params.setControlCodeName("실내 온도 설정");
-            params.setCommandFlow("0");
-            params.setDeviceId(deviceId);
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-
-            params.setPushTitle("기기제어");
-            params.setPushContent("실내온도 설정");
-            params.setDeviceId(deviceId);
-            params.setDeviceType("01");
-            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -861,7 +882,7 @@ public class DeviceServiceImpl implements DeviceService {
         String userId;
         String deviceId = params.getDeviceId();
         String redisValue;
-        String responseMessage;
+        String responseMessage = null;
         MobiusResponse response;
         String serialNumber;
         AuthServerDTO userNickname;
@@ -925,81 +946,86 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("wtTp" + boiledWaterTempertureSet.getUuId());
             redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "BoiledWaterTempertureSet OK");
-                msg = "난방수온도 설정 성공";
+            if(memberMapper.updatePushToken(params) <= 0) log.info(msg = "구글 FCM TOKEN 갱신 실패.");
+
+            if(responseMessage != null && responseMessage.equals("2")){
+                conMap.put("body", "RemoteController WIFI ERROR");
+                msg = "RC WIFI 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            }
-            else if(stringObject.equals("N")) {
-                conMap.put("body", "BoiledWaterTempertureSet FAIL");
-                msg = "난방수온도 설정 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-            else {
-                conMap.put("body", "Service TIME-OUT ");
-                msg = "응답이 없거나 시간 초과";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+                // TODO: RC WIFI 오류일 경우 어떻게 처리 할지 앱과 협의
 
-            household = memberMapper.getHouseholdByUserId(params.getUserId());
-            params.setGroupId(household.getGroupId());
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
-            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(params.getUserId());
-            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
-
-            for(int i = 0; i < userIds.size(); ++i){
-                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
-                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "wtTp");
-                conMap.put("id", "BoiledWaterTempertureSet ID");
-                conMap.put("isEnd", "false");
-
-                String jsonString = objectMapper.writeValueAsString(conMap);
-                log.info("jsonString: " + jsonString);
-
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                    msg = "PUSH 메세지 전송 오류";
+            } else {
+                if(stringObject.equals("Y")) {
+                    conMap.put("body", "BoiledWaterTempertureSet OK");
+                    msg = "난방수온도 설정 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+                else if(stringObject.equals("N")) {
+                    conMap.put("body", "BoiledWaterTempertureSet FAIL");
+                    msg = "난방수온도 설정 실패";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
+                else {
+                    conMap.put("body", "Service TIME-OUT ");
+                    msg = "응답이 없거나 시간 초과";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
+
+                household = memberMapper.getHouseholdByUserId(params.getUserId());
+                params.setGroupId(household.getGroupId());
+                List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
+                List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+                userNickname = memberMapper.getUserNickname(params.getUserId());
+                userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+
+                for(int i = 0; i < userIds.size(); ++i){
+                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
+                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                    conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("title", "wtTp");
+                    conMap.put("id", "BoiledWaterTempertureSet ID");
+                    conMap.put("isEnd", "false");
+
+                    String jsonString = objectMapper.writeValueAsString(conMap);
+                    log.info("jsonString: " + jsonString);
+
+                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                        msg = "PUSH 메세지 전송 오류";
+                        result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    }
+                }
+
+                deviceInfo.setWtTp(params.getTemperture());
+                deviceInfo.setDeviceId(deviceId);
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+                params.setCodeType("1");
+                params.setCommandId("BoiledWaterTempertureSet");
+                params.setControlCode("wtTp");
+                params.setControlCodeName("난방수 온도 설정");
+                params.setCommandFlow("0");
+                params.setDeviceId(deviceId);
+                params.setUserId(params.getUserId());
+                if(memberMapper.insertCommandHistory(params) <= 0) {
+                    msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                }
+
+                params.setPushTitle("기기제어");
+                params.setPushContent("난방수온도 설정");
+                params.setDeviceId(deviceId);
+                params.setDeviceType("01");
+                if(memberMapper.insertPushHistory(params) <= 0) {
+                    msg = "PUSH HISTORY INSERT ERROR";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 }
             }
-
-            deviceInfo.setWtTp(params.getTemperture());
-            deviceInfo.setDeviceId(deviceId);
-            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
-
-            params.setCodeType("1");
-            params.setCommandId("BoiledWaterTempertureSet");
-            params.setControlCode("wtTp");
-            params.setControlCodeName("난방수 온도 설정");
-            params.setCommandFlow("0");
-            params.setDeviceId(deviceId);
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) {
-                msg = "DB_ERROR 잠시 후 다시 시도 해주십시오.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
-            params.setPushTitle("기기제어");
-            params.setPushContent("난방수온도 설정");
-            params.setDeviceId(deviceId);
-            params.setDeviceType("01");
-            if(memberMapper.insertPushHistory(params) <= 0) {
-                msg = "PUSH HISTORY INSERT ERROR";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-
+            
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1018,7 +1044,7 @@ public class DeviceServiceImpl implements DeviceService {
         String userId;
         String deviceId = params.getDeviceId();
         String redisValue;
-        String responseMessage;
+        String responseMessage = null;
         MobiusResponse response;
         String serialNumber;
         AuthServerDTO household;
@@ -1081,71 +1107,80 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("hwTp" + waterTempertureSet.getUuId());
             redisCommand.deleteValues(waterTempertureSet.getUuId());
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "WaterTempertureSet OK");
-                msg = "온수온도 설정 성공";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            }
-            else if(stringObject.equals("N")) {
-                conMap.put("body", "WaterTempertureSet FAIL");
-                msg = "온수온도 설정 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-            else {
-                conMap.put("body", "Service TIME-OUT");
-                msg = "응답이 없거나 시간 초과";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            household = memberMapper.getHouseholdByUserId(params.getUserId());
-            params.setGroupId(household.getGroupId());
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
-            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(params.getUserId());
-            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+            if(responseMessage != null && responseMessage.equals("2")){
+                conMap.put("body", "RemoteController WIFI ERROR");
+                msg = "RC WIFI 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            for(int i = 0; i < userIds.size(); ++i){
-                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
-                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "htTp");
-                conMap.put("id", "WaterTempertureSet ID");
-                conMap.put("isEnd", "false");
+                // TODO: RC WIFI 오류일 경우 어떻게 처리 할지 앱과 협의
+
+            } else {
+                if(stringObject.equals("Y")) {
+                    conMap.put("body", "WaterTempertureSet OK");
+                    msg = "온수온도 설정 성공";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                }
+                else if(stringObject.equals("N")) {
+                    conMap.put("body", "WaterTempertureSet FAIL");
+                    msg = "온수온도 설정 실패";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
+                else {
+                    conMap.put("body", "Service TIME-OUT");
+                    msg = "응답이 없거나 시간 초과";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
+
+                household = memberMapper.getHouseholdByUserId(params.getUserId());
+                params.setGroupId(household.getGroupId());
+                List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
+                List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+                userNickname = memberMapper.getUserNickname(params.getUserId());
+                userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+
+                for(int i = 0; i < userIds.size(); ++i){
+                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
+                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                    conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("title", "htTp");
+                    conMap.put("id", "WaterTempertureSet ID");
+                    conMap.put("isEnd", "false");
+
+                    String jsonString = objectMapper.writeValueAsString(conMap);
+                    log.info("jsonString: " + jsonString);
+
+                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                        log.info("PUSH 메세지 전송 오류");
+
+                }
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
-                log.info("jsonString: " + jsonString);
+
+                deviceInfo.setHwTp(params.getTemperture());
+                deviceInfo.setDeviceId(deviceId);
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+                params.setCodeType("1");
+                params.setCommandId("WaterTempertureSet");
+                params.setControlCode("hwTp");
+                params.setControlCodeName("온수 온도 설정");
+                params.setCommandFlow("0");
+                params.setDeviceId(deviceId);
+                params.setUserId(params.getUserId());
+                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+
+                params.setPushTitle("기기제어");
+                params.setPushContent("온수온도 설정");
+                params.setDeviceId(deviceId);
+                params.setDeviceType("01");
+                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
                 if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
                     log.info("PUSH 메세지 전송 오류");
-
             }
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-
-            deviceInfo.setHwTp(params.getTemperture());
-            deviceInfo.setDeviceId(deviceId);
-            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
-
-            params.setCodeType("1");
-            params.setCommandId("WaterTempertureSet");
-            params.setControlCode("hwTp");
-            params.setControlCodeName("온수 온도 설정");
-            params.setCommandFlow("0");
-            params.setDeviceId(deviceId);
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-
-            params.setPushTitle("기기제어");
-            params.setPushContent("온수온도 설정");
-            params.setDeviceId(deviceId);
-            params.setDeviceType("01");
-            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                log.info("PUSH 메세지 전송 오류");
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -1166,7 +1201,7 @@ public class DeviceServiceImpl implements DeviceService {
         String deviceId = params.getDeviceId();
         String redisValue;
         MobiusResponse response;
-        String responseMessage;
+        String responseMessage = null;
         String serialNumber;
         AuthServerDTO userNickname;
         AuthServerDTO household;
@@ -1229,66 +1264,75 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("ftMd" + fastHotWaterSet.getUuId());
             redisCommand.deleteValues(fastHotWaterSet.getUuId());
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "FastHotWaterSet OK");
-                msg = "빠른온수 설정 성공";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            }
-            else if(stringObject.equals("N")) {
-                conMap.put("body", "FastHotWaterSet FAIL");
-                msg = "빠른온수 설정 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-            else {
-                conMap.put("body", "Service TIME-OUT");
-                msg = "응답이 없거나 시간 초과";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            household = memberMapper.getHouseholdByUserId(params.getUserId());
-            params.setGroupId(household.getGroupId());
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
-            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(params.getUserId());
-            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+            if(responseMessage != null && responseMessage.equals("2")){
+                conMap.put("body", "RemoteController WIFI ERROR");
+                msg = "RC WIFI 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            for(int i = 0; i < userIds.size(); ++i){
-                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                // TODO: RC WIFI 오류일 경우 어떻게 처리 할지 앱과 협의
 
-                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
-                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "FastHotWaterSet");
-                conMap.put("id", "FastHotWaterSet ID");
-                conMap.put("isEnd", "false");
+            } else {
+                if(stringObject.equals("Y")) {
+                    conMap.put("body", "FastHotWaterSet OK");
+                    msg = "빠른온수 설정 성공";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                }
+                else if(stringObject.equals("N")) {
+                    conMap.put("body", "FastHotWaterSet FAIL");
+                    msg = "빠른온수 설정 실패";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
+                else {
+                    conMap.put("body", "Service TIME-OUT");
+                    msg = "응답이 없거나 시간 초과";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
 
-                String jsonString = objectMapper.writeValueAsString(conMap);
+                household = memberMapper.getHouseholdByUserId(params.getUserId());
+                params.setGroupId(household.getGroupId());
+                List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
+                List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+                userNickname = memberMapper.getUserNickname(params.getUserId());
+                userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                    log.info("PUSH 메세지 전송 오류");
+                for(int i = 0; i < userIds.size(); ++i){
+                    log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+
+                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
+                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                    conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("title", "FastHotWaterSet");
+                    conMap.put("id", "FastHotWaterSet ID");
+                    conMap.put("isEnd", "false");
+
+                    String jsonString = objectMapper.writeValueAsString(conMap);
+
+                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                        log.info("PUSH 메세지 전송 오류");
+                }
+
+                deviceInfo.setFtMd(params.getModeCode());
+                deviceInfo.setDeviceId(deviceId);
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+                params.setCodeType("1");
+                params.setCommandId("FastHotWaterSet");
+                params.setControlCode("ftMd");
+                params.setControlCodeName("빠른 온수 설정");
+                params.setCommandFlow("0");
+                params.setDeviceId(deviceId);
+                params.setUserId(params.getUserId());
+                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+
+                params.setPushTitle("기기제어");
+                params.setPushContent("빠른온수 설정");
+                params.setDeviceId(deviceId);
+                params.setDeviceType("01");
+                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
-
-            deviceInfo.setFtMd(params.getModeCode());
-            deviceInfo.setDeviceId(deviceId);
-            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
-
-            params.setCodeType("1");
-            params.setCommandId("FastHotWaterSet");
-            params.setControlCode("ftMd");
-            params.setControlCodeName("빠른 온수 설정");
-            params.setCommandFlow("0");
-            params.setDeviceId(deviceId);
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-
-            params.setPushTitle("기기제어");
-            params.setPushContent("빠른온수 설정");
-            params.setDeviceId(deviceId);
-            params.setDeviceType("01");
-            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -1313,7 +1357,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         String redisValue;
         MobiusResponse response;
-        String responseMessage;
+        String responseMessage = null;
         String serialNumber;
 
         Map<String, String> conMap = new HashMap<>();
@@ -1375,58 +1419,63 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("fcLc" + lockSet.getUuId());
             redisCommand.deleteValues(lockSet.getUuId());
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "LockSet OK");
-                msg = "잠금 모드 설정 성공";
+            if(memberMapper.updatePushToken(params) <= 0) log.info(msg = "구글 FCM TOKEN 갱신 실패.");
+
+            if(responseMessage != null && responseMessage.equals("2")){
+                conMap.put("body", "RemoteController WIFI ERROR");
+                msg = "RC WIFI 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            }
-            else if(stringObject.equals("N")) {
-                conMap.put("body", "LockSet FAIL");
-                msg = "잠금 모드 설정 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-            else {
-                conMap.put("body", "Service TIME-OUT");
-                msg = "응답이 없거나 시간 초과";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
+                // TODO: RC WIFI 오류일 경우 어떻게 처리 할지 앱과 협의
 
-            household = memberMapper.getHouseholdByUserId(params.getUserId());
-            params.setGroupId(household.getGroupId());
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
-            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(params.getUserId());
-            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
-
-            for(int i = 0; i < userIds.size(); ++i){
-                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-
-                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
-                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("title", "LockSet");
-                conMap.put("id", "LockSet ID");
-                conMap.put("isEnd", "false");
-
-                String jsonString = objectMapper.writeValueAsString(conMap);
-
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                    msg = "PUSH 메세지 전송 오류";
+            } else {
+                if(stringObject.equals("Y")) {
+                    conMap.put("body", "LockSet OK");
+                    msg = "잠금 모드 설정 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
                 }
-            }
+                else if(stringObject.equals("N")) {
+                    conMap.put("body", "LockSet FAIL");
+                    msg = "잠금 모드 설정 실패";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
+                else {
+                    conMap.put("body", "Service TIME-OUT");
+                    msg = "응답이 없거나 시간 초과";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
+                
+                household = memberMapper.getHouseholdByUserId(params.getUserId());
+                params.setGroupId(household.getGroupId());
+                List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
+                List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+                userNickname = memberMapper.getUserNickname(params.getUserId());
+                userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-            deviceInfo.setFcLc(params.getLockSet());
-            deviceInfo.setDeviceId(deviceId);
-            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                for(int i = 0; i < userIds.size(); ++i){
+                    log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+
+                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
+                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                    conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("title", "LockSet");
+                    conMap.put("id", "LockSet ID");
+                    conMap.put("isEnd", "false");
+
+                    String jsonString = objectMapper.writeValueAsString(conMap);
+
+                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                        msg = "PUSH 메세지 전송 오류";
+                        result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    }
+                }
+
+                deviceInfo.setFcLc(params.getLockSet());
+                deviceInfo.setDeviceId(deviceId);
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+            }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
@@ -1845,65 +1894,74 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("VentilationFanSpeedSet" + fanSpeedSet.getUuId());
             redisCommand.deleteValues(fanSpeedSet.getUuId());
 
-            if(stringObject.equals("Y")) {
-                conMap.put("body", "Device ON/OFF OK");
-                msg = "풍량 단수 설정 성공";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            } else {
-                conMap.put("body", "Service TIME-OUT");
-                msg = "응답이 없거나 시간 초과";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-            }
-
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            redisCommand.deleteValues(fanSpeedSet.getUuId());
+            if(responseMessage != null && responseMessage.equals("2")){
+                conMap.put("body", "RemoteController WIFI ERROR");
+                msg = "RC WIFI 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            deviceInfo.setVtSp(fanSpeed);
-            deviceInfo.setDeviceId(deviceId);
-            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                // TODO: RC WIFI 오류일 경우 어떻게 처리 할지 앱과 협의
 
-            params.setCodeType("1");
-            params.setCommandId("VentilationFanSpeedSet");
-            params.setControlCode("vtSp");
-            params.setControlCodeName("풍량 단수 설정");
-            params.setCommandFlow("0");
-            params.setDeviceId(deviceId);
-            params.setUserId(params.getUserId());
-
-            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-
-            params.setPushTitle("기기제어");
-            params.setPushContent("풍량 단수 설정");
-            params.setDeviceId(deviceId);
-            params.setDeviceType("07");
-            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
-
-            household = memberMapper.getHouseholdByUserId(params.getUserId());
-            params.setGroupId(household.getGroupId());
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
-            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(params.getUserId());
-            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
-
-            for(int i = 0; i < userIds.size(); ++i){
-                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-
-                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                conMap.put("title", "VentilationFanSpeedSet");
-                conMap.put("powr", params.getPowerStatus());
-                conMap.put("isEnd", "false");
-                conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("modelCode", modelCode);
-
-                String jsonString = objectMapper.writeValueAsString(conMap);
-                log.info("doPowerOnOff jsonString: " + jsonString);
-
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                    msg = "PUSH 메세지 전송 오류";
+            } else {
+                if(stringObject.equals("Y")) {
+                    conMap.put("body", "Device ON/OFF OK");
+                    msg = "풍량 단수 설정 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                } else {
+                    conMap.put("body", "Service TIME-OUT");
+                    msg = "응답이 없거나 시간 초과";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                }
+
+                redisCommand.deleteValues(fanSpeedSet.getUuId());
+
+                deviceInfo.setVtSp(fanSpeed);
+                deviceInfo.setDeviceId(deviceId);
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+                params.setCodeType("1");
+                params.setCommandId("VentilationFanSpeedSet");
+                params.setControlCode("vtSp");
+                params.setControlCodeName("풍량 단수 설정");
+                params.setCommandFlow("0");
+                params.setDeviceId(deviceId);
+                params.setUserId(params.getUserId());
+
+                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+
+                params.setPushTitle("기기제어");
+                params.setPushContent("풍량 단수 설정");
+                params.setDeviceId(deviceId);
+                params.setDeviceType("07");
+                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+
+                household = memberMapper.getHouseholdByUserId(params.getUserId());
+                params.setGroupId(household.getGroupId());
+                List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
+                List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+                userNickname = memberMapper.getUserNickname(params.getUserId());
+                userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+
+                for(int i = 0; i < userIds.size(); ++i){
+                    log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+
+                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                    conMap.put("title", "VentilationFanSpeedSet");
+                    conMap.put("powr", params.getPowerStatus());
+                    conMap.put("isEnd", "false");
+                    conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                    conMap.put("modelCode", modelCode);
+
+                    String jsonString = objectMapper.writeValueAsString(conMap);
+                    log.info("doPowerOnOff jsonString: " + jsonString);
+
+                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
+                        msg = "PUSH 메세지 전송 오류";
+                        result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                    }
                 }
             }
 
