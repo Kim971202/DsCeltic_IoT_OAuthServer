@@ -138,7 +138,7 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
             redisCommand.deleteValues(powerOnOff.getUuId());
 
-            if(responseMessage.equals("2")){
+            if(responseMessage != null && responseMessage.equals("2")){
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "RC WIFI 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -154,53 +154,53 @@ public class DeviceServiceImpl implements DeviceService {
                     msg = "응답이 없거나 시간 초과";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 }
+
+                deviceInfo.setPowr(params.getPowerStatus());
+                deviceInfo.setDeviceId(deviceId);
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+                params.setCodeType("1");
+                params.setCommandId("PowerOnOff");
+                params.setControlCode("powr");
+                params.setControlCodeName("전원 ON/OFF");
+                params.setCommandFlow("0");
+                params.setDeviceId(deviceId);
+                params.setUserId(params.getUserId());
+                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+
+                params.setPushTitle("기기제어");
+                params.setPushContent("전원 ON/OFF");
+                params.setDeviceId(deviceId);
+                params.setDeviceType(deviceType);
+                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+
+                household = memberMapper.getHouseholdByUserId(params.getUserId());
+                params.setGroupId(household.getGroupId());
+                List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
+                List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+                userNickname = memberMapper.getUserNickname(params.getUserId());
+                userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+
+                for(int i = 0; i < userIds.size(); ++i){
+                    log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+
+                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                    conMap.put("title", "powr");
+                    conMap.put("powr", params.getPowerStatus());
+                    conMap.put("isEnd", "false");
+                    conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                    conMap.put("modelCode", modelCode);
+
+                    String jsonString = objectMapper.writeValueAsString(conMap);
+                    log.info("doPowerOnOff jsonString: " + jsonString);
+
+                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                        log.info("PUSH 메세지 전송 오류");
+                }
             }
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
-
-            deviceInfo.setPowr(params.getPowerStatus());
-            deviceInfo.setDeviceId(deviceId);
-            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
-
-            params.setCodeType("1");
-            params.setCommandId("PowerOnOff");
-            params.setControlCode("powr");
-            params.setControlCodeName("전원 ON/OFF");
-            params.setCommandFlow("0");
-            params.setDeviceId(deviceId);
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-
-            params.setPushTitle("기기제어");
-            params.setPushContent("전원 ON/OFF");
-            params.setDeviceId(deviceId);
-            params.setDeviceType(deviceType);
-            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
-
-            household = memberMapper.getHouseholdByUserId(params.getUserId());
-            params.setGroupId(household.getGroupId());
-            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
-            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
-            userNickname = memberMapper.getUserNickname(params.getUserId());
-            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
-
-            for(int i = 0; i < userIds.size(); ++i){
-                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-
-                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                conMap.put("title", "powr");
-                conMap.put("powr", params.getPowerStatus());
-                conMap.put("isEnd", "false");
-                conMap.put("userNickname", userNickname.getUserNickname());
-                conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap.put("modelCode", modelCode);
-
-                String jsonString = objectMapper.writeValueAsString(conMap);
-                log.info("doPowerOnOff jsonString: " + jsonString);
-
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                    log.info("PUSH 메세지 전송 오류");
-            }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
