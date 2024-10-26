@@ -48,6 +48,8 @@ public class DeviceServiceImpl implements DeviceService {
     GwMessagingSystem gwMessagingSystem;
     @Value("${server.timeout}")
     private long TIME_OUT;
+    @Value("#{${device.model.code}}")
+    Map<String, String> modelCodeMap;
     private final String DEVICE_ID_PREFIX = "0.2.481.1.1";
 
     /** 전원 On/Off */
@@ -1977,15 +1979,42 @@ public class DeviceServiceImpl implements DeviceService {
     public ResponseEntity<?> doActiveStatus(AuthServerDTO params) throws CustomException {
 
         ApiResponse.Data result = new ApiResponse.Data();
+        ActiveStatus activeStatus = new ActiveStatus();
         String stringObject;
         String msg;
-        String userId = params.getUserId();
+        String userId;
         String deviceId = params.getDeviceId();
         String controlAuthKey = params.getControlAuthKey();
+        String serialNumber;
+        String modelCode;
+        String redisValue;
+        String functionId;
+        String responseMessage = null;
+
         AuthServerDTO device;
+        AuthServerDTO firstDeviceUser;
+
+        MobiusResponse response;
+
         try {
 
+            modelCode = common.getModelCodeFromDeviceId(deviceId);
 
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            userId = firstDeviceUser.getUserId();
+
+            activeStatus.setAccessToken(common.getTransactionId());
+            activeStatus.setUserId(params.getUserId());
+            activeStatus.setDeviceId(deviceId);
+            activeStatus.setControlAuthKey(controlAuthKey);
+            activeStatus.setUuId(activeStatus.getAccessToken());
+
+            if(modelCode.equals(modelCodeMap.get("newModel")) || modelCode.equals(modelCodeMap.get("oldModel"))) functionId = "bAcTv";
+            else if(modelCode.equals(modelCodeMap.get("ventilation"))) functionId = "vAcTv";
+
+            activeStatus.setFunctionId("acTv");
+            redisValue = params.getUserId() + "," + activeStatus.getFunctionId();
+            redisCommand.setValues(activeStatus.getUuId(), redisValue);
 
             device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
 
@@ -1993,9 +2022,59 @@ public class DeviceServiceImpl implements DeviceService {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            } else {
+                serialNumber = device.getSerialNumber();
+                stringObject = "Y";
+                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), params.getUserId(), JSON.toJson(activeStatus));
+                if (!response.getResponseCode().equals("201")) {
+                    msg = "중계서버 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
             }
 
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            try {
+                // 메시징 시스템을 통해 응답 메시지 대기
+                gwMessagingSystem.printMessageQueues();
+                log.info("responseMessage: acTv" + activeStatus.getUuId());
+                responseMessage = gwMessagingSystem.waitForResponse("acTv" + activeStatus.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                if (responseMessage != null) {
+                    // 응답 처리
+                    log.info("receiveCin에서의 응답: " + responseMessage);
+                    if (responseMessage.equals("0")) stringObject = "Y";
+                    else stringObject = "N";
+                } else {
+                    // 타임아웃이나 응답 없음 처리
+                    stringObject = "T";
+                    log.info("응답이 없거나 시간 초과");
+                }
+            } catch (InterruptedException e) {
+                // 대기 중 인터럽트 처리
+                log.error("", e);
+            }
+
+            gwMessagingSystem.removeMessageQueue("acTv" + activeStatus.getUuId());
+            redisCommand.deleteValues(activeStatus.getUuId());
+
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+
+            if(responseMessage != null && responseMessage.equals("2")){
+                msg = "RC WIFI 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+
+                // TODO: RC WIFI 오류일 경우 어떻게 처리 할지 앱과 협의
+
+            } else {
+                if (stringObject.equals("Y")) {
+                    msg = "홈 IoT 컨트롤러 활성/비활성 정보 요청 성공";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    result.setTestVariable(responseMessage);
+                } else {
+                    msg = "응답이 없거나 시간 초과";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                }
+            }
+                return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
         }
