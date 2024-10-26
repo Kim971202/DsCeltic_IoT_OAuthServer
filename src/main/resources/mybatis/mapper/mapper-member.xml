@@ -673,18 +673,18 @@
         UPDATE
             TBD_IOT_GRP_INFO
         SET
-            GRP_NM = #{groupName} <!-- yohan1202 -->
-        WHERE
             GRP_NM = #{userId} <!-- yohan971202 -->
+        WHERE
+            GRP_NM = #{groupName} <!-- yohan1202 -->
     </update>
 
     <update id="updateGrpDeviceInfoTableForNewHousehold" parameterType="com.oauth.dto.AuthServerDTO" >
         UPDATE
             TBR_IOT_DEVICE_GRP_INFO
         SET
-            GRP_ID = #{groupName}
-        WHERE
             GRP_ID = #{userId}
+        WHERE
+            GRP_ID = #{groupName}
     </update>
 
     <update id="updateRegistTable" parameterType="com.oauth.dto.AuthServerDTO" >
