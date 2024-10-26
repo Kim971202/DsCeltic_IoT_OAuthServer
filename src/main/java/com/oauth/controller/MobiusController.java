@@ -96,9 +96,11 @@ public class MobiusController {
 
         List<String> redisValueList;
 
-        if(replyErrorCode.equals("2")) {
-            gwMessagingSystem.sendMessage(functionId + uuId, replyErrorCode);
-            return "";
+        if(replyErrorCode != null) {
+            if(replyErrorCode.equals("2")){
+                gwMessagingSystem.sendMessage(functionId + uuId, replyErrorCode);
+                return "";
+            }
         }
 
 
