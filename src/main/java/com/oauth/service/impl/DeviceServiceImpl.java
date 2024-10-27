@@ -1988,7 +1988,7 @@ public class DeviceServiceImpl implements DeviceService {
         String serialNumber;
         String modelCode;
         String redisValue;
-        String functionId;
+        String functionId = null;
         String responseMessage = null;
 
         AuthServerDTO device;
@@ -2012,7 +2012,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(modelCode.equals(modelCodeMap.get("newModel")) || modelCode.equals(modelCodeMap.get("oldModel"))) functionId = "bAcTv";
             else if(modelCode.equals(modelCodeMap.get("ventilation"))) functionId = "vAcTv";
 
-            activeStatus.setFunctionId("acTv");
+            activeStatus.setFunctionId(functionId);
             redisValue = params.getUserId() + "," + activeStatus.getFunctionId();
             redisCommand.setValues(activeStatus.getUuId(), redisValue);
 
@@ -2025,7 +2025,7 @@ public class DeviceServiceImpl implements DeviceService {
             } else {
                 serialNumber = device.getSerialNumber();
                 stringObject = "Y";
-                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), params.getUserId(), JSON.toJson(activeStatus));
+                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(activeStatus));
                 if (!response.getResponseCode().equals("201")) {
                     msg = "중계서버 오류";
                     result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
@@ -2037,7 +2037,7 @@ public class DeviceServiceImpl implements DeviceService {
                 // 메시징 시스템을 통해 응답 메시지 대기
                 gwMessagingSystem.printMessageQueues();
                 log.info("responseMessage: acTv" + activeStatus.getUuId());
-                responseMessage = gwMessagingSystem.waitForResponse("acTv" + activeStatus.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                responseMessage = gwMessagingSystem.waitForResponse(activeStatus.getFunctionId() + activeStatus.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if (responseMessage != null) {
                     // 응답 처리
                     log.info("receiveCin에서의 응답: " + responseMessage);
@@ -2053,7 +2053,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.error("", e);
             }
 
-            gwMessagingSystem.removeMessageQueue("acTv" + activeStatus.getUuId());
+            gwMessagingSystem.removeMessageQueue(activeStatus.getFunctionId() + activeStatus.getUuId());
             redisCommand.deleteValues(activeStatus.getUuId());
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
