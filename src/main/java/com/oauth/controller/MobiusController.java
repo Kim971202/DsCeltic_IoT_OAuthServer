@@ -308,18 +308,17 @@ public class MobiusController {
 
         } else if(functionId.equals("opIf")){
             List<AuthServerDTO> opTmInfo;
-            opTmInfo = memberMapper.getUserIdFromDeviceGroup(common.readCon(jsonBody, "deviceId"));
+            opTmInfo = memberMapper.getUserIdFromDeviceGroup(deviceId);
 
             List<AuthServerDTO> inputList = new ArrayList<>();
             for(AuthServerDTO authServerDTO : opTmInfo){
                 authServerDTO.setWorkTime(common.readCon(jsonBody, "wkTm"));
                 authServerDTO.setMsDt(common.readCon(jsonBody, "msDt"));
-                authServerDTO.setDeviceId(common.readCon(jsonBody, "deviceId"));
+                authServerDTO.setDeviceId(deviceId);
+                authServerDTO.setUserId(authServerDTO.getUserId());
                 inputList.add(authServerDTO);
             }
-
             memberMapper.insertWorkTime(inputList);
-
         }else {
             return "0x0106-Devices 상태 보고 요청";
         }
