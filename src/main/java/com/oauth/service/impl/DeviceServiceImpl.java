@@ -465,10 +465,10 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("slCd", value.getSlCd());
                         resultMap.put("hwSt", value.getHwSt());
                         resultMap.put("fcLc", value.getFcLc());
-
-                        resultMap.put("ftMdAcTv", activeValue.getFtMd());
-                        resultMap.put("fcLcAcTv", activeValue.getFcLc());
-
+                        if(!active.isEmpty()){
+                            resultMap.put("ftMdAcTv", activeValue.getFtMd());
+                            resultMap.put("fcLcAcTv", activeValue.getFcLc());
+                        }
                         ConcurrentHashMap<String, ConcurrentHashMap<String, String>> rscfMap = new ConcurrentHashMap<>();
                         ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
 
@@ -1597,11 +1597,6 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             activeStatusInfo = deviceMapper.getActiveStauts(serialNumberList);
-            if (activeStatusInfo == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
 
             log.info("devicesStatusInfo: " + devicesStatusInfo);
             log.info("activeStatusInfo: " + activeStatusInfo);
@@ -1639,8 +1634,10 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("slCd", devicesStatusInfo.get(i).getSlCd());
                     data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
                     data.put("inAq", devicesStatusInfo.get(i).getInAq());
-                    data.put("ftMdAcTv", activeStatusInfo.get(i).getFtMd());
-                    data.put("fcLcAcTv", activeStatusInfo.get(i).getFcLc());
+                    if(!activeStatusInfo.isEmpty()){
+                        data.put("ftMdAcTv", activeStatusInfo.get(i).getFtMd());
+                        data.put("fcLcAcTv", activeStatusInfo.get(i).getFcLc());
+                    }
                     appResponse.add(data);
                 }
                 stringObject = "Y";
