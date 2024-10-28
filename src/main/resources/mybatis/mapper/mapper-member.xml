@@ -544,9 +544,8 @@
             INSERT_DATETIME BETWEEN #{startDate} AND #{endDate}
     </select>
 
-    <insert id="insertWorkTime" parameterType="com.oauth.dto.AuthServerDTO">
-        INSERT INTO
-            TBR_OPR_DEVICE_WORK_DATETIME
+    <insert id="insertWorkTime" parameterType="java.util.List">
+        INSERT INTO TBR_OPR_DEVICE_WORK_DATETIME
         (
             USER_ID,
             DEVC_ID,
@@ -554,13 +553,16 @@
             INSERT_DATETIME
         )
         VALUES
-        (
-            #{userId},
-            #{deviceId},
-            #{workTime},
-            now()
-        )
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{userId},
+                #{deviceId},
+                #{workTime},
+                now()
+            )
+        </foreach>
     </insert>
+
 
     <select id="getPushTokenByUserId" parameterType="String" resultMap="member">
         SELECT

@@ -307,12 +307,18 @@ public class MobiusController {
             mobiusService.rtstHandler(dr910WDevice);
 
         } else if(functionId.equals("opIf")){
-            AuthServerDTO opTmInfo;
+            List<AuthServerDTO> opTmInfo;
             opTmInfo = memberMapper.getUserIdFromDeviceGroup(common.readCon(jsonBody, "deviceId"));
-            opTmInfo.setWorkTime(common.readCon(jsonBody, "wkTm"));
-            opTmInfo.setMsDt(common.readCon(jsonBody, "msDt"));
 
-            memberMapper.insertWorkTime(opTmInfo);
+            List<AuthServerDTO> inputList = new ArrayList<>();
+            for(AuthServerDTO authServerDTO : opTmInfo){
+                authServerDTO.setWorkTime(common.readCon(jsonBody, "wkTm"));
+                authServerDTO.setMsDt(common.readCon(jsonBody, "msDt"));
+                authServerDTO.setDeviceId(common.readCon(jsonBody, "deviceId"));
+                inputList.add(authServerDTO);
+            }
+
+            memberMapper.insertWorkTime(inputList);
 
         }else {
             return "0x0106-Devices 상태 보고 요청";
