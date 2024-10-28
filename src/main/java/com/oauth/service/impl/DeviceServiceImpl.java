@@ -1169,8 +1169,6 @@ public class DeviceServiceImpl implements DeviceService {
 
                 }
 
-                String jsonString = objectMapper.writeValueAsString(conMap);
-
                 deviceInfo.setHwTp(params.getTemperture());
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
@@ -1189,9 +1187,6 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setDeviceId(deviceId);
                 params.setDeviceType("01");
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
-
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                    log.info("PUSH 메세지 전송 오류");
             }
 
             return new ResponseEntity<>(result, HttpStatus.OK);
