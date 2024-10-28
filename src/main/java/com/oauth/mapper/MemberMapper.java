@@ -48,8 +48,10 @@ public interface MemberMapper {
     public AuthServerDTO getDeviceCount(HashMap<String, Object> map);
     public List<AuthServerDTO> getSafeAlarmSet();
     public AuthServerDTO getFwhInfo(String deviceId);
+    public AuthServerDTO getUserIdFromDeviceGroup(String deviceId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
+    public int insertWorkTime(AuthServerDTO member);
     public int updateGrpDeviceInfoTableForNewHousehold(AuthServerDTO member);
     public int updateGrpInfoTableHousehold(AuthServerDTO member);
     public int updateGrpInfoTableForNewHousehold(AuthServerDTO member);

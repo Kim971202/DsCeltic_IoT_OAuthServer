@@ -523,6 +523,15 @@
             USER_ID = #{userId}
     </select>
 
+    <select id="getUserIdFromDeviceGroup" parameterType="String" resultMap="member">
+        SELECT
+            USER_ID AS userId
+        FROM
+            TBR_IOT_DEVICE_GRP_INFO
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
     <select id="getWorkTime" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             WORK_TIME AS workTime,
@@ -534,6 +543,24 @@
         AND
             INSERT_DATETIME BETWEEN #{startDate} AND #{endDate}
     </select>
+
+    <insert id="insertWorkTime" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_OPR_DEVICE_WORK_DATETIME
+        (
+            USER_ID,
+            DEVC_ID,
+            WORK_TIME,
+            INSERT_DATETIME
+        )
+        VALUES
+        (
+            #{userId},
+            #{deviceId},
+            #{workTime},
+            now()
+        )
+    </insert>
 
     <select id="getPushTokenByUserId" parameterType="String" resultMap="member">
         SELECT
