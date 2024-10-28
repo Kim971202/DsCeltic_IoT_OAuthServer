@@ -186,6 +186,8 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String newControlAuthKey;            // 신규 RKey
     private String deviceCount;
 
+    private String fastHotWater;                 // 빠른온수 예약 정보 조회용 변수
+
     private Role role = Role.USER;
 
     private boolean accountNonExpired = true;

@@ -47,6 +47,7 @@ public interface MemberMapper {
     public AuthServerDTO getFirstDeviceUser(String deviceId);
     public AuthServerDTO getDeviceCount(HashMap<String, Object> map);
     public List<AuthServerDTO> getSafeAlarmSet();
+    public AuthServerDTO getFwhInfo(String deviceId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
     public int updateGrpDeviceInfoTableForNewHousehold(AuthServerDTO member);

@@ -597,6 +597,22 @@ public class UserController {
         return userService.doSafeAlarmSet(params);
     }
 
+    /*
+     * 빠른온수 예약 정보 조회
+     * */
+    @PostMapping(value = "/getFastHotWaterInfo")
+    @ResponseBody
+    public ResponseEntity<?> doGetFastHotWaterInfo(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws Exception {
+        log.info("빠른온수 예약 정보 조회");
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId())){
+            throw new CustomException("404", "빠른온수 예약 정보 조회 오류");
+        }
+        return userService.doGetFastHotWaterInfo(params);
+    }
+
     @PostMapping(value = "/test")
     public String test(String on) throws Exception {
         DeviceStatusInfo.Device a = new DeviceStatusInfo.Device();

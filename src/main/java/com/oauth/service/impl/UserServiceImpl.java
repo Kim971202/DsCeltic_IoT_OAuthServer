@@ -1124,8 +1124,8 @@ public class UserServiceImpl implements UserService {
             // TODO: 6. 세대주 권한이양 받은 세대원 Household 항목 Y로 UPDATE
             memberMapper.updateUserDeviceHousehold(nextHouseholder.getUserId());
 
-            /* 
-            * TODO: 7. 
+            /*
+            * TODO: 7.
             *  신규 세대주 TBR_OPR_USER HOUSE_HOLD Y
             * */
             params.setResponseUserId(nextHouseholder.getUserId());
@@ -1739,6 +1739,40 @@ public class UserServiceImpl implements UserService {
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /** 빠른온수 예약 정보 조회 */
+    @Override
+    public ResponseEntity<?> doGetFastHotWaterInfo(AuthServerDTO params) throws Exception {
+        ApiResponse.Data result = new ApiResponse.Data();
+        String stringObject = "N";
+        String msg;
+        String deviceId = params.getDeviceId();
+
+        AuthServerDTO fwhInfo;
+        try {
+            fwhInfo = memberMapper.getFwhInfo(deviceId);
+            if(fwhInfo == null){
+                msg = "빠른온수 예약 정보 조회 실패";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            } else stringObject = "Y";
+
+            if(stringObject.equals("Y"))
+                msg = "빠른온수 예약 정보 조회 성공";
+            else
+                msg = "빠른온수 예약 정보 조회 실패";
+
+            result.setResult("Y".equalsIgnoreCase(stringObject)
+                    ? ApiResponse.ResponseType.HTTP_200
+                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
+
+            result.setAwakeList(fwhInfo.getFastHotWater());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);

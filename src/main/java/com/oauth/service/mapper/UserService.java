@@ -96,4 +96,8 @@ public interface UserService {
     /** 안전안심 알람 설정 */
     ResponseEntity<?> doSafeAlarmSet(AuthServerDTO params) throws Exception;
 
+    /** 빠른온수 예약 정보 조회 */
+    ResponseEntity<?> doGetFastHotWaterInfo(AuthServerDTO params) throws Exception;
+
+
 }

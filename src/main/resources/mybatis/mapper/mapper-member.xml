@@ -993,4 +993,13 @@
             USER_ID = #{userId}
     </delete>
 
+    <select id="getFwhInfo" parameterType="String" resultMap="member">
+        SELECT
+            FWH AS fastHotWater
+        FROM
+            TBR_OPR_DEVICE_STATUS
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
 </mapper>
