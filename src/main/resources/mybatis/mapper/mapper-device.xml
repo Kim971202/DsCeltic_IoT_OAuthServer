@@ -442,7 +442,7 @@
             <if test="inDr != null">#{inDr},</if>
             <if test="inCl != null">#{inCl},</if>
             <if test="ecSt != null">#{ecSt},</if>
-            <if test="mfDt != null">#{mfDt},</if>
+            <if test="mfDt != null">now(),</if>
         </trim>
     </insert>
 
