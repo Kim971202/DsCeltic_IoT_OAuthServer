@@ -482,12 +482,13 @@
         UPDATE
             TBR_OPR_ACTIVE_DEVICE_STATUS
         SET
-            <if test="ftMd != null">#{ftMd},</if>
-            <if test="fcLc != null">#{fcLc},</if>
-            <if test="past != null">#{past},</if>
-            <if test="inDr != null">#{inDr},</if>
-            <if test="inCl != null">#{inCl},</if>
-            <if test="ecSt != null">#{ecSt},</if>
+            <if test="serialNumber != null">SERIAL_NO = #{serialNumber},</if>
+            <if test="ftMd != null">FTMD = #{ftMd},</if>
+            <if test="fcLc != null">FCLC = #{fcLc},</if>
+            <if test="past != null">PAST = #{past},</if>
+            <if test="inDr != null">INDR = #{inDr},</if>
+            <if test="inCl != null">INCL = #{inCl},</if>
+            <if test="ecSt != null">ECST = #{ecSt},</if>
             MFDT = now()
         WHERE
             DEVC_ID = #{deviceId}
@@ -623,6 +624,26 @@
             TBR_OPR_DEVICE_STATUS
         WHERE
             SERIAL_NO IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getActiveStauts" parameterType="java.util.List" resultMap="dr910w">
+        SELECT
+            IFNULL(DEVC_ID, '') AS deviceId,
+            IFNULL(SERIAL_NO, '') AS serialNumber,
+            IFNULL(FTMD, '') AS ftMd,
+            IFNULL(FCLC, '') AS fcLc,
+            IFNULL(PAST, '') AS past,
+            IFNULL(INDR, '') AS inDr,
+            IFNULL(INCL, '') AS inCl
+            IFNULL(ECST, '') AS ecSt
+            IFNULL(MFDT, '') AS mfDt
+        FROM
+            TBR_OPR_DEVICE_STATUS
+        WHERE
+        SERIAL_NO IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>

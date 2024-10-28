@@ -426,6 +426,7 @@ public class DeviceServiceImpl implements DeviceService {
         AuthServerDTO serialNumber;
         Map<String, String> resultMap = new HashMap<>();
         List<DeviceStatusInfo.Device> device;
+        List<DeviceStatusInfo.Device> active;
 
         try {
 
@@ -436,6 +437,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             } else {
                 device = deviceMapper.getDeviceStauts(Collections.singletonList(serialNumber.getSerialNumber()));
+                active = deviceMapper.getActiveStauts(Collections.singletonList(serialNumber.getSerialNumber()));
 
                 if(device == null) {
                     msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
@@ -444,7 +446,10 @@ public class DeviceServiceImpl implements DeviceService {
                 } else if(modelCode.equals("ESCeco13S") || modelCode.equals("DCR-91/WF")) {
                     resultMap.put("deviceStatus", "01");
                     resultMap.put("modelCategoryCode", "01");
-                    for (DeviceStatusInfo.Device value : device) {
+                    for (int i = 0; i < device.size(); i++) {
+                        DeviceStatusInfo.Device value = device.get(i);
+                        DeviceStatusInfo.Device activeValue = active.get(i);
+
                         resultMap.put("rKey", value.getRKey());
                         resultMap.put("powr", value.getPowr());
                         resultMap.put("opMd", value.getOpMd());
@@ -460,19 +465,24 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("slCd", value.getSlCd());
                         resultMap.put("hwSt", value.getHwSt());
                         resultMap.put("fcLc", value.getFcLc());
-                        ConcurrentHashMap<String, ConcurrentHashMap<String, String>> rscfMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, String>>() {{
 
-                            // 내부 맵 생성 및 초기화
-                            ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
-                            eleMap.put("24h", value.getH24());
-                            eleMap.put("12h", value.getH12());
-                            eleMap.put("7wk", value.getWk7());
+                        resultMap.put("ftMdAcTv", activeValue.getFtMd());
+                        resultMap.put("fcLcAcTv", activeValue.getFcLc());
 
-                            if(value.getFwh() == null) eleMap.put("fwt", "null");
-                            else eleMap.put("fwh", value.getFwh());
-                            // 외부 맵에 내부 맵 추가
-                            put("rsCf", eleMap);
-                        }};
+                        ConcurrentHashMap<String, ConcurrentHashMap<String, String>> rscfMap = new ConcurrentHashMap<>();
+                        ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
+
+                        eleMap.put("24h", value.getH24());
+                        eleMap.put("12h", value.getH12());
+                        eleMap.put("7wk", value.getWk7());
+
+                        if (value.getFwh() == null) {
+                            eleMap.put("fwt", "null");
+                        } else {
+                            eleMap.put("fwh", value.getFwh());
+                        }
+
+                        rscfMap.put("rsCf", eleMap);
                         resultMap.put("rsCf", JSON.toJson(rscfMap));
                     }
                 } else if(modelCode.equals("DCR-47/WF")){
@@ -1520,6 +1530,7 @@ public class DeviceServiceImpl implements DeviceService {
         List<AuthServerDTO> deviceNicknameAndDeviceLocNicknameResult;
         List<AuthServerDTO> multiSerialNumberBydeviceIdResult;
         List<DeviceStatusInfo.Device> devicesStatusInfo;
+        List<DeviceStatusInfo.Device> activeStatusInfo;
         try {
 
             // TODO: 만약 Household 여부가 N인 경우에는 세대주의 USERID 사용
@@ -1584,7 +1595,16 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
+
+            activeStatusInfo = deviceMapper.getActiveStauts(serialNumberList);
+            if (activeStatusInfo == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            }
+
             log.info("devicesStatusInfo: " + devicesStatusInfo);
+            log.info("activeStatusInfo: " + activeStatusInfo);
 
             if(rKeyList == null || deviceIdList == null){
                 msg = "등록된 R/C가 없습니다";
@@ -1619,6 +1639,8 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("slCd", devicesStatusInfo.get(i).getSlCd());
                     data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
                     data.put("inAq", devicesStatusInfo.get(i).getInAq());
+                    data.put("ftMdAcTv", activeStatusInfo.get(i).getFtMd());
+                    data.put("fcLcAcTv", activeStatusInfo.get(i).getFcLc());
                     appResponse.add(data);
                 }
                 stringObject = "Y";

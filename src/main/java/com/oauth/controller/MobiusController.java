@@ -140,6 +140,7 @@ public class MobiusController {
 
             if(common.readCon(jsonBody, "mfCd").equals("acTv")){
                 System.out.println("mobiusService.actvHandler CALLED");
+                deviceInfo.setSerialNumber(common.readCon(jsonBody, "srNo"));
                 mobiusService.actvHandler(deviceInfo);
                 return "OK";
             }
