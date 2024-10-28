@@ -312,11 +312,12 @@ public class MobiusController {
 
             List<AuthServerDTO> inputList = new ArrayList<>();
             for(AuthServerDTO authServerDTO : opTmInfo){
-                authServerDTO.setWorkTime(common.readCon(jsonBody, "wkTm"));
-                authServerDTO.setMsDt(common.readCon(jsonBody, "msDt"));
-                authServerDTO.setDeviceId(deviceId);
-                authServerDTO.setUserId(authServerDTO.getUserId());
-                inputList.add(authServerDTO);
+                AuthServerDTO newWkTmInfo = new AuthServerDTO();
+                newWkTmInfo.setWorkTime(common.readCon(jsonBody, "wkTm"));
+                newWkTmInfo.setMsDt(common.readCon(jsonBody, "msDt"));
+                newWkTmInfo.setDeviceId(deviceId);
+                newWkTmInfo.setUserId(authServerDTO.getUserId());
+                inputList.add(newWkTmInfo);
             }
             memberMapper.insertWorkTime(inputList);
         }else {
