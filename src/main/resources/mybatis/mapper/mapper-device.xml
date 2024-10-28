@@ -637,8 +637,8 @@
             IFNULL(FCLC, '') AS fcLc,
             IFNULL(PAST, '') AS past,
             IFNULL(INDR, '') AS inDr,
-            IFNULL(INCL, '') AS inCl
-            IFNULL(ECST, '') AS ecSt
+            IFNULL(INCL, '') AS inCl,
+            IFNULL(ECST, '') AS ecSt,
             IFNULL(MFDT, '') AS mfDt
         FROM
             TBR_OPR_DEVICE_STATUS
