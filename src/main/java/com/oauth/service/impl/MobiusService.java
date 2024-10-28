@@ -299,6 +299,12 @@ public class MobiusService {
         return mobiusResponse;
     }
 
+    public void actvHandler(DeviceStatusInfo.Device dr910W){
+
+        if(deviceMapper.getActiveStautsByDeviceId(dr910W.getDeviceId()) == null) deviceMapper.insertActiveStatus(dr910W);
+        else deviceMapper.updateActiveStatus(dr910W);
+
+    }
     public void rtstHandler(DeviceStatusInfo.Device dr910W){
         ApiResponse.Data result = new ApiResponse.Data();
         System.out.println("deviceMapper.getDeviceStautsByDeviceId(dr910W.getDeviceId()): " + deviceMapper.getDeviceStautsByDeviceId(dr910W.getDeviceId()));

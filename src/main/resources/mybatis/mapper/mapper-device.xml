@@ -419,6 +419,33 @@
         </trim>
     </insert>
 
+    <insert id="insertActiveStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        INSERT INTO TBR_OPR_ACTIVE_DEVICE_STATUS
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">DEVC_ID,</if>
+            <if test="serialNumber != null">SERIAL_NO,</if>
+            <if test="ftMd != null">FTMD,</if>
+            <if test="fcLc != null">FCLC,</if>
+            <if test="past != null">PAST,</if>
+            <if test="inDr != null">INDR,</if>
+            <if test="inCl != null">INCL,</if>
+            <if test="ecSt != null">ECST,</if>
+            <if test="mfDt != null">MFDT,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="serialNumber != null">#{serialNumber},</if>
+            <if test="ftMd != null">#{ftMd},</if>
+            <if test="fcLc != null">#{fcLc},</if>
+            <if test="past != null">#{past},</if>
+            <if test="inDr != null">#{inDr},</if>
+            <if test="inCl != null">#{inCl},</if>
+            <if test="ecSt != null">#{ecSt},</if>
+            <if test="mfDt != null">#{mfDt},</if>
+        </trim>
+    </insert>
+
     <update id="updateDeviceStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
         UPDATE
             TBR_OPR_DEVICE_STATUS
@@ -447,6 +474,21 @@
                     <if test="rsPw != null">RSPW = #{rsPw},</if>
                     INAQ = #{inAq},
                     MFDT = now()
+        WHERE
+            DEVC_ID = #{deviceId}
+    </update>
+
+    <update id="updateActiveStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE
+            TBR_OPR_ACTIVE_DEVICE_STATUS
+        SET
+            <if test="ftMd != null">#{ftMd},</if>
+            <if test="fcLc != null">#{fcLc},</if>
+            <if test="past != null">#{past},</if>
+            <if test="inDr != null">#{inDr},</if>
+            <if test="inCl != null">#{inCl},</if>
+            <if test="ecSt != null">#{ecSt},</if>
+            MFDT = now()
         WHERE
             DEVC_ID = #{deviceId}
     </update>
@@ -487,6 +529,15 @@
             DEVC_ID AS deviceId
         FROM
             TBR_OPR_DEVICE_STATUS
+        WHERE
+            DEVC_ID = #{deviceId};
+    </select>
+
+    <select id="getActiveStautsByDeviceId" parameterType="String" resultMap="dr910w">
+        SELECT
+            DEVC_ID AS deviceId
+        FROM
+            TBR_OPR_ACTIVE_DEVICE_STATUS
         WHERE
             DEVC_ID = #{deviceId};
     </select>

@@ -66,6 +66,11 @@ public class DeviceStatusInfo {
       private String wk7;
       private String fwh;
 
+      private String past;
+      private String inDr;
+      private String inCl;
+      private String ecSt;
+
       private String new24h;
       private String new12h;
       private String new7wk;

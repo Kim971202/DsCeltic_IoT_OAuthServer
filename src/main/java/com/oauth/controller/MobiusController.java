@@ -128,6 +128,22 @@ public class MobiusController {
         } else if (functionId.equals("mfSt")) {
 
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
+            deviceInfo.setDeviceId(common.readCon(jsonBody, "deviceId"));
+
+            deviceInfo.setFtMd(common.readCon(jsonBody, "ftMd"));
+            deviceInfo.setFcLc(common.readCon(jsonBody, "fcLc"));
+
+            deviceInfo.setPast(common.readCon(jsonBody, "past"));
+            deviceInfo.setInDr(common.readCon(jsonBody, "inDr"));
+            deviceInfo.setInCl(common.readCon(jsonBody, "inCl"));
+            deviceInfo.setEcSt(common.readCon(jsonBody, "ecSt"));
+
+            if(common.readCon(jsonBody, "mfCd").equals("acTv")){
+                System.out.println("mobiusService.actvHandler CALLED");
+                mobiusService.actvHandler(deviceInfo);
+                return "OK";
+            }
+
             deviceInfo.setMfcd(common.readCon(jsonBody, "mfcd"));
             deviceInfo.setPowr(common.readCon(jsonBody, "powr"));
             deviceInfo.setOpMd(common.readCon(jsonBody, "opMd"));
@@ -135,15 +151,12 @@ public class MobiusController {
             deviceInfo.setHtTp(common.readCon(jsonBody, "htTp"));
             deviceInfo.setWtTp(common.readCon(jsonBody, "wtTp"));
             deviceInfo.setHwTp(common.readCon(jsonBody, "hwTp"));
-            deviceInfo.setFtMd(common.readCon(jsonBody, "ftMd"));
             deviceInfo.setBCdt(common.readCon(jsonBody, "bCdt"));
             deviceInfo.setChTp(common.readCon(jsonBody, "chTp"));
             deviceInfo.setCwTp(common.readCon(jsonBody, "cwTp"));
             deviceInfo.setHwSt(common.readCon(jsonBody, "hwSt"));
             deviceInfo.setEcOp(common.readCon(jsonBody, "ecOp"));
-            deviceInfo.setFcLc(common.readCon(jsonBody, "fcLc"));
             deviceInfo.setBlCf(common.readCon(jsonBody, "blCf"));
-
             deviceInfo.setVtSp(common.readCon(jsonBody, "vtSp"));
 
             if(common.readCon(jsonBody, "rsPw") != null){
@@ -163,7 +176,6 @@ public class MobiusController {
             }
 
             deviceInfo.setFwh(common.readCon(jsonBody, "fwh"));
-            deviceInfo.setDeviceId(common.readCon(jsonBody, "deviceId"));
 
             int rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
             log.info("rcUpdateResult: " + rcUpdateResult);

@@ -436,7 +436,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             } else {
                 device = deviceMapper.getDeviceStauts(Collections.singletonList(serialNumber.getSerialNumber()));
-                System.out.println(device);
+
                 if(device == null) {
                     msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);

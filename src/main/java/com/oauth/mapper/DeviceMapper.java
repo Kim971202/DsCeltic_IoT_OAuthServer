@@ -27,6 +27,7 @@ public interface DeviceMapper {
     public AuthServerDTO checkDeviceStatus(AuthServerDTO params);
     public DeviceStatusInfo.Device getSingleDeviceStauts(String deviceId);
     public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
+    public DeviceStatusInfo.Device getActiveStautsByDeviceId(String deviceId);
     public int insertDeviceGrpInfo(AuthServerDTO params);
     public int updateDeviceErrorStatus(String deviceId);
     public int changeDeviceNicknameTemp(AuthServerDTO device);
@@ -38,7 +39,9 @@ public interface DeviceMapper {
     public int updateDeviceRegistLocation(AuthServerDTO device);
     public int updateDeviceDetailLocation(AuthServerDTO device);
     public int insertDeviceStatus(DeviceStatusInfo.Device device);
+    public int insertActiveStatus(DeviceStatusInfo.Device device);
     public int updateDeviceStatus(DeviceStatusInfo.Device device);
+    public int updateActiveStatus(DeviceStatusInfo.Device device);
     public int insertUserDevice(AuthServerDTO device);
     public int insertErrorInfo(AuthServerDTO device);
     public int updateDeviceStatusFromApplication(DeviceStatusInfo.Device device);
