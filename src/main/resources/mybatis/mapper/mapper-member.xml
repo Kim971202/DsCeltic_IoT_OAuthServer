@@ -555,9 +555,9 @@
         VALUES
         <foreach collection="list" item="item" separator=",">
             (
-                #{userId},
-                #{deviceId},
-                #{workTime},
+                #{item.userId},
+                #{item.deviceId},
+                #{item.workTime},
                 now()
             )
         </foreach>
