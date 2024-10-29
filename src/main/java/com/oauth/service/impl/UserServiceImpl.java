@@ -281,22 +281,12 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String userHp = params.getHp();
-        String modelCode = params.getModelCode();
-        String serialNumber = params.getSerialNumber();
-        String deviceId;
         String msg;
-        List<AuthServerDTO> member = null;
+        List<AuthServerDTO> member;
         List<String> userId;
         try {
 
-            // 받은 ModelCode와 SerialNumber로 DeviceId를 생성한다.
-            deviceId = "0.2.481.1.1" + common.stringToHex(modelCode) + "." + common.stringToHex(serialNumber);
-            log.info("deviceId: " + deviceId);
-
-            // 구형 모델의 경우
-            if(modelCode.equals(modelCodeMap.get("oldModel"))) member = memberMapper.getUserByHp(userHp);
-            else if(modelCode.equals(modelCodeMap.get("newModel"))) member = memberMapper.getUserByDeviceId(deviceId);
-
+            member = memberMapper.getUserByHp(userHp);
             if (member == null) {
                 msg = "일치하는 회원정보가 없습니다.";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
