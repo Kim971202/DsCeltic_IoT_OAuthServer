@@ -243,7 +243,7 @@ public class MobiusService {
         SubDTO.Sub.Enc enc = new SubDTO.Sub.Enc();
 
         String rnName = null;
-        String serverAddr = null;
+        String serverAddr = "";
 
         if(addrType.equals("gw")){
             rnName = "AppServerToGwServer";
@@ -307,21 +307,12 @@ public class MobiusService {
     }
     public void rtstHandler(DeviceStatusInfo.Device dr910W){
         ApiResponse.Data result = new ApiResponse.Data();
-        System.out.println("deviceMapper.getDeviceStautsByDeviceId(dr910W.getDeviceId()): " + deviceMapper.getDeviceStautsByDeviceId(dr910W.getDeviceId()));
         if(deviceMapper.getDeviceStautsByDeviceId(dr910W.getDeviceId()) == null){
             // 신규 기기 INSERT
-            if(deviceMapper.insertDeviceStatus(dr910W) <= 0) {
-                String msg = "모드변경 실패";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            deviceMapper.insertDeviceStatus(dr910W);
         } else {
             // 기존 기기 UPDATE
-            if(deviceMapper.updateDeviceStatus(dr910W) <= 0){
-                String msg = "모드변경 실패";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
+            deviceMapper.updateDeviceStatus(dr910W);
         }
     }
 

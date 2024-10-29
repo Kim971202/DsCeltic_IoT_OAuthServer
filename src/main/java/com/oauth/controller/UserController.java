@@ -116,8 +116,7 @@ public class UserController {
         System.out.println(logStep + params);
         if(Validator.isNullOrEmpty(params.getHp()) ||
            Validator.isNullOrEmpty(params.getDeviceType()) ||
-           Validator.isNullOrEmpty(params.getModelCode()) ||
-           Validator.isNullOrEmpty(params.getSerialNumber())){
+           Validator.isNullOrEmpty(params.getModelCode())){
             throw new CustomException("404", "ID 찾기 확인 입력 값 오류");
         }
 
