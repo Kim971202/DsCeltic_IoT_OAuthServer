@@ -287,7 +287,7 @@ public class UserServiceImpl implements UserService {
         try {
 
             member = memberMapper.getUserByHp(userHp);
-            if (member == null) {
+            if (member.isEmpty()) {
                 msg = "일치하는 회원정보가 없습니다.";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
@@ -310,16 +310,10 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String stringObject;
-        String modelCode = params.getModelCode();
         AuthServerDTO member;
         String msg;
 
         try {
-
-//            if(modelCode.equals(modelCodeMap.get("oldModel")) || modelCode.equals(modelCodeMap.get("newModel")))
-//                member = memberMapper.getUserByUserIdAndHp(params);
-//            else
-//                member = memberMapper.getUserByUserIdAndHpAndDeviceId(params);
 
             member = memberMapper.getUserByUserIdAndHp(params);
             if(member == null) stringObject = "N";
