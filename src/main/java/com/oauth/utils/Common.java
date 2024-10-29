@@ -445,6 +445,7 @@ public class Common {
         commandMap.put("cwTp", new String[]{"CWTP", "cwTp", "현재 난방수 온도"});
         commandMap.put("slCd", new String[]{"SLCD", "slCd", "취침 난방 모드 설정"});
         commandMap.put("ecOp", new String[]{"EcoOperation", "ecOp", "절약난방 상태정보 알림"});
+        commandMap.put("fcLc", new String[]{"DeviceLock", "fcLc", "화면 잠금 설정"});
         commandMap.put("mwk", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
         commandMap.put("reSt", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
         commandMap.put("mfAr", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
