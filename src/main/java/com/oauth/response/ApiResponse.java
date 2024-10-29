@@ -16,7 +16,7 @@ public class ApiResponse {
         HTTP_200("200", "성공"),
         HTTP_400("400", "Bad Request - field validation 실패"),
         HTTP_401("401", "Unauthorized - API 인증 실패"),
-        HTTP_404("404", "Not found"),
+        HTTP_404("404", "MOBIUS_SERVER_ERROR"),
         HTTP_500("500", "Internal Server Error"),
         CUSTOM_1001("1001", "사용자ID 중복"),
         CUSTOM_1002("1002", "R/C제어 인증 오류"),
