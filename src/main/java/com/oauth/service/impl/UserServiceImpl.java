@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
             if (account == null) {
                 msg = "계정이 존재하지 않습니다.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 registUserType = account.getRegistUserType();
@@ -100,14 +100,14 @@ public class UserServiceImpl implements UserService {
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
             if (member == null) {
                 msg = "계정이 존재하지 않습니다.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else userNickname = member.getUserNickname();
 
             List<AuthServerDTO> deviceInfoList = memberMapper.getDeviceIdByUserId(householdStatus.getGroupId());
             if(deviceInfoList == null) {
                 msg = "계정이 존재하지 않습니다.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
 
@@ -126,7 +126,6 @@ public class UserServiceImpl implements UserService {
                 log.info("tmpRegistKey: " + tmpRegistKey);
                 log.info("latitude: " + latitude);
                 log.info("longitude: " + longitude);
-
 
                 // Mapper실행 후 사용자가 가지고 있는 Device 개수
                 int numDevices = deviceInfoList.size();
@@ -167,7 +166,7 @@ public class UserServiceImpl implements UserService {
             hp = memberMapper.getHpByUserId(userId).getHp();
             if (hp == null) {
                 msg = "계정이 존재하지 않습니다.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else result.setHp(hp);
 
@@ -179,21 +178,21 @@ public class UserServiceImpl implements UserService {
 
             if(memberMapper.updatePushToken(params) <= 0) {
                 msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_2004, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             if(memberMapper.updateLoginDatetime(params) <= 0) {
                 msg = "LOGIN_INFO_UPDATE_ERROR";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                new ResponseEntity<>(result, HttpStatus.OK);
             }
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -215,19 +214,19 @@ public class UserServiceImpl implements UserService {
 
             if(memberMapper.insertAccount(params) <= 0) {
                 msg = "회원가입 실패";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
             if(memberMapper.insertMember(params) <= 0) {
                 msg = "회원가입 실패";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
             if(memberMapper.insertHouseholder(params) <= 0) {
                 msg = "회원가입 실패";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
@@ -259,12 +258,15 @@ public class UserServiceImpl implements UserService {
             if(member == null) stringObject = "N";
             else stringObject = "Y";
 
-            if(stringObject.equals("Y")) msg = "중복 되는 ID";
-            else msg = "중복 되지 않는 ID";
+            if(stringObject.equals("Y")) {
+                msg = "중복 되는 ID";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+            } else{
+                msg = "중복 되지 않는 ID";
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
 
             data.setDuplicationYn(stringObject);
-            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -297,7 +299,7 @@ public class UserServiceImpl implements UserService {
 
             if (member == null) {
                 msg = "일치하는 회원정보가 없습니다.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             } else userId = Common.extractJson(member.toString(), "userId");
 
@@ -323,13 +325,13 @@ public class UserServiceImpl implements UserService {
         String msg;
 
         try {
-            if(params.getDeviceId().equals("null")) params.setDeviceId(null);
-            // 구형 모델의 경우
-            if(modelCode.equals(modelCodeMap.get("oldModel")) || modelCode.equals(modelCodeMap.get("newModel")))
-                member = memberMapper.getUserByUserIdAndHp(params);
-            else
-                member = memberMapper.getUserByUserIdAndHpAndDeviceId(params);
 
+//            if(modelCode.equals(modelCodeMap.get("oldModel")) || modelCode.equals(modelCodeMap.get("newModel")))
+//                member = memberMapper.getUserByUserIdAndHp(params);
+//            else
+//                member = memberMapper.getUserByUserIdAndHpAndDeviceId(params);
+
+            member = memberMapper.getUserByUserIdAndHp(params);
             if(member == null) stringObject = "N";
             else {
                 data.setRegistUserType(member.getRegistUserType());
@@ -345,7 +347,7 @@ public class UserServiceImpl implements UserService {
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
+                    : ApiResponse.ResponseType.CUSTOM_1003, msg);
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
@@ -363,30 +365,21 @@ public class UserServiceImpl implements UserService {
         String msg;
 
         try{
-
             params.setNewPassword(encoder.encode(params.getUserPassword()));
-
             if(memberMapper.updatePassword(params) <= 0){
                 msg = "비밀번호 변경 - 생성 실패";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                new ResponseEntity<>(data, HttpStatus.OK);
             } else stringObject = "Y";
 
-            if(stringObject.equals("Y"))
-                msg = "비밀번호 변경 - 생성 성공";
-            else
-                msg = "비밀번호 변경 - 생성 실패";
+            if(stringObject.equals("Y")) msg = "비밀번호 변경 - 생성 성공";
+            else msg = "비밀번호 변경 - 생성 실패";
 
-
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
+                    : ApiResponse.ResponseType.CUSTOM_1003, msg);
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
@@ -408,8 +401,8 @@ public class UserServiceImpl implements UserService {
 
             if (member == null) {
                 msg = "사용자정보가 없습니다.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             } else {
                 data.setUserId(member.getUserId());
                 data.setUserNickname(member.getUserNickname());
@@ -439,20 +432,20 @@ public class UserServiceImpl implements UserService {
             dbPassword = memberMapper.getPasswordByUserId(params.getUserId());
             if (dbPassword == null) {
                 msg = "계정이 존재하지 않습니다.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             if(!encoder.matches(userPassword, dbPassword.getUserPassword())) {
                 msg = "비밀번호 오류.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             if(memberMapper.updateUserNicknameAndHp(params) <= 0) {
                 msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             } else {
                 msg = "회원 별칭(이름) 및 전화번호 변경 성공";
             }
@@ -482,21 +475,21 @@ public class UserServiceImpl implements UserService {
 
             if (account == null) {
                 msg = "계정이 존재하지 않습니다.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
             params.setNewPassword(encoder.encode(params.getNewPassword()));
 
             if(!encoder.matches(oldPassword, account.getUserPassword())){
                 msg = "PW 에러";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_2002, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             if(memberMapper.updatePassword(params) <= 0){
                 msg = "비밀번호 변경 - 로그인시 실패";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                new ResponseEntity<>(data, HttpStatus.OK);
             } else stringObject = "Y";
 
             if(stringObject.equals("Y"))
@@ -507,7 +500,7 @@ public class UserServiceImpl implements UserService {
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_2002, msg);
+                    : ApiResponse.ResponseType.CUSTOM_1003, msg);
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
@@ -541,8 +534,8 @@ public class UserServiceImpl implements UserService {
                 }
             } else {
                 msg = "계정이 존재하지 않습니다.";
-                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             msg = "사용자(세대원) 정보 조회 성공";

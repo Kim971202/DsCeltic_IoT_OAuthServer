@@ -2070,12 +2070,9 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue(activeStatus.getFunctionId() + activeStatus.getUuId());
             redisCommand.deleteValues(activeStatus.getUuId());
 
-            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
-
             if(responseMessage != null && responseMessage.equals("2")){
                 msg = "RC WIFI 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-
                 // TODO: RC WIFI 오류일 경우 어떻게 처리 할지 앱과 협의
 
             } else {

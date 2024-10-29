@@ -35,7 +35,7 @@ public class ApiResponse {
         CUSTOM_1015("1015", "디바이스 응답시간 초과"),
         CUSTOM_1016("1016", "데이터 미존재"),
         CUSTOM_1017("1017", "API 입력항목 검증 실패"),
-        CUSTOM_1018("1018", "존재하지 않는 제어 요청"),
+        CUSTOM_1018("1018", "DB 쿼리 에러"),
         CUSTOM_1019("1019", "제어 요청 Key 미정의(서버오류)"),
         CUSTOM_1020("1020", "제어 요청 Value 미정의(서버오류)"),
         CUSTOM_1021("1021", "제어 요청 Key-Value 항목 불일치(서버오류)"),
@@ -43,7 +43,9 @@ public class ApiResponse {
         CUSTOM_2001("2001", "API 인증키 미존재"),
         CUSTOM_2002("2002", "잘못된 API 인증키"),
         CUSTOM_2003("2003", "API 인증키 만료"),
+        CUSTOM_2004("2003", "FCM 갱신 오류"),
         CUSTOM_9999("2003", "정의되지 않은 오류");
+
 
         private String code;
         private String msg;
