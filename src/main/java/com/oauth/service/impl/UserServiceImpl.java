@@ -331,7 +331,7 @@ public class UserServiceImpl implements UserService {
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_1003, msg);
+                    : ApiResponse.ResponseType.CUSTOM_1004, msg);
 
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
