@@ -64,31 +64,12 @@ public class Common {
         return device;
     }
 
-    public static ApiResponse.Data.User createUsers(
-            String userNickname,
-            String userId,
-            String houseHolder,
-            Set<String> userIds) {
-
-        // 중복이 없다면 Set에 추가
-        userIds.add(userId);
-
-        // Device 생성
-        ApiResponse.Data.User user = new ApiResponse.Data.User();
-        user.setUserNickname(userNickname);
-        user.setUserId(userId);
-        user.setHouseholder(houseHolder);
-
-        return user;
-    }
-
     public static ApiResponse.Data.Invitation createInvitations(
             String invitationIdx,
             String inviteAcceptYn,
             String requestUserId,
             String requestUserNick,
             String responseUserId,
-//            String responseUserNick,
             String responseHp,
             String inviteStartDate,
             String inviteEndDate,
@@ -104,7 +85,6 @@ public class Common {
         invitation.setRequestUserId(requestUserId);
         invitation.setRequestUserNick(requestUserNick);
         invitation.setResponseUserId(responseUserId);
-//        invitation.setResponseUserNick(responseUserNick);
         invitation.setResponseHp(responseHp);
         invitation.setInviteStartDate(inviteStartDate);
         invitation.setInviteEndDate(inviteEndDate);
@@ -174,35 +154,9 @@ public class Common {
         return userIds;
     }
 
-    /**
-     * @param list 중복이 있는 list
-     * @param key  중복 여부를 판단하는 키값
-     * @param <T>  generic type
-     * @return list
-     */
-    public static <T> List<T> deduplication(final List<T> list, Function<? super T, ?> key) {
-        return list.stream()
-                .filter(deduplication(key))
-                .collect(Collectors.toList());
-    }
-
     private static <T> Predicate<T> deduplication(Function<? super T, ?> key) {
         final Set<Object> set = ConcurrentHashMap.newKeySet();
         return predicate -> set.add(key.apply(predicate));
-    }
-
-    public static void updateMemberDTOList(List<AuthServerDTO> authServerDTOList, String targetKey, Object newValue) {
-        for (AuthServerDTO authServerDTO : authServerDTOList) {
-            try {
-                // MemberDTO 클래스의 필드에 따라 해당 필드에 접근해서 원하는 Key인지 확인
-                var field = AuthServerDTO.class.getDeclaredField(targetKey);
-                field.setAccessible(true);
-                field.set(authServerDTO, newValue);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                // 원하는 Key가 없을 경우 예외 처리 또는 다른 작업 수행
-                log.info("Unsupported key: " + targetKey);
-            }
-        }
     }
 
     public LocalDateTime getTimeAsiaSeoulNow() {
@@ -366,11 +320,6 @@ public class Common {
     }
 
     public String stringToHex(String input){
-//        StringBuilder stringBuilder = new StringBuilder();
-//        for(char character : input.toCharArray()){
-//            stringBuilder.append(Integer.toHexString((int) character));
-//        }
-//        return  stringBuilder.toString();
         StringBuilder stringBuilder = new StringBuilder();
         byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
         for (byte b : bytes) {
@@ -426,7 +375,7 @@ public class Common {
 
     public void setCommandParams(Map<String, Object> nonNullField, AuthServerDTO params) {
 
-        System.out.println("Map<String, Object> nonNullField: " + nonNullField);
+        log.info("Map<String, Object> nonNullField: " + nonNullField);
 
         // 필드 이름을 키로, 그에 따른 Command 설정을 값으로 갖는 Map 생성
         Map<String, String[]> commandMap = new HashMap<>();
@@ -453,15 +402,14 @@ public class Common {
         commandMap.put("vtSp", new String[]{"VentilationSpeed", "vtSp", "환기 풍량 설정"});
         commandMap.put("rsPw", new String[]{"VentilationOnOffSet", "rsPw", "환기 켜짐 꺼짐 예약"});
 
-        System.out.println("commandMap");
-        System.out.println(commandMap);
+        log.info("commandMap: " + commandMap);
 
         // nonNullField에서 해당 필드가 존재하는지 확인하고, 해당 Command 설정 적용
         for (Map.Entry<String, String[]> entry : commandMap.entrySet()) {
             if (nonNullField.get(entry.getKey()) != null) {
-                System.out.println("entry.getValue()[0]: " + entry.getValue()[0]);
-                System.out.println("entry.getValue()[1]: " + entry.getValue()[1]);
-                System.out.println("entry.getValue()[2]: " + entry.getValue()[2]);
+                log.info("entry.getValue()[0]: " + entry.getValue()[0]);
+                log.info("entry.getValue()[1]: " + entry.getValue()[1]);
+                log.info("entry.getValue()[2]: " + entry.getValue()[2]);
 
                 params.setCommandId(entry.getValue()[0]);
                 params.setControlCode(entry.getValue()[1]);
@@ -487,4 +435,30 @@ public class Common {
         String[] modelCode = deviceId.split("\\.");
         return hexToString(modelCode[5]);
     }
+
+    /** 공통 로그 출력 함수 */
+    public void logParams(Object params) {
+        if (params == null) {
+            log.info("Params are null");
+            return;
+        }
+
+        try {
+            Field[] fields = params.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                field.setAccessible(true);
+                Object value = field.get(params);
+                if (value != null && !value.toString().isEmpty()) {
+                    if ("userPassword".equals(field.getName())) {
+                        log.info(field.getName() + ": [PROTECTED]"); // 비밀번호는 직접 출력 X
+                    } else {
+                        log.info(field.getName() + ": " + value);
+                    }
+                }
+            }
+        } catch (IllegalAccessException e) {
+            log.error("Error accessing field values", e);
+        }
+    }
+
 }

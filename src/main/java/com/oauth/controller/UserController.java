@@ -62,6 +62,8 @@ public class UserController {
         String logStep = "[회원 로그인]";
         log.info("[회원 로그인]");
 
+        common.logParams(params);
+
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getUserPassword())) {
             throw new CustomException("404", "회원 로그인 입력 값 오류");
         }
