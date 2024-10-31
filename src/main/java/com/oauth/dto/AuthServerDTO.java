@@ -21,37 +21,9 @@ import java.util.*;
 @Data
 @Getter
 @Setter
-public class AuthServerDTO implements UserDetails, Serializable {
+public class AuthServerDTO implements Serializable {
 
     private static final long serialVersionUID = 54436712726576487L;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        String[] roles = null;
-        if (authority != null) {
-            authority = authority.trim();
-            if (!authority.isEmpty()) {
-                roles = authority.split(",");
-            }
-        }
-        if (roles == null) {
-            roles = new String[] {};
-        }
-        // 방법1
-        ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        for (String authority : roles) {
-            authorities.add(new SimpleGrantedAuthority(authority));
-        }
-        return authorities;
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    public enum Role {
-        USER("ROLE_USER"),
-        ADMIN("ROLE_ADMIN");
-        private final String value;
-    }
 
     private String authority;                    // 권한
     private String hp;                           // 사용자 전화번호
@@ -188,41 +160,4 @@ public class AuthServerDTO implements UserDetails, Serializable {
     private String deviceCount;
 
     private String fastHotWater;                 // 빠른온수 예약 정보 조회용 변수
-
-    private Role role = Role.USER;
-
-    private boolean accountNonExpired = true;
-    private boolean accountNonLocked = true;
-    private boolean credentialsNonExpired = true;
-    private boolean enabled = true;
-
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return null;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
 }
