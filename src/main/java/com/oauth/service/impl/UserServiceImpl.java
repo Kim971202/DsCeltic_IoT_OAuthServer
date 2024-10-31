@@ -1549,7 +1549,7 @@ public class UserServiceImpl implements UserService {
             noticeList = memberMapper.getNoticeList();
             if(noticeList.isEmpty()) {
                 msg = "공지사항 목록이 없습니다.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
             else {
