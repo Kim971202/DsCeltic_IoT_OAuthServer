@@ -40,7 +40,8 @@
 
     <select id="getMultiSerialNumberBydeviceId" parameterType="hashmap" resultMap="device">
         SELECT
-            SERIAL_NO AS serialNumber
+            SERIAL_NO AS serialNumber,
+            DEVC_MODL_CD AS modelCode
         FROM
             TBR_IOT_DEVICE
         WHERE

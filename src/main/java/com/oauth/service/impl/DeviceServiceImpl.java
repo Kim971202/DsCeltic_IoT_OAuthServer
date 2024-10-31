@@ -1436,6 +1436,7 @@ public class DeviceServiceImpl implements DeviceService {
         List<String> latitudeList;
         List<String> longitudeList;
         List<String> regSortList;
+        List<String> modelCodeList;
 
         List<Map<String, String>> appResponse = new ArrayList<>();
 
@@ -1498,6 +1499,9 @@ public class DeviceServiceImpl implements DeviceService {
             longitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "longitude");
             log.info("longitudeList: " + longitudeList);
 
+            modelCodeList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "modelCode");
+            log.info("modelCodeList: " + modelCodeList);
+
             devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
             if (devicesStatusInfo == null) {
                 msg = "기기정보가 없습니다.";
@@ -1516,7 +1520,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            if(deviceNicknameList != null && addrNicknameList != null && regSortList != null && serialNumberList != null && latitudeList != null && longitudeList != null){
+            if(deviceNicknameList != null && addrNicknameList != null && regSortList != null && serialNumberList != null && latitudeList != null && longitudeList != null && modelCodeList != null){
                 for(int i = 0; i < rKeyList.size(); ++i){
                     Map<String, String> data = new HashMap<>();
                     data.put("rKey", rKeyList.get(i));
@@ -1543,7 +1547,7 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("slCd", devicesStatusInfo.get(i).getSlCd());
                     data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
                     data.put("inAq", devicesStatusInfo.get(i).getInAq());
-                    if(!activeStatusInfo.isEmpty()){
+                    if(!activeStatusInfo.isEmpty() && !modelCodeList.get(i).equals("ESCeco13S")){
                         data.put("ftMdAcTv", activeStatusInfo.get(i).getFtMd());
                         data.put("fcLcAcTv", activeStatusInfo.get(i).getFcLc());
                     }
