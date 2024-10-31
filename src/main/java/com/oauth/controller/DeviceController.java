@@ -35,8 +35,8 @@ public class DeviceController {
     public ResponseEntity<?> doDeviceStatusInfo(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws CustomException {
 
-        String logStep = "[홈 IoT 컨트롤러 상태 정보 조회]";
         log.info("[홈 IoT 컨트롤러 상태 정보 조회]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
@@ -54,8 +54,8 @@ public class DeviceController {
     public ResponseEntity<?> doPowerOnOff(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws CustomException {
 
-        String logStep = "[전원 On/Off]";
         log.info("[전원 On/Off]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -74,8 +74,8 @@ public class DeviceController {
     public ResponseEntity<?> doDeviceInfoUpsert(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws Exception {
 
-        String logStep = "[홈 IoT 컨트롤러 정보 등록/수정]";
         log.info("[홈 IoT 컨트롤러 정보 등록/수정]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getHp()) ||
@@ -104,8 +104,8 @@ public class DeviceController {
     public HashMap<String, Object> doDeviceInfoSearch(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws Exception {
 
-        String logStep = "[홈 IoT 컨트롤러 정보 조회-단건]";
         log.info("[홈 IoT 컨트롤러 정보 조회-단건]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
            Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -121,8 +121,8 @@ public class DeviceController {
     public ResponseEntity<?> doModeChange(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws CustomException {
 
-        String logStep = "[모드변경]";
         log.info("[모드변경]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -140,8 +140,8 @@ public class DeviceController {
     public ResponseEntity<?> doTemperatureSet(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws CustomException {
 
-        String logStep = "[실내온도 설정]";
         log.info("[실내온도 설정]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -176,8 +176,8 @@ public class DeviceController {
     public ResponseEntity<?> doWaterTempertureSet(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws CustomException{
 
-        String logStep = "[온수온도 설정]";
         log.info("[온수온도 설정]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -194,8 +194,8 @@ public class DeviceController {
     public ResponseEntity<?> doFastHotWaterSet(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws CustomException{
 
-        String logStep = "[빠른온수 설정]";
         log.info("[빠른온수 설정]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -212,8 +212,8 @@ public class DeviceController {
     public ResponseEntity<?>doLockSet(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws CustomException{
 
-        String logStep = "[잠금 모드 설정]";
         log.info("[잠금 모드 설정]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -230,8 +230,8 @@ public class DeviceController {
     public ResponseEntity<?> doBasicDeviceStatusInfo(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws Exception {
 
-        String logStep = "[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]";
         log.info("[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException("404", "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 값 오류");
@@ -245,8 +245,8 @@ public class DeviceController {
     public ResponseEntity<?> doDeviceErrorInfo(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws Exception {
 
-        String logStep = "[홈 IoT 컨트롤러 에러 정보 조회]";
         log.info("[홈 IoT 컨트롤러 에러 정보 조회]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId())||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -264,8 +264,8 @@ public class DeviceController {
     public ResponseEntity<?> doDeviceInfoSearchList(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws Exception {
 
-        String logStep = "[홈 IoT 정보 조회 - 리스트]";
         log.info("[홈 IoT 정보 조회 - 리스트]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException("404", "홈 IoT 정보 조회 - 리스트 값 오류");
@@ -279,8 +279,8 @@ public class DeviceController {
     public ResponseEntity<?> doVentilationFanSpeedSet(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws Exception {
 
-        String logStep = "[홈 IoT 컨트롤러 풍량 단수 설정]";
         log.info("[홈 IoT 컨트롤러 풍량 단수 설정]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
@@ -298,8 +298,8 @@ public class DeviceController {
     public ResponseEntity<?> doActiveStatus(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
             throws Exception {
 
-        String logStep = "[홈 IoT 컨트롤러 활성/비활성 정보 요청]";
         log.info("[홈 IoT 컨트롤러 활성/비활성 정보 요청]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||

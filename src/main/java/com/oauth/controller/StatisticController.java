@@ -2,6 +2,7 @@ package com.oauth.controller;
 
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.service.mapper.StatisticService;
+import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
 import com.oauth.utils.Validator;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +29,16 @@ public class StatisticController {
     @Autowired
     private StatisticService statisticService;
 
+    @Autowired
+    private Common common;
+
     /* 홈 IoT 가동시간 통계조회 */
     @RequestMapping("/infoDaily")
     public HashMap<String, Object> doInfoDaily(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException {
 
-        String logStep = "[홈 IoT가동시간 통계조회]";
         log.info("[홈 IoT가동시간 통계조회]");
+        common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
