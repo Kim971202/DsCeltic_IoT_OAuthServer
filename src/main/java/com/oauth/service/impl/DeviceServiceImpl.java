@@ -403,7 +403,6 @@ public class DeviceServiceImpl implements DeviceService {
         AuthServerDTO serialNumber;
         Map<String, String> resultMap = new HashMap<>();
         List<DeviceStatusInfo.Device> device;
-        List<DeviceStatusInfo.Device> active;
 
         try {
 
@@ -414,7 +413,6 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 device = deviceMapper.getDeviceStauts(Collections.singletonList(serialNumber.getSerialNumber()));
-                active = deviceMapper.getActiveStauts(Collections.singletonList(serialNumber.getSerialNumber()));
 
                 if(device == null) {
                     msg = "홈 IoT 컨트롤러 상태 정보 조회 실패";
@@ -423,10 +421,7 @@ public class DeviceServiceImpl implements DeviceService {
                 } else if(modelCode.equals("ESCeco13S") || modelCode.equals("DCR-91/WF")) {
                     resultMap.put("deviceStatus", "01");
                     resultMap.put("modelCategoryCode", "01");
-                    for (int i = 0; i < device.size(); i++) {
-                        DeviceStatusInfo.Device value = device.get(i);
-                        DeviceStatusInfo.Device activeValue = active.get(i);
-
+                    for (DeviceStatusInfo.Device value : device) {
                         resultMap.put("rKey", value.getRKey());
                         resultMap.put("powr", value.getPowr());
                         resultMap.put("opMd", value.getOpMd());
@@ -442,10 +437,7 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("slCd", value.getSlCd());
                         resultMap.put("hwSt", value.getHwSt());
                         resultMap.put("fcLc", value.getFcLc());
-                        if(!active.isEmpty()){
-                            resultMap.put("ftMdAcTv", activeValue.getFtMd());
-                            resultMap.put("fcLcAcTv", activeValue.getFcLc());
-                        }
+
                         ConcurrentHashMap<String, ConcurrentHashMap<String, String>> rscfMap = new ConcurrentHashMap<>();
                         ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
 
