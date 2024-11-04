@@ -801,7 +801,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("title", "htTp");
+                    conMap.put("title", "hwTp");
                     conMap.put("id", "TemperatureSet ID");
                     conMap.put("isEnd", "false");
 
@@ -817,7 +817,7 @@ public class DeviceServiceImpl implements DeviceService {
 
                 params.setCodeType("1");
                 params.setCommandId("TemperatureSet");
-                params.setControlCode("htTp");
+                params.setControlCode("hwTp");
                 params.setControlCodeName("실내 온도 설정");
                 params.setCommandFlow("0");
                 params.setDeviceId(deviceId);
