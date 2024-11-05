@@ -1566,8 +1566,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
             }
             redisCommand.deleteValues(uuId);
-            System.out.println("result");
-            System.out.println(result);
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
