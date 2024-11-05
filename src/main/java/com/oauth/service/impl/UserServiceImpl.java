@@ -565,7 +565,11 @@ public class UserServiceImpl implements UserService {
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             pushToken = memberMapper.getPushTokenByUserId(params.getResponseUserId());
-
+            if(pushToken.getPushToken() == null){
+                msg = "뭘 추가 하는 거죠?";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
             params.setUserId(params.getResponseUserId());
             pushYn = memberMapper.getPushYnStatus(params);
 
