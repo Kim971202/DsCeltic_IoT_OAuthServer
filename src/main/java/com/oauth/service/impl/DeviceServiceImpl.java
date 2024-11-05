@@ -195,6 +195,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             }
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -385,6 +386,7 @@ public class DeviceServiceImpl implements DeviceService {
             else if(registYn.equals("Y"))
                 params.setPushContent("신규기기 등록");
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CustomException e){
             log.error("", e);
@@ -486,6 +488,7 @@ public class DeviceServiceImpl implements DeviceService {
             redisCommand.deleteValues(uuId);
 
             result.setDeviceStatusInfo(resultMap);
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -685,7 +688,8 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setDeviceType(common.getModelCode(modelCode));
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
-            
+
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -830,6 +834,7 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setDeviceType("01");
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -975,7 +980,8 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setDeviceType("01");
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
-            
+
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1121,6 +1127,7 @@ public class DeviceServiceImpl implements DeviceService {
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1265,6 +1272,7 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setDeviceType("01");
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1394,6 +1402,8 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
             }
+
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1607,6 +1617,7 @@ public class DeviceServiceImpl implements DeviceService {
             result.put("resultCode", rtCode);
             result.put("resultMsg", msg);
 
+            log.info("result: " + result);
             return result;
         } catch (Exception e) {
             log.error("", e);
@@ -1663,6 +1674,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
             }
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1727,6 +1739,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
             }
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1888,6 +1901,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             }
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1987,7 +2001,8 @@ public class DeviceServiceImpl implements DeviceService {
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
                 }
             }
-                return new ResponseEntity<>(result, HttpStatus.OK);
+            log.info("result: " + result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
         }

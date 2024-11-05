@@ -24,9 +24,6 @@ public class StatisticServiceImpl implements StatisticService {
     @Override
     public HashMap<String, Object> doInfoDaily(AuthServerDTO params) throws CustomException {
 
-        String userId = params.getUserId();
-        String deviceId = params.getDeviceId();
-
         List<AuthServerDTO> deviceWorkTimeInfo;
 
         HashMap<String, Object> resultMap = new LinkedHashMap<String, Object>();
@@ -53,6 +50,7 @@ public class StatisticServiceImpl implements StatisticService {
             resultMap.put("resultMsg", "일별 가동시간 통계조회 조회 성공");
 
             resultMap.put("stats", statsList);
+            log.info("resultMap: " + resultMap);
             return resultMap;
         } catch (Exception e){
             log.error("", e);

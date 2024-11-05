@@ -189,6 +189,7 @@ public class UserServiceImpl implements UserService {
             }
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -236,6 +237,7 @@ public class UserServiceImpl implements UserService {
             log.info("Token: " + token);
             data.setAccessToken(token);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -267,6 +269,7 @@ public class UserServiceImpl implements UserService {
             }
 
             data.setDuplicationYn(stringObject);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -297,6 +300,7 @@ public class UserServiceImpl implements UserService {
 
             data.setUserIdList(userId);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -333,6 +337,7 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_1004, msg);
 
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -365,6 +370,7 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_1003, msg);
 
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -396,6 +402,7 @@ public class UserServiceImpl implements UserService {
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -437,6 +444,7 @@ public class UserServiceImpl implements UserService {
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -487,7 +495,7 @@ public class UserServiceImpl implements UserService {
                     : ApiResponse.ResponseType.CUSTOM_1003, msg);
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
-
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e) {
             log.error("", e);
@@ -526,6 +534,7 @@ public class UserServiceImpl implements UserService {
 
             data.setUser(user);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -586,6 +595,7 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_1018, msg);
 
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -795,6 +805,7 @@ public class UserServiceImpl implements UserService {
                 log.info("PUSH 메세지 전송 오류");
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -868,6 +879,7 @@ public class UserServiceImpl implements UserService {
 
             data.setInvitation(inv);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -908,6 +920,7 @@ public class UserServiceImpl implements UserService {
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -945,6 +958,7 @@ public class UserServiceImpl implements UserService {
                 msg = "홈 IoT 컨트롤러 알림 설정 성공";
 
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                log.info("data: " + data);
                 return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -1014,6 +1028,7 @@ public class UserServiceImpl implements UserService {
             resultMap.put("resultCode", "200");
             resultMap.put("resultMsg", "홈 IoT 컨트롤러 알림 정보 조회 성공");
 
+            log.info("resultMap: " + resultMap);
             return resultMap;
         }catch (CustomException e){
             log.error("", e);
@@ -1102,6 +1117,7 @@ public class UserServiceImpl implements UserService {
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1145,6 +1161,7 @@ public class UserServiceImpl implements UserService {
             msg = "홈IoT 서비스 회원 탈퇴 성공";
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -1173,6 +1190,7 @@ public class UserServiceImpl implements UserService {
 
             if(stringObject.equals("N")) result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
             else result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1235,6 +1253,7 @@ public class UserServiceImpl implements UserService {
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1003, msg);
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1284,6 +1303,7 @@ public class UserServiceImpl implements UserService {
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1018, msg);
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -1326,6 +1346,7 @@ public class UserServiceImpl implements UserService {
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1018, msg);
 
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1386,6 +1407,7 @@ public class UserServiceImpl implements UserService {
             msg = "스마트알림 - PUSH 이력 조회 성공";
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -1426,6 +1448,7 @@ public class UserServiceImpl implements UserService {
                     ApiResponse.ResponseType.HTTP_200 :
                     ApiResponse.ResponseType.CUSTOM_1018, msg);
 
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1531,6 +1554,7 @@ public class UserServiceImpl implements UserService {
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201"))
                 log.info("PUSH 메세지 전송 오류");
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
@@ -1590,6 +1614,7 @@ public class UserServiceImpl implements UserService {
             msg = "공지사항 조회 성공";
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (CustomException e){
             log.error("", e);
@@ -1625,6 +1650,7 @@ public class UserServiceImpl implements UserService {
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1639,6 +1665,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data result = new ApiResponse.Data();
         try {
             result.setTmpRegistKey(userId + common.getCurrentDateTime());
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
          log.error("", e);
@@ -1673,6 +1700,7 @@ public class UserServiceImpl implements UserService {
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1709,6 +1737,7 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_1018, msg);
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);

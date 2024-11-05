@@ -194,6 +194,7 @@ public class ReservationServiceImpl implements ReservationService{
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -336,6 +337,7 @@ public class ReservationServiceImpl implements ReservationService{
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -516,6 +518,7 @@ public class ReservationServiceImpl implements ReservationService{
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -666,7 +669,8 @@ public class ReservationServiceImpl implements ReservationService{
                 params.setWeekList("");
                 redisCommand.deleteValues(setWeek.getUuId());
             }
-            
+
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -845,6 +849,7 @@ public class ReservationServiceImpl implements ReservationService{
                         log.info("PUSH 메세지 전송 오류");
                 }
             }
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -1010,6 +1015,7 @@ public class ReservationServiceImpl implements ReservationService{
                 }
 
             }
+            log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
