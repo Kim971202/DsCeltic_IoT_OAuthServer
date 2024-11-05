@@ -1539,11 +1539,10 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("slCd", devicesStatusInfo.get(i).getSlCd());
                     data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
                     data.put("inAq", devicesStatusInfo.get(i).getInAq());
-                    if(!activeStatusInfo.isEmpty() && !modelCodeList.get(i).equals("ESCeco13S")){
+                    if(!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-91/WF")){
                         data.put("ftMdAcTv", activeStatusInfo.get(i).getFtMd());
                         data.put("fcLcAcTv", activeStatusInfo.get(i).getFcLc());
-                    }
-                    if(!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-47/WF")){
+                    } else if(!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-47/WF")){
                         data.put("pastAcTv", activeStatusInfo.get(i).getPast());
                         data.put("inDrAcTv", activeStatusInfo.get(i).getInDr());
                         data.put("inClAcTv", activeStatusInfo.get(i).getInCl());
