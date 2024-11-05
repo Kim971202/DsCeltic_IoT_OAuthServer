@@ -805,7 +805,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("title", "hwTp");
+                    conMap.put("title", "htTp");
                     conMap.put("id", "TemperatureSet ID");
                     conMap.put("isEnd", "false");
 
@@ -1096,7 +1096,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("title", "htTp");
+                    conMap.put("title", "hwTp");
                     conMap.put("id", "WaterTempertureSet ID");
                     conMap.put("isEnd", "false");
 
