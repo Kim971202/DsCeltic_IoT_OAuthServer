@@ -1243,7 +1243,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("title", "FastHotWaterSet");
+                    conMap.put("title", "ftMd");
                     conMap.put("id", "FastHotWaterSet ID");
                     conMap.put("isEnd", "false");
 
@@ -1391,7 +1391,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("title", "LockSet");
+                    conMap.put("title", "fcLc");
                     conMap.put("id", "LockSet ID");
                     conMap.put("isEnd", "false");
                     String jsonString = objectMapper.writeValueAsString(conMap);
