@@ -1723,6 +1723,7 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("regSort", authServerDTO.getRegSort());
                     data.put("deviceId", authServerDTO.getDeviceId());
                     data.put("controlAuthKey", authServerDTO.getControlAuthKey());
+                    data.put("tempKey", authServerDTO.getTmpRegistKey());
                     appResponse.add(data);
                 }
                 stringObject = "Y";

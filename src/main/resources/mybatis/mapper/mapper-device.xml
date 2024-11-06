@@ -18,6 +18,7 @@
             regist.DTAIL_ADDR AS addrDetail,
             regist.LAT AS latitude,
             regist.LON AS longitude,
+            regist.TEMP_DEVC_REG_KEY AS tmpRegistKey,
             ROW_NUMBER() OVER () AS regSort
         FROM
             TBR_IOT_DEVICE AS device
