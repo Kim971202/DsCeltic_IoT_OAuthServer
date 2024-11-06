@@ -1792,7 +1792,7 @@ public class DeviceServiceImpl implements DeviceService {
             fanSpeedSet.setUuId(common.getTransactionId());
 
             redisValue = params.getUserId() + "," + "VentilationFanSpeedSet";
-            redisCommand.setValues(fanSpeedSet.getUserId(), redisValue);
+            redisCommand.setValues(fanSpeedSet.getUuId(), redisValue);
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
 
