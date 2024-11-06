@@ -1808,7 +1808,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 stringObject = "Y";
-                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), params.getUserId(), JSON.toJson(fanSpeedSet));
+                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(fanSpeedSet));
                 if(!response.getResponseCode().equals("201")){
                     msg = "중계서버 오류";
                     result.setResult(ApiResponse.ResponseType.HTTP_404, msg);

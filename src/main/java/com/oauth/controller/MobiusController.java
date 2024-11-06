@@ -76,6 +76,7 @@ public class MobiusController {
         if(functionId == null) return "FUNCTION ID NULL";
 
         if(!functionId.equals("rtSt") && !functionId.equals("mfSt") && !functionId.equals("opIf")) redisValue = redisCommand.getValues(uuId);
+        log.info("uuId: " + uuId);
 
         log.info("functionId: " + functionId);
         log.info("redisValue: " + redisValue);
