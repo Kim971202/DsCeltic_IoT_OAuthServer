@@ -565,6 +565,8 @@ public class UserServiceImpl implements UserService {
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             pushToken = memberMapper.getPushTokenByUserId(params.getResponseUserId());
+            System.out.println("pushToken == null");
+            System.out.println(pushToken == null);
             if(pushToken.getPushToken() == null){
                 msg = "뭘 추가 하는 거죠?";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
