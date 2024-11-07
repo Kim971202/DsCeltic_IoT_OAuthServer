@@ -685,12 +685,12 @@
         WHERE
             USER_ID IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.userId},
+            #{item.userId}
         </foreach>
         AND
             DEVC_ID IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.deviceId},
+            #{item.deviceId}
         </foreach>
     </select>
 
