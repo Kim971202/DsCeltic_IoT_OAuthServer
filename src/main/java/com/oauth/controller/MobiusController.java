@@ -105,7 +105,6 @@ public class MobiusController {
             }
         }
 
-
         if (!redisValue.equals("false")) {
             redisValueList = common.getUserIdAndFunctionId(redisCommand.getValues(uuId));
             userId = redisValueList.get(0);

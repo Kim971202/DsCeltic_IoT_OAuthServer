@@ -558,7 +558,6 @@ public class UserServiceImpl implements UserService {
         String msg;
         AuthServerDTO userNickname;
         AuthServerDTO pushToken;
-        AuthServerDTO pushYn;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -578,13 +577,12 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
             params.setUserId(params.getResponseUserId());
-            pushYn = memberMapper.getPushYnStatus(params);
 
             conMap.put("targetToken", pushToken.getPushToken());
-            conMap.put("title", "Add User");
+            conMap.put("title", "adUr");
             conMap.put("isEnd", "false");
             conMap.put("userNickname", userNickname.getUserNickname());
-            conMap.put("pushYn", pushYn.getFPushYn());
+            conMap.put("pushYn", "Y");
 
             String jsonString = objectMapper.writeValueAsString(conMap);
             log.info("Add User jsonString: " + jsonString);
@@ -800,12 +798,11 @@ public class UserServiceImpl implements UserService {
             userNickname = memberMapper.getUserNickname(requestUserId);
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-            pushYn = memberMapper.getPushYnStatus(params);
-
-            conMap.put("pushYn", pushYn.getFPushYn());
+            conMap.put("pushYn", "Y");
             conMap.put("targetToken", pushToken.getPushToken());
             conMap.put("userNickname", userNickname.getUserNickname());
-            conMap.put("title", "Accept Invite");
+            conMap.put("title", "acIv");
+            conMap.put("invite", inviteAcceptYn);
             conMap.put("id", "Accept Invite ID");
             conMap.put("isEnd", "false");
 
