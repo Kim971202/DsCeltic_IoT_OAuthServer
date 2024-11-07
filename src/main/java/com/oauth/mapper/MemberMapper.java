@@ -76,6 +76,7 @@ public interface MemberMapper {
     public int insertAccount(AuthServerDTO member);
     public int updatePassword(AuthServerDTO member);
     public int updateUserNicknameAndHp(AuthServerDTO member);
+    public int updateGrpNick(AuthServerDTO member);
     public int inviteHouseMember(AuthServerDTO member);
     public int acceptInvite(AuthServerDTO member);
     public int insertNewHouseMember(AuthServerDTO members);

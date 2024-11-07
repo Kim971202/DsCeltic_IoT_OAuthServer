@@ -165,6 +165,16 @@
             USER_ID = #{userId}
     </update>
 
+    <update id="updateGrpNick" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBD_IOT_GRP_INFO
+        SET
+            USER_NICK = #{userNickname},
+        WHERE
+            USER_ID = #{userId}
+    </update>
+
+
     <select id="accessTokenCheck" parameterType="String" resultMap="member">
         SELECT
             USER_ID AS userId,
