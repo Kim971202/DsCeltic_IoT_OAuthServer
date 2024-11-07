@@ -563,7 +563,6 @@
         </foreach>
     </insert>
 
-
     <select id="getPushTokenByUserId" parameterType="String" resultMap="member">
         SELECT
             PUSH_TOKEN AS pushToken
@@ -650,7 +649,8 @@
 
     <select id="getUserIdsByDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
-            a.USER_ID AS userId
+            a.USER_ID AS userId,
+            b.DEVC_ID AS deviceId
         FROM
             TBD_IOT_GRP_INFO a
         INNER JOIN
@@ -685,7 +685,12 @@
         WHERE
             USER_ID IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.userId}
+            #{item.userId},
+        </foreach>
+        AND
+            DEVC_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.deviceId},
         </foreach>
     </select>
 
