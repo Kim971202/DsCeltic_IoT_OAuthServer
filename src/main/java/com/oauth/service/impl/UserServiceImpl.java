@@ -801,7 +801,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("targetToken", pushToken.getPushToken());
             conMap.put("userNickname", userNickname.getUserNickname());
             conMap.put("title", "acIv");
-            conMap.put("invite", inviteAcceptYn);
+            conMap.put("acIv", inviteAcceptYn);
             conMap.put("id", "Accept Invite ID");
             conMap.put("isEnd", "false");
 
