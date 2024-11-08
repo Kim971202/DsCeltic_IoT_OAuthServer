@@ -160,14 +160,13 @@ public class MobiusController {
             deviceInfo.setBlCf(common.readCon(jsonBody, "blCf"));
             deviceInfo.setVtSp(common.readCon(jsonBody, "vtSp"));
 
-            if(common.readCon(jsonBody, "rsPw") != null) deviceInfo.setRsPw(common.convertToJsonFormat(common.readCon(jsonBody, "rsPw")));
+//            if(deviceInfo.getBCdt() != null) deviceMapper
 
+            if(common.readCon(jsonBody, "rsPw") != null) deviceInfo.setRsPw(common.convertToJsonFormat(common.readCon(jsonBody, "rsPw")));
 
             if(common.readCon(jsonBody, "7wk") != null) deviceInfo.setWk7(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")));
 
-
             if(common.readCon(jsonBody, "12h") != null) deviceInfo.setH12(common.convertToJsonFormat(common.readCon(jsonBody, "12h")));
-
 
             if(common.readCon(jsonBody, "24h") != null) deviceInfo.setH24(common.convertToJsonFormat(common.readCon(jsonBody, "24h")));
 

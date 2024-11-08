@@ -619,7 +619,6 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
-        AuthServerDTO pushYn;
         AuthServerDTO userHp;
         AuthServerDTO userNickname;
         AuthServerDTO pushToken;
