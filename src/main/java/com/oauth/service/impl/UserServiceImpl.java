@@ -11,6 +11,7 @@ import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.UserService;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
+import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1369,6 +1370,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         List<AuthServerDTO> member;
+        List<Map<String, String>> pushInfoList = new ArrayList<>();
 
         try{
             member = memberMapper.getPushInfoList(params);
@@ -1377,42 +1379,19 @@ public class UserServiceImpl implements UserService {
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             } else {
-
-                // Set 생성
-                Set<String> pushSet = new HashSet<>();
-                List<ApiResponse.Data.PushInfo> pushInfoArray = new ArrayList<>();
-
-                List<String> pushIdxList = Common.extractJson(member.toString(), "pushIdx");
-                List<String> pushTitleList = Common.extractJson(member.toString(), "pushTitle");
-                List<String> pushContentList = Common.extractJson(member.toString(), "pushContent");
-                List<String> pushTypeList = Common.extractJson(member.toString(), "pushType");
-                List<String> pushDatetimeList = Common.extractJson(member.toString(), "pushDatetime");
-
-                int numPush = member.size();
-
-                if(pushIdxList != null
-                        && pushTitleList != null
-                        && pushContentList != null
-                        && pushTypeList != null
-                        && pushDatetimeList != null
-                ){
-                    // Member 추가
-                    for (int i = 0; i < numPush; i++) {
-                        ApiResponse.Data.PushInfo pushes = Common.createPush(
-                                pushIdxList.get(i),
-                                pushTitleList.get(i),
-                                pushContentList.get(i),
-                                pushTypeList.get(i),
-                                pushDatetimeList.get(i),
-                                pushSet);
-                        pushInfoArray.add(pushes);
-                    }
+                for(AuthServerDTO authServerDTO : member){
+                    Map<String, String> map = new HashMap<>();
+                    map.put("pushIdx", authServerDTO.getPushIdx());
+                    map.put("pushTitle", authServerDTO.getPushTitle());
+                    map.put("pushContent", authServerDTO.getPushContent());
+                    map.put("pushType", authServerDTO.getPushType());
+                    map.put("pushDatetime", authServerDTO.getPushDatetime());
+                    pushInfoList.add(map);
                 }
-                data.setPushInfo(pushInfoArray);
             }
 
             msg = "스마트알림 - PUSH 이력 조회 성공";
-
+            data.setPushInfo(pushInfoList);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
