@@ -924,6 +924,7 @@
             TBR_OPR_DEVICE_DETAIL
         WHERE
             DEVC_ID = #{deviceId}
+        LIMIT 1
     </select>
 
 </mapper>
