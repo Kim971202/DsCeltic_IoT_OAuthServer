@@ -615,6 +615,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("modelCode", modelCode);
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "opMd");
                     conMap.put("id", "Mode Change ID");
                     conMap.put("isEnd", "false");
@@ -806,6 +807,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "htTp");
                     conMap.put("id", "TemperatureSet ID");
                     conMap.put("isEnd", "false");
@@ -951,6 +953,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "wtTp");
                     conMap.put("id", "BoiledWaterTempertureSet ID");
                     conMap.put("isEnd", "false");
@@ -1097,6 +1100,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "hwTp");
                     conMap.put("id", "WaterTempertureSet ID");
                     conMap.put("isEnd", "false");
@@ -1244,6 +1248,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "ftMd");
                     conMap.put("id", "FastHotWaterSet ID");
                     conMap.put("isEnd", "false");
@@ -1392,6 +1397,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "fcLc");
                     conMap.put("id", "LockSet ID");
                     conMap.put("isEnd", "false");
@@ -1893,6 +1899,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("powr", params.getPowerStatus());
                     conMap.put("isEnd", "false");
                     conMap.put("userNickname", userNickname.getUserNickname());
+                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                     conMap.put("modelCode", modelCode);
 

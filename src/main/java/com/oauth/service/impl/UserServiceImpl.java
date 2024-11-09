@@ -1455,6 +1455,8 @@ public class UserServiceImpl implements UserService {
         String redisValue;
         AuthServerDTO pushYn;
         AuthServerDTO firstDeviceUser;
+        AuthServerDTO household;
+        AuthServerDTO userNickname;
 
         Map<String, Object> conMap = new HashMap<>();
         Map<String, Object> conMap1 = new HashMap<>();
@@ -1525,20 +1527,30 @@ public class UserServiceImpl implements UserService {
             deviceInfo.setDeviceId(deviceId);
             deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-            pushYn = memberMapper.getPushYnStatus(params);
-            conMap1.put("pushYn", pushYn.getFPushYn());
-            conMap1.put("targetToken", params.getPushToken());
-            conMap1.put("title", "Reset Password");
-            conMap1.put("id", "Reset Password ID");
-            conMap1.put("isEnd", "false");
+            household = memberMapper.getHouseholdByUserId(params.getUserId());
+            params.setGroupId(household.getGroupId());
+            List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
+            List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+            userNickname = memberMapper.getUserNickname(params.getUserId());
+            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-            String jsonString1 = objectMapper.writeValueAsString(conMap1);
-            log.info("jsonString1: " + jsonString1);
+            for(int i = 0; i < userIds.size(); ++i){
+                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                conMap1.put("pushYn", pushYnList.get(i).getFPushYn());
+                conMap1.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
+                conMap1.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                conMap1.put("userNickname", userNickname.getUserNickname());
+                conMap1.put("deviceNick", common.returnDeviceNickname(deviceId));
+                conMap1.put("title", "Reset Password");
+                conMap1.put("id", "Reset Password ID");
+                conMap1.put("isEnd", "false");
 
-            redisCommand.deleteValues(uuId);
+                String jsonString1 = objectMapper.writeValueAsString(conMap);
+                log.info("jsonString: " + jsonString);
 
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201"))
-                log.info("PUSH 메세지 전송 오류");
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201"))
+                    log.info("PUSH 메세지 전송 오류");
+            }
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
