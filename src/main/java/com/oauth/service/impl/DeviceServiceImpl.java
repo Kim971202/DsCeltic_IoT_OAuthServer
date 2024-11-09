@@ -189,6 +189,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                     conMap.put("modelCode", modelCode);
+                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     String jsonString = objectMapper.writeValueAsString(conMap);
                     if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
                         log.info("PUSH 메세지 전송 오류");

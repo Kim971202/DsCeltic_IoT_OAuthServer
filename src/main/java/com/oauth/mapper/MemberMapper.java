@@ -12,12 +12,7 @@ import java.util.Map;
 @Mapper
 public interface MemberMapper {
 
-    public List<AuthServerDTO> getUserList();
     public List<AuthServerDTO> getUserByHp(String userHp);
-    public List<AuthServerDTO> getDeviceInfoByUserID(String userId);
-    public List<AuthServerDTO> getDeviceIdListByUserId(String userId);
-    public List<AuthServerDTO> getUserByDeviceId(String deviceId);
-    public List<AuthServerDTO> getHouseMembersByUserId(List<AuthServerDTO> members);
     public List<AuthServerDTO> getDeviceIdByUserId(String userId);
     public List<AuthServerDTO> getInvitationList (String requestUserId);
     public List<AuthServerDTO> getPushInfoList(AuthServerDTO params);
@@ -30,13 +25,14 @@ public interface MemberMapper {
     public List<AuthServerDTO> getRegistDeviceIdByUserId(String userIds);
     public List<AuthServerDTO> getFailyMemberByUserId(String requestUserId);
     public List<AuthServerDTO> getGroupMemberByUserId(String requestUserId);
+    public List<AuthServerDTO> getSafeAlarmSet();
+    public List<AuthServerDTO> getUserIdFromDeviceGroup(String deviceId);
+    public AuthServerDTO getDeviceNicknameByDeviceId(String deviceId);
     public AuthServerDTO getPushYnStatus(AuthServerDTO userId);
     public AuthServerDTO getUserByUserId(String userId);
     public AuthServerDTO getAccountByUserId(String userId);
     public AuthServerDTO getUserByUserIdAndHp(AuthServerDTO member);
-    public AuthServerDTO getUserByUserIdAndHpAndDeviceId(AuthServerDTO member);
     public AuthServerDTO getPasswordByUserId(String userId);
-    public AuthServerDTO accessTokenCheck(AuthServerDTO member);
     public AuthServerDTO identifyRKey(String deviceId);
     public AuthServerDTO getHpByUserId(String userId);
     public AuthServerDTO getHouseholdByUserId(String userId);
@@ -46,9 +42,7 @@ public interface MemberMapper {
     public AuthServerDTO getPushYnStatusByDeviceIdAndUserId(AuthServerDTO info);
     public AuthServerDTO getFirstDeviceUser(String deviceId);
     public AuthServerDTO getDeviceCount(HashMap<String, Object> map);
-    public List<AuthServerDTO> getSafeAlarmSet();
     public AuthServerDTO getFwhInfo(String deviceId);
-    public List<AuthServerDTO> getUserIdFromDeviceGroup(String deviceId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
     public int insertWorkTime(List<AuthServerDTO> member);
@@ -70,7 +64,6 @@ public interface MemberMapper {
     public int UpdateSafeAlarmSet(AuthServerDTO member);
     public int insertPushHistory(AuthServerDTO member);
     public int updatePushToken(AuthServerDTO member);
-    public int insertUserDevicePush(AuthServerDTO member);
     public int insertUserDevicePushByList(List<AuthServerDTO> member);
     public int insertMember(AuthServerDTO member);
     public int insertAccount(AuthServerDTO member);
@@ -79,10 +72,7 @@ public interface MemberMapper {
     public int updateGrpNick(AuthServerDTO member);
     public int inviteHouseMember(AuthServerDTO member);
     public int acceptInvite(AuthServerDTO member);
-    public int insertNewHouseMember(AuthServerDTO members);
-    public int changeHouseholdStatus(AuthServerDTO member);
     public int updatePushCodeStatus(AuthServerDTO params);
-    public int insertInitPushCode(AuthServerDTO member); // Device 등록 시 사용
     public int updateHouseholdTbrOprUser(String userId);
     public int updateDeviceLocationNicknameDeviceDetail(AuthServerDTO member);
     public int updateDeviceLocationNicknameDeviceRegist(AuthServerDTO member);

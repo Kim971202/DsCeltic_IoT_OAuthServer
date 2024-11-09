@@ -37,6 +37,9 @@ public class Common {
     @Autowired
     private ApiTokenUtils apiTokenUtils;
 
+    @Autowired
+    private MemberMapper memberMapper;
+
     public static ApiResponse.Data.Device createDevice(
             String deviceId,
             String controlAuthKey,
@@ -413,6 +416,10 @@ public class Common {
         String[] modelCode = deviceId.split("\\.");
         return hexToString(modelCode[5]);
     }
+
+    /** 기기별칭 쿼리 함수 */
+    public String returnDeviceNickname(String deviceId){ return memberMapper.getDeviceNicknameByDeviceId(deviceId).getDeviceNickname(); }
+
 
     /** 공통 로그 출력 함수 */
     public void logParams(Object params) {
