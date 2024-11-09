@@ -215,6 +215,12 @@ public class MobiusController {
             int insertCommandHistoryResult = memberMapper.insertCommandHistory(params);
             log.info("insertCommandHistoryResult: " + insertCommandHistoryResult);
 
+            params.setPushTitle(params.getCommandId());
+            params.setPushContent(params.getControlCodeName());
+            params.setDeviceId(deviceId);
+            params.setDeviceType(common.getModelCode(modelCode[5].replace(" ", "")));
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+
         } else if (functionId.equals("rtSt")) {
 
             // 주기상태보고

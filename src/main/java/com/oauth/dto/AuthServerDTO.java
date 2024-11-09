@@ -127,7 +127,7 @@ public class AuthServerDTO implements Serializable {
     private String newDeviceLocNickname;
 
     private String searchFlag;                   // 00:단건 01:전체
-
+    private String responseDeviceCount;          // 00: 0개(등록한 기기), 01: 1개(등록한 기기) 이상
     private String registUserType;
 
     private String safeAlarmTime;                // 안전안심 시간 (예: 0723 = 7일 23시간)
