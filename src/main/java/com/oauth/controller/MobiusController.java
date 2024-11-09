@@ -218,10 +218,9 @@ public class MobiusController {
             params.setPushTitle(params.getCommandId());
             params.setPushContent(params.getControlCodeName());
             params.setDeviceId(deviceId);
-            System.out.println(modelCode[5].replace(" ", ""));
-            System.out.println(common.getModelCode(modelCode[5].replace(" ", "")));
-            System.out.println(common.getModelCode(modelCode[5]));
-            params.setDeviceType(common.getModelCode(modelCode[5].replace(" ", "")));
+            System.out.println(common.getModelCodeFromDeviceId(deviceId));
+            System.out.println(common.getModelCode(common.getModelCodeFromDeviceId(deviceId)));
+            params.setDeviceType(common.getModelCode(common.getModelCodeFromDeviceId(deviceId)));
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
         } else if (functionId.equals("rtSt")) {
