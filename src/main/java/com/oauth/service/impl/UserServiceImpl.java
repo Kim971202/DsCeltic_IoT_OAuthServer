@@ -1453,7 +1453,6 @@ public class UserServiceImpl implements UserService {
         String deviceId = params.getDeviceId();
         String uuId = common.getTransactionId();
         String redisValue;
-        AuthServerDTO pushYn;
         AuthServerDTO firstDeviceUser;
         AuthServerDTO household;
         AuthServerDTO userNickname;
@@ -1541,8 +1540,8 @@ public class UserServiceImpl implements UserService {
                 conMap1.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap1.put("userNickname", userNickname.getUserNickname());
                 conMap1.put("deviceNick", common.returnDeviceNickname(deviceId));
-                conMap1.put("title", "Reset Password");
-                conMap1.put("id", "Reset Password ID");
+                conMap1.put("title", "Brightness Control");
+                conMap1.put("id", "Brightness Control ID");
                 conMap1.put("isEnd", "false");
 
                 String jsonString1 = objectMapper.writeValueAsString(conMap1);
@@ -1551,6 +1550,21 @@ public class UserServiceImpl implements UserService {
                 if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201"))
                     log.info("PUSH 메세지 전송 오류");
             }
+
+            params.setCodeType("1");
+            params.setCommandId("BlCd");
+            params.setControlCode("BlCd");
+            params.setControlCodeName("밝기 설정");
+            params.setCommandFlow("0");
+            params.setDeviceId(deviceId);
+            params.setUserId(params.getUserId());
+
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+
+            params.setPushTitle("기기제어");
+            params.setPushContent("밝기 설정");
+            params.setDeviceType("01");
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
