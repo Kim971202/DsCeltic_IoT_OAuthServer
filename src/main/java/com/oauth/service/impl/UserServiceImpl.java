@@ -1545,7 +1545,7 @@ public class UserServiceImpl implements UserService {
                 conMap1.put("id", "Reset Password ID");
                 conMap1.put("isEnd", "false");
 
-                String jsonString1 = objectMapper.writeValueAsString(conMap);
+                String jsonString1 = objectMapper.writeValueAsString(conMap1);
                 log.info("jsonString: " + jsonString);
 
                 if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201"))
