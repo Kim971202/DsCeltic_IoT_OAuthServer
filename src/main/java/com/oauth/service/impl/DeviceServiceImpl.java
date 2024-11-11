@@ -1470,7 +1470,8 @@ public class DeviceServiceImpl implements DeviceService {
         try {
 
 
-            groupInfo = memberMapper.getGroupIddByUserId(userId);
+            groupInfo = memberMapper.getHouseholdByUserId(userId);
+//            groupInfo = memberMapper.getGroupIddByUserId(userId);
             userId = groupInfo.getGroupId();
 
             controlAuthKeyByUserIdResult = deviceMapper.getControlAuthKeyByUserId(userId);
