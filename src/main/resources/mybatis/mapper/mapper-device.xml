@@ -832,7 +832,7 @@
         )
     </insert>
 
-    <select id="checkDeviceExist" parameterType="String" resultMap="com.oauth.dto.AuthServerDTO">
+    <select id="checkDeviceExist" parameterType="String" resultMap="device">
         SELECT
             a.DEVC_ID AS deviceId,
             a.DEVC_CTRL_KEY AS controlAuthKey,
