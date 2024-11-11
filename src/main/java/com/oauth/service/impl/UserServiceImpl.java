@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else userNickname = member.getUserNickname();
 
-            if(memberMapper.getDeviceIdFromDeviceGroup(householdStatus.getGroupId()).getDeviceId().isEmpty())
+            if(memberMapper.getDeviceIdFromDeviceGroup(householdStatus.getGroupId()).getDeviceCount().equals("0"))
                 result.setDeviceInfo("N");
             else
                 result.setDeviceInfo("Y");
@@ -561,144 +561,9 @@ public class UserServiceImpl implements UserService {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-
-            // 세대주가 가지고 있는 기기 정보 List
-            deviceIdList = memberMapper.getRegistDeviceIdByUserId(requestUserId);
-            familyMemberList = memberMapper.getFailyMemberByUserId(requestUserId);
-            if(deviceIdList == null || familyMemberList == null){
-                msg = "사용자 초대 - 수락 실패 : deviceIdList||familyMemberList";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            /*
-             * TODO:
-             *  1. 세대주 HP 쿼리
-             *  2. 세대원 REGIST TABLE의 USER_ID, HP 세대주 정보로 UPDATE
-             *  3. USER_DEVICE TABLE의 USER_ID 세대주 정보로 UPDATE
-             *     - HOUSE_HOLDER = Y로 수정
-             *  4. ACCOUNT TABLE의 GROUP_KEY = 세대주 명으로 수정
-             *  5. USER TABLE의 세대주 여부 UPDATE
-             *  6. 수락여부에 따른 초대 결과 DB UPDATE
-             *  7. TBR_OPR_USER_DEVICE_PUSH 테이블에 각 세대주/세대원/신규 세대원에 값 생성
-             *  8. 세대주와 세대원이 동일한 기기를 가지고 있을 경우 중복 되므로 삭제 한다.
-             * */
-
             if(inviteAcceptYn.equals("Y")){
 
-                /*
-                 * TODO: 7. TBR_OPR_USER_DEVICE_PUSH 테이블에 각 세대주/세대원/신규 세대원에 값 생성
-                 *  필요한 변수 목록
-                 * 1. 세대주 deviceId List
-                 * 2. 세대주 + 세대원 userId List
-                 * 3. 신규 세대원 deviceId List
-                 * 4. 신규 세대원 userId
-                 * */
 
-                // 1. 세대주 기준 PUSH Y/N 정보 있는지 확인
-                HashMap<String, Object> deviceMap = new HashMap<String, Object>();
-                HashMap<String, Object> deviceMap2 = new HashMap<String, Object>();
-                List<HashMap<String, Object>> deviceList = new ArrayList<>();
-
-                // 신규 세대원이 가지고 있는 기기로 List 쿼리
-                deviceIdList = memberMapper.getRegistDeviceIdByUserId(responseUserId);
-
-                for(AuthServerDTO authServerDTO : deviceIdList){
-                    // 세대주 ID로 Set
-                    authServerDTO.setUserId(requestUserId);
-                    deviceMap.put("deviceId", authServerDTO.getDeviceId());
-                    deviceMap.put("userId", authServerDTO.getUserId());
-                    deviceList.add(deviceMap);
-                }
-                deviceMap2.put("list", deviceList);
-
-                // 2. 세대주 정보가 테이블에 없을 경우 세대주 + 세대원 INSERT
-                if(memberMapper.getDeviceCount(deviceMap2).getDeviceCount().equals("0")){
-
-                    // 사용자 + 기기 : 1 대 1 List를 생성해야함
-                    List<AuthServerDTO> inputList = new ArrayList<>();
-
-                    for (AuthServerDTO authServerDTO : familyMemberList) {
-                        for (AuthServerDTO serverDTO : deviceIdList) {
-                            // 새로운 AuthServerDTO 객체 생성
-                            AuthServerDTO newDevice = new AuthServerDTO();
-                            // 각 사용자의 ID와 각 기기의 ID를 설정
-                            newDevice.setDeviceId(serverDTO.getDeviceId());
-                            newDevice.setHp(authServerDTO.getHp());
-                            newDevice.setUserId(authServerDTO.getUserId());
-                            // 리스트에 추가
-                            inputList.add(newDevice);
-                        }
-                    }
-                    memberMapper.insertUserDevicePushByList(inputList);
-                }
-
-                // 3. 신규 세대원 기준 PUSH Y/N 정보 있는지 확인
-                deviceMap.clear();
-                deviceMap2.clear();
-                deviceList.clear();
-                // 세대주가 가지고 있는 기기로 List 쿼리
-                deviceIdList = memberMapper.getRegistDeviceIdByUserId(requestUserId);
-
-                for(AuthServerDTO authServerDTO : deviceIdList){
-                    // 신규 세대원 ID로 Set
-                    authServerDTO.setUserId(responseUserId);
-                    deviceMap.put("deviceId", authServerDTO.getDeviceId());
-                    deviceMap.put("userId", authServerDTO.getUserId());
-                    deviceList.add(deviceMap);
-                }
-                deviceMap2.put("list", deviceList);
-
-                // 4. 신규 세대원 정보가 테이블에 없을 경우 세대주 + 세대원 INSERT
-                if(memberMapper.getDeviceCount(deviceMap2).getDeviceCount().equals("0")){
-
-                    List<AuthServerDTO> inputList = new ArrayList<>();
-
-                    for (AuthServerDTO serverDTO : deviceIdList) {
-                        // 새로운 AuthServerDTO 객체 생성
-                        AuthServerDTO newDevice = new AuthServerDTO();
-                        // 각 사용자의 ID와 HP는 동일, 기기의 ID는 각기 다른 값 설정
-                        newDevice.setDeviceId(serverDTO.getDeviceId());
-                        newDevice.setHp(responseHp);
-                        newDevice.setUserId(responseUserId);
-                        // 리스트에 추가
-                        inputList.add(newDevice);
-                    }
-                    memberMapper.insertUserDevicePushByList(inputList);
-                }
-
-                // TODO: 1. 세대주 HP 쿼리
-                userHp = memberMapper.getHpByUserId(requestUserId);
-                if(userHp == null){
-                    msg = "사용자 초대 - 수락 실패 : getHpByUserId";
-                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                    return new ResponseEntity<>(data, HttpStatus.OK);
-                }
-
-                // TODO: 2. 세대원 REGIST TABLE의 USER_ID, HP 세대주 정보로 UPDATE
-                // TODO: 3. USER_DEVICE TABLE의 USER_ID 세대주 정보로 UPDATE
-                params.setHp(userHp.getHp());
-                for(AuthServerDTO authServerDTO : deviceIdList){
-                    authServerDTO.setUserId(responseUserId);
-                    if(authServerDTO.getUserId().equals(responseUserId)){
-                        memberMapper.deleteDuplicateDeviceIdFromRegist(deviceIdList);
-                        memberMapper.updateRegistTable(params);
-                        memberMapper.deleteDuplicateDeviceIdFromUserDevice(deviceIdList);
-                        memberMapper.updateUserDeviceTable(params);
-                        memberMapper.deleteDuplicateDeviceIdFromDeviceGrpInfo(deviceIdList);
-                        memberMapper.updateGrpInfoTable(params);
-                    }
-                }
-
-                // TODO: 4. TBD_IOT_GRP_INFO TABLE의 세대원으로 변경
-                memberMapper.updateHouseholdToMember(params);
-
-                // TODO: 5. USER TABLE의 세대주 여부 UPDATE
-                params.setHouseholder("N");
-                memberMapper.updateUserTable(params);
-
-                // TODO: 6. 수락여부에 따른 초대 결과 DB UPDATE
-                memberMapper.acceptInvite(params);
 
             } else if(inviteAcceptYn.equals("N")){
 

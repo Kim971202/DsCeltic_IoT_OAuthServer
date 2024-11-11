@@ -20,6 +20,7 @@ public interface DeviceMapper {
     public List<AuthServerDTO> getPushinfoByDeviceId(String deviceId);
     public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);
     public List<DeviceStatusInfo.Device> getActiveStauts(List<String> serialNumber);
+    public AuthServerDTO checkDeviceExist(String deviceId);
     public AuthServerDTO getSingleSerialNumberBydeviceId(String deviceId);
     public AuthServerDTO getPushTokenByUserId(String userId);
     public AuthServerDTO deviceTempAuthCheck(List<AuthServerDTO> device);

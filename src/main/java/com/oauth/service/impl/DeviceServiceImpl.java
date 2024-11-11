@@ -37,6 +37,8 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     MobiusService mobiusService;
     @Autowired
+    UserServiceImpl userService;
+    @Autowired
     DeviceMapper deviceMapper;
     @Autowired
     MemberMapper memberMapper;
@@ -220,6 +222,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         AuthServerDTO deviceRegistStatus;
         AuthServerDTO checkDeviceAuthkeyExist;
+        AuthServerDTO checkDeviceExist;
 
         List<AuthServerDTO> familyMemberList;
 
@@ -273,6 +276,15 @@ public class DeviceServiceImpl implements DeviceService {
 
                 params.setModelCode(params.getModelCode().replaceAll(" ", ""));
                 params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
+
+                // TODO: 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
+                checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
+                if(!checkDeviceExist.getDeviceId().isEmpty() && !userId.equals(checkDeviceExist.getUserId())){
+                    AuthServerDTO authServerDTO = new AuthServerDTO();
+                    authServerDTO.setUserId(checkDeviceExist.getUserId());
+                    authServerDTO.setDeviceId(checkDeviceExist.getDeviceId());
+                    userService.doUserDeviceDelete(params);
+                }
 
                 familyMemberList = memberMapper.getFailyMemberByUserId(memberMapper.getHouseholdByUserId(userId).getGroupId());
 
@@ -1435,7 +1447,7 @@ public class DeviceServiceImpl implements DeviceService {
         String userId = params.getUserId();
         String uuId = common.getTransactionId();
 
-        AuthServerDTO householdStatus;
+        AuthServerDTO groupInfo;
 
         List<String> serialNumberList;
         List<String> rKeyList;
@@ -1457,9 +1469,9 @@ public class DeviceServiceImpl implements DeviceService {
         List<DeviceStatusInfo.Device> activeStatusInfo;
         try {
 
-            // TODO: 만약 Household 여부가 N인 경우에는 세대주의 USERID 사용
-            householdStatus = memberMapper.getHouseholdByUserId(userId);
-            if(householdStatus.getHouseholder().equals("N")) userId = householdStatus.getGroupId();
+
+            groupInfo = memberMapper.getGroupIddByUserId(userId);
+            userId = groupInfo.getGroupId();
 
             controlAuthKeyByUserIdResult = deviceMapper.getControlAuthKeyByUserId(userId);
             if (controlAuthKeyByUserIdResult == null) {

@@ -435,12 +435,11 @@
 
     <select id="getDeviceIdFromDeviceGroup" parameterType="String" resultMap="member">
         SELECT
-            DEVC_ID AS deviceId
+            COUNT(*) AS deviceCount
         FROM
             TBR_IOT_DEVICE_GRP_INFO
         WHERE
             GRP_ID = #{groupId}
-        LIMIT 1
     </select>
 
     <select id="getWorkTime" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
@@ -947,5 +946,19 @@
             DEVC_ID = #{deviceId}
         LIMIT 1
     </select>
+
+    <insert id="insertUserDevicePushByList" parameterType="java.util.List" >
+        INSERT INTO
+            TBD_USER_INVITE_GROUP
+        (
+            GRP_ID,
+            USER_ID
+        )
+            VALUES
+        (
+            #{groupId},
+            #{userId}
+        )
+    </insert>
 
 </mapper>

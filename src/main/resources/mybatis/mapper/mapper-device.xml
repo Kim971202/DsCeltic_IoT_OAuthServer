@@ -832,4 +832,15 @@
         )
     </insert>
 
+    <select id="checkDeviceExist" parameterType="String" resultMap="com.oauth.dto.AuthServerDTO">
+        SELECT
+            a.DEVC_ID AS deviceId,
+            a.DEVC_CTRL_KEY AS controlAuthKey,
+            b.USER_ID AS userId
+        FROM
+            TBR_OPR_DEVICE_DETAIL
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
 </mapper>
