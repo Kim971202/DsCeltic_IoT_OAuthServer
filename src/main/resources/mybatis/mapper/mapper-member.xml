@@ -947,7 +947,7 @@
         LIMIT 1
     </select>
 
-    <insert id="insertUserDevicePushByList" parameterType="java.util.List" >
+    <insert id="insertInviteGroup" parameterType="java.util.List" >
         INSERT INTO
             TBD_USER_INVITE_GROUP
         (
