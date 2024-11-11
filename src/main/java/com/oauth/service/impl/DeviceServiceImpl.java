@@ -1446,6 +1446,7 @@ public class DeviceServiceImpl implements DeviceService {
         List<String> longitudeList;
         List<String> regSortList;
         List<String> modelCodeList;
+        List<String> tmpKeyListList;
 
         List<Map<String, String>> appResponse = new ArrayList<>();
 
@@ -1511,6 +1512,9 @@ public class DeviceServiceImpl implements DeviceService {
             modelCodeList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "modelCode");
             log.info("modelCodeList: " + modelCodeList);
 
+            tmpKeyListList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "tmpRegistKey");
+            log.info("tmpKeyListList: " + tmpKeyListList);
+
             devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
             if (devicesStatusInfo == null) {
                 msg = "기기정보가 없습니다.";
@@ -1529,7 +1533,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            if(deviceNicknameList != null && addrNicknameList != null && regSortList != null && serialNumberList != null && latitudeList != null && longitudeList != null && modelCodeList != null){
+            if(deviceNicknameList != null && addrNicknameList != null && regSortList != null && serialNumberList != null && latitudeList != null && longitudeList != null && modelCodeList != null && tmpKeyListList != null){
                 for(int i = 0; i < rKeyList.size(); ++i){
                     Map<String, String> data = new HashMap<>();
                     data.put("rKey", rKeyList.get(i));
@@ -1540,6 +1544,7 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("latitude", latitudeList.get(i));
                     data.put("longitude", longitudeList.get(i));
                     data.put("controlAuthKey", rKeyList.get(i));
+                    data.put("tmpRegistKey", tmpKeyListList.get(i));
                     data.put("deviceStatus", "1");
                     data.put("powr", devicesStatusInfo.get(i).getPowr());
                     data.put("opMd", devicesStatusInfo.get(i).getOpMd());
@@ -1557,11 +1562,9 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
                     data.put("inAq", devicesStatusInfo.get(i).getInAq());
                     if(!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-91/WF")){
-                        log.info("!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals(\"DCR-91/WF\")");
                         data.put("ftMdAcTv", activeStatusInfo.get(i).getFtMd());
                         data.put("fcLcAcTv", activeStatusInfo.get(i).getFcLc());
                     } else if(!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-47/WF")){
-                        log.info("!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals(\"DCR-47/WF\")");
                         data.put("pastAcTv", activeStatusInfo.get(i).getPast());
                         data.put("inDrAcTv", activeStatusInfo.get(i).getInDr());
                         data.put("inClAcTv", activeStatusInfo.get(i).getInCl());

@@ -321,6 +321,7 @@
             DEVC_ID AS deviceId,
             LAT AS latitude,
             LON AS longitude,
+            TEMP_DEVC_REG_KEY AS tmpRegistKey,
             ROW_NUMBER() OVER () AS regSort
         FROM
             TBT_OPR_DEVICE_REGIST
