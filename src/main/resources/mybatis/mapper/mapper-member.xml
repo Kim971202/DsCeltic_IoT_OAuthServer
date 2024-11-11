@@ -789,7 +789,18 @@
             TBD_IOT_GRP_INFO
         WHERE
             GRP_ID = #{userId}
+    </select>
 
+    <select id="getGroupIddByUserId" parameterType="String" resultMap="member">
+        SELECT
+            GRP_ID AS groupId,
+            USER_ID AS userId
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            GRP_ID = #{userId}
+        OR
+            USER_ID = #{userId}
     </select>
 
     <select id="getGroupMemberByUserId" parameterType="String" resultMap="member">

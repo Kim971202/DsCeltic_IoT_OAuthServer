@@ -1468,7 +1468,7 @@ public class UserServiceImpl implements UserService {
                 conMap1.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap1.put("userNickname", userNickname.getUserNickname());
                 conMap1.put("deviceNick", common.returnDeviceNickname(deviceId));
-                conMap1.put("title", "Brightness Control");
+                conMap1.put("title", "blCf");
                 conMap1.put("id", "Brightness Control ID");
                 conMap1.put("isEnd", "false");
 
@@ -1480,8 +1480,8 @@ public class UserServiceImpl implements UserService {
             }
 
             params.setCodeType("1");
-            params.setCommandId("BlCd");
-            params.setControlCode("BlCd");
+            params.setCommandId("blCf");
+            params.setControlCode("blCf");
             params.setControlCodeName("밝기 설정");
             params.setCommandFlow("0");
             params.setDeviceId(deviceId);
