@@ -215,7 +215,7 @@ public class MobiusController {
             int insertCommandHistoryResult = memberMapper.insertCommandHistory(params);
             log.info("insertCommandHistoryResult: " + insertCommandHistoryResult);
 
-            params.setPushTitle(params.getCommandId());
+            params.setPushTitle("기기 제어");
             params.setPushContent(params.getControlCodeName());
             params.setDeviceId(deviceId);
             params.setDeviceType(common.getModelCode(common.getModelCodeFromDeviceId(deviceId).replace(" ", "")));
