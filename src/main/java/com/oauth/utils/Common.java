@@ -40,33 +40,6 @@ public class Common {
     @Autowired
     private MemberMapper memberMapper;
 
-    public static ApiResponse.Data.Device createDevice(
-            String deviceId,
-            String controlAuthKey,
-            String nickname,
-            String regSort,
-            String tmpRegistKey,
-            String latitude,
-            String longitude,
-            Set<String> usedDeviceIds) {
-
-
-        // 중복이 없다면 Set에 추가
-        usedDeviceIds.add(deviceId);
-
-        // Device 생성
-        ApiResponse.Data.Device device = new ApiResponse.Data.Device();
-        device.setDeviceId(deviceId);
-        device.setControlAuthKey(controlAuthKey);
-        device.setDeviceNickname(nickname);
-        device.setRegSort(regSort);
-        device.setTmpRegistKey(tmpRegistKey);
-        device.setLatitude(latitude);
-        device.setLongitude(longitude);
-
-        return device;
-    }
-
     public static ApiResponse.Data.Invitation createInvitations(
             String invitationIdx,
             String inviteAcceptYn,

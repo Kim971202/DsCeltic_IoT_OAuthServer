@@ -312,7 +312,7 @@
         FROM
             TBR_OPR_USER_DEVICE_PUSH_INFO
         WHERE
-            USER_ID = #{userId}
+            (USER_ID = #{userId} OR USER_ID = 'RC')
         AND
             PUSH_DATETIME BETWEEN #{startDatetime} AND #{endDatetime}
         <if test="deviceType != 00">
