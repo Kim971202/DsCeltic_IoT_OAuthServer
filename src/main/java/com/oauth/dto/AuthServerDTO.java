@@ -159,5 +159,7 @@ public class AuthServerDTO implements Serializable {
     private String newControlAuthKey;            // 신규 RKey
     private String deviceCount;
 
+    private String deviceInfo;                   // Y/N 기기 존재 여부
+
     private String fastHotWater;                 // 빠른온수 예약 정보 조회용 변수
 }

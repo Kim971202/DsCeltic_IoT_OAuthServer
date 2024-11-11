@@ -95,30 +95,6 @@ public class Common {
         return invitation;
     }
 
-    public static ApiResponse.Data.NoticeInfo createNotice(
-            String noticeIdx,
-            String noticeTitle,
-            String noticeContent,
-            String noticeType,
-            String noticeStartDate,
-            String noticeEndDate,
-            Set<String> noticeIds) {
-
-        noticeIds.add(noticeIdx);
-
-        // Device 생성
-        ApiResponse.Data.NoticeInfo notice = new ApiResponse.Data.NoticeInfo();
-
-        notice.setNoticeIdx(noticeIdx);
-        notice.setNoticeTitle(noticeTitle);
-        notice.setNoticeContent(noticeContent);
-        notice.setNoticeType(noticeType);
-        notice.setNoticeStartDate(noticeStartDate);
-        notice.setNoticeEndDate(noticeEndDate);
-
-        return notice;
-    }
-
     public static List<String> extractJson(String inputList, String inputKey) {
 
         if(inputList.isEmpty()) return null;
@@ -133,19 +109,6 @@ public class Common {
         }
 
         return userIds;
-    }
-
-    private static <T> Predicate<T> deduplication(Function<? super T, ?> key) {
-        final Set<Object> set = ConcurrentHashMap.newKeySet();
-        return predicate -> set.add(key.apply(predicate));
-    }
-
-    public LocalDateTime getTimeAsiaSeoulNow() {
-        return getTimeNow("Asia/Seoul");
-    }
-
-    public LocalDateTime getTimeNow(String zoneId) {
-        return LocalDateTime.now(ZoneId.of(zoneId));
     }
 
     /**
@@ -419,7 +382,6 @@ public class Common {
 
     /** 기기별칭 쿼리 함수 */
     public String returnDeviceNickname(String deviceId){ return stringToHex(memberMapper.getDeviceNicknameByDeviceId(deviceId).getDeviceNickname()); }
-
 
     /** 공통 로그 출력 함수 */
     public void logParams(Object params) {

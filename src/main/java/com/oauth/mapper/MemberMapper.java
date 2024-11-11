@@ -34,6 +34,7 @@ public interface MemberMapper {
     public AuthServerDTO getUserByUserIdAndHp(AuthServerDTO member);
     public AuthServerDTO getPasswordByUserId(String userId);
     public AuthServerDTO identifyRKey(String deviceId);
+    public AuthServerDTO getDeviceIdFromDeviceGroup(String groupId);
     public AuthServerDTO getHpByUserId(String userId);
     public AuthServerDTO getHouseholdByUserId(String userId);
     public AuthServerDTO getNextHouseholder(String userId);

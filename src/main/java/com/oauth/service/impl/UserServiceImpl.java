@@ -58,18 +58,6 @@ public class UserServiceImpl implements UserService {
         String registUserType;
         ApiResponse.Data result = new ApiResponse.Data();
 
-        // Device Set 생성
-        Set<String> userDeviceIds = new HashSet<>();
-        List<ApiResponse.Data.Device> data = new ArrayList<>();
-
-        List<String> deviceId;
-        List<String> controlAuthKey;
-        List<String> deviceNickname;
-        List<String> regSort;
-        List<String> tmpRegistKey;
-        List<String> latitude;
-        List<String> longitude;
-
         String msg;
         String token;
         String hp;
@@ -92,12 +80,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
 
-            // TODO: 만약 Household 여부가 N인 경우에는 세대주의 USERID 사용
             householdStatus = memberMapper.getHouseholdByUserId(userId);
-            if(householdStatus.getHouseholder().equals("N")){
-                log.info("만약 Household 여부가 N인 경우에는 세대주의 USERID 사용");
-                log.info("householdStatus.getGroupId(): " + householdStatus.getGroupId());
-            }
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
             if (member == null) {
                 msg = "계정이 존재하지 않습니다.";
@@ -105,62 +88,16 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else userNickname = member.getUserNickname();
 
-            List<AuthServerDTO> deviceInfoList = memberMapper.getDeviceIdByUserId(householdStatus.getGroupId());
-            if(deviceInfoList == null) {
-                msg = "계정이 존재하지 않습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            } else {
-
-                deviceId = Common.extractJson(deviceInfoList.toString(), "deviceId");
-                controlAuthKey = Common.extractJson(deviceInfoList.toString(), "controlAuthKey");
-                deviceNickname = Common.extractJson(deviceInfoList.toString(), "deviceNickname");
-                regSort = Common.extractJson(deviceInfoList.toString(), "regSort");
-                tmpRegistKey = Common.extractJson(deviceInfoList.toString(), "tmpRegistKey");
-                latitude = Common.extractJson(deviceInfoList.toString(), "latitude");
-                longitude = Common.extractJson(deviceInfoList.toString(), "longitude");
-
-                log.info("deviceId: " + deviceId);
-                log.info("controlAuthKey: " + controlAuthKey);
-                log.info("deviceNickname: " + deviceNickname);
-                log.info("regSort: " + regSort);
-                log.info("tmpRegistKey: " + tmpRegistKey);
-                log.info("latitude: " + latitude);
-                log.info("longitude: " + longitude);
-
-                // Mapper실행 후 사용자가 가지고 있는 Device 개수
-                int numDevices = deviceInfoList.size();
-
-                if(deviceId != null &&
-                        controlAuthKey != null &&
-                        deviceNickname != null &&
-                        regSort != null &&
-                        tmpRegistKey != null &&
-                        latitude != null &&
-                        longitude != null){
-
-                    // Device 추가
-                    for (int i = 0; i < numDevices; i++) {
-                        ApiResponse.Data.Device device = Common.createDevice(
-                                deviceId.get(i),
-                                controlAuthKey.get(i),
-                                deviceNickname.get(i),
-                                regSort.get(i),
-                                tmpRegistKey.get(i),
-                                latitude.get(i),
-                                longitude.get(i),
-                                userDeviceIds);
-                        data.add(device);
-                    }
-                }
-            }
+            if(memberMapper.getDeviceIdFromDeviceGroup(householdStatus.getGroupId()).getDeviceId().isEmpty())
+                result.setDeviceInfo("N");
+            else
+                result.setDeviceInfo("Y");
 
             token = common.createJwtToken(userId, "NORMAL", "Login");
             log.info("Token: " + token);
             result.setRegistUserType(registUserType);
             result.setAccessToken(token);
             result.setUserNickname(userNickname);
-            result.setDevice(data);
 
             msg = "로그인 성공";
 
@@ -177,17 +114,8 @@ public class UserServiceImpl implements UserService {
             params.setPushToken(pushToken);
             params.setUserId(userId);
 
-            if(memberMapper.updatePushToken(params) <= 0) {
-                msg = "구글 FCM TOKEN 갱신 실패.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_2004, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            if(memberMapper.updateLoginDatetime(params) <= 0) {
-                msg = "LOGIN_INFO_UPDATE_ERROR";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                new ResponseEntity<>(result, HttpStatus.OK);
-            }
+            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+            if(memberMapper.updateLoginDatetime(params) <= 0) log.info("LOGIN_INFO_UPDATE_ERROR");
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             log.info("result: " + result);
@@ -1580,47 +1508,27 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
-        List<AuthServerDTO> noticeList;
+        List<AuthServerDTO> notice;
+        List<Map<String, String>> noticeList = new ArrayList<>();
         try {
-            noticeList = memberMapper.getNoticeList();
-            if(noticeList.isEmpty()) {
+            notice = memberMapper.getNoticeList();
+            if(notice.isEmpty()) {
                 msg = "공지사항 목록이 없습니다.";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
             else {
-                Set<String> noticeSet = new HashSet<>();
-                List<ApiResponse.Data.NoticeInfo> noticeInfoArray = new ArrayList<>();
-
-                List<String> noticeIdxList = Common.extractJson(noticeList.toString(), "noticeIdx");
-                List<String> noticeTitle = Common.extractJson(noticeList.toString(), "noticeTitle");
-                List<String> noticeContent = Common.extractJson(noticeList.toString(), "noticeContent");
-                List<String> noticeType = Common.extractJson(noticeList.toString(), "noticeType");
-                List<String> noticeStartDate = Common.extractJson(noticeList.toString(), "noticeStartDate");
-                List<String> noticeEndDate = Common.extractJson(noticeList.toString(), "noticeEndDate");
-
-                int numNotice = noticeList.size();
-                if(noticeIdxList != null
-                        && noticeTitle != null
-                        && noticeContent != null
-                        && noticeStartDate != null
-                        && noticeEndDate != null
-                        && noticeType != null
-                ){
-                    // Member 추가
-                    for (int i = 0; i < numNotice; i++) {
-                        ApiResponse.Data.NoticeInfo notices = Common.createNotice(
-                                noticeIdxList.get(i),
-                                noticeTitle.get(i),
-                                noticeContent.get(i),
-                                noticeType.get(i),
-                                noticeStartDate.get(i),
-                                noticeEndDate.get(i),
-                                noticeSet);
-                        noticeInfoArray.add(notices);
-                    }
+                for(AuthServerDTO authServerDTO : notice){
+                    Map<String, String> map = new HashMap<>();
+                    map.put("noticeIdx", authServerDTO.getNoticeIdx());
+                    map.put("noticeTitle", authServerDTO.getNoticeTitle());
+                    map.put("noticeContent", authServerDTO.getNoticeContent());
+                    map.put("noticeType", authServerDTO.getNoticeType());
+                    map.put("noticeStartDate", authServerDTO.getNoticeStartDate());
+                    map.put("noticeEndDate", authServerDTO.getNoticeEndDate());
+                    noticeList.add(map);
                 }
-                data.setNoticeInfo(noticeInfoArray);
+                data.setNoticeInfo(noticeList);
             }
 
             msg = "공지사항 조회 성공";

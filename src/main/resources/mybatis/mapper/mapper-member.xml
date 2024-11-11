@@ -433,6 +433,16 @@
             DEVC_ID = #{deviceId}
     </select>
 
+    <select id="getDeviceIdFromDeviceGroup" parameterType="String" resultMap="member">
+        SELECT
+            DEVC_ID AS deviceId
+        FROM
+            TBR_IOT_DEVICE_GRP_INFO
+        WHERE
+            GRP_ID = #{groupId}
+        LIMIT 1
+    </select>
+
     <select id="getWorkTime" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             WORK_TIME AS workTime,
