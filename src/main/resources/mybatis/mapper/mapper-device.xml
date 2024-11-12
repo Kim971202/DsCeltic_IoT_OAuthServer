@@ -838,9 +838,12 @@
             a.DEVC_CTRL_KEY AS controlAuthKey,
             b.USER_ID AS userId
         FROM
-            TBR_OPR_DEVICE_DETAIL
+            TBR_OPR_DEVICE_DETAIL a
+        INNER JOIN
+            TBT_OPR_DEVICE_REGIST b
+            ON a.DEVC_ID = b.DEVC_ID
         WHERE
-            DEVC_ID = #{deviceId}
+            a.DEVC_ID = #{deviceId}
     </select>
 
 </mapper>
