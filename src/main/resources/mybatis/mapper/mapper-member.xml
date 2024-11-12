@@ -790,7 +790,7 @@
             GRP_ID = #{userId}
     </select>
 
-    <select id="getGroupIddByUserId" parameterType="String" resultMap="member">
+    <select id="getGroupIdByUserId" parameterType="String" resultMap="member">
         SELECT
             GRP_ID AS groupId,
             USER_ID AS userId

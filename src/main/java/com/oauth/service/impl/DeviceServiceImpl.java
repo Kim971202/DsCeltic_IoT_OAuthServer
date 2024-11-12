@@ -278,13 +278,13 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
 
                 // TODO: 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
-                checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
-                if(!checkDeviceExist.getDeviceId().isEmpty() && !userId.equals(checkDeviceExist.getUserId())){
-                    AuthServerDTO authServerDTO = new AuthServerDTO();
-                    authServerDTO.setUserId(checkDeviceExist.getUserId());
-                    authServerDTO.setDeviceId(checkDeviceExist.getDeviceId());
-                    userService.doUserDeviceDelete(params);
-                }
+//                checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
+//                if(!checkDeviceExist.getDeviceId().isEmpty() && !userId.equals(checkDeviceExist.getUserId())){
+//                    AuthServerDTO authServerDTO = new AuthServerDTO();
+//                    authServerDTO.setUserId(checkDeviceExist.getUserId());
+//                    authServerDTO.setDeviceId(checkDeviceExist.getDeviceId());
+//                    userService.doUserDeviceDelete(params);
+//                }
 
                 familyMemberList = memberMapper.getFailyMemberByUserId(memberMapper.getHouseholdByUserId(userId).getGroupId());
 
@@ -1435,10 +1435,10 @@ public class DeviceServiceImpl implements DeviceService {
     public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
 
         /*
-        * 구현전 생각해야 할 것
-        * 1. 몇개의 응답을 올지 모름 (사용자가 몇개의 기기를 등록했는지 알아야함)
-        * 2. 받은 응답을 어떻게 Passing 할 것인가
-        * */
+         * 구현전 생각해야 할 것
+         * 1. 몇개의 응답을 올지 모름 (사용자가 몇개의 기기를 등록했는지 알아야함)
+         * 2. 받은 응답을 어떻게 Passing 할 것인가
+         * */
 
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject;
@@ -1606,6 +1606,191 @@ public class DeviceServiceImpl implements DeviceService {
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
+
+    /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
+//    @Override
+//    public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
+//
+//        /*
+//        * 구현전 생각해야 할 것
+//        * 1. 몇개의 응답을 올지 모름 (사용자가 몇개의 기기를 등록했는지 알아야함)
+//        * 2. 받은 응답을 어떻게 Passing 할 것인가
+//        * */
+//
+//        ApiResponse.Data result = new ApiResponse.Data();
+//        String stringObject = "N";
+//        String msg;
+//
+//        String userId = params.getUserId();
+//        String uuId = common.getTransactionId();
+//
+//        List<AuthServerDTO> groupInfo;
+//
+//        List<String> serialNumberList;
+//        List<String> rKeyList;
+//        List<String> deviceIdList;
+//        List<String> deviceNicknameList;
+//        List<String> addrNicknameList;
+//        List<String> latitudeList;
+//        List<String> longitudeList;
+//        List<String> regSortList;
+//        List<String> modelCodeList;
+//        List<String> tmpKeyListList;
+//
+//        List<Map<String, String>> appResponse = new ArrayList<>();
+//
+//        List<AuthServerDTO> controlAuthKeyByUserIdResult;
+//        List<AuthServerDTO> deviceNicknameAndDeviceLocNicknameResult;
+//        List<AuthServerDTO> multiSerialNumberBydeviceIdResult;
+//        List<DeviceStatusInfo.Device> devicesStatusInfo;
+//        List<DeviceStatusInfo.Device> activeStatusInfo;
+//        try {
+//
+//
+//            // 1. 사용자 그룹 정보 가져오기
+//            groupInfo = memberMapper.getGroupIdByUserId(userId);
+//            if (groupInfo == null || groupInfo.isEmpty()) {
+//                msg = "그룹 정보가 없습니다.";
+//                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+//                return new ResponseEntity<>(result, HttpStatus.OK);
+//            }
+//
+//            // 2. 여러 그룹 ID에 대해 각 기기 정보를 조회
+//            for (AuthServerDTO group : groupInfo) {
+//                controlAuthKeyByUserIdResult = deviceMapper.getControlAuthKeyByUserId(group.getUserId());
+//                if (controlAuthKeyByUserIdResult == null || controlAuthKeyByUserIdResult.isEmpty()) {
+//                    msg = "기기정보가 없습니다.";
+//                    result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+//                    return new ResponseEntity<>(result, HttpStatus.OK);
+//                }
+//
+//                deviceNicknameAndDeviceLocNicknameResult = deviceMapper.getDeviceNicknameAndDeviceLocNickname(controlAuthKeyByUserIdResult);
+//                multiSerialNumberBydeviceIdResult = deviceMapper.getMultiSerialNumberBydeviceId(controlAuthKeyByUserIdResult);
+//
+//                if (deviceNicknameAndDeviceLocNicknameResult == null || multiSerialNumberBydeviceIdResult == null) {
+//                    msg = "기기정보가 없습니다.";
+//                    result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+//                    return new ResponseEntity<>(result, HttpStatus.OK);
+//                }
+//
+//                log.info("deviceNicknameAndDeviceLocNicknameResult: " + deviceNicknameAndDeviceLocNicknameResult);
+//                log.info("multiSerialNumberBydeviceIdResult: " + multiSerialNumberBydeviceIdResult);
+//
+//                // 3. 각 데이터 리스트로 변환
+//                rKeyList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "controlAuthKey");
+//                deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
+//                deviceNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "deviceNickname");
+//                addrNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "addrNickname");
+//                serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
+//                regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
+//                latitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "latitude");
+//                longitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "longitude");
+//                modelCodeList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "modelCode");
+//                tmpKeyListList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "tmpRegistKey");
+//
+//                log.info("rKeyList: " + rKeyList);
+//                log.info("deviceIdList: " + deviceIdList);
+//                log.info("deviceNicknameList: " + deviceNicknameList);
+//                log.info("addrNicknameList: " + addrNicknameList);
+//                log.info("serialNumberList: " + serialNumberList);
+//                log.info("regSortList: " + regSortList);
+//                log.info("latitudeList: " + latitudeList);
+//                log.info("longitudeList: " + longitudeList);
+//                log.info("modelCodeList: " + modelCodeList);
+//                log.info("tmpKeyListList: " + tmpKeyListList);
+//
+//                // 4. 기기 상태 정보 및 활성화 상태 조회
+//                devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
+//                activeStatusInfo = deviceMapper.getActiveStauts(serialNumberList);
+//
+//                if (devicesStatusInfo == null || devicesStatusInfo.isEmpty()) {
+//                    msg = "등록된 R/C가 없습니다";
+//                    result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+//                    return new ResponseEntity<>(result, HttpStatus.OK);
+//                }
+//
+//                log.info("devicesStatusInfo: " + devicesStatusInfo);
+//                log.info("activeStatusInfo: " + activeStatusInfo);
+//
+//                if(deviceNicknameList != null &&
+//                        addrNicknameList != null &&
+//                        regSortList != null &&
+//                        serialNumberList != null &&
+//                        latitudeList != null &&
+//                        longitudeList != null &&
+//                        modelCodeList != null &&
+//                        tmpKeyListList != null &&
+//                        rKeyList != null){
+//
+//                    // 5. 데이터 매핑
+//                    for (int i = 0; i < rKeyList.size(); ++i) {
+//                        Map<String, String> data = new HashMap<>();
+//                        data.put("rKey", rKeyList.get(i));
+//                        data.put("deviceNickname", deviceNicknameList.get(i));
+//                        data.put("addrNickname", addrNicknameList.get(i));
+//                        data.put("regSort", regSortList.get(i));
+//                        data.put("deviceId", deviceIdList.get(i));
+//                        data.put("latitude", latitudeList.get(i));
+//                        data.put("longitude", longitudeList.get(i));
+//                        data.put("controlAuthKey", rKeyList.get(i));
+//                        data.put("tmpRegistKey", tmpKeyListList.get(i));
+//                        data.put("deviceStatus", "1");
+//
+//                        // 기기 상태 정보 추가
+//                        DeviceStatusInfo.Device statusInfo = devicesStatusInfo.get(i);
+//                        data.put("powr", statusInfo.getPowr());
+//                        data.put("opMd", statusInfo.getOpMd());
+//                        data.put("htTp", statusInfo.getHtTp());
+//                        data.put("wtTp", statusInfo.getWtTp());
+//                        data.put("hwTp", statusInfo.getHwTp());
+//                        data.put("ftMd", statusInfo.getFtMd());
+//                        data.put("chTp", statusInfo.getChTp());
+//                        data.put("mfDt", statusInfo.getMfDt());
+//                        data.put("hwSt", statusInfo.getHwSt());
+//                        data.put("fcLc", statusInfo.getFcLc());
+//                        data.put("blCf", statusInfo.getBlCf());
+//                        data.put("type24h", common.readCon(statusInfo.getH24(), "serviceMd"));
+//                        data.put("slCd", statusInfo.getSlCd());
+//                        data.put("vtSp", statusInfo.getVtSp());
+//                        data.put("inAq", statusInfo.getInAq());
+//
+//                        // 활성화 상태 정보 추가 (모델에 따라 분기 처리)
+//                        if (!activeStatusInfo.isEmpty()) {
+//                            DeviceStatusInfo.Device activeInfo = activeStatusInfo.get(i);
+//                            if (modelCodeList.get(i).equals("DCR-91/WF")) {
+//                                data.put("ftMdAcTv", activeInfo.getFtMd());
+//                                data.put("fcLcAcTv", activeInfo.getFcLc());
+//                            } else if (modelCodeList.get(i).equals("DCR-47/WF")) {
+//                                data.put("pastAcTv", activeInfo.getPast());
+//                                data.put("inDrAcTv", activeInfo.getInDr());
+//                                data.put("inClAcTv", activeInfo.getInCl());
+//                                data.put("ecStAcTv", activeInfo.getEcSt());
+//                            }
+//                        }
+//                        appResponse.add(data);
+//                    }
+//                    stringObject = "Y";
+//                }
+//            }
+//
+//            if(stringObject.equals("Y")) {
+//                msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 성공";
+//                result.setHomeViewValue(appResponse);
+//                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+//            }
+//
+//            if(stringObject.equals("N")) {
+//                msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 실패";
+//                result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+//            }
+//            redisCommand.deleteValues(uuId);
+//            log.info("result: " + result);
+//            return new ResponseEntity<>(result, HttpStatus.OK);
+//        } catch (Exception e){
+//            log.error("", e);
+//            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     /** 홈 IoT 컨트롤러 정보 조회-단건 */
     @Override

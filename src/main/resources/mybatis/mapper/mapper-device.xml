@@ -834,16 +834,11 @@
 
     <select id="checkDeviceExist" parameterType="String" resultMap="device">
         SELECT
-            a.DEVC_ID AS deviceId,
-            a.DEVC_CTRL_KEY AS controlAuthKey,
-            b.USER_ID AS userId
+            COUNT(*) AS deviceCount
         FROM
-            TBR_OPR_DEVICE_DETAIL a
-        INNER JOIN
-            TBT_OPR_DEVICE_REGIST b
-            ON a.DEVC_ID = b.DEVC_ID
+            TBR_OPR_DEVICE_DETAIL
         WHERE
-            a.DEVC_ID = #{deviceId}
+            DEVC_ID = #{deviceId}
     </select>
 
 </mapper>
