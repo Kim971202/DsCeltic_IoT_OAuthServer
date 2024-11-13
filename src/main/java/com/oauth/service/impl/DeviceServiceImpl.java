@@ -281,12 +281,11 @@ public class DeviceServiceImpl implements DeviceService {
                     AuthServerDTO authServerDTO = deviceMapper.getCheckedDeviceExist(deviceId);
                     memberMapper.deleteControllerMapping(authServerDTO);
                 }
-                params.setGroupIdx("16");
-                params.setIdx(16L);
+
+                params.setIdx(Long.valueOf(params.getGroupIdx()));
                 params.setGroupId(userId);
                 // TODO: GroupIdx가 NULL이면 신규 등록
                 if(params.getGroupIdx() == null){
-                    params.setGroupName("SampleGroupName"); // 추후 제거
                     memberMapper.insertInviteGroup(params);
                     memberMapper.updateInviteGroup(params);
                     // TODO: 신규 등록 시 등록한 Idx를 기반으로 사용자 ID 쿼리
