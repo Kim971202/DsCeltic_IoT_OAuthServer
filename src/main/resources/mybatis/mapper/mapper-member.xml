@@ -135,7 +135,6 @@
         SELECT DISTINCT
             a.USER_ID AS userId,
             a.DEVC_ID AS deviceId,
-            a.HOUSE_HOLDER AS householder,
             a.DEVC_CTRL_KEY AS controlAuthKey,
             MAX(a.ATTC_DATM) AS authenticationDatetime,  -- 최근 인증 날짜를 선택
             c.ADDR_NICK AS addrNickname,
@@ -155,7 +154,6 @@
         GROUP BY
             a.USER_ID,
             a.DEVC_ID,
-            a.HOUSE_HOLDER,
             a.DEVC_CTRL_KEY,
             c.ADDR_NICK,
             c.DEVC_NICK,
@@ -273,15 +271,6 @@
             USER_ID != #{userId}
         LIMIT 1;
     </select>
-
-    <update id="updateHouseholdTbrOprUser" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE
-            TBR_OPR_USER
-        SET
-            HOUSE_HOLDER = "Y"
-        WHERE
-            USER_ID = #{userId}
-    </update>
 
     <select id="deleteMemberFromService" parameterType="String" resultType="String">
         CALL deleteUserFromService(#{userId})
@@ -599,15 +588,6 @@
         </foreach>
     </select>
 
-    <update id="updateGrpInfoTableHousehold" parameterType="com.oauth.dto.AuthServerDTO" >
-        UPDATE
-            TBD_IOT_GRP_INFO
-        SET
-            HOUSE_HOLDER = #{householder}
-        WHERE
-            USER_ID = #{groupId}
-    </update>
-
     <update id="updateGrpInfoTableForNewHousehold" parameterType="com.oauth.dto.AuthServerDTO" >
         UPDATE
             TBD_IOT_GRP_INFO
@@ -632,25 +612,6 @@
         SET
             HP = #{hp},
             USER_ID = #{requestUserId}
-        WHERE
-            USER_ID = #{responseUserId}
-    </update>
-
-    <update id="updateUserDeviceTable" parameterType="com.oauth.dto.AuthServerDTO" >
-        UPDATE
-            TBR_OPR_USER_DEVICE
-        SET
-            USER_ID = #{requestUserId},
-            HOUSE_HOLDER = 'Y'
-        WHERE
-            USER_ID = #{responseUserId}
-    </update>
-
-    <update id="updateUserTable" parameterType="com.oauth.dto.AuthServerDTO" >
-        UPDATE
-            TBR_OPR_USER
-        SET
-            HOUSE_HOLDER = #{householder}
         WHERE
             USER_ID = #{responseUserId}
     </update>
@@ -794,15 +755,6 @@
             GRP_NM = #{userId} AND USER_ID != #{userId}
         LIMIT 1
     </select>
-
-    <update id="updateUserDeviceHousehold" parameterType="String">
-        UPDATE
-            TBR_OPR_USER_DEVICE
-        SET
-            HOUSE_HOLDER = 'Y'
-        WHERE
-            USER_ID = #{userId}
-    </update>
 
     <select id="getUserNickname" parameterType="String" resultMap="member">
         SELECT

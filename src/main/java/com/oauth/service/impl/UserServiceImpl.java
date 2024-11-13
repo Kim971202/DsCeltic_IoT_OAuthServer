@@ -745,11 +745,6 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            if(memberMapper.updateHouseholdTbrOprUser(delUserId) <= 0){
-                msg = "사용자(세대원) 강제탈퇴 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
             msg = "사용자(세대원) - 강제탈퇴 성공";
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
@@ -913,7 +908,6 @@ public class UserServiceImpl implements UserService {
             memberMapper.updateGrpDeviceInfoTableForNewHousehold(nextHouseholder);
             params.setHouseholder("Y");
             params.setGroupId(nextHouseholder.getUserId());
-            memberMapper.updateGrpInfoTableHousehold(params);
 
             // TODO: 3. TBD_IOT_GRP_INFO : 기존 새대원의 GRP_NM 신규 세대주 ID로 변경
             params.setDelUserId(userId);
@@ -935,17 +929,14 @@ public class UserServiceImpl implements UserService {
             *  requestUserId: 신규 세대주
             *  responseUserId: 이전 세대주
             * */
-            memberMapper.updateUserDeviceTable(params);
 
             // TODO: 6. 세대주 권한이양 받은 세대원 Household 항목 Y로 UPDATE
-            memberMapper.updateUserDeviceHousehold(nextHouseholder.getUserId());
 
             /*
             * TODO: 7.
             *  신규 세대주 TBR_OPR_USER HOUSE_HOLD Y
             * */
             params.setResponseUserId(nextHouseholder.getUserId());
-            memberMapper.updateUserTable(params);
 
             msg = "사용자(세대주) 탈퇴 성공";
 

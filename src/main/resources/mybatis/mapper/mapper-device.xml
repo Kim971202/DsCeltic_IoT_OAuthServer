@@ -559,7 +559,6 @@
             DEVC_CTRL_KEY,
             ATTC_DATM,
             REG_DATM,
-            HOUSE_HOLDER,
             GRP_IDX
         )
             VALUES
@@ -569,7 +568,6 @@
             #{controlAuthKey},
             now(),
             now(),
-            'Y',
             #{idx}
         )
     </insert>

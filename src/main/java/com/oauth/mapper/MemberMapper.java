@@ -54,15 +54,11 @@ public interface MemberMapper {
     public int insertInviteGroupMember(AuthServerDTO info);
     public int insertWorkTime(List<AuthServerDTO> member);
     public int updateGrpDeviceInfoTableForNewHousehold(AuthServerDTO member);
-    public int updateGrpInfoTableHousehold(AuthServerDTO member);
     public int updateGrpInfoTableForNewHousehold(AuthServerDTO member);
     public int deleteUserDevicePush(String userId);
-    public int updateUserDeviceHousehold(String userId);
     public int delHouseholdMember(String userId);
     public int insertHouseholder(AuthServerDTO member);
     public int updateRegistTable(AuthServerDTO member);
-    public int updateUserTable(AuthServerDTO member);
-    public int updateUserDeviceTable(AuthServerDTO member);
     public int InsertSafeAlarmSet(AuthServerDTO member);
     public int insertPushHistory(AuthServerDTO member);
     public int updatePushToken(AuthServerDTO member);
@@ -75,7 +71,6 @@ public interface MemberMapper {
     public int inviteHouseMember(AuthServerDTO member);
     public int acceptInvite(AuthServerDTO member);
     public int updatePushCodeStatus(AuthServerDTO params);
-    public int updateHouseholdTbrOprUser(String userId);
     public int updateDeviceLocationNicknameDeviceDetail(AuthServerDTO member);
     public int updateDeviceLocationNicknameDeviceRegist(AuthServerDTO member);
     public int insertCommandHistory(AuthServerDTO member);
