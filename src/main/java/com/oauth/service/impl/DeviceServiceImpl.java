@@ -312,7 +312,7 @@ public class DeviceServiceImpl implements DeviceService {
                     // 리스트에 추가
                     inputList.add(memberInfo);
                 }
-
+                System.out.println(inputList);
                 if(memberMapper.insertUserDevicePushByList(inputList) <= 0){
                     msg = "사용자 PUSH 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
