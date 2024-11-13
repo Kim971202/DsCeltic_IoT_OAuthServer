@@ -282,7 +282,6 @@ public class DeviceServiceImpl implements DeviceService {
                     memberMapper.deleteControllerMapping(authServerDTO);
                 }
 
-                params.setIdx(Long.valueOf(params.getGroupIdx()));
                 params.setGroupId(userId);
                 // TODO: GroupIdx가 NULL이면 신규 등록
                 if(params.getGroupIdx() == null){
@@ -292,6 +291,7 @@ public class DeviceServiceImpl implements DeviceService {
                     groupLeaderId = memberMapper.getGroupLeaderId(params.getIdx());
                     familyMemberList = memberMapper.getFailyMemberByUserId(groupLeaderId.getGroupId());
                 } else {
+                    params.setIdx(Long.parseLong(params.getGroupIdx()));
                     groupLeaderIdByGroupIdx = memberMapper.getGroupLeaderIdByGroupIdx(params.getGroupIdx());
                     familyMemberList = memberMapper.getFailyMemberByUserId(groupLeaderIdByGroupIdx.getGroupId());
                 }
