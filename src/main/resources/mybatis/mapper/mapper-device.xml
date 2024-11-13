@@ -179,7 +179,8 @@
                 DEVC_NICK,
                 REG_DATM,
                 ADDR_NICK,
-                GRP_IDX
+                GRP_IDX,
+                GRP_NM
             )
         VALUES
             (
@@ -196,7 +197,8 @@
                 #{deviceNickname},
                 now(),
                 #{addrNickname},
-                #{idx}
+                #{idx},
+                #{groupName}
             )
     </insert>
 

@@ -1441,6 +1441,7 @@ public class DeviceServiceImpl implements DeviceService {
         List<String> deviceIdList;
         List<String> deviceNicknameList;
         List<String> groupIdxList;
+        List<String> groupNameList;
         List<String> latitudeList;
         List<String> longitudeList;
         List<String> regSortList;
@@ -1475,11 +1476,10 @@ public class DeviceServiceImpl implements DeviceService {
                 }
 
                 groupIdxListByUserIdResult = memberMapper.getGroupIdxByUserId(userId);
-
                 deviceNicknameAndDeviceLocNicknameResult = deviceMapper.getDeviceNicknameAndDeviceLocNickname(controlAuthKeyByUserIdResult);
                 multiSerialNumberBydeviceIdResult = deviceMapper.getMultiSerialNumberBydeviceId(controlAuthKeyByUserIdResult);
 
-                if (deviceNicknameAndDeviceLocNicknameResult == null || multiSerialNumberBydeviceIdResult == null) {
+                if (deviceNicknameAndDeviceLocNicknameResult.isEmpty() || multiSerialNumberBydeviceIdResult.isEmpty() || groupIdxListByUserIdResult.isEmpty()) {
                     msg = "기기정보가 없습니다.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1493,6 +1493,7 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
                 deviceNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "deviceNickname");
                 groupIdxList = Common.extractJson(groupIdxListByUserIdResult.toString(), "groupIdx");
+                groupNameList = Common.extractJson(groupIdxListByUserIdResult.toString(), "groupName");
                 serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
                 regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
                 latitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "latitude");
@@ -1504,6 +1505,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.info("deviceIdList: " + deviceIdList);
                 log.info("deviceNicknameList: " + deviceNicknameList);
                 log.info("groupIdxList: " + groupIdxList);
+                log.info("groupNameList: " + groupNameList);
                 log.info("serialNumberList: " + serialNumberList);
                 log.info("regSortList: " + regSortList);
                 log.info("latitudeList: " + latitudeList);
@@ -1526,6 +1528,7 @@ public class DeviceServiceImpl implements DeviceService {
 
                 if(deviceNicknameList != null &&
                         groupIdxList != null &&
+                        groupNameList != null &&
                         regSortList != null &&
                         serialNumberList != null &&
                         latitudeList != null &&
@@ -1541,6 +1544,7 @@ public class DeviceServiceImpl implements DeviceService {
                         data.put("rKey", rKeyList.get(i));
                         data.put("deviceNickname", deviceNicknameList.get(i));
                         data.put("groupIdx", groupIdxList.get(i));
+                        data.put("groupName", groupNameList.get(i));
                         data.put("regSort", regSortList.get(i));
                         data.put("deviceId", deviceIdList.get(i));
                         data.put("latitude", latitudeList.get(i));
