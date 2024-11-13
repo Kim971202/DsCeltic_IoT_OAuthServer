@@ -865,13 +865,18 @@
 
     <select id="getNextUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
-            USER_ID AS userId
+            a.USER_ID AS userId,
+            b.HP AS hp
         FROM
-            TBD_USER_INVITE_GROUP
+            TBD_USER_INVITE_GROUP a
+        INNER JOIN
+            TBR_OPR_USER b
+        ON
+            a.USER_ID = b.USER_ID
         WHERE
-            GRP_IDX = #{groupIdx}
+            a.GRP_IDX = #{groupIdx}
         AND
-            USER_ID != #{userId}
+            a.USER_ID != #{userId}
         LIMIT 1
     </select>
 
@@ -919,6 +924,25 @@
             GRP_IDX = #{idx}
         WHERE
             idx = #{idx}
+    </update>
+
+    <update id="updateDeviceRegist" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBT_OPR_DEVICE_REGIST
+        SET
+            USER_ID = #{nextUserId},
+            HP = #{hp}
+        WHERE
+            USER_ID = #{userId};
+    </update>
+
+    <update id="updateUserDevice" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_USER_DEVICE
+        SET
+            USER_ID = #{nextUserId}
+        WHERE
+            USER_ID = #{userId};
     </update>
 
     <insert id="insertInviteGroupMember" parameterType="com.oauth.dto.AuthServerDTO">

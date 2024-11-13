@@ -50,6 +50,8 @@ public interface MemberMapper {
     public AuthServerDTO getFwhInfo(String deviceId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
+    public int updateDeviceRegist(AuthServerDTO info);
+    public int updateUserDevice(AuthServerDTO info);
     public int updateInviteGroup(AuthServerDTO info);
     public int insertInviteGroup(AuthServerDTO info);
     public int insertUserDevicePushByList(List<AuthServerDTO> info);

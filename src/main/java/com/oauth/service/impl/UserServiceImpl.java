@@ -475,7 +475,6 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
-        String userId = params.getUserId();
         String groupIdx = params.getGroupIdxList();
         List<String> groupIdxList;
         List<AuthServerDTO> userIdList;
@@ -886,40 +885,45 @@ public class UserServiceImpl implements UserService {
 
         String userId = params.getUserId();
         AuthServerDTO nextHouseholder;
-        AuthServerDTO userHp;
 
         try {
 
             /**
              * TODO
              * 1. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
-             * 2. 다음 세대원을 세대주로 변경 (다음 세대원이 없을 경우 그룹 삭제 이후 로직 종료)
+             * 2. 다음 세대원을 세대주로 변경
              * 3. TBT_OPR_DEVICE_REGIST, TBR_OPR_USER_DEVICE USER_ID 다음 세대원으로 변경
              * */
 
             // TODO: 1. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
-//            params.setDelUserId(userId);
-//            if(memberMapper.deleteUserInviteGroup(params) <= 0){
-//                msg = "사용자(세대원) 강제탈퇴 실패";
-//                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-//                return new ResponseEntity<>(data, HttpStatus.OK);
-//            }
-
-            // TODO: 다음 세대원 검색
-            nextHouseholder = memberMapper.getNextUserId(params);
-
-            if(nextHouseholder.getUserId().isEmpty()){
-                System.out.println("IS EMPTY");
-            } else {
-                System.out.println("NOT EMPTY");
+            params.setDelUserId(userId);
+            if(memberMapper.deleteUserInviteGroup(params) <= 0){
+                msg = "사용자(세대원) 강제탈퇴 실패";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            // TODO: 2. 다음 세대원 검색
+            nextHouseholder = memberMapper.getNextUserId(params);
+            params.setNextUserId(nextHouseholder.getUserId());
+
+            // TODO: 3. TBT_OPR_DEVICE_REGIST USER_ID, HP 업데이트
+            if(memberMapper.updateDeviceRegist(params) <= 0){
+                msg = "사용자(세대원) 강제탈퇴 실패";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
+            // TODO: 4. TBR_OPR_USER_DEVICE USER_ID 업데이트
+            if(memberMapper.updateUserDevice(params) <= 0){
+                msg = "사용자(세대원) 강제탈퇴 실패";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
             msg = "사용자(세대주) 탈퇴 성공";
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
-
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
