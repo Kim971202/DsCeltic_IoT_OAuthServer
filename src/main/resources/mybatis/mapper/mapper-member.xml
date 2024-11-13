@@ -9,8 +9,7 @@
             HP AS hp,
             USER_ID AS userId,
             USER_NICK AS userNickname,
-            API_ATTC_KEY AS accessToken,
-            HOUSE_HOLDER AS  householder
+            API_ATTC_KEY AS accessToken
         FROM
             TBR_OPR_USER
         WHERE
