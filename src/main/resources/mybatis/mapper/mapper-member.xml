@@ -695,6 +695,7 @@
             TBD_USER_INVITE_GROUP
         WHERE
             GRP_IDX = #{groupIdx}
+        LIMIT 1
     </select>
 
     <select id="getHouseholdByUserId" parameterType="String" resultMap="member">
