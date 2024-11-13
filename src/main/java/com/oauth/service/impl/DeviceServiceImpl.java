@@ -216,13 +216,11 @@ public class DeviceServiceImpl implements DeviceService {
         String msg;
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
-        String serialNumber = params.getSerialNumber();
-        String controlAuthKey = params.getControlAuthKey();
         String registYn = params.getRegistYn();
 
-        AuthServerDTO deviceRegistStatus;
-        AuthServerDTO checkDeviceAuthkeyExist;
         AuthServerDTO checkDeviceExist;
+        AuthServerDTO groupLeaderId;
+        AuthServerDTO groupLeaderIdByGroupIdx;
 
         List<AuthServerDTO> familyMemberList;
 
@@ -278,91 +276,83 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
 
                 // TODO: 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
-//                checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
-//                if(!checkDeviceExist.getDeviceId().isEmpty() && !userId.equals(checkDeviceExist.getUserId())){
-//                    AuthServerDTO authServerDTO = new AuthServerDTO();
-//                    authServerDTO.setUserId(checkDeviceExist.getUserId());
-//                    authServerDTO.setDeviceId(checkDeviceExist.getDeviceId());
-//                    userService.doUserDeviceDelete(params);
-//                }
-
-                familyMemberList = memberMapper.getFailyMemberByUserId(memberMapper.getHouseholdByUserId(userId).getGroupId());
-
-                // SerialNumber가 등록된 기기 일 경우 TBR_IOT_DEVICE Table에 INSERT 스킵
-                deviceRegistStatus = deviceMapper.getDeviceRegistStatus(serialNumber);
-                log.info("deviceRegistStatus: " + deviceRegistStatus.getDeviceId());
-
+                checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
+                if(!checkDeviceExist.getDeviceCount().equals("0")){
+                    AuthServerDTO authServerDTO = deviceMapper.getCheckedDeviceExist(deviceId);
+                    memberMapper.deleteControllerMapping(authServerDTO);
+                }
+                params.setGroupIdx("16");
+                params.setIdx(16L);
                 params.setGroupId(userId);
-                if(deviceRegistStatus.getDeviceId().equals("EMPTY")){
-                    if(deviceMapper.insertDevice(params) <= 0){
-                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
-                        result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                        return new ResponseEntity<>(result, HttpStatus.OK);
-                    }
-                    if(deviceMapper.insertFristDeviceUser(params) <= 0){
-                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
-                        result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                        return new ResponseEntity<>(result, HttpStatus.OK);
-                    }
-                }
-
-                checkDeviceAuthkeyExist = deviceMapper.checkDeviceAuthkeyExist(params);
-                if(!checkDeviceAuthkeyExist.getControlAuthKey().equals("EMPTY")){
-                    // TODO: Return 값이 EMPTY가 아닌 경우 이미 같은 값을 가진 기기가 있으므로 Rkey값을 UPDATE 한다.
-                    deviceMapper.updateUserDevice(params);
-                    params.setNewControlAuthKey(controlAuthKey);
-                    // 이전에 등록한 RKey를 기존 ControlAuthKey에 Set
-                    params.setControlAuthKey(checkDeviceAuthkeyExist.getControlAuthKey());
-                    deviceMapper.updateDeviceDetail(params);
-                    deviceMapper.updateDeviceRegist(params);
+                // TODO: GroupIdx가 NULL이면 신규 등록
+                if(params.getGroupIdx() == null){
+                    params.setGroupName("SampleGroupName"); // 추후 제거
+                    memberMapper.insertInviteGroup(params);
+                    memberMapper.updateInviteGroup(params);
+                    // TODO: 신규 등록 시 등록한 Idx를 기반으로 사용자 ID 쿼리
+                    groupLeaderId = memberMapper.getGroupLeaderId(params.getIdx());
+                    familyMemberList = memberMapper.getFailyMemberByUserId(groupLeaderId.getGroupId());
                 } else {
-
-                    if(deviceMapper.insertDeviceRegist(params) <= 0){
-                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
-                        result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                        return new ResponseEntity<>(result, HttpStatus.OK);
-                    }
-
-                    if(deviceMapper.insertDeviceDetail(params) <= 0){
-                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
-                        result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                        return new ResponseEntity<>(result, HttpStatus.OK);
-                    }
-
-                    if(deviceMapper.insertUserDevice(params) <= 0){
-                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
-                        result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                        return new ResponseEntity<>(result, HttpStatus.OK);
-                    }
-
-                    // Push 설정 관련 기본 DB 추가
-                    // TODO: 세대주 포함 모든 세대원에 추가
-                    List<AuthServerDTO> inputList = new ArrayList<>();
-                    for (AuthServerDTO authServerDTO : familyMemberList){
-                        // 새로운 AuthServerDTO 객체 생성
-                        AuthServerDTO memberInfo = new AuthServerDTO();
-                        // 한개의 기기만 추가
-                        memberInfo.setDeviceId(deviceId);
-                        // 각 사용자의 ID와 HP 설정
-                        memberInfo.setHp(authServerDTO.getHp());
-                        memberInfo.setUserId(authServerDTO.getUserId());
-                        // 리스트에 추가
-                        inputList.add(memberInfo);
-                    }
-
-                    if(memberMapper.insertUserDevicePushByList(inputList) <= 0){
-                        msg = "사용자 PUSH 정보 등록 실패.";
-                        result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                        return new ResponseEntity<>(result, HttpStatus.OK);
-                    }
-
-                    if(deviceMapper.insertDeviceGrpInfo(params) <= 0){
-                        msg = "홈 IoT 컨트롤러 정보 등록 실패.";
-                        result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                        return new ResponseEntity<>(result, HttpStatus.OK);
-                    }
-                    stringObject = "Y";
+                    groupLeaderIdByGroupIdx = memberMapper.getGroupLeaderIdByGroupIdx(params.getGroupIdx());
+                    familyMemberList = memberMapper.getFailyMemberByUserId(groupLeaderIdByGroupIdx.getGroupId());
                 }
+
+                // Push 설정 관련 기본 DB 추가
+                List<AuthServerDTO> inputList = new ArrayList<>();
+                for (AuthServerDTO authServerDTO : familyMemberList){
+                    // 새로운 AuthServerDTO 객체 생성
+                    AuthServerDTO memberInfo = new AuthServerDTO();
+                    // 한개의 기기만 추가
+                    memberInfo.setDeviceId(deviceId);
+                    // 각 사용자의 ID와 HP 설정
+                    memberInfo.setHp(authServerDTO.getHp());
+                    memberInfo.setUserId(authServerDTO.getUserId());
+                    // 리스트에 추가
+                    inputList.add(memberInfo);
+                }
+
+                if(memberMapper.insertUserDevicePushByList(inputList) <= 0){
+                    msg = "사용자 PUSH 정보 등록 실패.";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
+                if(deviceMapper.insertDevice(params) <= 0){
+                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
+                if(deviceMapper.insertFristDeviceUser(params) <= 0){
+                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
+                if(deviceMapper.insertDeviceRegist(params) <= 0){
+                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
+                if(deviceMapper.insertDeviceDetail(params) <= 0){
+                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
+                if(deviceMapper.insertUserDevice(params) <= 0){
+                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
+                if(deviceMapper.insertDeviceGrpInfo(params) <= 0){
+                    msg = "홈 IoT 컨트롤러 정보 등록 실패.";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+                stringObject = "Y";
             }
 
             log.info("stringObject: " + stringObject);
@@ -381,17 +371,13 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setLatitude(params.getLatitude());
                 result.setLongitude(params.getLongitude());
                 result.setTmpRegistKey("NULL");
-
-            } else {
-                msg = "응답이 없거나 시간 초과";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
             }
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             params.setUserId(userId);
             params.setPushTitle("기기제어");
-            if(deviceId == null) deviceId = "EMPTy";
+            if(deviceId == null) deviceId = "EMPTY";
             params.setDeviceId(deviceId);
 
             if(registYn.equals("N"))
@@ -1435,19 +1421,18 @@ public class DeviceServiceImpl implements DeviceService {
     public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
 
         /*
-         * 구현전 생각해야 할 것
-         * 1. 몇개의 응답을 올지 모름 (사용자가 몇개의 기기를 등록했는지 알아야함)
-         * 2. 받은 응답을 어떻게 Passing 할 것인가
-         * */
+        * 구현전 생각해야 할 것
+        * 1. 몇개의 응답을 올지 모름 (사용자가 몇개의 기기를 등록했는지 알아야함)
+        * 2. 받은 응답을 어떻게 Passing 할 것인가
+        * */
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject;
+        String stringObject = "N";
         String msg;
 
         String userId = params.getUserId();
         String uuId = common.getTransactionId();
-
-        AuthServerDTO groupInfo;
+        List<AuthServerDTO> groupInfo;
 
         List<String> serialNumberList;
         List<String> rKeyList;
@@ -1469,124 +1454,131 @@ public class DeviceServiceImpl implements DeviceService {
         List<DeviceStatusInfo.Device> activeStatusInfo;
         try {
 
-
-            groupInfo = memberMapper.getHouseholdByUserId(userId);
-//            groupInfo = memberMapper.getGroupIddByUserId(userId);
-            userId = groupInfo.getGroupId();
-
-            controlAuthKeyByUserIdResult = deviceMapper.getControlAuthKeyByUserId(userId);
-            if (controlAuthKeyByUserIdResult == null) {
-                msg = "기기정보가 없습니다.";
+            // 1. 사용자 그룹 정보 가져오기
+            groupInfo = memberMapper.getGroupIdByUserId(userId);
+            if (groupInfo == null || groupInfo.isEmpty()) {
+                msg = "그룹 정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            deviceNicknameAndDeviceLocNicknameResult = deviceMapper.getDeviceNicknameAndDeviceLocNickname(controlAuthKeyByUserIdResult);
-
-            if (deviceNicknameAndDeviceLocNicknameResult == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-                return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-            }
-            log.info("deviceNicknameAndDeviceLocNicknameResult: " + deviceNicknameAndDeviceLocNicknameResult);
-
-            multiSerialNumberBydeviceIdResult = deviceMapper.getMultiSerialNumberBydeviceId(controlAuthKeyByUserIdResult);
-            if (multiSerialNumberBydeviceIdResult == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-            log.info("multiSerialNumberBydeviceIdResult: " + multiSerialNumberBydeviceIdResult);
-
-            rKeyList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "controlAuthKey");
-            log.info("rKeyList: " + rKeyList);
-
-            deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
-            log.info("deviceIdList: " + deviceIdList);
-
-            deviceNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "deviceNickname");
-            log.info("deviceNicknameList: " + deviceNicknameList);
-
-            addrNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "addrNickname");
-            log.info("addrNicknameList: " + addrNicknameList);
-
-            serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
-            log.info("serialNumberList: " + serialNumberList);
-
-            regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
-            log.info("regSortList: " + regSortList);
-
-            latitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "latitude");
-            log.info("latitudeList: " + latitudeList);
-
-            longitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "longitude");
-            log.info("longitudeList: " + longitudeList);
-
-            modelCodeList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "modelCode");
-            log.info("modelCodeList: " + modelCodeList);
-
-            tmpKeyListList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "tmpRegistKey");
-            log.info("tmpKeyListList: " + tmpKeyListList);
-
-            devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
-            if (devicesStatusInfo == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-
-            activeStatusInfo = deviceMapper.getActiveStauts(serialNumberList);
-
-            log.info("devicesStatusInfo: " + devicesStatusInfo);
-            log.info("activeStatusInfo: " + activeStatusInfo);
-
-            if(rKeyList == null || deviceIdList == null){
-                msg = "등록된 R/C가 없습니다";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-
-            if(deviceNicknameList != null && addrNicknameList != null && regSortList != null && serialNumberList != null && latitudeList != null && longitudeList != null && modelCodeList != null && tmpKeyListList != null){
-                for(int i = 0; i < rKeyList.size(); ++i){
-                    Map<String, String> data = new HashMap<>();
-                    data.put("rKey", rKeyList.get(i));
-                    data.put("deviceNickname", deviceNicknameList.get(i));
-                    data.put("addrNickname", addrNicknameList.get(i));
-                    data.put("regSort", regSortList.get(i));
-                    data.put("deviceId", deviceIdList.get(i));
-                    data.put("latitude", latitudeList.get(i));
-                    data.put("longitude", longitudeList.get(i));
-                    data.put("controlAuthKey", rKeyList.get(i));
-                    data.put("tmpRegistKey", tmpKeyListList.get(i));
-                    data.put("deviceStatus", "1");
-                    data.put("powr", devicesStatusInfo.get(i).getPowr());
-                    data.put("opMd", devicesStatusInfo.get(i).getOpMd());
-                    data.put("htTp", devicesStatusInfo.get(i).getHtTp());
-                    data.put("wtTp", devicesStatusInfo.get(i).getWtTp());
-                    data.put("hwTp", devicesStatusInfo.get(i).getHwTp());
-                    data.put("ftMd", devicesStatusInfo.get(i).getFtMd());
-                    data.put("chTp", devicesStatusInfo.get(i).getChTp());
-                    data.put("mfDt", devicesStatusInfo.get(i).getMfDt());
-                    data.put("hwSt", devicesStatusInfo.get(i).getHwSt());
-                    data.put("fcLc", devicesStatusInfo.get(i).getFcLc());
-                    data.put("blCf", devicesStatusInfo.get(i).getBlCf());
-                    data.put("type24h", common.readCon(devicesStatusInfo.get(i).getH24(), "serviceMd"));
-                    data.put("slCd", devicesStatusInfo.get(i).getSlCd());
-                    data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
-                    data.put("inAq", devicesStatusInfo.get(i).getInAq());
-                    if(!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-91/WF")){
-                        data.put("ftMdAcTv", activeStatusInfo.get(i).getFtMd());
-                        data.put("fcLcAcTv", activeStatusInfo.get(i).getFcLc());
-                    } else if(!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-47/WF")){
-                        data.put("pastAcTv", activeStatusInfo.get(i).getPast());
-                        data.put("inDrAcTv", activeStatusInfo.get(i).getInDr());
-                        data.put("inClAcTv", activeStatusInfo.get(i).getInCl());
-                        data.put("ecStAcTv", activeStatusInfo.get(i).getEcSt());
-                    }
-                    appResponse.add(data);
+            // 2. 여러 그룹 ID에 대해 각 기기 정보를 조회
+            for (AuthServerDTO group : groupInfo) {
+                controlAuthKeyByUserIdResult = deviceMapper.getControlAuthKeyByUserId(group.getGroupId());
+                if (controlAuthKeyByUserIdResult == null || controlAuthKeyByUserIdResult.isEmpty()) {
+                    msg = "기기정보가 없습니다.";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
-                stringObject = "Y";
-            }else stringObject = "N";
+
+                deviceNicknameAndDeviceLocNicknameResult = deviceMapper.getDeviceNicknameAndDeviceLocNickname(controlAuthKeyByUserIdResult);
+                multiSerialNumberBydeviceIdResult = deviceMapper.getMultiSerialNumberBydeviceId(controlAuthKeyByUserIdResult);
+
+                if (deviceNicknameAndDeviceLocNicknameResult == null || multiSerialNumberBydeviceIdResult == null) {
+                    msg = "기기정보가 없습니다.";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
+                log.info("deviceNicknameAndDeviceLocNicknameResult: " + deviceNicknameAndDeviceLocNicknameResult);
+                log.info("multiSerialNumberBydeviceIdResult: " + multiSerialNumberBydeviceIdResult);
+
+                // 3. 각 데이터 리스트로 변환
+                rKeyList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "controlAuthKey");
+                deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
+                deviceNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "deviceNickname");
+                addrNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "addrNickname");
+                serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
+                regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
+                latitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "latitude");
+                longitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "longitude");
+                modelCodeList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "modelCode");
+                tmpKeyListList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "tmpRegistKey");
+
+                log.info("rKeyList: " + rKeyList);
+                log.info("deviceIdList: " + deviceIdList);
+                log.info("deviceNicknameList: " + deviceNicknameList);
+                log.info("addrNicknameList: " + addrNicknameList);
+                log.info("serialNumberList: " + serialNumberList);
+                log.info("regSortList: " + regSortList);
+                log.info("latitudeList: " + latitudeList);
+                log.info("longitudeList: " + longitudeList);
+                log.info("modelCodeList: " + modelCodeList);
+                log.info("tmpKeyListList: " + tmpKeyListList);
+
+                // 4. 기기 상태 정보 및 활성화 상태 조회
+                devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
+                activeStatusInfo = deviceMapper.getActiveStauts(serialNumberList);
+
+                if (devicesStatusInfo == null || devicesStatusInfo.isEmpty()) {
+                    msg = "등록된 R/C가 없습니다";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
+                log.info("devicesStatusInfo: " + devicesStatusInfo);
+                log.info("activeStatusInfo: " + activeStatusInfo);
+
+                if(deviceNicknameList != null &&
+                        addrNicknameList != null &&
+                        regSortList != null &&
+                        serialNumberList != null &&
+                        latitudeList != null &&
+                        longitudeList != null &&
+                        modelCodeList != null &&
+                        tmpKeyListList != null &&
+                        rKeyList != null &&
+                        deviceIdList != null){
+
+                    // 5. 데이터 매핑
+                    for (int i = 0; i < rKeyList.size(); ++i) {
+                        Map<String, String> data = new HashMap<>();
+                        data.put("rKey", rKeyList.get(i));
+                        data.put("deviceNickname", deviceNicknameList.get(i));
+                        data.put("addrNickname", addrNicknameList.get(i));
+                        data.put("regSort", regSortList.get(i));
+                        data.put("deviceId", deviceIdList.get(i));
+                        data.put("latitude", latitudeList.get(i));
+                        data.put("longitude", longitudeList.get(i));
+                        data.put("controlAuthKey", rKeyList.get(i));
+                        data.put("tmpRegistKey", tmpKeyListList.get(i));
+                        data.put("deviceStatus", "1");
+
+                        // 기기 상태 정보 추가
+                        DeviceStatusInfo.Device statusInfo = devicesStatusInfo.get(i);
+                        data.put("powr", statusInfo.getPowr());
+                        data.put("opMd", statusInfo.getOpMd());
+                        data.put("htTp", statusInfo.getHtTp());
+                        data.put("wtTp", statusInfo.getWtTp());
+                        data.put("hwTp", statusInfo.getHwTp());
+                        data.put("ftMd", statusInfo.getFtMd());
+                        data.put("chTp", statusInfo.getChTp());
+                        data.put("mfDt", statusInfo.getMfDt());
+                        data.put("hwSt", statusInfo.getHwSt());
+                        data.put("fcLc", statusInfo.getFcLc());
+                        data.put("blCf", statusInfo.getBlCf());
+                        data.put("type24h", common.readCon(statusInfo.getH24(), "serviceMd"));
+                        data.put("slCd", statusInfo.getSlCd());
+                        data.put("vtSp", statusInfo.getVtSp());
+                        data.put("inAq", statusInfo.getInAq());
+
+                        // 활성화 상태 정보 추가 (모델에 따라 분기 처리)
+                        if (!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-91/WF")) {
+                            DeviceStatusInfo.Device activeInfo = activeStatusInfo.get(i);
+                            data.put("ftMdAcTv", activeInfo.getFtMd());
+                            data.put("fcLcAcTv", activeInfo.getFcLc());
+                        } else if (!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-47/WF")) {
+                            DeviceStatusInfo.Device activeInfo = activeStatusInfo.get(i);
+                            data.put("pastAcTv", activeInfo.getPast());
+                            data.put("inDrAcTv", activeInfo.getInDr());
+                            data.put("inClAcTv", activeInfo.getInCl());
+                            data.put("ecStAcTv", activeInfo.getEcSt());
+                        }
+                        appResponse.add(data);
+                    }
+                    stringObject = "Y";
+                }
+            }
 
             if(stringObject.equals("Y")) {
                 msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 성공";
@@ -1606,191 +1598,6 @@ public class DeviceServiceImpl implements DeviceService {
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
-
-    /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
-//    @Override
-//    public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
-//
-//        /*
-//        * 구현전 생각해야 할 것
-//        * 1. 몇개의 응답을 올지 모름 (사용자가 몇개의 기기를 등록했는지 알아야함)
-//        * 2. 받은 응답을 어떻게 Passing 할 것인가
-//        * */
-//
-//        ApiResponse.Data result = new ApiResponse.Data();
-//        String stringObject = "N";
-//        String msg;
-//
-//        String userId = params.getUserId();
-//        String uuId = common.getTransactionId();
-//
-//        List<AuthServerDTO> groupInfo;
-//
-//        List<String> serialNumberList;
-//        List<String> rKeyList;
-//        List<String> deviceIdList;
-//        List<String> deviceNicknameList;
-//        List<String> addrNicknameList;
-//        List<String> latitudeList;
-//        List<String> longitudeList;
-//        List<String> regSortList;
-//        List<String> modelCodeList;
-//        List<String> tmpKeyListList;
-//
-//        List<Map<String, String>> appResponse = new ArrayList<>();
-//
-//        List<AuthServerDTO> controlAuthKeyByUserIdResult;
-//        List<AuthServerDTO> deviceNicknameAndDeviceLocNicknameResult;
-//        List<AuthServerDTO> multiSerialNumberBydeviceIdResult;
-//        List<DeviceStatusInfo.Device> devicesStatusInfo;
-//        List<DeviceStatusInfo.Device> activeStatusInfo;
-//        try {
-//
-//
-//            // 1. 사용자 그룹 정보 가져오기
-//            groupInfo = memberMapper.getGroupIdByUserId(userId);
-//            if (groupInfo == null || groupInfo.isEmpty()) {
-//                msg = "그룹 정보가 없습니다.";
-//                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-//                return new ResponseEntity<>(result, HttpStatus.OK);
-//            }
-//
-//            // 2. 여러 그룹 ID에 대해 각 기기 정보를 조회
-//            for (AuthServerDTO group : groupInfo) {
-//                controlAuthKeyByUserIdResult = deviceMapper.getControlAuthKeyByUserId(group.getUserId());
-//                if (controlAuthKeyByUserIdResult == null || controlAuthKeyByUserIdResult.isEmpty()) {
-//                    msg = "기기정보가 없습니다.";
-//                    result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-//                    return new ResponseEntity<>(result, HttpStatus.OK);
-//                }
-//
-//                deviceNicknameAndDeviceLocNicknameResult = deviceMapper.getDeviceNicknameAndDeviceLocNickname(controlAuthKeyByUserIdResult);
-//                multiSerialNumberBydeviceIdResult = deviceMapper.getMultiSerialNumberBydeviceId(controlAuthKeyByUserIdResult);
-//
-//                if (deviceNicknameAndDeviceLocNicknameResult == null || multiSerialNumberBydeviceIdResult == null) {
-//                    msg = "기기정보가 없습니다.";
-//                    result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-//                    return new ResponseEntity<>(result, HttpStatus.OK);
-//                }
-//
-//                log.info("deviceNicknameAndDeviceLocNicknameResult: " + deviceNicknameAndDeviceLocNicknameResult);
-//                log.info("multiSerialNumberBydeviceIdResult: " + multiSerialNumberBydeviceIdResult);
-//
-//                // 3. 각 데이터 리스트로 변환
-//                rKeyList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "controlAuthKey");
-//                deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
-//                deviceNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "deviceNickname");
-//                addrNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "addrNickname");
-//                serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
-//                regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
-//                latitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "latitude");
-//                longitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "longitude");
-//                modelCodeList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "modelCode");
-//                tmpKeyListList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "tmpRegistKey");
-//
-//                log.info("rKeyList: " + rKeyList);
-//                log.info("deviceIdList: " + deviceIdList);
-//                log.info("deviceNicknameList: " + deviceNicknameList);
-//                log.info("addrNicknameList: " + addrNicknameList);
-//                log.info("serialNumberList: " + serialNumberList);
-//                log.info("regSortList: " + regSortList);
-//                log.info("latitudeList: " + latitudeList);
-//                log.info("longitudeList: " + longitudeList);
-//                log.info("modelCodeList: " + modelCodeList);
-//                log.info("tmpKeyListList: " + tmpKeyListList);
-//
-//                // 4. 기기 상태 정보 및 활성화 상태 조회
-//                devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
-//                activeStatusInfo = deviceMapper.getActiveStauts(serialNumberList);
-//
-//                if (devicesStatusInfo == null || devicesStatusInfo.isEmpty()) {
-//                    msg = "등록된 R/C가 없습니다";
-//                    result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-//                    return new ResponseEntity<>(result, HttpStatus.OK);
-//                }
-//
-//                log.info("devicesStatusInfo: " + devicesStatusInfo);
-//                log.info("activeStatusInfo: " + activeStatusInfo);
-//
-//                if(deviceNicknameList != null &&
-//                        addrNicknameList != null &&
-//                        regSortList != null &&
-//                        serialNumberList != null &&
-//                        latitudeList != null &&
-//                        longitudeList != null &&
-//                        modelCodeList != null &&
-//                        tmpKeyListList != null &&
-//                        rKeyList != null){
-//
-//                    // 5. 데이터 매핑
-//                    for (int i = 0; i < rKeyList.size(); ++i) {
-//                        Map<String, String> data = new HashMap<>();
-//                        data.put("rKey", rKeyList.get(i));
-//                        data.put("deviceNickname", deviceNicknameList.get(i));
-//                        data.put("addrNickname", addrNicknameList.get(i));
-//                        data.put("regSort", regSortList.get(i));
-//                        data.put("deviceId", deviceIdList.get(i));
-//                        data.put("latitude", latitudeList.get(i));
-//                        data.put("longitude", longitudeList.get(i));
-//                        data.put("controlAuthKey", rKeyList.get(i));
-//                        data.put("tmpRegistKey", tmpKeyListList.get(i));
-//                        data.put("deviceStatus", "1");
-//
-//                        // 기기 상태 정보 추가
-//                        DeviceStatusInfo.Device statusInfo = devicesStatusInfo.get(i);
-//                        data.put("powr", statusInfo.getPowr());
-//                        data.put("opMd", statusInfo.getOpMd());
-//                        data.put("htTp", statusInfo.getHtTp());
-//                        data.put("wtTp", statusInfo.getWtTp());
-//                        data.put("hwTp", statusInfo.getHwTp());
-//                        data.put("ftMd", statusInfo.getFtMd());
-//                        data.put("chTp", statusInfo.getChTp());
-//                        data.put("mfDt", statusInfo.getMfDt());
-//                        data.put("hwSt", statusInfo.getHwSt());
-//                        data.put("fcLc", statusInfo.getFcLc());
-//                        data.put("blCf", statusInfo.getBlCf());
-//                        data.put("type24h", common.readCon(statusInfo.getH24(), "serviceMd"));
-//                        data.put("slCd", statusInfo.getSlCd());
-//                        data.put("vtSp", statusInfo.getVtSp());
-//                        data.put("inAq", statusInfo.getInAq());
-//
-//                        // 활성화 상태 정보 추가 (모델에 따라 분기 처리)
-//                        if (!activeStatusInfo.isEmpty()) {
-//                            DeviceStatusInfo.Device activeInfo = activeStatusInfo.get(i);
-//                            if (modelCodeList.get(i).equals("DCR-91/WF")) {
-//                                data.put("ftMdAcTv", activeInfo.getFtMd());
-//                                data.put("fcLcAcTv", activeInfo.getFcLc());
-//                            } else if (modelCodeList.get(i).equals("DCR-47/WF")) {
-//                                data.put("pastAcTv", activeInfo.getPast());
-//                                data.put("inDrAcTv", activeInfo.getInDr());
-//                                data.put("inClAcTv", activeInfo.getInCl());
-//                                data.put("ecStAcTv", activeInfo.getEcSt());
-//                            }
-//                        }
-//                        appResponse.add(data);
-//                    }
-//                    stringObject = "Y";
-//                }
-//            }
-//
-//            if(stringObject.equals("Y")) {
-//                msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 성공";
-//                result.setHomeViewValue(appResponse);
-//                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-//            }
-//
-//            if(stringObject.equals("N")) {
-//                msg = "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 실패";
-//                result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-//            }
-//            redisCommand.deleteValues(uuId);
-//            log.info("result: " + result);
-//            return new ResponseEntity<>(result, HttpStatus.OK);
-//        } catch (Exception e){
-//            log.error("", e);
-//            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-//        }
-//    }
 
     /** 홈 IoT 컨트롤러 정보 조회-단건 */
     @Override

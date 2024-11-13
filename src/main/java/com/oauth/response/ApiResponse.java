@@ -75,6 +75,7 @@ public class ApiResponse {
         private Object deviceStatusInfo;
         private Object pushInfo;
         private Object noticeInfo;
+        private Object groupInfo;
         private Object errorInfo;
         private String mobiusResponseCode;
         private String latitude;

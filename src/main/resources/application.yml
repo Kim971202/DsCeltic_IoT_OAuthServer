@@ -6,7 +6,7 @@ spring:
       suffix: .jsp
 
   datasource:
-    url: jdbc:mysql://3.37.23.88:3306/dsiot?characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://3.37.23.88:3306/ds_iot?characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
 #    url: jdbc:mysql://127.0.0.1:3306/dsiot?characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
     username: dsiotAppServer
 #    username: root

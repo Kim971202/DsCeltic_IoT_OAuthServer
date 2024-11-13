@@ -178,7 +178,8 @@
                 INVITE_START_DATE,
                 INVITE_END_DATE,
                 INVITE_ACCEPT_YN,
-                REQUEST_USER_NICK
+                REQUEST_USER_NICK,
+                GRP_IDX
             )
             VALUES(
                 #{requestUserId},
@@ -188,7 +189,8 @@
                 DATE_ADD(DATE_FORMAT(now(), "%y-%m-%d %H:%i:%S"),
                 INTERVAL 3 DAY),
                 'D',
-                #{requestUserNick}
+                #{requestUserNick},
+                #{groupIdx}
             );
     </insert>
 
@@ -212,7 +214,8 @@
             INVITE_END_DATE AS inviteEndDate,
             INVITE_ACCEPT_YN AS inviteAcceptYn,
             REQUEST_USER_NICK AS requestUserNick,
-            RESPONSE_USER_NICK AS responseUserNick
+            RESPONSE_USER_NICK AS responseUserNick,
+            GRP_IDX AS groupIdx
         FROM
             TBR_OPR_USER_INVITE_STATUS
         WHERE
@@ -517,14 +520,22 @@
         )
     </insert>
 
-    <update id="UpdateSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE
-            TBR_OPR_USER
-        SET
-            SAFE_ALARM_TIME = #{safeAlarmTime},
-            SAFE_ALARM_STATUS = #{safeAlarmStatus}
-        WHERE
-            USER_ID = #{userId}
+    <update id="InsertSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_OPR_SAFE_ALARM
+        (
+            USER_ID,
+            DEVC_ID,
+            SAFE_ALARM_SET,
+            SAFE_ALARM_STATUS
+        )
+            VALUES
+        (
+            #{userId},
+            #{deviceId},
+            #{safeAlarmTime},
+            #{safeAlarmStatus}
+        )
     </update>
 
     <select id="getSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
@@ -540,23 +551,6 @@
         GROUP BY
             USER_ID,
             SAFE_ALARM_STATUS
-    </select>
-
-    <select id="getPushYnStatus" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
-        SELECT
-            PUSH_YN_01 AS fPushYn,
-            PUSH_YN_02 AS sPushYn,
-            PUSH_YN_03 AS tPushYn
-        FROM
-            TBR_OPR_USER_DEVICE_PUSH
-        WHERE
-            USER_ID = #{userId}
-        <if test="deviceId != null">
-            AND DEVC_ID = #{deviceId}
-        </if>
-        <if test="deviceId == null">
-            LIMIT 1
-        </if>
     </select>
 
     <select id="getUserIdsByDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
@@ -662,25 +656,6 @@
             USER_ID = #{responseUserId}
     </update>
 
-    <update id="updateGrpInfoTable" parameterType="com.oauth.dto.AuthServerDTO" >
-        UPDATE
-            TBR_IOT_DEVICE_GRP_INFO
-        SET
-            GRP_ID = #{requestUserId}
-        WHERE
-            GRP_ID = #{responseUserId}
-    </update>
-
-    <update id="updateHouseholdToMember" parameterType="com.oauth.dto.AuthServerDTO" >
-        UPDATE
-            TBD_IOT_GRP_INFO
-        SET
-            GRP_NM = #{requestUserId},
-            HOUSE_HOLDER = 'N'
-        WHERE
-            GRP_ID = #{responseUserId}
-    </update>
-
     <insert id="insertHouseholder" parameterType="com.oauth.dto.AuthServerDTO" >
         INSERT INTO
             TBD_IOT_GRP_INFO
@@ -703,79 +678,63 @@
         )
     </insert>
 
-    <delete id="deleteDuplicateDeviceIdFromUserDevice" parameterType="com.oauth.dto.AuthServerDTO" >
-        DELETE
-        FROM
-            TBR_OPR_USER_DEVICE
-        WHERE
-            DEVC_ID IN
-        <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.deviceId}
-        </foreach>
-        AND
-            USER_ID IN
-        <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.userId}
-        </foreach>
-    </delete>
-
-    <delete id="deleteDuplicateDeviceIdFromRegist" parameterType="com.oauth.dto.AuthServerDTO" >
-        DELETE
-        FROM
-            TBT_OPR_DEVICE_REGIST
-        WHERE
-            DEVC_ID IN
-        <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.deviceId}
-        </foreach>
-        AND
-            USER_ID IN
-        <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.userId}
-        </foreach>
-    </delete>
-
-    <delete id="deleteDuplicateDeviceIdFromDeviceGrpInfo" parameterType="com.oauth.dto.AuthServerDTO" >
-        DELETE
-        FROM
-            TBR_IOT_DEVICE_GRP_INFO
-        WHERE
-            DEVC_ID IN
-        <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.deviceId}
-        </foreach>
-        AND
-            GRP_ID IN
-        <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.userId}
-        </foreach>
-    </delete>
-
-    <select id="getRegistDeviceIdByUserId" parameterType="String" resultMap="member">
-        SELECT
-            DEVC_ID AS deviceId,
-            USER_ID AS userId,
-            HP AS hp
-        FROM
-            TBT_OPR_DEVICE_REGIST
-        WHERE
-            USER_ID = #{userId}
-    </select>
-
     <select id="getFailyMemberByUserId" parameterType="String" resultMap="member">
         SELECT
+            a.GRP_ID AS groupId,
             a.USER_ID AS userId,
-            a.USER_NICK AS userNickname,
-            a.HOUSE_HOLDER AS householder,
-            b.HP AS hp
+            b.HP AS hp,
+            b.USER_NICK AS userNickname,
+            a.GRP_IDX AS groupIdx,
+            a.GRP_NM AS groupName
         FROM
-            TBD_IOT_GRP_INFO a
+            TBD_USER_INVITE_GROUP a
         INNER JOIN
             TBR_OPR_USER b
         ON
             a.USER_ID = b.USER_ID
         WHERE
-            GRP_NM = #{userId}
+            a.GRP_ID = #{userId}
+        OR
+            a.USER_ID = #{userId}
+    </select>
+
+    <select id="getFamilyMemberByGroupIdxList" parameterType="java.util.List" resultMap="member">
+        SELECT
+            a.GRP_ID AS groupId,
+            a.USER_ID AS userId,
+            b.HP AS hp,
+            b.USER_NICK AS userNickname,
+            a.GRP_IDX AS groupIdx,
+            a.GRP_NM AS groupName
+        FROM
+            TBD_USER_INVITE_GROUP a
+        INNER JOIN
+            TBR_OPR_USER b
+        ON
+            a.USER_ID = b.USER_ID
+        WHERE
+            a.GRP_IDX IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getGroupLeaderId" parameterType="Long" resultMap="member">
+        SELECT
+            GRP_ID AS groupId
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            idx = #{idx}
+    </select>
+
+    <select id="getGroupLeaderIdByGroupIdx" parameterType="String" resultMap="member">
+        SELECT
+            GRP_ID AS groupId
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            GRP_IDX = #{groupIdx}
     </select>
 
     <select id="getHouseholdByUserId" parameterType="String" resultMap="member">
@@ -879,44 +838,49 @@
             DEVC_ID = #{deviceId}
     </select>
 
-    <select id="getDeviceCount" parameterType="java.util.Map" resultMap="member">
-        SELECT
-            COUNT(*) AS deviceCount
-        FROM
+    <insert id="insertUserDevicePush" parameterType="com.oauth.dto.AuthServerDTO" >
+        INSERT INTO
             TBR_OPR_USER_DEVICE_PUSH
-        WHERE
-            DEVC_ID IN
-            <foreach collection="list" item="item" open="(" separator="," close=")">
-                #{item.deviceId}
-            </foreach>
-        AND
-            USER_ID IN
-            <foreach collection="list" item="item" open="(" separator="," close=")">
-                #{item.userId}
-            </foreach>
-    </select>
+        (
+            USER_ID,
+            DEVC_ID,
+            HP,
+            PUSH_YN_01,
+            PUSH_YN_02,
+            PUSH_YN_03
+        )
+            VALUES
+        (
+            #{userId},
+            #{deviceId},
+            #{hp},
+            'Y',
+            'Y',
+            'Y'
+        )
+    </insert>
 
     <insert id="insertUserDevicePushByList" parameterType="java.util.List" >
         INSERT INTO
             TBR_OPR_USER_DEVICE_PUSH
         (
-                USER_ID,
-                DEVC_ID,
-                HP,
-                PUSH_YN_01,
-                PUSH_YN_02,
-                PUSH_YN_03
+            USER_ID,
+            DEVC_ID,
+            HP,
+            PUSH_YN_01,
+            PUSH_YN_02,
+            PUSH_YN_03
         )
-            VALUES
+        VALUES
         <foreach collection="list" item="item" separator=",">
-        (
-            #{item.userId},
-            #{item.deviceId},
-            #{item.hp},
-            'N',
-            'N',
-            'N'
-        )
+            (
+                #{item.userId},
+                #{item.deviceId},
+                #{item.hp},
+                'Y',
+                'Y',
+                'Y'
+            )
         </foreach>
     </insert>
 
@@ -947,18 +911,71 @@
         LIMIT 1
     </select>
 
-    <insert id="insertInviteGroup" parameterType="java.util.List" >
+    <insert id="insertInviteGroup" parameterType="com.oauth.dto.AuthServerDTO" useGeneratedKeys="true" keyProperty="idx">
         INSERT INTO
             TBD_USER_INVITE_GROUP
         (
             GRP_ID,
-            USER_ID
+            GRP_NM,
+            USER_ID,
+            GRP_IDX
         )
-            VALUES
+        VALUES
         (
             #{groupId},
-            #{userId}
+            #{groupName},
+            #{groupId},
+            #{idx}
         )
     </insert>
+
+    <update id="updateInviteGroup" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBD_USER_INVITE_GROUP
+        SET
+            GRP_IDX = #{idx}
+        WHERE
+            idx = #{idx}
+    </update>
+
+    <insert id="insertInviteGroupMember" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+        TBD_USER_INVITE_GROUP
+        (
+            GRP_IDX,
+            GRP_ID,
+            USER_ID
+        )
+        VALUES
+        (
+            #{groupIdx},
+            #{requestUserId},
+            #{responseUserId}
+        )
+    </insert>
+
+    <select id="getRegistDeviceIdByUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            DEVC_ID AS deviceId,
+            USER_ID AS userId,
+            HP AS hp
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            USER_ID = #{userId}
+        AND
+            GRP_IDX = #{groupIdx}
+    </select>
+
+    <select id="getInviteGroupIdx" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            GRP_IDX AS groupIdx
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            GRP_ID = #{userId}
+        AND
+            USER_ID = #{userId}
+    </select>
 
 </mapper>

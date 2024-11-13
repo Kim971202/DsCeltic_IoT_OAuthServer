@@ -40,34 +40,6 @@ public class Common {
     @Autowired
     private MemberMapper memberMapper;
 
-    public static ApiResponse.Data.Invitation createInvitations(
-            String invitationIdx,
-            String inviteAcceptYn,
-            String requestUserId,
-            String requestUserNick,
-            String responseUserId,
-            String responseHp,
-            String inviteStartDate,
-            String inviteEndDate,
-            Set<String> invitationIds) {
-
-        invitationIds.add(invitationIdx);
-
-        // Device 생성
-        ApiResponse.Data.Invitation invitation = new ApiResponse.Data.Invitation();
-
-        invitation.setInvitationIdx(invitationIdx);
-        invitation.setInviteAcceptYn(inviteAcceptYn);
-        invitation.setRequestUserId(requestUserId);
-        invitation.setRequestUserNick(requestUserNick);
-        invitation.setResponseUserId(responseUserId);
-        invitation.setResponseHp(responseHp);
-        invitation.setInviteStartDate(inviteStartDate);
-        invitation.setInviteEndDate(inviteEndDate);
-
-        return invitation;
-    }
-
     public static List<String> extractJson(String inputList, String inputKey) {
 
         if(inputList.isEmpty()) return null;

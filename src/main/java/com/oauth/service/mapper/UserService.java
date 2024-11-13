@@ -30,6 +30,9 @@ public interface UserService {
     /** 사용자정보 조회 */
     ResponseEntity<?> doSearch(AuthServerDTO params) throws CustomException;
 
+    /** 사용자 그룹 정보 조회 */
+    ResponseEntity<?> doSearchGroupInfo(AuthServerDTO params) throws CustomException;
+
     /** 회원 별칭(이름) 및 전화번호 변경 */
     ResponseEntity<?> doUpdateUserNicknameHp(AuthServerDTO params) throws CustomException;
 

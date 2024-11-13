@@ -82,7 +82,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getUserNickname()) ||
                 Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getUserPassword()) ||
-                Validator.isNullOrEmpty(params.getPushToken()) ||
+//                Validator.isNullOrEmpty(params.getPushToken()) ||
                 Validator.isNullOrEmpty(params.getRegistUserType())){
             throw new CustomException("404", "회원 가입 입력 값 오류");
         }
@@ -173,6 +173,22 @@ public class UserController {
         return userService.doSearch(params);
     }
 
+    /** 사용자 그룹 정보 조회 */
+    @PostMapping(value = "/searchGroupInfo")
+    @ResponseBody
+    public ResponseEntity<?> doSearchGroupInfo(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException{
+
+        log.info("[사용자정보 조회]");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getUserId())){
+            throw new CustomException("404", "사용자정보 조회 입력 값 오류");
+        }
+
+        return userService.doSearchGroupInfo(params);
+    }
+
     /** 회원 별칭(이름) 및 전화번호 변경 */
     @PostMapping(value = "/updateUserNicknameHp")
     @ResponseBody
@@ -211,7 +227,7 @@ public class UserController {
     }
 
     /** 사용자(세대원) 정보 조회 */
-    @PostMapping(value = "/viewHouseholdMemebers")
+    @PostMapping(value = "/viewHouseholdMembers")
     @ResponseBody
     public ResponseEntity<?> doViewHouseholdMemebers(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException{
@@ -219,7 +235,7 @@ public class UserController {
         log.info("[사용자(세대원) 정보 조회]");
         common.logParams(params);
 
-        if(Validator.isNullOrEmpty(params.getUserId())){
+        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getGroupIdxList())){
             throw new CustomException("404", "사용자(세대원) 정보 조회 값 오류");
         }
 
@@ -236,9 +252,11 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getRequestUserId()) ||
+                Validator.isNullOrEmpty(params.getRequestUserNick()) ||
                 Validator.isNullOrEmpty(params.getResponseHp()) ||
                 Validator.isNullOrEmpty(params.getResponseUserId()) ||
-                Validator.isNullOrEmpty(params.getRequestUserNick())){
+                Validator.isNullOrEmpty(params.getInviteStartDate()) ||
+                Validator.isNullOrEmpty(params.getGroupIdx())){
             throw new CustomException("404", "사용자 추가 - 초대 값 오류");
         }
 
@@ -259,6 +277,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getResponseUserId()) ||
                 Validator.isNullOrEmpty(params.getResponseNickname()) ||
                 Validator.isNullOrEmpty(params.getInviteAcceptYn()) ||
+                Validator.isNullOrEmpty(params.getGroupIdx()) ||
                 Validator.isNullOrEmpty(params.getInvitationIdx())){
             throw new CustomException("404", "사용자 초대 - 수락여부 값 오류");
         }
@@ -429,8 +448,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getSerialNumber()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getTmpRegistKey()) ||
-                Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getModelCode())){
             throw new CustomException("404", "홈 IoT 최초 등록 인증 값 오류");
         }
         return userService.doFirstDeviceAuthCheck(params);
@@ -561,7 +579,7 @@ public class UserController {
         return userService.doUpdateDeviceLocationNickname(params);
     }
 
-    /*
+    /**
      * 임시 저장키 생성
      * */
     @PostMapping(value = "/generateTempKey")
@@ -578,7 +596,7 @@ public class UserController {
         return userService.dogenerateTempKey(params.getUserId());
     }
 
-    /*
+    /**
      * 안전안심 알람 설정
      * */
     @PostMapping(value = "/safeAlarmSet")
@@ -591,13 +609,14 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
             Validator.isNullOrEmpty(params.getSafeAlarmTime()) ||
-            Validator.isNullOrEmpty(params.getSafeAlarmStatus())){
+            Validator.isNullOrEmpty(params.getSafeAlarmStatus()) ||
+            Validator.isNullOrEmpty(params.getDeviceId())){
             throw new CustomException("404", "안전안심 알람 설정 값 오류");
         }
         return userService.doSafeAlarmSet(params);
     }
 
-    /*
+    /**
      * 빠른온수 예약 정보 조회
      * */
     @PostMapping(value = "/getFastHotWaterInfo")

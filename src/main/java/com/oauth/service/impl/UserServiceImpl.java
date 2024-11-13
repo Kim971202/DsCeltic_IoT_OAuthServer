@@ -11,7 +11,6 @@ import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.UserService;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
-import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -339,6 +338,38 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /** 사용자 그룹 정보 조회 */
+    @Override
+    public ResponseEntity<?> doSearchGroupInfo(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data data = new ApiResponse.Data();
+        String msg;
+        String userId = params.getUserId();
+        List<AuthServerDTO> groupInfo;
+        List<Map<String, Object>> groupInfoList = new ArrayList<>();
+        try {
+            groupInfo = memberMapper.getFailyMemberByUserId(userId);
+            if (groupInfo == null) {
+                msg = "그룹 정보가 없습니다.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+            for(AuthServerDTO authServerDTO : groupInfo){
+                Map<String, Object> map = new HashMap<>();
+                map.put("groupIdx", authServerDTO.getIdx());
+                map.put("groupName", authServerDTO.getGroupName());
+                groupInfoList.add(map);
+            }
+            msg = "그룹 정보 조회 성공";
+            data.setNoticeInfo(groupInfoList);
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("", e);
+            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     /** 회원 별칭(이름) 및 전화번호 변경 */
     @Override
     public ResponseEntity<?> doUpdateUserNicknameHp(AuthServerDTO params) throws CustomException{
@@ -445,18 +476,26 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String userId = params.getUserId();
+        List<String> groupIdxList = params.getGroupIdxList();
         List<AuthServerDTO> userIdList;
         List<HashMap<String, String>> user = new ArrayList<>();
         try {
 
-            userIdList = memberMapper.getFailyMemberByUserId(userId);
+            groupIdxList = Arrays.asList("12", "13");
+
+            userIdList = memberMapper.getFamilyMemberByGroupIdxList(groupIdxList);
 
             if(userIdList != null){
                 for(AuthServerDTO authServerDTO : userIdList){
                     HashMap<String, String> userMap = new HashMap<>();
+                    String household = "N";
+                    if(authServerDTO.getUserId().equals(authServerDTO.getGroupId())) household = "Y";
                     userMap.put("userId", authServerDTO.getUserId());
                     userMap.put("userNickname", authServerDTO.getUserNickname());
-                    userMap.put("householder", authServerDTO.getHouseholder());
+                    userMap.put("householder", household);
+                    userMap.put("groupName", authServerDTO.getGroupName());
+                    userMap.put("groupId", authServerDTO.getGroupId());
+                    userMap.put("groupIdx", authServerDTO.getGroupIdx());
                     user.add(userMap);  // 리스트에 HashMap 추가
                 }
             } else {
@@ -548,22 +587,45 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
-        AuthServerDTO userHp;
         AuthServerDTO userNickname;
         AuthServerDTO pushToken;
+
         List<AuthServerDTO> deviceIdList;
-        List<AuthServerDTO> familyMemberList;
+        List<AuthServerDTO> inputList = new ArrayList<>();
+
         String requestUserId = params.getRequestUserId();
         String responseUserId = params.getResponseUserId();
         String responseHp = params.getResponseHp();
+        String groupIdx = params.getGroupIdx();
         String inviteAcceptYn = params.getInviteAcceptYn();
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
+            params.setUserId(requestUserId);
+            // 세대주가 가지고 있는 기기 정보 List
+            deviceIdList = memberMapper.getRegistDeviceIdByUserId(params);
+
             if(inviteAcceptYn.equals("Y")){
 
+            /* TODO
+            *  1. 신규 세대원을 TBD_USER_INVITE_GROUP 테이블에 추가
+            *  2. 신규 세대원 관련 PUSH Message Info 등록
+            * */
+                memberMapper.insertInviteGroupMember(params);
+                params.setUserId(responseUserId);
 
+                inputList = new ArrayList<>();
+                for(AuthServerDTO authServerDTO : deviceIdList){
+                    AuthServerDTO newDevice = new AuthServerDTO();
+                    newDevice.setDeviceId(authServerDTO.getDeviceId());
+                    newDevice.setUserId(responseUserId);
+                    newDevice.setResponseHp(responseHp);
+
+                    // 리스트에 추가
+                    inputList.add(newDevice);
+                }
+                memberMapper.insertUserDevicePushByList(inputList);
 
             } else if(inviteAcceptYn.equals("N")){
 
@@ -622,63 +684,35 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String userId = params.getUserId();
+
+        List<Map<String, String>> invitationList = new ArrayList<>();
+        List<AuthServerDTO> invitationInfo;
         try {
 
-            List<AuthServerDTO> invitationInfo = memberMapper.getInvitationList(userId);
-            System.out.println("invitationInfo: " + invitationInfo);
+            invitationInfo = memberMapper.getInvitationList(userId);
             if (invitationInfo.isEmpty()) {
                 msg = "사용자 초대 이력이 없습니다.";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            // Device Set 생성
-            Set<String> invitationIds = new HashSet<>();
-            List<ApiResponse.Data.Invitation> inv = new ArrayList<>();
-
-            List<String> invitationIdxList = Common.extractJson(invitationInfo.toString(), "invitationIdx");
-            List<String> inviteAcceptYnList = Common.extractJson(invitationInfo.toString(), "inviteAcceptYn");
-            List<String> requestUserIdList = Common.extractJson(invitationInfo.toString(), "requestUserId");
-            List<String> requestUserNickList = Common.extractJson(invitationInfo.toString(), "requestUserNick");
-            List<String> responseUserIdList = Common.extractJson(invitationInfo.toString(), "responseUserId");
-//            List<String> responseUserNickList = Common.extractJson(invitationInfo.toString(), "responseUserNick");
-            List<String> responseHpList = Common.extractJson(invitationInfo.toString(), "responseHp");
-            List<String> inviteStartDateList = Common.extractJson(invitationInfo.toString(), "inviteStartDate");
-            List<String> inviteEndDateList = Common.extractJson(invitationInfo.toString(), "inviteEndDate");
-
-            // Mapper실행 후 사용자가 가지고 있는 Invitation 개수
-            int numInvitations = invitationInfo.size();
-
-            if(invitationIdxList != null
-                    && inviteAcceptYnList != null
-                    && requestUserIdList != null
-                    && requestUserNickList != null
-                    && responseUserIdList != null
-//                    && responseUserNickList != null
-                    && responseHpList != null
-                    && inviteStartDateList != null
-                    && inviteEndDateList != null
-            ){
-                // Member 추가
-                for (int i = 0; i < numInvitations; i++) {
-                    ApiResponse.Data.Invitation invitations = Common.createInvitations(
-                            invitationIdxList.get(i),
-                            inviteAcceptYnList.get(i),
-                            requestUserIdList.get(i),
-                            requestUserNickList.get(i),
-                            responseUserIdList.get(i),
-//                            responseUserNickList.get(i),
-                            responseHpList.get(i),
-                            inviteStartDateList.get(i),
-                            inviteEndDateList.get(i),
-                            invitationIds);
-                    inv.add(invitations);
-                }
+            for(AuthServerDTO authServerDTO : invitationInfo){
+                Map<String, String> map = new HashMap<>();
+                map.put("invitationIdx", authServerDTO.getInvitationIdx());
+                map.put("inviteAcceptYn", authServerDTO.getInviteAcceptYn());
+                map.put("requestUserId", authServerDTO.getRequestUserId());
+                map.put("requestUserNick", authServerDTO.getRequestUserNick());
+                map.put("responseUserId", authServerDTO.getResponseUserId());
+                map.put("responseHp", authServerDTO.getResponseHp());
+                map.put("inviteStartDate", authServerDTO.getInviteStartDate());
+                map.put("inviteEndDate", authServerDTO.getInviteEndDate());
+                map.put("groupIdx", authServerDTO.getGroupIdx());
+                invitationList.add(map);
             }
 
             msg = "사용자 초대 - 목록 조회 성공";
 
-            data.setInvitation(inv);
+            data.setInvitation(invitationList);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -1468,7 +1502,7 @@ public class UserServiceImpl implements UserService {
 
         try {
 
-            if(memberMapper.UpdateSafeAlarmSet(params) <= 0){
+            if(memberMapper.InsertSafeAlarmSet(params) <= 0){
                 msg = "안전안심 알람 설정 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 new ResponseEntity<>(result, HttpStatus.OK);
