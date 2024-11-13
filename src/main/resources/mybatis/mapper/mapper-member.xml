@@ -853,6 +853,28 @@
             USER_ID = #{userId}
     </delete>
 
+    <delete id="deleteUserInviteGroup" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            USER_ID = #{delUserId}
+        AND
+            GRP_IDX = #{groupIdx}
+    </delete>
+
+    <select id="getNextUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            USER_ID AS userId
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            GRP_IDX = #{groupIdx}
+        AND
+            USER_ID != #{userId}
+        LIMIT 1
+    </select>
+
     <select id="getFwhInfo" parameterType="String" resultMap="member">
         SELECT
             FWH AS fastHotWater

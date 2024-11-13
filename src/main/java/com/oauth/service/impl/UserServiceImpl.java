@@ -476,12 +476,13 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String userId = params.getUserId();
-        List<String> groupIdxList = params.getGroupIdxList();
+        String groupIdx = params.getGroupIdxList();
+        List<String> groupIdxList;
         List<AuthServerDTO> userIdList;
         List<HashMap<String, String>> user = new ArrayList<>();
         try {
 
-            groupIdxList = Arrays.asList("12", "13");
+            groupIdxList = Arrays.asList(groupIdx.split(","));
 
             userIdList = memberMapper.getFamilyMemberByGroupIdxList(groupIdxList);
 
@@ -745,6 +746,13 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            // TODO: TBD_USER_INVITE_GROUP 테이블 삭제
+            if(memberMapper.deleteUserInviteGroup(params) <= 0){
+                msg = "사용자(세대원) 강제탈퇴 실패";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
             msg = "사용자(세대원) - 강제탈퇴 성공";
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
@@ -882,61 +890,29 @@ public class UserServiceImpl implements UserService {
 
         try {
 
-            /*
-            * TODO:
-            *  1. TBR_IOT_DEVICE_GRP_INFO : GRP_ID => 신규 세대주 ID로 변경
-            *  2. TBD_IOT_GRP_INFO : 기존 새대원의 GRP_NM 신규 세대주 ID로 변경, 세대주 여부 N으로 변경
-            *  3. TBT_OPR_DEVICE_REGIST : USER_ID, HP => 신규 세대주 ID로 변경
-            *  4. TBR_OPR_USER_DEVICE : USER_ID => 신규 세대주 ID로 변경
-            *  5. TBR_OPR_USER_DEVICE : 세대주 여부 Y로 변경
-            *  6. TBR_OPR_ACCOUNT : 세대주 여부 Y로 변경
-            * */
+            /**
+             * TODO
+             * 1. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
+             * 2. 다음 세대원을 세대주로 변경 (다음 세대원이 없을 경우 그룹 삭제 이후 로직 종료)
+             * 3. TBT_OPR_DEVICE_REGIST, TBR_OPR_USER_DEVICE USER_ID 다음 세대원으로 변경
+             * */
 
-            // TODO: 1. 세대주 권한을 넘겨줄 세대원 쿼리
-            nextHouseholder = memberMapper.getNextHouseholder(userId);
+            // TODO: 1. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
+//            params.setDelUserId(userId);
+//            if(memberMapper.deleteUserInviteGroup(params) <= 0){
+//                msg = "사용자(세대원) 강제탈퇴 실패";
+//                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+//                return new ResponseEntity<>(data, HttpStatus.OK);
+//            }
 
-            /*
-            * nextHouseholder RESULT
-            * groupId : clspecial@naver.com
-            * userId : clspecial@naver.com
-            * groupName : yohan1202
-            * householder : N
-            * */
+            // TODO: 다음 세대원 검색
+            nextHouseholder = memberMapper.getNextUserId(params);
 
-            // TODO: 2. TBR_IOT_DEVICE_GRP_INFO : GRP_ID => 신규 세대주 ID로 변경 (HOUSE_HOLD 포함)
-            memberMapper.updateGrpInfoTableForNewHousehold(nextHouseholder);
-            memberMapper.updateGrpDeviceInfoTableForNewHousehold(nextHouseholder);
-            params.setHouseholder("Y");
-            params.setGroupId(nextHouseholder.getUserId());
-
-            // TODO: 3. TBD_IOT_GRP_INFO : 기존 새대원의 GRP_NM 신규 세대주 ID로 변경
-            params.setDelUserId(userId);
-            memberMapper.delHouseholdMember(params.getDelUserId());
-
-            /*
-            *  TODO: 4. TBT_OPR_DEVICE_REGIST : USER_ID, HP => 신규 세대주 ID로 변경
-            *   requestUserId: 신규 세대주
-            *   responseUserId: 이전 세대주
-            * */
-            params.setRequestUserId(nextHouseholder.getUserId());
-            params.setResponseUserId(userId);
-            userHp = memberMapper.getHpByUserId(nextHouseholder.getUserId());
-            params.setHp(userHp.getHp());
-            memberMapper.updateRegistTable(params);
-
-            /*
-            * TODO: 5. TBR_OPR_USER_DEVICE : USER_ID => 신규 세대주 ID로 변경
-            *  requestUserId: 신규 세대주
-            *  responseUserId: 이전 세대주
-            * */
-
-            // TODO: 6. 세대주 권한이양 받은 세대원 Household 항목 Y로 UPDATE
-
-            /*
-            * TODO: 7.
-            *  신규 세대주 TBR_OPR_USER HOUSE_HOLD Y
-            * */
-            params.setResponseUserId(nextHouseholder.getUserId());
+            if(nextHouseholder.getUserId().isEmpty()){
+                System.out.println("IS EMPTY");
+            } else {
+                System.out.println("NOT EMPTY");
+            }
 
             msg = "사용자(세대주) 탈퇴 성공";
 

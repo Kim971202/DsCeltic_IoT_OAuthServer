@@ -35,6 +35,7 @@ public interface MemberMapper {
     public AuthServerDTO getGroupLeaderIdByGroupIdx(String groupIdx);
     public AuthServerDTO getUserByUserId(String userId);
     public AuthServerDTO getAccountByUserId(String userId);
+    public AuthServerDTO getNextUserId(AuthServerDTO member);
     public AuthServerDTO getUserByUserIdAndHp(AuthServerDTO member);
     public AuthServerDTO getPasswordByUserId(String userId);
     public AuthServerDTO identifyRKey(String deviceId);
@@ -57,6 +58,7 @@ public interface MemberMapper {
     public int updateGrpDeviceInfoTableForNewHousehold(AuthServerDTO member);
     public int updateGrpInfoTableForNewHousehold(AuthServerDTO member);
     public int deleteUserDevicePush(String userId);
+    public int deleteUserInviteGroup(AuthServerDTO member);
     public int delHouseholdMember(String userId);
     public int insertHouseholder(AuthServerDTO member);
     public int updateRegistTable(AuthServerDTO member);

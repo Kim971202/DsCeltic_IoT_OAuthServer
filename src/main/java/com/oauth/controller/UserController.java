@@ -312,7 +312,8 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getDelUserId()) ||
-                Validator.isNullOrEmpty(params.getUserId())){
+                Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getGroupIdx())){
             throw new CustomException("404", "사용자(세대원) - 강제탈퇴 값 오류");
         }
         return userService.doDelHouseholdMembers(params);
@@ -373,7 +374,7 @@ public class UserController {
         log.info("[사용자(세대주) 탈퇴]");
         common.logParams(params);
 
-        if(Validator.isNullOrEmpty(params.getUserId())){
+        if(Validator.isNullOrEmpty(params.getUserId())|| Validator.isNullOrEmpty(params.getGroupIdx())){
             throw new CustomException("404", "사용자(세대주) 탈퇴 값 오류");
         }
         return userService.doDelHouseholder(params);

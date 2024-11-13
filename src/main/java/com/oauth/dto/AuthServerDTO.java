@@ -27,7 +27,7 @@ public class AuthServerDTO implements Serializable {
 
     private Long idx;
     private String groupIdx;
-    private List<String> groupIdxList;
+    private String groupIdxList;
     private String authority;                    // 권한
     private String hp;                           // 사용자 전화번호
     private String userId;                       // 사용자 아이디
