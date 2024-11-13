@@ -527,9 +527,9 @@
             <if test="slCd != null">SLCD = #{slCd},</if>
             <if test="ecOp != null">ECOP = #{ecOp},</if>
             <if test="fcLc != null">FCLC = #{fcLc},</if>
-            <if test="mfDt != null">MFDT = #{mfDt},</if>
             <if test="vtSp != null">VTSP = #{vtSp},</if>
             <if test="rsPw != null">RSPW = #{rsPw},</if>
+            MFDT = now(),
         </set>
         WHERE DEVC_ID = #{deviceId}
     </update>
