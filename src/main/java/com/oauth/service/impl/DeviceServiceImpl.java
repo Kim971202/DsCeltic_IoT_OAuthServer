@@ -282,8 +282,8 @@ public class DeviceServiceImpl implements DeviceService {
                     memberMapper.deleteControllerMapping(authServerDTO);
                 }
 
-                System.out.println(params.getGroupIdx() == null);
-                System.out.println(params.getGroupIdx().isEmpty());
+                System.out.println(params.getGroupIdx() == null);    // false
+                System.out.println(params.getGroupIdx().isEmpty()); // true
 
                 params.setGroupId(userId);
                 // TODO: GroupIdx가 NULL이면 신규 등록
@@ -1440,7 +1440,7 @@ public class DeviceServiceImpl implements DeviceService {
         List<String> rKeyList;
         List<String> deviceIdList;
         List<String> deviceNicknameList;
-        List<String> addrNicknameList;
+        List<String> groupIdxList;
         List<String> latitudeList;
         List<String> longitudeList;
         List<String> regSortList;
@@ -1452,6 +1452,7 @@ public class DeviceServiceImpl implements DeviceService {
         List<AuthServerDTO> controlAuthKeyByUserIdResult;
         List<AuthServerDTO> deviceNicknameAndDeviceLocNicknameResult;
         List<AuthServerDTO> multiSerialNumberBydeviceIdResult;
+        List<AuthServerDTO> groupIdxListByUserIdResult;
         List<DeviceStatusInfo.Device> devicesStatusInfo;
         List<DeviceStatusInfo.Device> activeStatusInfo;
         try {
@@ -1473,6 +1474,8 @@ public class DeviceServiceImpl implements DeviceService {
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
+                groupIdxListByUserIdResult = memberMapper.getGroupIdxByUserId(userId);
+
                 deviceNicknameAndDeviceLocNicknameResult = deviceMapper.getDeviceNicknameAndDeviceLocNickname(controlAuthKeyByUserIdResult);
                 multiSerialNumberBydeviceIdResult = deviceMapper.getMultiSerialNumberBydeviceId(controlAuthKeyByUserIdResult);
 
@@ -1489,7 +1492,7 @@ public class DeviceServiceImpl implements DeviceService {
                 rKeyList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "controlAuthKey");
                 deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
                 deviceNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "deviceNickname");
-                addrNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "addrNickname");
+                groupIdxList = Common.extractJson(groupIdxListByUserIdResult.toString(), "groupIdx");
                 serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
                 regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
                 latitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "latitude");
@@ -1500,7 +1503,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.info("rKeyList: " + rKeyList);
                 log.info("deviceIdList: " + deviceIdList);
                 log.info("deviceNicknameList: " + deviceNicknameList);
-                log.info("addrNicknameList: " + addrNicknameList);
+                log.info("groupIdxList: " + groupIdxList);
                 log.info("serialNumberList: " + serialNumberList);
                 log.info("regSortList: " + regSortList);
                 log.info("latitudeList: " + latitudeList);
@@ -1522,7 +1525,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.info("activeStatusInfo: " + activeStatusInfo);
 
                 if(deviceNicknameList != null &&
-                        addrNicknameList != null &&
+                        groupIdxList != null &&
                         regSortList != null &&
                         serialNumberList != null &&
                         latitudeList != null &&
@@ -1537,7 +1540,7 @@ public class DeviceServiceImpl implements DeviceService {
                         Map<String, String> data = new HashMap<>();
                         data.put("rKey", rKeyList.get(i));
                         data.put("deviceNickname", deviceNicknameList.get(i));
-                        data.put("addrNickname", addrNicknameList.get(i));
+                        data.put("groupIdx", groupIdxList.get(i));
                         data.put("regSort", regSortList.get(i));
                         data.put("deviceId", deviceIdList.get(i));
                         data.put("latitude", latitudeList.get(i));

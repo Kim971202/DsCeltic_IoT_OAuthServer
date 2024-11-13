@@ -918,6 +918,18 @@
             GRP_IDX = #{groupIdx}
     </select>
 
+    <select id="getGroupIdxByUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            GRP_IDX AS groupIdx,
+            USER_ID AS userId,
+            HP AS hp,
+            DEVC_ID AS deviceId
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
     <select id="getInviteGroupIdx" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             GRP_IDX AS groupIdx
