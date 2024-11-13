@@ -356,12 +356,12 @@ public class UserServiceImpl implements UserService {
             }
             for(AuthServerDTO authServerDTO : groupInfo){
                 Map<String, Object> map = new HashMap<>();
-                map.put("groupIdx", authServerDTO.getIdx());
+                map.put("groupIdx", authServerDTO.getGroupIdx());
                 map.put("groupName", authServerDTO.getGroupName());
                 groupInfoList.add(map);
             }
             msg = "그룹 정보 조회 성공";
-            data.setNoticeInfo(groupInfoList);
+            data.setGroupInfo(groupInfoList);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e){
