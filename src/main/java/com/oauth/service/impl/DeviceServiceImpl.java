@@ -282,21 +282,19 @@ public class DeviceServiceImpl implements DeviceService {
                     memberMapper.deleteControllerMapping(authServerDTO);
                 }
 
-                System.out.println(params.getGroupIdx() == null);    // false
-                System.out.println(params.getGroupIdx().isEmpty());  // true
-
                 params.setGroupId(userId);
-                // TODO: GroupIdx가 NULL이면 신규 등록
-                if(params.getGroupIdx().isEmpty()){
+                // TODO: getGroupIdx가 null이 아니고 비어있지 않은 경우의 처리
+                if(params.getGroupIdx() != null && !params.getGroupIdx().isEmpty()){
+                    params.setIdx(Long.parseLong(params.getGroupIdx()));
+                    groupLeaderIdByGroupIdx = memberMapper.getGroupLeaderIdByGroupIdx(params.getGroupIdx());
+                    familyMemberList = memberMapper.getFailyMemberByUserId(groupLeaderIdByGroupIdx.getGroupId());
+                } else {
+                    // TODO: getGroupIdx가 null이거나 비어있는 경우의 처리
                     memberMapper.insertInviteGroup(params);
                     memberMapper.updateInviteGroup(params);
                     // TODO: 신규 등록 시 등록한 Idx를 기반으로 사용자 ID 쿼리
                     groupLeaderId = memberMapper.getGroupLeaderId(params.getIdx());
                     familyMemberList = memberMapper.getFailyMemberByUserId(groupLeaderId.getGroupId());
-                } else {
-                    params.setIdx(Long.parseLong(params.getGroupIdx()));
-                    groupLeaderIdByGroupIdx = memberMapper.getGroupLeaderIdByGroupIdx(params.getGroupIdx());
-                    familyMemberList = memberMapper.getFailyMemberByUserId(groupLeaderIdByGroupIdx.getGroupId());
                 }
 
                 // Push 설정 관련 기본 DB 추가
