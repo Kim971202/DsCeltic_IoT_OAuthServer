@@ -551,7 +551,7 @@
         FROM
             TBR_IOT_DEVICE_GRP_INFO
         WHERE
-            DEVC_ID AS #{deviceId}
+            DEVC_ID = #{deviceId}
     </select>
 
     <select id="getAllUserIdsByDeviceId" parameterType="String" resultMap="member">
