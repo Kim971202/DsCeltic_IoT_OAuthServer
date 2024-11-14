@@ -175,7 +175,7 @@ public class MobiusController {
             int rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
-            List<AuthServerDTO> userIds = memberMapper.getDeviceIdByUserIds(common.readCon(jsonBody, "deviceId"));
+            List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
 
             AuthServerDTO info = new AuthServerDTO();
 

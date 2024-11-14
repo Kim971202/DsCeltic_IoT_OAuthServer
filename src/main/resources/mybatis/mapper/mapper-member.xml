@@ -546,16 +546,12 @@
 
     <select id="getUserIdsByDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
-            a.USER_ID AS userId,
-            b.DEVC_ID AS deviceId
+            USER_ID AS userId,
+            DEVC_ID AS deviceId
         FROM
-            TBD_IOT_GRP_INFO a
-        INNER JOIN
-            TBR_IOT_DEVICE_GRP_INFO b
+            TBR_IOT_DEVICE_GRP_INFO
         WHERE
-            a.GRP_NM = b.GRP_ID AND b.DEVC_ID = #{deviceId}
-        AND
-            a.GRP_NM = #{groupId}
+            DEVC_ID AS #{deviceId}
     </select>
 
     <select id="getAllUserIdsByDeviceId" parameterType="String" resultMap="member">
@@ -1004,7 +1000,8 @@
 
     <select id="getDeviceIdByUserIds" parameterType="String" resultMap="member">
         SELECT
-            USER_ID AS userId
+            USER_ID AS userId,
+            DEVC_ID AS deviceId
         FROM
             TBR_IOT_DEVICE_GRP_INFO
         WHERE
