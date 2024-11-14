@@ -1469,7 +1469,7 @@ public class DeviceServiceImpl implements DeviceService {
             // 2. 여러 그룹 ID에 대해 각 기기 정보를 조회
             for (AuthServerDTO group : groupInfo) {
                 controlAuthKeyByUserIdResult = deviceMapper.getControlAuthKeyByUserId(group.getGroupId());
-                if (controlAuthKeyByUserIdResult == null || controlAuthKeyByUserIdResult.isEmpty()) {
+                if (controlAuthKeyByUserIdResult == null) {
                     msg = "기기정보가 없습니다.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);

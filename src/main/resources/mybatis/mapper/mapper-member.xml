@@ -176,7 +176,8 @@
                 INVITE_END_DATE,
                 INVITE_ACCEPT_YN,
                 REQUEST_USER_NICK,
-                GRP_IDX
+                GRP_IDX,
+                GRP_NM
             )
             VALUES(
                 #{requestUserId},
@@ -187,7 +188,8 @@
                 INTERVAL 3 DAY),
                 'D',
                 #{requestUserNick},
-                #{groupIdx}
+                #{groupIdx},
+                #{groupName}
             );
     </insert>
 
@@ -212,7 +214,8 @@
             INVITE_ACCEPT_YN AS inviteAcceptYn,
             REQUEST_USER_NICK AS requestUserNick,
             RESPONSE_USER_NICK AS responseUserNick,
-            GRP_IDX AS groupIdx
+            GRP_IDX AS groupIdx,
+            GRP_NM AS groupName
         FROM
             TBR_OPR_USER_INVITE_STATUS
         WHERE
@@ -950,13 +953,15 @@
         (
             GRP_IDX,
             GRP_ID,
-            USER_ID
+            USER_ID,
+            GRP_NM
         )
         VALUES
         (
             #{groupIdx},
             #{requestUserId},
-            #{responseUserId}
+            #{responseUserId},
+            #{groupName}
         )
     </insert>
 

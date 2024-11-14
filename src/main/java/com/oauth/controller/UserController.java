@@ -256,7 +256,8 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getResponseHp()) ||
                 Validator.isNullOrEmpty(params.getResponseUserId()) ||
                 Validator.isNullOrEmpty(params.getInviteStartDate()) ||
-                Validator.isNullOrEmpty(params.getGroupIdx())){
+                Validator.isNullOrEmpty(params.getGroupIdx()) ||
+                Validator.isNullOrEmpty(params.getGroupName())){
             throw new CustomException("404", "사용자 추가 - 초대 값 오류");
         }
 
@@ -278,7 +279,8 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getResponseNickname()) ||
                 Validator.isNullOrEmpty(params.getInviteAcceptYn()) ||
                 Validator.isNullOrEmpty(params.getGroupIdx()) ||
-                Validator.isNullOrEmpty(params.getInvitationIdx())){
+                Validator.isNullOrEmpty(params.getInvitationIdx()) ||
+                Validator.isNullOrEmpty(params.getGroupName())){
             throw new CustomException("404", "사용자 초대 - 수락여부 값 오류");
         }
 

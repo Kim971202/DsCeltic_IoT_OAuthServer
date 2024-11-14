@@ -596,7 +596,6 @@ public class UserServiceImpl implements UserService {
         String requestUserId = params.getRequestUserId();
         String responseUserId = params.getResponseUserId();
         String responseHp = params.getResponseHp();
-        String groupIdx = params.getGroupIdx();
         String inviteAcceptYn = params.getInviteAcceptYn();
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -707,6 +706,7 @@ public class UserServiceImpl implements UserService {
                 map.put("inviteStartDate", authServerDTO.getInviteStartDate());
                 map.put("inviteEndDate", authServerDTO.getInviteEndDate());
                 map.put("groupIdx", authServerDTO.getGroupIdx());
+                map.put("groupName", authServerDTO.getGroupName());
                 invitationList.add(map);
             }
 
