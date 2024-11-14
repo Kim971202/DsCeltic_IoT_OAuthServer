@@ -592,7 +592,8 @@ public class UserServiceImpl implements UserService {
         AuthServerDTO pushToken;
 
         List<AuthServerDTO> deviceIdList;
-        List<AuthServerDTO> inputList = new ArrayList<>();
+        List<AuthServerDTO> inputList;
+        List<AuthServerDTO> userDeviceList;
 
         String requestUserId = params.getRequestUserId();
         String responseUserId = params.getResponseUserId();
@@ -624,7 +625,7 @@ public class UserServiceImpl implements UserService {
                     AuthServerDTO newDevice = new AuthServerDTO();
                     newDevice.setDeviceId(authServerDTO.getDeviceId());
                     newDevice.setUserId(responseUserId);
-                    newDevice.setResponseHp(responseHp);
+                    newDevice.setHp(responseHp);
 
                     // 리스트에 추가
                     inputList.add(newDevice);
@@ -635,6 +636,21 @@ public class UserServiceImpl implements UserService {
                     return new ResponseEntity<>(data, HttpStatus.OK);
                 }
 
+                inputList = new ArrayList<>();
+                for(AuthServerDTO authServerDTO : deviceIdList){
+                    AuthServerDTO newDevice = new AuthServerDTO();
+                    newDevice.setDeviceId(authServerDTO.getDeviceId());
+                    newDevice.setUserId(responseUserId);
+
+                    // 리스트에 추가
+                    inputList.add(newDevice);
+                }
+
+                if(deviceMapper.insertDeviceListGrpInfo(inputList) <= 0){
+                    msg = "사용자 초대 - 수락 실패";
+                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(data, HttpStatus.OK);
+                }
                 if(memberMapper.acceptInvite(params) <= 0){
                     msg = "사용자 초대 - 수락 실패";
                     data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);

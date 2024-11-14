@@ -134,6 +134,22 @@
             )
     </insert>
 
+    <insert id="insertDeviceListGrpInfo" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_IOT_DEVICE_GRP_INFO
+        (
+            DEVC_ID,
+            GRP_ID
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.deviceId},
+                #{item.userId}
+            )
+        </foreach>
+    </insert>
+
     <insert id="insertDevice" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO TBR_IOT_DEVICE
             (
