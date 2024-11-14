@@ -1002,7 +1002,7 @@
             USER_ID = #{userId}
     </select>
 
-    <select id="getInviteGroupIdx" parameterType="String" resultMap="member">
+    <select id="getDeviceIdByUserIds" parameterType="String" resultMap="member">
         SELECT
             USER_ID AS userId
         FROM
