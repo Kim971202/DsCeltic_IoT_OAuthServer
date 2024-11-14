@@ -283,7 +283,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
 
                 System.out.println(params.getGroupIdx() == null);    // false
-                System.out.println(params.getGroupIdx().isEmpty()); // true
+                System.out.println(params.getGroupIdx().isEmpty());  // true
 
                 params.setGroupId(userId);
                 // TODO: GroupIdx가 NULL이면 신규 등록

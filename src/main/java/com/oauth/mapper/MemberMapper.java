@@ -23,6 +23,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getWorkTime(AuthServerDTO param);
     public List<AuthServerDTO> getUserIdsByDeviceId(AuthServerDTO params);
     public List<AuthServerDTO> getAllUserIdsByDeviceId(String deviceId);
+    public List<AuthServerDTO> getInviteGroupIdx(String deviceId);
     public List<AuthServerDTO> getPushYnStatusByUserIds(List<AuthServerDTO> userIds);
     public List<AuthServerDTO> getFailyMemberByUserId(String userId);
     public List<AuthServerDTO> getFamilyMemberByGroupIdxList(List<String> userId);

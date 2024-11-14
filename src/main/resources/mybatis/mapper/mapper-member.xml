@@ -1002,4 +1002,13 @@
             USER_ID = #{userId}
     </select>
 
+    <select id="getInviteGroupIdx" parameterType="String" resultMap="member">
+        SELECT
+            USER_ID AS userId
+        FROM
+            TBR_IOT_DEVICE_GRP_INFO
+        WHERE
+            DEVC_ID AS #{deviceId}
+    </select>
+
 </mapper>
