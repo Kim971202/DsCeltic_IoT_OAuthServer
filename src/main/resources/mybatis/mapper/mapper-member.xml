@@ -595,9 +595,9 @@
         UPDATE
             TBD_IOT_GRP_INFO
         SET
-            GRP_NM = #{userId} <!-- yohan971202 -->
+            GRP_NM = #{newId} <!-- yohan971202 -->
         WHERE
-            GRP_NM = #{groupName} <!-- yohan1202 -->
+            GRP_NM = #{oldId} <!-- yohan1202 -->
     </update>
 
     <update id="updateGrpDeviceInfoTableForNewHousehold" parameterType="com.oauth.dto.AuthServerDTO" >

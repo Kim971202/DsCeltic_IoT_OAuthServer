@@ -549,6 +549,7 @@ public class UserServiceImpl implements UserService {
             conMap.put("targetToken", pushToken.getPushToken());
             conMap.put("title", "adUr");
             conMap.put("isEnd", "false");
+            conMap.put("body", "adUr");
             conMap.put("userNickname", userNickname.getUserNickname());
             conMap.put("pushYn", "Y");
 
@@ -614,6 +615,10 @@ public class UserServiceImpl implements UserService {
                 memberMapper.insertInviteGroupMember(params);
                 params.setUserId(responseUserId);
 
+                params.setNewId(params.getRequestUserId());
+                params.setOldId(params.getResponseUserId());
+                memberMapper.updateGrpInfoTableForNewHousehold(params);
+
                 inputList = new ArrayList<>();
                 for(AuthServerDTO authServerDTO : deviceIdList){
                     AuthServerDTO newDevice = new AuthServerDTO();
@@ -624,8 +629,17 @@ public class UserServiceImpl implements UserService {
                     // 리스트에 추가
                     inputList.add(newDevice);
                 }
-                memberMapper.insertUserDevicePushByList(inputList);
+                if(memberMapper.insertUserDevicePushByList(inputList) <= 0){
+                    msg = "사용자 초대 - 수락 실패";
+                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(data, HttpStatus.OK);
+                }
 
+                if(memberMapper.acceptInvite(params) <= 0){
+                    msg = "사용자 초대 - 수락 실패";
+                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(data, HttpStatus.OK);
+                }
             } else if(inviteAcceptYn.equals("N")){
 
                 if(memberMapper.acceptInvite(params) <= 0){
