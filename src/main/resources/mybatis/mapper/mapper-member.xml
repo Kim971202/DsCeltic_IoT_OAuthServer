@@ -718,8 +718,6 @@
         FROM
             TBD_USER_INVITE_GROUP
         WHERE
-            GRP_ID = #{userId}
-        OR
             USER_ID = #{userId}
     </select>
 
