@@ -1475,7 +1475,7 @@ public class DeviceServiceImpl implements DeviceService {
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                groupIdxListByUserIdResult = memberMapper.getGroupIdxByUserId(userId);
+                groupIdxListByUserIdResult = memberMapper.getGroupIdxByUserId(group.getGroupId());
                 deviceNicknameAndDeviceLocNicknameResult = deviceMapper.getDeviceNicknameAndDeviceLocNickname(controlAuthKeyByUserIdResult);
                 multiSerialNumberBydeviceIdResult = deviceMapper.getMultiSerialNumberBydeviceId(controlAuthKeyByUserIdResult);
 
