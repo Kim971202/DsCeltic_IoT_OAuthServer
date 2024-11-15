@@ -348,7 +348,7 @@ public class UserServiceImpl implements UserService {
         List<AuthServerDTO> groupInfo;
         List<Map<String, Object>> groupInfoList = new ArrayList<>();
         try {
-            groupInfo = memberMapper.getFamilyMemberByGroupIdxList(userId);
+            groupInfo = memberMapper.getMemberByGroupIdxList(userId);
             if (groupInfo == null) {
                 msg = "그룹 정보가 없습니다.";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
@@ -475,12 +475,16 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
-        String groupIdx = params.getGroupIdxList();
         String userId = params.getUserId();
+        String groupIdx = params.getGroupIdxList();
         List<AuthServerDTO> userIdList;
+        List<String> groupIdxList;
         List<HashMap<String, String>> user = new ArrayList<>();
         try {
-            userIdList = memberMapper.getFamilyMemberByGroupIdxList(userId);
+
+            groupIdxList = Arrays.asList(groupIdx.split(","));
+
+            userIdList = memberMapper.getFamilyMemberByGroupIdxList(groupIdxList);
 
             if(userIdList != null){
                 for(AuthServerDTO authServerDTO : userIdList){

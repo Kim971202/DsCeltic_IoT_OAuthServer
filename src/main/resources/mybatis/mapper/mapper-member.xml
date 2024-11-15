@@ -657,28 +657,28 @@
             a.USER_ID = #{userId}
     </select>
 
-<!--    <select id="getFamilyMemberByGroupIdxList" parameterType="java.util.List" resultMap="member">-->
-<!--        SELECT-->
-<!--            a.GRP_ID AS groupId,-->
-<!--            a.USER_ID AS userId,-->
-<!--            b.HP AS hp,-->
-<!--            b.USER_NICK AS userNickname,-->
-<!--            a.GRP_IDX AS groupIdx,-->
-<!--            a.GRP_NM AS groupName-->
-<!--        FROM-->
-<!--            TBD_USER_INVITE_GROUP a-->
-<!--        INNER JOIN-->
-<!--            TBR_OPR_USER b-->
-<!--        ON-->
-<!--            a.USER_ID = b.USER_ID-->
-<!--        WHERE-->
-<!--            a.GRP_IDX IN-->
-<!--        <foreach collection="list" item="item" open="(" separator="," close=")">-->
-<!--            #{item}-->
-<!--        </foreach>-->
-<!--    </select>-->
-
     <select id="getFamilyMemberByGroupIdxList" parameterType="java.util.List" resultMap="member">
+        SELECT
+            a.GRP_ID AS groupId,
+            a.USER_ID AS userId,
+            b.HP AS hp,
+            b.USER_NICK AS userNickname,
+            a.GRP_IDX AS groupIdx,
+            a.GRP_NM AS groupName
+        FROM
+            TBD_USER_INVITE_GROUP a
+        INNER JOIN
+            TBR_OPR_USER b
+        ON
+            a.USER_ID = b.USER_ID
+        WHERE
+            a.GRP_IDX IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getMemberByGroupIdxList" parameterType="java.util.List" resultMap="member">
         SELECT
             a.GRP_ID AS groupId,
             a.USER_ID AS userId,
