@@ -82,7 +82,6 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getUserNickname()) ||
                 Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getUserPassword()) ||
-//                Validator.isNullOrEmpty(params.getPushToken()) ||
                 Validator.isNullOrEmpty(params.getRegistUserType())){
             throw new CustomException("404", "회원 가입 입력 값 오류");
         }
@@ -472,7 +471,8 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
-                Validator.isNullOrEmpty(params.getModelCode())){
+                Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getGroupIdx())){
             throw new CustomException("404", "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 값 오류");
         }
         return userService.doUserDeviceDelete(params);

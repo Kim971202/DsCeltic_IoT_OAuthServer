@@ -27,6 +27,7 @@ public class AuthServerDTO implements Serializable {
 
     private Long idx;
     private String newId;
+    private String hpCount;
     private String oldId;
     private String nextUserId;
     private String groupIdx;

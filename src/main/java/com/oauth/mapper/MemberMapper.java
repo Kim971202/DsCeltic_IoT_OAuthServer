@@ -33,6 +33,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getUserIdFromDeviceGroup(String deviceId);
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
     public AuthServerDTO getDeviceNicknameByDeviceId(String deviceId);
+    public AuthServerDTO checkDuplicateHp(String newHp);
     public AuthServerDTO getGroupLeaderId(Long idx);
     public AuthServerDTO getGroupLeaderIdByGroupIdx(String groupIdx);
     public AuthServerDTO getUserByUserId(String userId);
