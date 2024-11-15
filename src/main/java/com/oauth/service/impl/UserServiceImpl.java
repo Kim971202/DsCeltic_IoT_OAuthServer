@@ -476,6 +476,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String groupIdx = params.getGroupIdxList();
+        String userId = params.getUserId();
         List<String> groupIdxList;
         List<AuthServerDTO> userIdList;
         List<HashMap<String, String>> user = new ArrayList<>();
@@ -483,7 +484,7 @@ public class UserServiceImpl implements UserService {
 
             groupIdxList = Arrays.asList(groupIdx.split(","));
 
-            userIdList = memberMapper.getFamilyMemberByGroupIdxList(groupIdxList);
+            userIdList = memberMapper.getFamilyMemberByGroupIdxList(userId);
 
             if(userIdList != null){
                 for(AuthServerDTO authServerDTO : userIdList){
