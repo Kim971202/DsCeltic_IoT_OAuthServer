@@ -1746,6 +1746,8 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("deviceId", authServerDTO.getDeviceId());
                     data.put("controlAuthKey", authServerDTO.getControlAuthKey());
                     data.put("tempKey", authServerDTO.getTmpRegistKey());
+                    data.put("groupIdx", authServerDTO.getGroupIdx());
+                    data.put("groupName", authServerDTO.getGroupName());
                     appResponse.add(data);
                 }
                 stringObject = "Y";
