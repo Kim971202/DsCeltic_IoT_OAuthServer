@@ -1035,12 +1035,12 @@
 
     <select id="getDeviceIdByUserIds" parameterType="String" resultMap="member">
         SELECT
-            USER_ID AS userId,
+            GRP_ID AS userId,
             DEVC_ID AS deviceId
         FROM
             TBR_IOT_DEVICE_GRP_INFO
         WHERE
-            DEVC_ID AS #{deviceId}
+            GRP_ID = #{userId}
     </select>
 
 </mapper>

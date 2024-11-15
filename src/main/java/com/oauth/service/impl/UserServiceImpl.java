@@ -868,7 +868,7 @@ public class UserServiceImpl implements UserService {
 
             // TDOD: 세대주 ID 쿼리
             householderId = memberMapper.getHouseholdByUserId(userId).getGroupId();
-            deviceIdList = memberMapper.getDeviceIdByUserId(householderId);
+            deviceIdList = memberMapper.getDeviceIdByUserIds(householderId);
 
             // deviceIds를 쉼표로 구분된 String으로 변환
             String deviceIds = deviceIdList.stream()
