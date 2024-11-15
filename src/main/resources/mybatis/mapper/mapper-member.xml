@@ -1013,6 +1013,15 @@
             USER_ID = #{userId}
     </select>
 
+    <select id="getDeviceCountFromRegist" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS deviceCount
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
     <select id="getInviteGroupIdx" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             GRP_IDX AS groupIdx
