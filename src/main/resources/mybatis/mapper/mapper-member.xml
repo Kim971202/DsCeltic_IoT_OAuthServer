@@ -130,7 +130,6 @@
         WHERE HP = #{newHp}
     </select>
 
-
     <update id="updateGrpNick" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBD_IOT_GRP_INFO
