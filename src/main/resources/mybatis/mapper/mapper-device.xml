@@ -5,7 +5,7 @@
     <resultMap id="device" type="com.oauth.dto.AuthServerDTO"> </resultMap>
     <resultMap id="dr910w" type="com.oauth.dto.gw.DeviceStatusInfo$Device"> </resultMap>
 
-    <select id="getDeviceInfoSearchList" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+    <select id="getDeviceInfoSearchList" parameterType="java.util.List" resultMap="device">
         SELECT
             device.DEVC_MODL_CD AS modelCode,
             device.ATTC_ID AS controlAuthKey,
@@ -29,7 +29,10 @@
         ON
             device.DEVC_ID = regist.DEVC_ID
         WHERE
-            regist.USER_ID = #{userId}
+            regist.USER_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.groupId}
+        </foreach>
     </select>
 
     <select id="getSingleSerialNumberBydeviceId" parameterType="String" resultMap="device">

@@ -1741,22 +1741,21 @@ public class DeviceServiceImpl implements DeviceService {
         * 2. DeviceId로 필요한 Data를 쿼리 (TBT_OPR_DEVICE_REGIST, TBR_IOT_DEVICE)
         * */
 
+        String groupIdx = params.getGroupIdxList();
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = "N";
         String msg = null;
-
+        List<String> groupIdxList;
+        List<AuthServerDTO> userIdList;
         List<Map<String, String>> appResponse = new ArrayList<>();
         List<AuthServerDTO> deviceInfoList;
 
-        AuthServerDTO householdStatus;
-
         try {
 
-            // TODO: 만약 Household 여부가 N인 경우에는 세대주의 USERID 사용
-            householdStatus = memberMapper.getHouseholdByUserId(params.getUserId());
-            if(householdStatus.getHouseholder().equals("N")) params.setUserId(householdStatus.getGroupId());
+            groupIdxList = Arrays.asList(groupIdx.split(","));
+            userIdList = memberMapper.getFamilyMemberByGroupIdxList(groupIdxList);
 
-            deviceInfoList = deviceMapper.getDeviceInfoSearchList(params);
+            deviceInfoList = deviceMapper.getDeviceInfoSearchList(userIdList);
 
             if(!deviceInfoList.isEmpty()){
                 for (AuthServerDTO authServerDTO : deviceInfoList) {

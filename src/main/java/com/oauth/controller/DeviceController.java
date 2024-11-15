@@ -265,7 +265,7 @@ public class DeviceController {
         log.info("[홈 IoT 정보 조회 - 리스트]");
         common.logParams(params);
 
-        if(Validator.isNullOrEmpty(params.getUserId())){
+        if(Validator.isNullOrEmpty(params.getUserId())|| Validator.isNullOrEmpty(params.getGroupIdxList())){
             throw new CustomException("404", "홈 IoT 정보 조회 - 리스트 값 오류");
         }
         return deviceService.doDeviceInfoSearchList(params);

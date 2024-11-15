@@ -841,7 +841,7 @@
             #{hp},
             'Y',
             'Y',
-            'Y'
+            'N'
         )
     </insert>
 
@@ -864,7 +864,7 @@
                 #{item.hp},
                 'Y',
                 'Y',
-                'Y'
+                'N'
             )
         </foreach>
     </insert>
