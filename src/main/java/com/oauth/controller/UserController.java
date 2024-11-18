@@ -181,7 +181,7 @@ public class UserController {
         log.info("[사용자정보 조회]");
         common.logParams(params);
 
-        if(Validator.isNullOrEmpty(params.getUserId())){
+        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getHouseLeaderFlag())){
             throw new CustomException("404", "사용자정보 조회 입력 값 오류");
         }
 
