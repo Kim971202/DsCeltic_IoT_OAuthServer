@@ -28,7 +28,7 @@ public class ApiTokenInterceptor implements HandlerInterceptor {
             return false;
         } else {
             accessToken = accessToken.replace("Bearer ", "");
-            log.info("수신.accessToken:{}", accessToken);
+            log.info("수신.accessToken: {}", accessToken);
 
             TokenMaterial token = apiTokenUtils.verify(accessToken);
 

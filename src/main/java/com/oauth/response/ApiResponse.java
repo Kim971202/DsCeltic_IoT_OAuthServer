@@ -64,6 +64,7 @@ public class ApiResponse {
         private String resultCode;
         private String resultMsg;
         private String accessToken;
+        private String tokenVerify;
         private String userId;
         private String userNickname;
         private String hp;

@@ -419,20 +419,20 @@ public class UserController {
     }
 
     /**
-     * API인증키 갱신
+     * API인증키 검증
      */
-    @PostMapping(value = "/accessTokenRenewal")
+    @PostMapping(value = "/accessTokenVerification")
     @ResponseBody
-    public ResponseEntity<?> doAccessTokenRenewal(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+    public ResponseEntity<?> doAccessTokenVerification(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException {
 
         log.info("[API인증키 갱신]");
         common.logParams(params);
 
-        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getUserPassword())){
+        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getAccessToken())){
             throw new CustomException("404", "API인증키 갱신 값 오류");
         }
-        return userService.doAccessTokenRenewal(params);
+        return userService.doAccessTokenVerification(params);
     }
 
     /**

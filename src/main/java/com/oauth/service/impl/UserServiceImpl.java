@@ -1116,16 +1116,16 @@ public class UserServiceImpl implements UserService {
 
     /** API 인증키 갱신 */
     @Override
-    public ResponseEntity<?> doAccessTokenRenewal(AuthServerDTO params)
+    public ResponseEntity<?> doAccessTokenVerification(AuthServerDTO params)
             throws CustomException{
 
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject;
         String msg;
-        String inputPassword = params.getUserPassword();
         String userId = params.getUserId();
-        String token;
+        String token = params.getAccessToken();
         AuthServerDTO account;
+        AuthServerDTO member;
 
         try{
             account = memberMapper.getAccountByUserId(userId);
@@ -1135,22 +1135,16 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            if(!encoder.matches(inputPassword, account.getUserPassword())){
-                msg = "PW 에러";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
+            member = memberMapper.getUserByUserId(userId);
+            if(member.getAccessToken().equals(token)){
+                stringObject = "Y";
+                result.setTokenVerify(stringObject);
+            } else {
+                stringObject = "N";
+                result.setTokenVerify(stringObject);
             }
 
-            token = common.createJwtToken(userId, "NORMAL", "AccessTokenRenewal");
-            log.info("token: " + token);
-
-            if(token.isEmpty()) stringObject = "N";
-            else stringObject = "Y";
-
-            if(stringObject.equals("Y")) msg = "API인증키 갱신 성공";
-            else msg = "API인증키 갱신 실패";
-
-            result.setAccessToken(token);
+            msg = "API인증키 검증 성공";
 
             result.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
