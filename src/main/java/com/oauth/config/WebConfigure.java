@@ -21,7 +21,7 @@ public class WebConfigure implements WebMvcConfigurer {
                 .excludePathPatterns("/users/v1/idFind")
                 .excludePathPatterns("/users/v1/resetPassword")
                 .excludePathPatterns("/users/v1/changePassword")
-                .excludePathPatterns("/users/v1/accessTokenRenewal")
+                .excludePathPatterns("/users/v1/accessTokenVerification")
                 .excludePathPatterns("/users/v1/login")
                 .addPathPatterns("/users/v1/**")
                 .addPathPatterns("/devices/v1/**")
