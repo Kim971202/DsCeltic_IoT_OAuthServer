@@ -508,7 +508,7 @@ public class UserServiceImpl implements UserService {
                     HashMap<String, String> userMap = new HashMap<>();
                     String household = "N";
                     if(authServerDTO.getUserId().equals(authServerDTO.getGroupId())) household = "Y";
-                    userMap.put("userId", authServerDTO.getGroupId());
+                    userMap.put("userId", authServerDTO.getUserId());
                     userMap.put("userNickname", authServerDTO.getUserNickname());
                     userMap.put("householder", household);
                     userMap.put("groupName", authServerDTO.getGroupName());
