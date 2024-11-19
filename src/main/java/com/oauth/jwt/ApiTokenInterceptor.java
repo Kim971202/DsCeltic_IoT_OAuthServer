@@ -24,7 +24,13 @@ public class ApiTokenInterceptor implements HandlerInterceptor {
         String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (accessToken == null){
-            response.sendError(HttpStatus.UNAUTHORIZED.value());
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            String errorMessage = "{ \"resultCode\": \"1002\", \"resultMsg\": \"---\" }";
+            response.getWriter().write(errorMessage);
+
             return false;
         } else {
             accessToken = accessToken.replace("Bearer ", "");
