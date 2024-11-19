@@ -1146,9 +1146,7 @@ public class UserServiceImpl implements UserService {
 
             msg = "API인증키 검증 성공";
 
-            result.setResult("Y".equalsIgnoreCase(stringObject) ?
-                    ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1018, msg);
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
