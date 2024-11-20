@@ -906,7 +906,7 @@
         FROM
             TBR_IOT_DEVICE_GRP_INFO
         WHERE
-            USER_ID IN
+            GRP_ID IN
             <foreach collection="list" item="item" open="(" separator="," close=")">
                 #{item.userId}
             </foreach>
