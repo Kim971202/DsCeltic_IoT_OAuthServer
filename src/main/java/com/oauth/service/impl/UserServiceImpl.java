@@ -789,7 +789,7 @@ public class UserServiceImpl implements UserService {
             for(AuthServerDTO authServerDTO : deviceIdList){
                 AuthServerDTO newDevice = new AuthServerDTO();
                 newDevice.setDeviceId(authServerDTO.getDeviceId());
-                newDevice.setUserId(userId);
+                newDevice.setUserId(delUserId);
                 // 리스트에 추가
                 inputList.add(newDevice);
             }
