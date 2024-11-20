@@ -782,18 +782,10 @@ public class UserServiceImpl implements UserService {
         List<AuthServerDTO> inputList;
 
         try {
-            if(memberMapper.delHouseholdMember(delUserId) <= 0){
-                msg = "사용자(세대원) 강제탈퇴 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
 
+            memberMapper.delHouseholdMember(delUserId);
             // TODO: TBR_OPR_USER_DEVICE_PUSH 테이블 삭제
-            if(memberMapper.deleteUserDevicePush(delUserId) <= 0){
-                msg = "사용자(세대원) 강제탈퇴 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
+            memberMapper.deleteUserDevicePush(delUserId);
 
             // TBR_IOT_DEVICE_GRP_INFO deleteDeviceGrpInfo
             // TODO: 세대주 ID로 세대주 등록 기기 목록을 Regist 테이블에서 불러온후 해당 기기를 세대원 TBR_IOT_DEVICE_GRP_INFO 테이블에서 삭제
