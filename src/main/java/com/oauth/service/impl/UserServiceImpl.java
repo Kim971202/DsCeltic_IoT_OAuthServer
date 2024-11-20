@@ -777,6 +777,9 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String delUserId = params.getDelUserId();
+        String userId = params.getUserId();
+        List<AuthServerDTO> deviceIdList;
+        List<AuthServerDTO> inputList;
 
         try {
             if(memberMapper.delHouseholdMember(delUserId) <= 0){
@@ -791,6 +794,21 @@ public class UserServiceImpl implements UserService {
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
+
+            // TBR_IOT_DEVICE_GRP_INFO deleteDeviceGrpInfo
+            // TODO: 세대주 ID로 세대주 등록 기기 목록을 Regist 테이블에서 불러온후 해당 기기를 세대원 TBR_IOT_DEVICE_GRP_INFO 테이블에서 삭제
+            deviceIdList = memberMapper.getDeviceIdFromRegist(userId);
+
+            inputList = new ArrayList<>();
+            for(AuthServerDTO authServerDTO : deviceIdList){
+                AuthServerDTO newDevice = new AuthServerDTO();
+                newDevice.setDeviceId(authServerDTO.getDeviceId());
+                newDevice.setUserId(userId);
+                // 리스트에 추가
+                inputList.add(newDevice);
+            }
+
+            memberMapper.deleteDeviceGrpInfo(inputList);
 
             // TODO: TBD_USER_INVITE_GROUP 테이블 삭제
             if(memberMapper.deleteUserInviteGroup(params) <= 0){
@@ -1545,7 +1563,7 @@ public class UserServiceImpl implements UserService {
         try {
             fwhInfo = memberMapper.getFwhInfo(deviceId);
             if(fwhInfo == null){
-                msg = "빠른온수 예약 정보 조회 실패";
+                msg = "빠른온수 예약 정보 없음";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 new ResponseEntity<>(result, HttpStatus.OK);
             } else {

@@ -728,7 +728,6 @@
         </choose>
     </select>
 
-
     <select id="getGroupLeaderId" parameterType="Long" resultMap="member">
         SELECT
             GRP_ID AS groupId
@@ -901,6 +900,31 @@
         WHERE
             USER_ID = #{userId}
     </delete>
+
+    <delete id="deleteDeviceGrpInfo" parameterType="com.oauth.dto.AuthServerDTO">
+        DELETE
+        FROM
+            TBR_IOT_DEVICE_GRP_INFO
+        WHERE
+            USER_ID IN
+            <foreach collection="list" item="item" open="(" separator="," close=")">
+                #{item.userId}
+            </foreach>
+        AND
+            DEVC_ID IN
+            <foreach collection="list" item="item" open="(" separator="," close=")">
+                #{item.deviceId}
+            </foreach>
+    </delete>
+
+    <select id="getDeviceIdFromRegist" parameterType="String" resultMap="member">
+        SELECT
+            DEVC_ID AS deviceId
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            USER_ID = #{userId}
+    </select>
 
     <delete id="deleteUserInviteGroup" parameterType="com.oauth.dto.AuthServerDTO" >
         DELETE

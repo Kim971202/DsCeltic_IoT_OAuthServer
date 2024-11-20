@@ -32,6 +32,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getSafeAlarmSet();
     public List<AuthServerDTO> getUserIdFromDeviceGroup(String deviceId);
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
+    public List<AuthServerDTO> getDeviceIdFromRegist(String userId);
     public AuthServerDTO getDeviceNicknameByDeviceId(String deviceId);
     public AuthServerDTO checkDuplicateHp(String newHp);
     public AuthServerDTO getGroupLeaderId(Long idx);
@@ -63,6 +64,7 @@ public interface MemberMapper {
     public int updateGrpDeviceInfoTableForNewHousehold(AuthServerDTO member);
     public int updateGrpInfoTableForNewHousehold(AuthServerDTO member);
     public int deleteUserDevicePush(String userId);
+    public int deleteDeviceGrpInfo(List<AuthServerDTO> authServerDTOList);
     public int deleteUserInviteGroup(AuthServerDTO member);
     public int delHouseholdMember(String userId);
     public int insertHouseholder(AuthServerDTO member);
