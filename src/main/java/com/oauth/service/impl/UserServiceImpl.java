@@ -142,7 +142,7 @@ public class UserServiceImpl implements UserService {
             params.setUserPassword(userPassword);
 
             params.setNewHp(params.getHp());
-            if(memberMapper.checkDuplicateHp(params.getNewHp()).getHpCount().equals("0")){
+            if(!memberMapper.checkDuplicateHp(params.getNewHp()).getHpCount().equals("0")){
                 if(memberMapper.updateUserNicknameAndHp(params) <= 0) {
                     msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
                     data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
