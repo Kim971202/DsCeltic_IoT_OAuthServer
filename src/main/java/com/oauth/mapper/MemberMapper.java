@@ -63,7 +63,7 @@ public interface MemberMapper {
     public int insertWorkTime(List<AuthServerDTO> member);
     public int updateGrpDeviceInfoTableForNewHousehold(AuthServerDTO member);
     public int updateGrpInfoTableForNewHousehold(AuthServerDTO member);
-    public int deleteUserDevicePush(String userId);
+    public int deleteUserDevicePush(List<AuthServerDTO> authServerDTOList);
     public int deleteDeviceGrpInfo(List<AuthServerDTO> authServerDTOList);
     public int deleteUserInviteGroup(AuthServerDTO member);
     public int delHouseholdMember(String userId);

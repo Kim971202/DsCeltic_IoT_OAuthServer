@@ -778,8 +778,7 @@ public class UserServiceImpl implements UserService {
         try {
 
             memberMapper.delHouseholdMember(delUserId);
-            // TODO: TBR_OPR_USER_DEVICE_PUSH 테이블 삭제
-            memberMapper.deleteUserDevicePush(delUserId);
+
 
             // TBR_IOT_DEVICE_GRP_INFO deleteDeviceGrpInfo
             // TODO: 세대주 ID로 세대주 등록 기기 목록을 Regist 테이블에서 불러온후 해당 기기를 세대원 TBR_IOT_DEVICE_GRP_INFO 테이블에서 삭제
@@ -793,6 +792,9 @@ public class UserServiceImpl implements UserService {
                 // 리스트에 추가
                 inputList.add(newDevice);
             }
+
+            // TODO: TBR_OPR_USER_DEVICE_PUSH 테이블 삭제
+            memberMapper.deleteUserDevicePush(inputList);
 
             memberMapper.deleteDeviceGrpInfo(inputList);
 
