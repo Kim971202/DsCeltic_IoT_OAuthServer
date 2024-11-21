@@ -331,7 +331,7 @@
             DEVC_ID = #{deviceId}
     </update>
 
-    <select id="getControlAuthKeyByUserId" parameterType="String" resultMap="device">
+    <select id="getControlAuthKeyByUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
         SELECT
             DEVC_CTRL_KEY AS controlAuthKey,
             DEVC_ID AS deviceId,
@@ -340,6 +340,8 @@
             TBR_OPR_USER_DEVICE
         WHERE
             USER_ID = #{userId}
+        AND
+            GRP_IDX = #{groupIdx}
     </select>
 
     <select id="getDeviceNicknameAndDeviceLocNickname" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">

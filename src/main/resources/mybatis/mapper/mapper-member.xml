@@ -763,7 +763,8 @@
         SELECT
             GRP_ID AS groupId,
             USER_ID AS userId,
-            GRP_NM AS groupName
+            GRP_NM AS groupName,
+            GRP_IDX AS groupIdx
         FROM
             TBD_USER_INVITE_GROUP
         WHERE
@@ -1079,6 +1080,21 @@
             TBT_OPR_DEVICE_REGIST
         WHERE
             USER_ID = #{userId}
+    </select>
+
+    <select id="getGroupIdxByUserIdAndIdx" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            GRP_IDX AS groupIdx,
+            USER_ID AS userId,
+            GRP_NM AS groupName,
+            HP AS hp,
+            DEVC_ID AS deviceId
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            USER_ID = #{userId}
+        AND
+            GRP_IDX = #{groupIdx}
     </select>
 
     <select id="getDeviceCountFromRegist" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">

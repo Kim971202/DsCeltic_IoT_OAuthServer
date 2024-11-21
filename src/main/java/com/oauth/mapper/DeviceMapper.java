@@ -14,7 +14,7 @@ public interface DeviceMapper {
     public List<AuthServerDTO> getMultiSerialNumberBydeviceId(List<AuthServerDTO> deviceId);
     public List<AuthServerDTO> deviceAuthCheck(List<AuthServerDTO> device);
     public List<AuthServerDTO> getDeviceAuthCheckValuesByUserId(String device);
-    public List<AuthServerDTO> getControlAuthKeyByUserId(String userId);
+    public List<AuthServerDTO> getControlAuthKeyByUserId(AuthServerDTO param);
     public List<AuthServerDTO> getDeviceNicknameAndDeviceLocNickname(List<AuthServerDTO> device);
     public List<AuthServerDTO> getDeviceErroInfo(String serialNumber);
     public List<AuthServerDTO> getPushinfoByDeviceId(String deviceId);
