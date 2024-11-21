@@ -961,6 +961,17 @@
         LIMIT 1
     </select>
 
+    <update id="updateNewHouseHolder" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBD_USER_INVITE_GROUP
+        SET
+            GRP_ID = #{nextUserId}
+        WHERE
+            GRP_IDX = #{groupIdx}
+        AND
+            GRP_ID = #{userId}
+    </update>
+
     <select id="getFwhInfo" parameterType="String" resultMap="member">
         SELECT
             FWH AS fastHotWater

@@ -943,31 +943,27 @@ public class UserServiceImpl implements UserService {
 
             /**
              * TODO
-             * 1. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
-             * 2. 다음 세대원을 세대주로 변경
-             * 3. TBT_OPR_DEVICE_REGIST, TBR_OPR_USER_DEVICE USER_ID 다음 세대원으로 변경
+             * 1. 신규 세대주 ID 쿼리후 기존 세대주 ID, IDX 가 있는 테이블에 ID UPDATE
+             * 2. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
+             * 3. 다음 세대원을 세대주로 변경
+             * 4. TBT_OPR_DEVICE_REGIST, TBR_OPR_USER_DEVICE USER_ID 다음 세대원으로 변경
              * */
 
-            // TODO: 1. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
-            params.setDelUserId(userId);
-            if(memberMapper.deleteUserInviteGroup(params) <= 0){
-                msg = "사용자(세대원) 강제탈퇴 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            // TODO: 2. 다음 세대원 검색
+            // TODO: 1. 다음 세대원 검색
             nextHouseholder = memberMapper.getNextUserId(params);
             params.setNextUserId(nextHouseholder.getUserId());
 
-            // TODO: 3. TBT_OPR_DEVICE_REGIST USER_ID, HP 업데이트
-            if(memberMapper.updateDeviceRegist(params) <= 0){
-                msg = "사용자(세대원) 강제탈퇴 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
+            // TODO: 2. TBD_USER_INVITE_GROUP 다음 세대주 ID로 UPDATE
+            memberMapper.updateNewHouseHolder(params);
 
-            // TODO: 4. TBR_OPR_USER_DEVICE USER_ID 업데이트
+            // TODO: 3. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
+            params.setDelUserId(userId);
+            memberMapper.deleteUserInviteGroup(params);
+
+            // TODO: 4. TBT_OPR_DEVICE_REGIST USER_ID, HP 업데이트
+            memberMapper.updateDeviceRegist(params);
+
+            // TODO: 5. TBR_OPR_USER_DEVICE USER_ID 업데이트
             if(memberMapper.updateUserDevice(params) <= 0){
                 msg = "사용자(세대원) 강제탈퇴 실패";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
