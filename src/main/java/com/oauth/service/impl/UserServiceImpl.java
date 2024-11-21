@@ -952,6 +952,7 @@ public class UserServiceImpl implements UserService {
             // TODO: 1. 다음 세대원 검색
             nextHouseholder = memberMapper.getNextUserId(params);
             params.setNextUserId(nextHouseholder.getUserId());
+            params.setHp(nextHouseholder.getHp());
 
             // TODO: 2. TBD_USER_INVITE_GROUP 다음 세대주 ID로 UPDATE
             memberMapper.updateNewHouseHolder(params);
