@@ -883,5 +883,6 @@
             a.DEVC_ID = b.DEVC_ID
         WHERE
             a.DEVC_ID = #{deviceId}
+        LIMIT 1
     </select>
 </mapper>
