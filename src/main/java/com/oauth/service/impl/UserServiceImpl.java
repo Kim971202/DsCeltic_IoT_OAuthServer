@@ -938,10 +938,12 @@ public class UserServiceImpl implements UserService {
 
         String userId = params.getUserId();
         AuthServerDTO nextHouseholder;
+        List<AuthServerDTO> deviceIdList;
+        List<AuthServerDTO> inputList;
 
         try {
 
-            /**
+            /* *
              * TODO
              * 1. 신규 세대주 ID 쿼리후 기존 세대주 ID, IDX 가 있는 테이블에 ID UPDATE
              * 2. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
@@ -953,6 +955,20 @@ public class UserServiceImpl implements UserService {
             nextHouseholder = memberMapper.getNextUserId(params);
             params.setNextUserId(nextHouseholder.getUserId());
             params.setHp(nextHouseholder.getHp());
+
+            // TODO: 2. TBR_IOT_DEVICE_GRP_INFO에서 세대주 ID 삭제
+            deviceIdList = memberMapper.getDeviceIdFromRegist(userId);
+
+            inputList = new ArrayList<>();
+            for(AuthServerDTO authServerDTO : deviceIdList){
+                AuthServerDTO newDevice = new AuthServerDTO();
+                newDevice.setDeviceId(authServerDTO.getDeviceId());
+                newDevice.setUserId(userId);
+                // 리스트에 추가
+                inputList.add(newDevice);
+            }
+            deviceMapper.deleteDeviceListGrpInfo(inputList);
+
 
             // TODO: 2. TBD_USER_INVITE_GROUP 다음 세대주 ID로 UPDATE
             memberMapper.updateNewHouseHolder(params);

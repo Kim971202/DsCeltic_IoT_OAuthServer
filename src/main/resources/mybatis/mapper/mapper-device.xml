@@ -155,6 +155,16 @@
         </foreach>
     </insert>
 
+    <delete id="deleteDeviceListGrpInfo" parameterType="com.oauth.dto.AuthServerDTO">
+        DELETE FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            (deviceId, userId) IN
+        <foreach collection="list" item="item" open="(" separator="),(" close=")">
+            #{item.deviceId}, #{item.userId}
+        </foreach>
+    </delete>
+
     <insert id="insertDevice" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO TBR_IOT_DEVICE
             (
