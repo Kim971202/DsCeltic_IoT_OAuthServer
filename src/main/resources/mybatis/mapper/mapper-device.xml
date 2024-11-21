@@ -11,7 +11,6 @@
             device.ATTC_ID AS controlAuthKey,
             device.DEVC_ID AS deviceId,
             regist.DEVC_NICK AS deviceNickname,
-            regist.ADDR_NICK AS addrNickname,
             regist.ZIP AS zipCode,
             regist.OLD_ADDR AS oldAddr,
             regist.NEW_ADDR AS newAddr,
@@ -200,7 +199,6 @@
                 LON,
                 DEVC_NICK,
                 REG_DATM,
-                ADDR_NICK,
                 GRP_IDX,
                 GRP_NM
             )
@@ -218,7 +216,6 @@
                 #{longitude},
                 #{deviceNickname},
                 now(),
-                #{addrNickname},
                 #{idx},
                 #{groupName}
             )
@@ -235,8 +232,7 @@
             LAT = #{latitude},
             LON = #{longitude},
             DEVC_NICK = #{deviceNickname},
-            REG_DATM = now(),
-            ADDR_NICK = #{addrNickname}
+            REG_DATM = now()
         WHERE
             DEVC_ID = #{deviceId}
         AND
@@ -257,7 +253,6 @@
                 DEVC_STAT_JSON,
                 DEVC_NICK,
                 DEVC_REG_DATM,
-                ADDR_NICK,
                 GRP_IDX
             )
         VALUES
@@ -271,7 +266,6 @@
                 'empty',
                 #{deviceNickname},
                 now(),
-                #{addrNickname},
                 #{idx}
             )
     </insert>
@@ -286,8 +280,7 @@
             NEW_ADDR = #{newAddr},
             DTAIL_ADDR = #{addrDetail},
             DEVC_NICK = #{deviceNickname},
-            DEVC_REG_DATM = now(),
-            ADDR_NICK = #{addrNickname}
+            DEVC_REG_DATM = now()
         WHERE
             DEVC_CTRL_KEY = #{controlAuthKey}
         AND
@@ -303,6 +296,15 @@
             DEVC_ID = #{deviceId}
     </update>
 
+    <update id="updateGroupName" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBD_USER_INVITE_GROUP
+        SET
+            GRP_NM = #{groupName}
+        WHERE
+            GRP_IDX = #{groupIdx}
+    </update>
+
     <update id="updateDeviceRegistLocation" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBT_OPR_DEVICE_REGIST
@@ -310,8 +312,7 @@
             LAT = #{latitude},
             LON = #{longitude},
             DEVC_NICK = #{deviceNickname},
-            ADDR_NICK = #{addrNickname},
-            DTAIL_ADDR = #{addrDetail}
+            GRP_NM = #{groupName}
         WHERE
             TEMP_DEVC_REG_KEY = #{tmpRegistKey}
         AND
@@ -324,8 +325,6 @@
         SET
             OLD_ADDR = #{oldAddr},
             NEW_ADDR = #{newAddr},
-            DTAIL_ADDR = #{addrDetail},
-            ADDR_NICK = #{addrNickname},
             DEVC_NICK = #{deviceNickname}
         WHERE
             DEVC_ID = #{deviceId}
@@ -347,7 +346,6 @@
     <select id="getDeviceNicknameAndDeviceLocNickname" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
         SELECT
             DEVC_NICK AS deviceNickname,
-            ADDR_NICK AS addrNickname,
             DEVC_ID AS deviceId,
             LAT AS latitude,
             LON AS longitude,
@@ -372,7 +370,6 @@
         SELECT
             device.DEVC_MODL_CD AS modelCode,
             regist.DEVC_NICK AS deviceNickname,
-            regist.ADDR_NICK AS addrNickname,
             regist.ZIP AS zipCode,
             regist.OLD_ADDR AS oldAddr,
             regist.NEW_ADDR AS newAddr,

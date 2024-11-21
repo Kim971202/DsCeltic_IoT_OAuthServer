@@ -245,6 +245,12 @@ public class DeviceServiceImpl implements DeviceService {
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
+                if(deviceMapper.updateGroupName(params) <= 0) {
+                    msg = "홈 IoT 컨트롤러 정보 수정 실패.";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
                 if(deviceMapper.updateDeviceRegistLocation(params) <= 0) {
                     msg = "홈 IoT 컨트롤러 정보 수정 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
@@ -1656,7 +1662,6 @@ public class DeviceServiceImpl implements DeviceService {
 
             result.put("modelCategoryCode", resultDto.getModelCode());
             result.put("deviceNickname", resultDto.getDeviceNickname());
-            result.put("addrNickname", resultDto.getAddrNickname());
             result.put("zipCode", resultDto.getZipCode());
             result.put("oldAddr", resultDto.getOldAddr());
             result.put("newAddr", resultDto.getNewAddr());
@@ -1762,7 +1767,6 @@ public class DeviceServiceImpl implements DeviceService {
                     Map<String, String> data = new HashMap<>();
                     data.put("modelCode", authServerDTO.getModelCode());
                     data.put("deviceNickname", authServerDTO.getDeviceNickname());
-                    data.put("addrNickname", authServerDTO.getAddrNickname());
                     data.put("zipCode", authServerDTO.getZipCode());
                     data.put("oldAddr", authServerDTO.getOldAddr());
                     data.put("newAddr", authServerDTO.getNewAddr());

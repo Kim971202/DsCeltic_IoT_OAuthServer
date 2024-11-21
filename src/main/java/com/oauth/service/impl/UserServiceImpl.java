@@ -1472,11 +1472,6 @@ public class UserServiceImpl implements UserService {
 
         try {
 
-            if(memberMapper.updateDeviceLocationNicknameDeviceDetail(params) <= 0){
-                msg = "기기 설치 위치 별칭 수정 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                new ResponseEntity<>(result, HttpStatus.OK);
-            } else stringObject = "Y";
             if(memberMapper.updateDeviceLocationNicknameDeviceRegist(params) <= 0){
                 msg = "기기 설치 위치 별칭 수정 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);

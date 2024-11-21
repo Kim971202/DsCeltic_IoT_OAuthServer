@@ -145,7 +145,6 @@
             a.DEVC_ID AS deviceId,
             a.DEVC_CTRL_KEY AS controlAuthKey,
             MAX(a.ATTC_DATM) AS authenticationDatetime,  -- 최근 인증 날짜를 선택
-            c.ADDR_NICK AS addrNickname,
             c.DEVC_NICK AS deviceNickname,
             c.TEMP_DEVC_REG_KEY AS tmpRegistKey,
             c.LAT AS latitude,
@@ -163,7 +162,6 @@
             a.USER_ID,
             a.DEVC_ID,
             a.DEVC_CTRL_KEY,
-            c.ADDR_NICK,
             c.DEVC_NICK,
             c.TEMP_DEVC_REG_KEY,
             c.LAT,
@@ -342,16 +340,19 @@
     </select>
 
     <update id="updateDeviceLocationNicknameDeviceDetail" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE TBR_OPR_DEVICE_DETAIL
-        SET ADDR_NICK = #{newDeviceLocNickname}
-        WHERE DEVC_ID = #{deviceId}
+        UPDATE
+            TBR_OPR_DEVICE_DETAIL
+        SET
+            ADDR_NICK = #{newDeviceLocNickname}
+        WHERE
+            DEVC_ID = #{deviceId}
     </update>
 
     <update id="updateDeviceLocationNicknameDeviceRegist" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBT_OPR_DEVICE_REGIST
         SET
-            ADDR_NICK = #{newDeviceLocNickname}
+            GRP_NM = #{groupName}
         WHERE
             DEVC_ID = #{deviceId}
     </update>
