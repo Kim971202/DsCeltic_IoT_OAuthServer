@@ -47,7 +47,7 @@ public interface MemberMapper {
     public AuthServerDTO getDeviceIdFromDeviceGroup(String groupId);
     public AuthServerDTO getHpByUserId(String userId);
     public AuthServerDTO getHouseholdByUserId(String userId);
-    public AuthServerDTO getDeviceCountFromRegist(String userId);
+    public AuthServerDTO getDeviceCountFromRegist(AuthServerDTO info);
     public AuthServerDTO getUserNickname(String userId);
     public AuthServerDTO getPushTokenByUserId(String userId);
     public AuthServerDTO getPushYnStatusByDeviceIdAndUserId(AuthServerDTO info);

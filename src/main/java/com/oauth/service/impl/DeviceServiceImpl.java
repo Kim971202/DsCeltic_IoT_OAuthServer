@@ -1470,29 +1470,47 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            // groupInfo 리스트에서 각 AuthServerDTO 객체의 groupId를 추출하여 idList에 저장
-            List<String> idList = groupInfo.stream()
+            // groupInfo 리스트에서 각 AuthServerDTO 객체의 groupId와 groupIdx를 추출하여 각각 리스트에 저장
+            List<String> groupIdList = groupInfo.stream()
                     .map(AuthServerDTO::getGroupId) // groupInfo 리스트의 각 요소에서 groupId 필드를 추출
                     .collect(Collectors.toList());  // 추출된 groupId 값을 List<String> 형태로 수집
 
-            // idList의 내용을 출력 (예상 결과: [yohan1202, daesung1234])
-            System.out.println(idList);
+            List<String> idxList = groupInfo.stream()
+                    .map(AuthServerDTO::getGroupIdx) // groupInfo 리스트의 각 요소에서 groupIdx 필드를 추출
+                    .collect(Collectors.toList());  // 추출된 groupIdx 값을 List<String> 형태로 수집
 
-            // idList의 내용을 복사하여 idListCopy 생성 (이후 원본을 수정해도 루프에 영향을 주지 않기 위해 복사본을 사용)
-            List<String> idListCopy = new ArrayList<>(idList);
+            // groupIdList와 groupIdxList의 내용을 출력 (예상 결과: [yohan1202, daesung1234], [1, 2])
+            System.out.println(groupIdList);
+            System.out.println(idxList);
 
-            // idListCopy의 각 id 값에 대해 반복 처리
-            for (String id : idListCopy) {
-                // 현재 id 값을 출력 (예: yohan1202, daesung1234)
-                System.out.println(id);
+            // groupIdList와 groupIdxList의 내용을 복사하여 각각 idListCopy, idxListCopy 생성
+            // (이후 원본을 수정해도 루프에 영향을 주지 않기 위해 복사본을 사용)
+            List<String> idListCopy = new ArrayList<>(groupIdList);
+            List<String> idxListCopy = new ArrayList<>(idxList);
+
+            // idListCopy의 각 id 값과 idx 값을 반복 처리
+            for (int i = 0; i < idListCopy.size(); i++) {
+                String id = idListCopy.get(i);
+                String idx = idxListCopy.get(i);
+
+                // 현재 id와 idx 값을 출력 (예: yohan1202, 1)
+                System.out.println("Group ID: " + id);
+                System.out.println("Group IDX: " + idx);
+
+                // AuthServerDTO 객체 생성하여 groupId와 groupIdx 설정
+                AuthServerDTO info = new AuthServerDTO();
+                info.setUserId(id);
+                info.setGroupIdx(idx);
 
                 // groupInfo 리스트에서 조건에 맞는 요소를 제거하는 작업
-                // 조건: group 객체의 groupId가 현재 id와 같고, 해당 id에 대한 deviceCount가 "0"인 경우
+                // 조건: group 객체의 groupId와 groupIdx가 현재 반복 중인 값과 같고, 해당 id에 대한 deviceCount가 "0"인 경우
                 groupInfo.removeIf(group ->
                         group.getGroupId().equals(id) && // group의 groupId가 현재 반복 중인 id와 같은지 확인
-                                memberMapper.getDeviceCountFromRegist(id).getDeviceCount().equals("0") // 해당 id의 deviceCount가 "0"인지 확인
+                                group.getGroupIdx().equals(idx) && // group의 groupIdx가 현재 반복 중인 idx와 같은지 확인
+                                memberMapper.getDeviceCountFromRegist(info).getDeviceCount().equals("0") // 해당 params의 deviceCount가 "0"인지 확인
                 );
             }
+
 
             // 최종적으로 groupInfo 리스트의 내용을 출력
             // (삭제 조건을 만족하지 않는 요소들만 남은 상태로 출력될 것)
