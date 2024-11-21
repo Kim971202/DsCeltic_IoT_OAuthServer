@@ -992,6 +992,7 @@ public class UserServiceImpl implements UserService {
         String userPassword = params.getUserPassword();
         AuthServerDTO account;
 
+        List<AuthServerDTO> deviceIdList;
         try {
 
             account = memberMapper.getAccountByUserId(userId);
@@ -1000,6 +1001,17 @@ public class UserServiceImpl implements UserService {
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
+
+            // TODO: 서비스 탈퇴시 모든 기기또한 삭제 한다. deleteControllerMapping 호출
+            deviceIdList = memberMapper.getGroupIdxByUserId(userId);
+            for(AuthServerDTO authServerDTO : deviceIdList){
+                AuthServerDTO newDevice = new AuthServerDTO();
+                newDevice.setDeviceId(authServerDTO.getDeviceId());
+                newDevice.setUserId(userId);
+                newDevice.setControlAuthKey("0000");
+                memberMapper.deleteControllerMapping(newDevice);
+            }
+
             /* *
              * 홈IoT 서비스 탈퇴 시 삭제 Table
              * 1. TBR_OPR_ACCOUNT
