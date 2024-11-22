@@ -969,7 +969,6 @@ public class UserServiceImpl implements UserService {
             }
             deviceMapper.deleteDeviceListGrpInfo(inputList);
 
-
             // TODO: 2. TBD_USER_INVITE_GROUP 다음 세대주 ID로 UPDATE
             memberMapper.updateNewHouseHolder(params);
 

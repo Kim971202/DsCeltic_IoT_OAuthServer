@@ -251,6 +251,12 @@ public class DeviceServiceImpl implements DeviceService {
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
+                if(deviceMapper.updateDeviceRegistGroupName(params) <= 0) {
+                    msg = "홈 IoT 컨트롤러 정보 수정 실패.";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
                 if(deviceMapper.updateDeviceRegistLocation(params) <= 0) {
                     msg = "홈 IoT 컨트롤러 정보 수정 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
