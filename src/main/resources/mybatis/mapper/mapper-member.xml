@@ -520,13 +520,13 @@
         )
     </insert>
 
-    <update id="InsertSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO">
+    <insert id="InsertSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO
             TBR_OPR_SAFE_ALARM
         (
             USER_ID,
             DEVC_ID,
-            SAFE_ALARM_SET,
+            SAFE_ALARM_TIME,
             SAFE_ALARM_STATUS
         )
             VALUES
@@ -536,21 +536,36 @@
             #{safeAlarmTime},
             #{safeAlarmStatus}
         )
+    </insert>
+
+    <update id="updateSafeAlarmSet" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE
+            TBR_OPR_SAFE_ALARM
+        SET
+            REC_BCDT_RUN_TIME = #{bCdt}
+        WHERE
+            DEVC_ID = #{deviceId}
     </update>
 
     <select id="getSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             USER_ID AS userId,
-            SAFE_ALARM_STATUS AS safeAlarmStatus
+            DEVC_ID AS deviceId,
+            SAFE_ALARM_TIME AS safeAlarmTime,
+            SAFE_ALARM_STATUS AS safeAlarmStatus,
+            NOW() + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
+            + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR AS CALCULATED_TIME
         FROM
-            TBR_OPR_USER
+            TBR_OPR_SAFE_ALARM
         WHERE
-            TIMESTAMPDIFF(HOUR, LAST_LOGIN_DATM, NOW())
-            >
-            SAFE_ALARM_TIME DIV 100 * 24 + SAFE_ALARM_TIME MOD 100
-        GROUP BY
-            USER_ID,
-            SAFE_ALARM_STATUS
+            SAFE_ALARM_STATUS = 'Y'
+        AND
+            (
+                REC_BCDT_RUN_TIME IS NULL OR
+                NOW() + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
+                    + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR
+                > REC_BCDT_RUN_TIME
+            )
     </select>
 
     <select id="getUserIdsByDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
@@ -1130,4 +1145,15 @@
             GRP_ID = #{userId}
     </select>
 
+    <select id="getPushTokenByUserIds" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+        PUSH_TOKEN AS pushToken
+        FROM
+            TBR_OPR_ACCOUNT
+        WHERE
+            USER_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.userId}
+        </foreach>
+    </select>
 </mapper>

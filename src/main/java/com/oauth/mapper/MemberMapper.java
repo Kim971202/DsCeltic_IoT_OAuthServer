@@ -1,5 +1,6 @@
 package com.oauth.mapper;
 
+import com.oauth.dto.gw.DeviceStatusInfo;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.oauth.dto.AuthServerDTO;
@@ -26,6 +27,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getAllUserIdsByDeviceId(String deviceId);
     public List<AuthServerDTO> getDeviceIdByUserIds(String userId);
     public List<AuthServerDTO> getPushYnStatusByUserIds(List<AuthServerDTO> userIds);
+    public List<AuthServerDTO> getPushTokenByUserIds(List<AuthServerDTO> userIds);
     public List<AuthServerDTO> getFailyMemberByUserId(String userId);
     public List<AuthServerDTO> getFamilyMemberByGroupIdxList(List<String> userId);
     public List<AuthServerDTO> getMemberByGroupIdxList(AuthServerDTO param);
@@ -72,6 +74,7 @@ public interface MemberMapper {
     public int insertHouseholder(AuthServerDTO member);
     public int updateRegistTable(AuthServerDTO member);
     public int InsertSafeAlarmSet(AuthServerDTO member);
+    public int updateSafeAlarmSet(DeviceStatusInfo.Device deviceStatusInfo);
     public int insertPushHistory(AuthServerDTO member);
     public int updatePushToken(AuthServerDTO member);
     public int insertUserDevicePush(AuthServerDTO member);

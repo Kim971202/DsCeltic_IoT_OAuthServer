@@ -17,11 +17,13 @@ public class ScheduledSafeAlarm {
     private MemberMapper memberMapper;
 
     public void checkUserSafeAlarm(){
-        List<AuthServerDTO> userInfo = new ArrayList<>();
+        List<AuthServerDTO> userInfo;
+        List<AuthServerDTO> pushInfo;
 
         userInfo = memberMapper.getSafeAlarmSet();
 
         if(userInfo != null){
+            pushInfo = memberMapper.getPushTokenByUserIds(userInfo);
             for(AuthServerDTO authServerDTO : userInfo){
                 System.out.println(authServerDTO.getUserId());
             }

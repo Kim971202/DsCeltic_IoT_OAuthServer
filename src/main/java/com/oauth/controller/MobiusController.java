@@ -160,7 +160,7 @@ public class MobiusController {
             deviceInfo.setBlCf(common.readCon(jsonBody, "blCf"));
             deviceInfo.setVtSp(common.readCon(jsonBody, "vtSp"));
 
-//            if(deviceInfo.getBCdt() != null) deviceMapper
+            if(deviceInfo.getBCdt() != null) memberMapper.updateSafeAlarmSet(deviceInfo);
 
             if(common.readCon(jsonBody, "rsPw") != null) deviceInfo.setRsPw(common.convertToJsonFormat(common.readCon(jsonBody, "rsPw")));
 
@@ -173,6 +173,7 @@ public class MobiusController {
             deviceInfo.setFwh(common.readCon(jsonBody, "fwh"));
 
             int rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+            log.info("rcUpdateResult: " + rcUpdateResult);
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
             List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
