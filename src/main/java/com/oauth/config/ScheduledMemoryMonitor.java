@@ -16,8 +16,9 @@ public class ScheduledMemoryMonitor {
         MemoryMonitor.logMemoryUsage();
     }
 
-    @Scheduled(fixedRate = 5000) // 5,000 밀리초 = 5초
+//    @Scheduled(fixedRate = 5000) // 5,000 밀리초 = 5초
+    @Scheduled(fixedRate = 600000) // 600,000 밀리초 = 10분
     public void safeAlarmMemory() throws Exception {
-        scheduledSafeAlarm.checkUserSafeAlarm();
+            scheduledSafeAlarm.checkUserSafeAlarm();
     }
 }
