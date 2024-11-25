@@ -1147,7 +1147,8 @@
 
     <select id="getPushTokenByUserIds" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
-        PUSH_TOKEN AS pushToken
+            PUSH_TOKEN AS pushToken,
+            USER_ID AS userId
         FROM
             TBR_OPR_ACCOUNT
         WHERE

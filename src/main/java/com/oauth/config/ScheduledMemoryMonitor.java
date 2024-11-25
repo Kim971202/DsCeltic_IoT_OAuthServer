@@ -17,7 +17,7 @@ public class ScheduledMemoryMonitor {
     }
 
     @Scheduled(fixedRate = 5000) // 5,000 밀리초 = 5초
-    public void safeAlarmMemory() {
+    public void safeAlarmMemory() throws Exception {
         scheduledSafeAlarm.checkUserSafeAlarm();
     }
 }
