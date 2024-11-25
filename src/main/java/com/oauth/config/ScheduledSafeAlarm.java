@@ -22,13 +22,12 @@ public class ScheduledSafeAlarm {
 
         userInfo = memberMapper.getSafeAlarmSet();
 
-        if(userInfo != null){
+        if(userInfo != null && !userInfo.isEmpty()){
             pushInfo = memberMapper.getPushTokenByUserIds(userInfo);
             for(AuthServerDTO authServerDTO : userInfo){
                 System.out.println(authServerDTO.getUserId());
             }
-        }
-        else System.out.println("userInfo is NULL");
+        } else System.out.println("userInfo is NULL");
     }
 
 }
