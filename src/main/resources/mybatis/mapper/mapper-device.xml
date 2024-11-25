@@ -357,7 +357,7 @@
         FROM
             TBR_OPR_USER_DEVICE
         WHERE
-            USER_ID = #{userId}
+            USER_ID = #{groupId}
         AND
             GRP_IDX = #{groupIdx}
     </select>

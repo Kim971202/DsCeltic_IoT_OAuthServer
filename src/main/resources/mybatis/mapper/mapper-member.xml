@@ -1108,7 +1108,7 @@
         FROM
             TBT_OPR_DEVICE_REGIST
         WHERE
-            USER_ID = #{userId}
+            USER_ID = #{groupId}
         AND
             GRP_IDX = #{groupIdx}
     </select>
