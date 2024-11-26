@@ -308,6 +308,7 @@ public class DeviceServiceImpl implements DeviceService {
                     // TODO: 신규 등록 시 등록한 Idx를 기반으로 사용자 ID 쿼리
                     groupLeaderId = memberMapper.getGroupLeaderId(params.getIdx());
                     params.setGroupId(groupLeaderId.getGroupId());
+                    params.setGroupIdx(Long.toString(params.getIdx()));
                     familyMemberList = memberMapper.getFailyMemberByUserId(params);
                 }
 
