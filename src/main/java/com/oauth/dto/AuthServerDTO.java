@@ -170,4 +170,18 @@ public class AuthServerDTO implements Serializable {
     private String deviceInfo;                   // Y/N 기기 존재 여부
 
     private String fastHotWater;                 // 빠른온수 예약 정보 조회용 변수
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AuthServerDTO that = (AuthServerDTO) o;
+        return Objects.equals(userId, that.userId) &&
+                Objects.equals(groupIdx, that.groupIdx);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, groupIdx);
+    }
 }

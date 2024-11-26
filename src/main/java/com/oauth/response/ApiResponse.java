@@ -94,6 +94,7 @@ public class ApiResponse {
         private String errorName;
         private String errorMessage;
         private String deviceInfo;
+
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);

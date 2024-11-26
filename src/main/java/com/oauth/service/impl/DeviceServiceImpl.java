@@ -299,14 +299,16 @@ public class DeviceServiceImpl implements DeviceService {
                 if(params.getGroupIdx() != null && !params.getGroupIdx().isEmpty()){
                     params.setIdx(Long.parseLong(params.getGroupIdx()));
                     groupLeaderIdByGroupIdx = memberMapper.getGroupLeaderIdByGroupIdx(params.getGroupIdx());
-                    familyMemberList = memberMapper.getFailyMemberByUserId(groupLeaderIdByGroupIdx.getGroupId());
+                    params.setGroupId(groupLeaderIdByGroupIdx.getGroupId());
+                    familyMemberList = memberMapper.getFailyMemberByUserId(params);
                 } else {
                     // TODO: getGroupIdx가 null이거나 비어있는 경우의 처리
                     memberMapper.insertInviteGroup(params);
                     memberMapper.updateInviteGroup(params);
                     // TODO: 신규 등록 시 등록한 Idx를 기반으로 사용자 ID 쿼리
                     groupLeaderId = memberMapper.getGroupLeaderId(params.getIdx());
-                    familyMemberList = memberMapper.getFailyMemberByUserId(groupLeaderId.getGroupId());
+                    params.setGroupId(groupLeaderId.getGroupId());
+                    familyMemberList = memberMapper.getFailyMemberByUserId(params);
                 }
 
                 // Push 설정 관련 기본 DB 추가
@@ -1782,8 +1784,8 @@ public class DeviceServiceImpl implements DeviceService {
         try {
 
             groupIdxList = Arrays.asList(groupIdx.split(","));
+            System.out.println(groupIdxList);
             userIdList = memberMapper.getFamilyMemberByGroupIdxList(groupIdxList);
-
             deviceInfoList = deviceMapper.getDeviceInfoSearchList(userIdList);
 
             if(!deviceInfoList.isEmpty()){

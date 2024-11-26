@@ -28,7 +28,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getDeviceIdByUserIds(String userId);
     public List<AuthServerDTO> getPushYnStatusByUserIds(List<AuthServerDTO> userIds);
     public List<AuthServerDTO> getPushTokenByUserIds(List<AuthServerDTO> userIds);
-    public List<AuthServerDTO> getFailyMemberByUserId(String userId);
+    public List<AuthServerDTO> getFailyMemberByUserId(AuthServerDTO param);
     public List<AuthServerDTO> getFamilyMemberByGroupIdxList(List<String> userId);
     public List<AuthServerDTO> getMemberByGroupIdxList(AuthServerDTO param);
     public List<AuthServerDTO> getGroupMemberByUserId(String requestUserId);
