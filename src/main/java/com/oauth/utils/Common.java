@@ -373,9 +373,10 @@ public class Common {
                 .collect(Collectors.toList());
 
         log.info("inviteIdxList에서 registIdxList에 없는 값: " + uniqueInviteIdxList);
-
-        int result = deviceMapper.deleteNoDeviceGroupByList(uniqueInviteIdxList);
-        log.info("DELETE GROUP RESULT: " + result);
+        if(!uniqueInviteIdxList.isEmpty()){
+            int result = deviceMapper.deleteNoDeviceGroupByList(uniqueInviteIdxList);
+            log.info("DELETE GROUP RESULT: " + result);
+        }
     }
 
 }
