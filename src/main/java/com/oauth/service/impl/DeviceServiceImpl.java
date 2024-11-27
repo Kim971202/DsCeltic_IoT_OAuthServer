@@ -290,8 +290,10 @@ public class DeviceServiceImpl implements DeviceService {
                 // TODO: 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
                 checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
                 if(!checkDeviceExist.getDeviceCount().equals("0")){
-                    AuthServerDTO authServerDTO = deviceMapper.getCheckedDeviceExist(deviceId);
-                    memberMapper.deleteControllerMapping(authServerDTO);
+                    List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(deviceId);
+                    for(AuthServerDTO authServerDTO : authServerDTOList){
+                        memberMapper.deleteControllerMapping(authServerDTO);
+                    }
                 }
 
                 params.setGroupId(userId);

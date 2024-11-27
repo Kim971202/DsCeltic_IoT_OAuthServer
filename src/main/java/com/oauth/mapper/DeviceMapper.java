@@ -22,8 +22,8 @@ public interface DeviceMapper {
     public List<String> getRegistGroupIdxList();
     public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);
     public List<DeviceStatusInfo.Device> getActiveStauts(List<String> serialNumber);
+    public List<AuthServerDTO> getCheckedDeviceExist(String deviceId);
     public AuthServerDTO checkDeviceExist(String deviceId);
-    public AuthServerDTO getCheckedDeviceExist(String deviceId);
     public AuthServerDTO getSingleSerialNumberBydeviceId(String deviceId);
     public AuthServerDTO getPushTokenByUserId(String userId);
     public AuthServerDTO deviceTempAuthCheck(List<AuthServerDTO> device);
