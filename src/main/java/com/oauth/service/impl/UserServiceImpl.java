@@ -1202,11 +1202,15 @@ public class UserServiceImpl implements UserService {
              * TBR_OPR_DEVICE_DETAIL - 단말정보상세
              * 프로시져
              * */
+
             if(!memberMapper.deleteControllerMapping(params).equals("100")){
                 msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 실패";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 new ResponseEntity<>(data, HttpStatus.OK);
             } else stringObject = "Y";
+
+            // 기기 삭제 후 전체 groupIdx를 regist 테이블의 groupIdx와 비교해 regist에 없는 groupIdx는 전체 삭제
+            common.deleteNoDeviceGroup();
 
             if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 성공";
             else msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 실패";

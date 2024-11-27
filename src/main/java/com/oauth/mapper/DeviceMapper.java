@@ -18,6 +18,8 @@ public interface DeviceMapper {
     public List<AuthServerDTO> getDeviceNicknameAndDeviceLocNickname(List<AuthServerDTO> device);
     public List<AuthServerDTO> getDeviceErroInfo(String serialNumber);
     public List<AuthServerDTO> getPushinfoByDeviceId(String deviceId);
+    public List<String> getInviteGroupIdxList();
+    public List<String> getRegistGroupIdxList();
     public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);
     public List<DeviceStatusInfo.Device> getActiveStauts(List<String> serialNumber);
     public AuthServerDTO checkDeviceExist(String deviceId);
@@ -32,6 +34,7 @@ public interface DeviceMapper {
     public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public DeviceStatusInfo.Device getActiveStautsByDeviceId(String deviceId);
     public int updateGroupName(AuthServerDTO params);
+    public int deleteNoDeviceGroupByList(List<String> groupIdxList);
     public int insertDeviceGrpInfo(AuthServerDTO params);
     public int insertDeviceListGrpInfo(List<AuthServerDTO> device);
     public int deleteDeviceListGrpInfo(List<AuthServerDTO> device);

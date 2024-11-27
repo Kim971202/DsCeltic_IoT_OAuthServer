@@ -367,6 +367,10 @@ public class DeviceServiceImpl implements DeviceService {
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
+
+                // 기기없는 그룹 삭제
+                common.deleteNoDeviceGroup();
+
                 stringObject = "Y";
             }
 

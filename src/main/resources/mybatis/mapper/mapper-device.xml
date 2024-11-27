@@ -4,6 +4,7 @@
 
     <resultMap id="device" type="com.oauth.dto.AuthServerDTO"> </resultMap>
     <resultMap id="dr910w" type="com.oauth.dto.gw.DeviceStatusInfo$Device"> </resultMap>
+    <resultMap id="String" type="String"> </resultMap>
 
     <select id="getDeviceInfoSearchList" parameterType="java.util.List" resultMap="device">
         SELECT
@@ -894,4 +895,28 @@
             a.DEVC_ID = #{deviceId}
         LIMIT 1
     </select>
+
+    <select id="getInviteGroupIdxList" parameterType="String" resultMap="String">
+        SELECT DISTINCT
+            GRP_IDX AS groupIdx
+        FROM
+            TBD_USER_INVITE_GROUP
+    </select>
+
+    <select id="getRegistGroupIdxList" parameterType="String" resultMap="String">
+        SELECT DISTINCT
+        GRP_IDX AS groupIdx
+        FROM
+        TBT_OPR_DEVICE_REGIST
+    </select>
+
+    <delete id="deleteNoDeviceGroupByList" parameterType="list">
+        DELETE FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            GRP_IDX  IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>

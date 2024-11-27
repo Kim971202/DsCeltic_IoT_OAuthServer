@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.jwt.ApiTokenUtils;
 import com.oauth.jwt.TokenMaterial;
+import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -36,9 +37,10 @@ public class Common {
 
     @Autowired
     private ApiTokenUtils apiTokenUtils;
-
     @Autowired
     private MemberMapper memberMapper;
+    @Autowired
+    private DeviceMapper deviceMapper;
 
     public static List<String> extractJson(String inputList, String inputKey) {
 
@@ -351,6 +353,29 @@ public class Common {
         } catch (IllegalAccessException e) {
             log.error("Error accessing field values", e);
         }
+    }
+
+    /** 기기없는 그룹 삭제 함수 */
+    public void deleteNoDeviceGroup(){
+
+        List<String> inviteIdxList = deviceMapper.getInviteGroupIdxList();
+        log.info("inviteIdxList: " + inviteIdxList);
+
+        List<String> registIdxList= deviceMapper.getRegistGroupIdxList();
+        log.info("registIdxList: " + registIdxList);
+
+        // registIdxList를 Set으로 변환 (검색 시간 최적화)
+        Set<String> registIdxSet = new HashSet<>(registIdxList);
+
+        // Stream + Set을 사용해 리스트 변환
+        List<String> uniqueInviteIdxList = inviteIdxList.stream()
+                .filter(idx -> !registIdxSet.contains(idx)) // Set에서 검색
+                .collect(Collectors.toList());
+
+        log.info("inviteIdxList에서 registIdxList에 없는 값: " + uniqueInviteIdxList);
+
+        int result = deviceMapper.deleteNoDeviceGroupByList(uniqueInviteIdxList);
+        log.info("DELETE GROUP RESULT: " + result);
     }
 
 }

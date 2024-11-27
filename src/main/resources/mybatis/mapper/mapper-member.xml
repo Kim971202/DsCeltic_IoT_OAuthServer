@@ -323,14 +323,6 @@
     <select id="getNoticeList" resultMap="member">
         SELECT
             NOTI_IDX AS noticeIdx,
-            (
-                CASE WHEN NOTI_TYPE = '00' THEN 'ALL'
-                     WHEN NOTI_TYPE = '01' THEN '보일러'
-                     WHEN NOTI_TYPE = '05' THEN '각방'
-                     WHEN NOTI_TYPE = '07' THEN '환기'
-                     ELSE '-'
-                END
-            ) AS noticeType,
             NOTI_TITLE AS noticeTitle,
             NOTI_CONTENT AS noticeContent,
             NOTI_START_DATE AS noticeStartDate,
