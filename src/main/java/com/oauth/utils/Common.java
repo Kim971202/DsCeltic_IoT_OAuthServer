@@ -357,7 +357,7 @@ public class Common {
 
     /** 기기없는 그룹 삭제 함수 */
     public void deleteNoDeviceGroup(){
-
+        // Branch Test
         List<String> inviteIdxList = deviceMapper.getInviteGroupIdxList();
         log.info("inviteIdxList: " + inviteIdxList);
 
