@@ -1148,4 +1148,13 @@
             #{item.userId}
         </foreach>
     </select>
+
+    <delete id="deleteUserInviteGroupByGroupIdx" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            GRP_IDX = #{groupIdx}
+    </delete>
+
 </mapper>

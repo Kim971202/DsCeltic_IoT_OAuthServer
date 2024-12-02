@@ -188,6 +188,38 @@ public class UserController {
         return userService.doSearchGroupInfo(params);
     }
 
+    /** 사용자 그룹 삭제 */
+    @PostMapping(value = "/deleteGroup")
+    @ResponseBody
+    public ResponseEntity<?> doDeleteGroup(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException{
+
+        log.info("[사용자정보 조회]");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getGroupIdx())){
+            throw new CustomException("404", "사용자정보 조회 입력 값 오류");
+        }
+
+        return userService.doDeleteGroup(params);
+    }
+
+    /** 사용자 그룹 명칭 변경 */
+    @PostMapping(value = "/changeGroupName")
+    @ResponseBody
+    public ResponseEntity<?> doChangeGroupName(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException{
+
+        log.info("[사용자정보 조회]");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getGroupIdx()) || Validator.isNullOrEmpty(params.getGroupName())){
+            throw new CustomException("404", "사용자정보 조회 입력 값 오류");
+        }
+
+        return userService.doChangeGroupName(params);
+    }
+
     /** 회원 별칭(이름) 및 전화번호 변경 */
     @PostMapping(value = "/updateUserNicknameHp")
     @ResponseBody
@@ -467,14 +499,14 @@ public class UserController {
         log.info("[홈 IoT 컨트롤러 삭제(회원 매핑 삭제)]");
         common.logParams(params);
 
-//        if(Validator.isNullOrEmpty(params.getUserId()) ||
-//                Validator.isNullOrEmpty(params.getDeviceId()) ||
-//                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-//                Validator.isNullOrEmpty(params.getDeviceType()) ||
-//                Validator.isNullOrEmpty(params.getGroupIdx()) ||
-//                Validator.isNullOrEmpty(params.getModelCode())){
-//            throw new CustomException("404", "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 값 오류");
-//        }
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getDeviceType()) ||
+                Validator.isNullOrEmpty(params.getGroupIdx()) ||
+                Validator.isNullOrEmpty(params.getModelCode())){
+            throw new CustomException("404", "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 값 오류");
+        }
         return userService.doUserDeviceDelete(params);
     }
 

@@ -904,9 +904,18 @@
 
     <select id="getRegistGroupIdxList" parameterType="String" resultMap="String">
         SELECT DISTINCT
-        GRP_IDX AS groupIdx
+            GRP_IDX AS groupIdx
         FROM
-        TBT_OPR_DEVICE_REGIST
+            TBT_OPR_DEVICE_REGIST
+    </select>
+
+    <select id="getDeviceIdByGroupIdx" parameterType="String" resultMap="device">
+        SELECT
+            DEVC_ID AS deviceId
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            GRP_IDX = #{groupIdx}
     </select>
 
     <delete id="deleteNoDeviceGroupByList" parameterType="list">

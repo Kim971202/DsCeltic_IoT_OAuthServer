@@ -70,6 +70,7 @@ public interface MemberMapper {
     public int deleteUserDevicePush(List<AuthServerDTO> authServerDTOList);
     public int deleteDeviceGrpInfo(List<AuthServerDTO> authServerDTOList);
     public int deleteUserInviteGroup(AuthServerDTO member);
+    public int deleteUserInviteGroupByGroupIdx(String groupIdx);
     public int delHouseholdMember(String userId);
     public int insertHouseholder(AuthServerDTO member);
     public int updateRegistTable(AuthServerDTO member);
