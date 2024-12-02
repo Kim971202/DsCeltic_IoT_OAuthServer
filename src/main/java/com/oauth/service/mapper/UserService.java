@@ -33,6 +33,12 @@ public interface UserService {
     /** 사용자 그룹 정보 조회 */
     ResponseEntity<?> doSearchGroupInfo(AuthServerDTO params) throws CustomException;
 
+    /** 사용자 그룹 삭제 */
+    ResponseEntity<?> doDeleteGroup(AuthServerDTO params) throws CustomException;
+
+    /** 사용자 그룹 명칭 변경 */
+    ResponseEntity<?> doChangeGroupName(AuthServerDTO params) throws CustomException;
+
     /** 회원 별칭(이름) 및 전화번호 변경 */
     ResponseEntity<?> doUpdateUserNicknameHp(AuthServerDTO params) throws CustomException;
 

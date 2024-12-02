@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
             if (account == null) {
                 msg = "계정이 존재하지 않습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 registUserType = account.getRegistUserType();
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
             AuthServerDTO member = memberMapper.getUserByUserId(userId);
             if (member == null) {
                 msg = "계정이 존재하지 않습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else userNickname = member.getUserNickname();
 
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
             hp = memberMapper.getHpByUserId(userId).getHp();
             if (hp == null) {
                 msg = "계정이 존재하지 않습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else result.setHp(hp);
 
@@ -355,9 +355,9 @@ public class UserServiceImpl implements UserService {
         List<Map<String, Object>> groupInfoList = new ArrayList<>();
         try {
             groupInfo = memberMapper.getMemberByGroupIdxList(params);
-            if (groupInfo == null) {
+            if (groupInfo == null || groupInfo.isEmpty()) {
                 msg = "그룹 정보가 없습니다.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
             for(AuthServerDTO authServerDTO : groupInfo){
@@ -373,6 +373,76 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e){
             log.error("", e);
             return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /** 사용자 그룹 삭제 */
+    @Override
+    public ResponseEntity<?> doDeleteGroup(AuthServerDTO params) throws CustomException {
+        ApiResponse.Data data = new ApiResponse.Data();
+        String msg;
+        String groupIdx = params.getGroupIdx();
+        List<AuthServerDTO> deviceIdList;
+
+        try {
+            /* *
+             * TODO: 기기 삭제를 위한 필요한 정보 (기기ID, 사용자ID)
+             *  1. groupIdx기준 해당 그룹에 있는 기기ID 쿼리 - getDeviceIdByGroupIdx
+             *  2. 기기삭제 정보 쿼리 getCheckedDeviceExist
+             *  3. 기기 삭제 deleteControllerMapping
+             *  4. 그룹 삭제
+             * */
+
+            // 1
+            deviceIdList = deviceMapper.getDeviceIdByGroupIdx(groupIdx);
+
+            // 2
+            for(AuthServerDTO authServerDTO1 : deviceIdList){
+                List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(authServerDTO1.getDeviceId());
+                // 3
+                for(AuthServerDTO authServerDTO2 : authServerDTOList){
+                    memberMapper.deleteControllerMapping(authServerDTO2);
+                }
+            }
+
+            // 4
+            memberMapper.deleteUserInviteGroupByGroupIdx(groupIdx);
+            msg = "그룹 정보 삭제 성공";
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("", e);
+            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /** 사용자 그룹 명칭 변경 */
+    @Override
+    public ResponseEntity<?> doChangeGroupName(AuthServerDTO params) throws CustomException {
+        ApiResponse.Data data = new ApiResponse.Data();
+        String msg;
+
+        try {
+
+            if(deviceMapper.updateGroupName(params) <= 0) {
+                msg = "홈 IoT 컨트롤러 정보 수정 실패.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
+            if(deviceMapper.updateDeviceRegistGroupName(params) <= 0) {
+                msg = "홈 IoT 컨트롤러 정보 수정 실패.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
+            msg = "사용자 그룹 명칭 변경 성공";
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("", e);
+            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+
         }
     }
 
@@ -553,7 +623,7 @@ public class UserServiceImpl implements UserService {
 
             if(pushToken == null){
                 msg = "뭘 추가 하는 거죠?";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
             params.setUserId(params.getResponseUserId());
@@ -732,7 +802,7 @@ public class UserServiceImpl implements UserService {
             invitationInfo = memberMapper.getInvitationList(userId);
             if (invitationInfo.isEmpty()) {
                 msg = "사용자 초대 이력이 없습니다.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
@@ -778,7 +848,6 @@ public class UserServiceImpl implements UserService {
         try {
 
             memberMapper.delHouseholdMember(delUserId);
-
 
             // TBR_IOT_DEVICE_GRP_INFO deleteDeviceGrpInfo
             // TODO: 세대주 ID로 세대주 등록 기기 목록을 Regist 테이블에서 불러온후 해당 기기를 세대원 TBR_IOT_DEVICE_GRP_INFO 테이블에서 삭제
@@ -881,8 +950,8 @@ public class UserServiceImpl implements UserService {
 
             List<AuthServerDTO> pushCodeInfo = memberMapper.getPushCodeStatus(params.getUserId(), deviceIds);
             if (pushCodeInfo == null) {
-                resultMap.put("resultCode", "1018");
-                resultMap.put("resultMsg", "홈 IoT 컨트롤러 알림 정보 조회 실패");
+                resultMap.put("resultCode", "1016");
+                resultMap.put("resultMsg", "쿼리 결과 없음");
                 return resultMap;
             }
             // 사용자가 가진 DeviceId 리스트 개수 만큼 생성

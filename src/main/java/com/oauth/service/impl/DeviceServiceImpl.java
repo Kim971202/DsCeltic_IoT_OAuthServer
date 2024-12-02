@@ -272,7 +272,6 @@ public class DeviceServiceImpl implements DeviceService {
                  * 2. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
                  * 3. TBR_OPR_DEVICE_DETAIL - 단말정보상세
                  * 4. TBR_OPR_USER_DEVICE - 사용자 단말 정보
-                 *
                  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                  * 1. Push 설정 관련 기본 DB 추가 (기본값: Y)
                  * 2. IOT_DEVICE 테이블 등록 시 최초 기기 등록자 ID도 같이 등록
