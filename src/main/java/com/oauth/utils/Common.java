@@ -379,4 +379,27 @@ public class Common {
         }
     }
 
+    public String putQuotes(String conValue ) throws JsonProcessingException {
+        // 1. Key-Value 파싱을 위한 정규식
+        Pattern pattern = Pattern.compile("([a-zA-Z0-9]+):([^,}]+)");
+        Matcher matcher = pattern.matcher(conValue);
+
+        // 2. Key-Value를 LinkedHashMap에 저장
+        Map<String, String> map = new LinkedHashMap<>();
+        while (matcher.find()) {
+            String key = matcher.group(1).trim();
+            String value = matcher.group(2).trim();
+
+            // 값에서 공백이 포함된 경우 처리 (e.g., 날짜/시간 값)
+            if (value.contains(" ")) {
+                value = value.replace(" ", "T"); // ISO 8601 형식으로 변경 가능
+            }
+
+            map.put(key, value);
+        }
+        // 3. Jackson ObjectMapper로 JSON 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        return objectMapper.writeValueAsString(map);
+    }
 }
