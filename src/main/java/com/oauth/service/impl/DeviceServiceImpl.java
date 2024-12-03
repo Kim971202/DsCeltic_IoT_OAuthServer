@@ -187,7 +187,6 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("title", "powr");
                     conMap.put("powr", params.getPowerStatus());
-                    conMap.put("isEnd", "false");
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                     conMap.put("modelCode", modelCode);
@@ -636,7 +635,6 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "opMd");
                     conMap.put("id", "Mode Change ID");
-                    conMap.put("isEnd", "false");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
 
@@ -828,8 +826,6 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "htTp");
                     conMap.put("id", "TemperatureSet ID");
-                    conMap.put("isEnd", "false");
-
                     String jsonString = objectMapper.writeValueAsString(conMap);
 
                     if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
@@ -974,7 +970,6 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "wtTp");
                     conMap.put("id", "BoiledWaterTempertureSet ID");
-                    conMap.put("isEnd", "false");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
                     log.info("jsonString: " + jsonString);
@@ -1121,7 +1116,6 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "hwTp");
                     conMap.put("id", "WaterTempertureSet ID");
-                    conMap.put("isEnd", "false");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
 
@@ -1269,7 +1263,6 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "ftMd");
                     conMap.put("id", "FastHotWaterSet ID");
-                    conMap.put("isEnd", "false");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
 
@@ -1418,7 +1411,6 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "fcLc");
                     conMap.put("id", "LockSet ID");
-                    conMap.put("isEnd", "false");
                     String jsonString = objectMapper.writeValueAsString(conMap);
                     if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
                 }
@@ -1978,7 +1970,6 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("title", "VentilationFanSpeedSet");
                     conMap.put("powr", params.getPowerStatus());
-                    conMap.put("isEnd", "false");
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
