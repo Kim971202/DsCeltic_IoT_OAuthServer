@@ -630,7 +630,6 @@ public class UserServiceImpl implements UserService {
 
             conMap.put("targetToken", pushToken.getPushToken());
             conMap.put("title", "adUr");
-            conMap.put("isEnd", "false");
             conMap.put("body", "adUr");
             conMap.put("userNickname", userNickname.getUserNickname());
             conMap.put("pushYn", "Y");
@@ -1478,7 +1477,6 @@ public class UserServiceImpl implements UserService {
                 conMap1.put("deviceNick", common.returnDeviceNickname(deviceId));
                 conMap1.put("title", "blCf");
                 conMap1.put("id", "Brightness Control ID");
-                conMap1.put("isEnd", "false");
 
                 String jsonString1 = objectMapper.writeValueAsString(conMap1);
                 log.info("jsonString: " + jsonString);

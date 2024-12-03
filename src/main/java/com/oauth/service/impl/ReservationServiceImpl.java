@@ -140,10 +140,12 @@ public class ReservationServiceImpl implements ReservationService{
             } else {
                 if(stringObject.equals("Y")) {
                     msg = "24시간 예약 성공";
+                    conMap.put("body", "24hSet OK");
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 }
                 else if(stringObject.equals("N")) {
                     msg = "24시간 예약 실패";
+                    conMap.put("body", "24hSet FAIL");
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
                 }
                 else {
@@ -167,7 +169,6 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "24h");
                     conMap.put("id", "Set24 ID");
-                    conMap.put("isEnd", "false");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
                     log.info("jsonString: " + jsonString);
@@ -281,10 +282,12 @@ public class ReservationServiceImpl implements ReservationService{
             } else {
                 if(stringObject.equals("Y")) {
                     msg = "12시간 예약 성공";
+                    conMap.put("body", "12hSet OK");
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 }
                 else if(stringObject.equals("N")) {
                     msg = "12시간 예약 실패";
+                    conMap.put("body", "12hSet FAIL");
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
                 }
                 else {
@@ -315,7 +318,6 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "12h");
                     conMap.put("id", "Set12 ID");
-                    conMap.put("isEnd", "false");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
                     log.info("jsonString: " + jsonString);
@@ -470,9 +472,11 @@ public class ReservationServiceImpl implements ReservationService{
             } else {
                 if(stringObject.equals("Y")) {
                     msg = "빠른 온수 예약 성공";
+                    conMap.put("body", "FastHotWaterReservation OK");
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 } else if(stringObject.equals("N")) {
                     msg = "빠른 온수 예약 실패";
+                    conMap.put("body", "FastHotWaterReservation FAIL");
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
                 } else {
                     msg = "응답이 없거나 시간 초과";
@@ -497,7 +501,6 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "fwh");
                     conMap.put("id", "AwakeAlarmSet ID");
-                    conMap.put("isEnd", "false");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
                     log.info("jsonString: " + jsonString);
@@ -620,10 +623,12 @@ public class ReservationServiceImpl implements ReservationService{
             } else {
                 if(stringObject.equals("Y")) {
                     msg = "주간 예약 성공";
+                    conMap.put("body", "7wkSet OK");
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 }
                 else if(stringObject.equals("N")) {
                     msg = "주간 예약 실패";
+                    conMap.put("body", "7wkSet FAIL");
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
                 }
                 else {
@@ -649,7 +654,6 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "7wk");
                     conMap.put("id", "Mode Change ID");
-                    conMap.put("isEnd", "false");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
 
@@ -798,7 +802,7 @@ public class ReservationServiceImpl implements ReservationService{
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
                 } else {
                     if(stringObject.equals("Y")) {
-                        conMap.put("body", "Device ON/OFF OK");
+                        conMap.put("body", "Ventilation ON/OFF OK");
                         msg = "환기 취침 모드 성공";
                         result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                         result.setTestVariable(responseMessage);
@@ -842,7 +846,6 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("title", "setSleepMode");
                     conMap.put("powr", params.getPowerStatus());
-                    conMap.put("isEnd", "false");
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
@@ -1008,7 +1011,6 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("title", "rsPw");
                     conMap.put("rsPw", params.getPowerStatus());
-                    conMap.put("isEnd", "false");
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
