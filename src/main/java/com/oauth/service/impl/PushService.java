@@ -37,6 +37,7 @@ public class PushService {
         int endIndex = jsonBody.indexOf("},cr:");
         String conValue = jsonBody.substring(startIndex, endIndex + 1);
         log.info("conValue: " + conValue);
+        log.info("conValue: " + common.convertToJsonFormat(conValue));
         HashMap<String, String> pushMap = new HashMap<>();
         try {
             pushMap.put("targetToken", pushToken);
