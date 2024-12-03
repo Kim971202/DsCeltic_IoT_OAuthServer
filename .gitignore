@@ -17,4 +17,4 @@ out/
 
 # Add this to make sure the build directory is included
 !build/
-!build/libs/*.jar
+!build/libs/*.jarnohup.out
