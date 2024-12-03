@@ -32,7 +32,7 @@ public class PushService {
 
     public void sendPushMessage(String jsonBody, String pushToken, String fPushYn, String userId, String modelCode) throws Exception {
         log.info("sendPushMessage jsonBody: " + jsonBody);
-
+        log.info("common.readCon(jsonBody, \"con\"): " + common.readCon(jsonBody, "con"));
         HashMap<String, String> pushMap = new HashMap<>();
         try {
             pushMap.put("targetToken", pushToken);
@@ -41,7 +41,6 @@ public class PushService {
             pushMap.put("title", common.readCon(jsonBody, "mfCd"));
             pushMap.put("body", common.readCon(jsonBody, "con"));
             pushMap.put("id", userId);
-            pushMap.put("isEnd", "False");
 
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
         } catch (Exception e){
