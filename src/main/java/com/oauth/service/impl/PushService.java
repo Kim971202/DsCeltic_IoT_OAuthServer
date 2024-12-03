@@ -33,6 +33,7 @@ public class PushService {
     public void sendPushMessage(String jsonBody, String pushToken, String fPushYn, String userId, String modelCode) throws Exception {
         log.info("sendPushMessage jsonBody: " + jsonBody);
         log.info("common.readCon(jsonBody, \"con\"): " + common.readCon(jsonBody, "con"));
+        log.info("common.readCon(jsonBody, \"con\"): " + common.readCon(common.readCon(jsonBody, "con"), "con"));
         HashMap<String, String> pushMap = new HashMap<>();
         try {
             pushMap.put("targetToken", pushToken);
