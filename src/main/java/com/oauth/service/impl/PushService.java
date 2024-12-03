@@ -32,15 +32,18 @@ public class PushService {
 
     public void sendPushMessage(String jsonBody, String pushToken, String fPushYn, String userId, String modelCode) throws Exception {
         log.info("sendPushMessage jsonBody: " + jsonBody);
-        log.info("common.readCon(jsonBody, \"con\"): " + common.readCon(jsonBody, "con"));
-        log.info("common.readCon(jsonBody, \"con\"): " + common.readCon(common.readCon(jsonBody, "con"), "con"));
+
+        int startIndex = jsonBody.indexOf("con:{") + 4;
+        int endIndex = jsonBody.indexOf("},cr:");
+        String conValue = jsonBody.substring(startIndex, endIndex + 1);
+
         HashMap<String, String> pushMap = new HashMap<>();
         try {
             pushMap.put("targetToken", pushToken);
             pushMap.put("pushYn", fPushYn);
             pushMap.put("modelCode", modelCode);
             pushMap.put("title", common.readCon(jsonBody, "mfCd"));
-            pushMap.put("body", common.readCon(jsonBody, "con"));
+            pushMap.put("body", conValue);
             pushMap.put("id", userId);
 
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
