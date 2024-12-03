@@ -189,7 +189,7 @@ public class MobiusController {
                 String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
                 String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
 
-                pushService.sendPushMessage(jsonBody, pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]));
+                pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]));
             }
 
             AuthServerDTO params = new AuthServerDTO();
