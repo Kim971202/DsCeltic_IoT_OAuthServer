@@ -121,7 +121,7 @@ public class MobiusController {
             errorInfo.setErrorMessage(errorMessage);
             errorInfo.setErrorDateTime(errorDateTime);
             errorInfo.setSerialNumber(serialNumber[2]);
-            pushService.sendPushMessage(jsonBody, errorCode, errorMessage, common.hexToString(modelCode[5]));
+            pushService.sendPushMessage(common.readCon(jsonBody, "con"), errorCode, errorMessage, common.hexToString(modelCode[5]));
             if(deviceMapper.insertErrorInfo(errorInfo) <= 0) {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, "DB_ERROR 잠시 후 다시 시도 해주십시오.");
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
