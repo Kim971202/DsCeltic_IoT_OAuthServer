@@ -36,15 +36,14 @@ public class PushService {
         int startIndex = jsonBody.indexOf("con:{") + 4;
         int endIndex = jsonBody.indexOf("},cr:");
         String conValue = jsonBody.substring(startIndex, endIndex + 1);
-        log.info("conValue: " + conValue);
-        log.info("conValue: " + common.convertToJsonFormat(conValue));
+        log.info("JSON.toJson(conValue): " + JSON.toJson(conValue));
         HashMap<String, String> pushMap = new HashMap<>();
         try {
             pushMap.put("targetToken", pushToken);
             pushMap.put("pushYn", fPushYn);
             pushMap.put("modelCode", modelCode);
             pushMap.put("title", title);
-            pushMap.put("body", conValue);
+            pushMap.put("body", JSON.toJson(conValue));
             pushMap.put("id", userId);
 
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
