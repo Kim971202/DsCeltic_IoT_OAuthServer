@@ -402,4 +402,10 @@ public class Common {
 
         return objectMapper.writeValueAsString(map);
     }
+
+    public String returnConValue(String jsonBody){
+        int startIndex = jsonBody.indexOf("con:{") + 4;
+        int endIndex = jsonBody.indexOf("},cr:");
+        return jsonBody.substring(startIndex, endIndex + 1);
+    }
 }

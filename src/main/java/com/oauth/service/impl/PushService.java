@@ -33,17 +33,13 @@ public class PushService {
     public void sendPushMessage(String jsonBody, String pushToken, String fPushYn, String userId, String modelCode, String title) throws Exception {
         log.info("sendPushMessage jsonBody: " + jsonBody);
 
-        int startIndex = jsonBody.indexOf("con:{") + 4;
-        int endIndex = jsonBody.indexOf("},cr:");
-        String conValue = jsonBody.substring(startIndex, endIndex + 1);
-        log.info("JSON.toJson(conValue): " + common.putQuotes(conValue));
         HashMap<String, String> pushMap = new HashMap<>();
         try {
             pushMap.put("targetToken", pushToken);
             pushMap.put("pushYn", fPushYn);
             pushMap.put("modelCode", modelCode);
             pushMap.put("title", title);
-            pushMap.put("body", common.putQuotes(conValue));
+            pushMap.put("body", common.putQuotes(common.returnConValue(jsonBody)));
             pushMap.put("id", userId);
 
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
@@ -77,10 +73,9 @@ public class PushService {
 
                 pushMap.put("targetToken", authServerDTO.getPushToken());
                 pushMap.put("title","ERROR");
-                pushMap.put("body", common.readCon(jsonBody, "con"));
+                pushMap.put("body", common.putQuotes(common.returnConValue(jsonBody)));
                 pushMap.put("id", authServerDTO.getUserId());
                 pushMap.put("pushYn", authServerDTO.getSPushYn());
-                pushMap.put("isEnd", "False");
 
                 mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
             }
