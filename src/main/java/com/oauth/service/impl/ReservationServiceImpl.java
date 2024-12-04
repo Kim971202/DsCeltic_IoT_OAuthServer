@@ -135,7 +135,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             if(responseMessage != null && responseMessage.equals("2")){
                 conMap.put("body", "RemoteController WIFI ERROR");
-                msg = "RC WIFI 오류";
+                msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
             } else {
                 if(stringObject.equals("Y")) {
@@ -149,7 +149,7 @@ public class ReservationServiceImpl implements ReservationService{
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
                 }
                 else {
-                    msg = "응답이 없거나 시간 초과";
+                    msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
                 }
 
@@ -277,7 +277,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             if(responseMessage != null && responseMessage.equals("2")){
                 conMap.put("body", "RemoteController WIFI ERROR");
-                msg = "RC WIFI 오류";
+                msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
             } else {
                 if(stringObject.equals("Y")) {
@@ -291,7 +291,7 @@ public class ReservationServiceImpl implements ReservationService{
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
                 }
                 else {
-                    msg = "응답이 없거나 시간 초과";
+                    msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
                 }
 
@@ -467,7 +467,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             if(responseMessage != null && responseMessage.equals("2")){
                 conMap.put("body", "RemoteController WIFI ERROR");
-                msg = "RC WIFI 오류";
+                msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
             } else {
                 if(stringObject.equals("Y")) {
@@ -479,7 +479,7 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("body", "FastHotWaterReservation FAIL");
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
                 } else {
-                    msg = "응답이 없거나 시간 초과";
+                    msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
                 }
 
@@ -618,7 +618,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             if(responseMessage != null && responseMessage.equals("2")){
                 conMap.put("body", "RemoteController WIFI ERROR");
-                msg = "RC WIFI 오류";
+                msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
             } else {
                 if(stringObject.equals("Y")) {
@@ -632,7 +632,7 @@ public class ReservationServiceImpl implements ReservationService{
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
                 }
                 else {
-                    msg = "응답이 없거나 시간 초과";
+                    msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
                 }
 
@@ -763,7 +763,7 @@ public class ReservationServiceImpl implements ReservationService{
                 } else serialNumber = device.getSerialNumber();
 
                 if(serialNumber == null) {
-                    msg = "환기 취침 모드 실패";
+                    msg = "기기정보가 없습니다.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 } else {
@@ -798,7 +798,7 @@ public class ReservationServiceImpl implements ReservationService{
 
                 if(responseMessage != null && responseMessage.equals("2")){
                     conMap.put("body", "RemoteController WIFI ERROR");
-                    msg = "RC WIFI 오류";
+                    msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
                 } else {
                     if(stringObject.equals("Y")) {
@@ -809,7 +809,7 @@ public class ReservationServiceImpl implements ReservationService{
                     }
                     else {
                         conMap.put("body", "Service TIME-OUT");
-                        msg = "응답이 없거나 시간 초과";
+                        msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                         result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
                     }
                 }
@@ -927,7 +927,7 @@ public class ReservationServiceImpl implements ReservationService{
             } else serialNumber = device.getSerialNumber();
 
             if(serialNumber == null) {
-                msg = "환기 꺼짐/켜짐 예약 실패";
+                msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }else {
@@ -964,7 +964,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             if(responseMessage != null && responseMessage.equals("2")){
                 conMap.put("body", "RemoteController WIFI ERROR");
-                msg = "RC WIFI 오류";
+                msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
             } else {
                 if(stringObject.equals("Y")) {
@@ -975,7 +975,7 @@ public class ReservationServiceImpl implements ReservationService{
                 }
                 else {
                     conMap.put("body", "Service TIME-OUT");
-                    msg = "응답이 없거나 시간 초과";
+                    msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
                 }
 

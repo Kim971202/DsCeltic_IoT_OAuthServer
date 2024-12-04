@@ -34,7 +34,7 @@ public class StatisticServiceImpl implements StatisticService {
             deviceWorkTimeInfo = memberMapper.getWorkTime(params);
 
             if(deviceWorkTimeInfo == null){
-                resultMap.put("resultCode", "200");
+                resultMap.put("resultCode", "1018");
                 resultMap.put("resultMsg", "일별 가동시간 통계조회 조회 실패");
                 return resultMap;
             }
