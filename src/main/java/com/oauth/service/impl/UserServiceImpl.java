@@ -143,7 +143,7 @@ public class UserServiceImpl implements UserService {
 
             params.setNewHp(params.getHp());
             if(!memberMapper.checkDuplicateHp(params.getNewHp()).getHpCount().equals("0")){
-                msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
+                msg = "증복 전화번호 입력.";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
@@ -425,13 +425,13 @@ public class UserServiceImpl implements UserService {
         try {
 
             if(deviceMapper.updateGroupName(params) <= 0) {
-                msg = "홈 IoT 컨트롤러 정보 수정 실패.";
+                msg = "사용자 그룹 명칭 변경 실패.";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             if(deviceMapper.updateDeviceRegistGroupName(params) <= 0) {
-                msg = "홈 IoT 컨트롤러 정보 수정 실패.";
+                msg = "사용자 그룹 명칭 변경 실패.";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
@@ -622,7 +622,7 @@ public class UserServiceImpl implements UserService {
             pushToken = memberMapper.getPushTokenByUserId(params.getResponseUserId());
 
             if(pushToken == null){
-                msg = "뭘 추가 하는 거죠?";
+                msg = "PUSH TOKEN NULL";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
@@ -743,7 +743,6 @@ public class UserServiceImpl implements UserService {
                     data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(data, HttpStatus.OK);
                 }
-
             } else {
                 msg = "예기치 못한 오류로 인해 서버에 연결할 수 없습니다";
                 data.setResult(ApiResponse.ResponseType.HTTP_500, msg);
@@ -911,9 +910,9 @@ public class UserServiceImpl implements UserService {
                             break;
                     }
                 }
-                if(memberMapper.updatePushCodeStatus(params) <= 0) log.info("홈 IoT 컨트롤러 알림 설정 실패");
+                if(memberMapper.updatePushCodeStatus(params) <= 0) log.info("기기 알림 설정 실패");
 
-                msg = "홈 IoT 컨트롤러 알림 설정 성공";
+                msg = "기기 알림 설정 성공";
 
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 log.info("data: " + data);
@@ -984,7 +983,7 @@ public class UserServiceImpl implements UserService {
 
             resultMap.put("push", pushList);
             resultMap.put("resultCode", "200");
-            resultMap.put("resultMsg", "홈 IoT 컨트롤러 알림 정보 조회 성공");
+            resultMap.put("resultMsg", "기기 알림 정보 조회 성공");
 
             log.info("resultMap: " + resultMap);
             return resultMap;
@@ -1049,7 +1048,7 @@ public class UserServiceImpl implements UserService {
 
             // TODO: 5. TBR_OPR_USER_DEVICE USER_ID 업데이트
             if(memberMapper.updateUserDevice(params) <= 0){
-                msg = "사용자(세대원) 강제탈퇴 실패";
+                msg = "사용자(세대주) 강제탈퇴 실패";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
@@ -1064,7 +1063,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /** 홈IoT 서비스 회원 탈퇴 */
+    /** 홈 IoT 서비스 회원 탈퇴 */
     @Override
     public ResponseEntity<?> doWithdrawal(AuthServerDTO params)
             throws CustomException{
@@ -1104,12 +1103,12 @@ public class UserServiceImpl implements UserService {
              * 프로시져 사용 (deleteUserFromService)
              * */
             if(!memberMapper.deleteMemberFromService(userId).equals("100")){
-                msg = "홈IoT 서비스 회원 탈퇴 실패";
+                msg = "홈 IoT 서비스 회원 탈퇴 실패";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            msg = "홈IoT 서비스 회원 탈퇴 성공";
+            msg = "홈 IoT 서비스 회원 탈퇴 성공";
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             log.info("data: " + data);
@@ -1242,7 +1241,7 @@ public class UserServiceImpl implements UserService {
                 result.setTokenVerify(stringObject);
             }
 
-            msg = "API인증키 검증 성공";
+            msg = "API인증키 갱신 성공";
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
@@ -1272,16 +1271,13 @@ public class UserServiceImpl implements UserService {
              * */
 
             if(!memberMapper.deleteControllerMapping(params).equals("100")){
-                msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 실패";
+                msg = "기기 삭제(회원 매핑 삭제) 실패";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 new ResponseEntity<>(data, HttpStatus.OK);
             } else stringObject = "Y";
 
-            // 기기 삭제 후 전체 groupIdx를 regist 테이블의 groupIdx와 비교해 regist에 없는 groupIdx는 전체 삭제
-            common.deleteNoDeviceGroup();
-
-            if(stringObject.equals("Y")) msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 성공";
-            else msg = "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 실패";
+            if(stringObject.equals("Y")) msg = "기기 삭제(회원 매핑 삭제) 성공";
+            else msg = "기기 삭제(회원 매핑 삭제) 실패";
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
@@ -1405,7 +1401,7 @@ public class UserServiceImpl implements UserService {
 
             serialNumber = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             if(serialNumber.getSerialNumber() == null){
-                msg = "기기 밝기 조절 실패";
+                msg = "기기 제어 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
@@ -1434,12 +1430,12 @@ public class UserServiceImpl implements UserService {
                 // 메시징 시스템을 통해 응답 메시지 대기
                 responseMessage = gwMessagingSystem.waitForResponse("blCf" + uuId, TIME_OUT, TimeUnit.SECONDS);
                 if(responseMessage == null) {
-                    msg = "REQ_TIME_OUT";
+                    msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
 
                 } else if(!responseMessage.equals("0")) {
-                    msg = "기기 밝기 수정 실패";
+                    msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
@@ -1642,7 +1638,7 @@ public class UserServiceImpl implements UserService {
             fwhInfo = memberMapper.getFwhInfo(deviceId);
             if(fwhInfo == null){
                 msg = "빠른온수 예약 정보 없음";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 result.setAwakeList(fwhInfo.getFastHotWater());
