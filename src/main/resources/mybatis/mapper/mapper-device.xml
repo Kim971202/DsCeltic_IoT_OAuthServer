@@ -158,7 +158,7 @@
 
     <delete id="deleteDeviceListGrpInfo" parameterType="com.oauth.dto.AuthServerDTO">
         DELETE FROM
-            TBD_USER_INVITE_GROUP
+            TBR_IOT_DEVICE_GRP_INFO
         WHERE
             (DEVC_ID, GRP_ID) IN
         <foreach collection="list" item="item" open="(" separator="),(" close=")">
