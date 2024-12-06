@@ -142,8 +142,7 @@ public class ReservationController {
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getPowerStatus()) ||
                 Validator.isNullOrEmpty(params.getWaitHour()) ||
-                Validator.isNullOrEmpty(params.getWaitMinute()) ||
-                Validator.isNullOrEmpty(params.getOnOffFlag())){
+                Validator.isNullOrEmpty(params.getWaitMinute())){
             throw new CustomException("404", "환기 꺼짐/켜짐 예약 값 오류");
         }
 
