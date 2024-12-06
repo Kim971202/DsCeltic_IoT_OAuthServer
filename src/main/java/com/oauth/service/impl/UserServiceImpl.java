@@ -1402,7 +1402,7 @@ public class UserServiceImpl implements UserService {
             serialNumber = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             if(serialNumber.getSerialNumber() == null){
                 msg = "기기 제어 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
             System.out.println("params.getBrightnessLevel(): " + params.getBrightnessLevel());
