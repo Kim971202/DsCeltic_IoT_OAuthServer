@@ -156,13 +156,13 @@
         </foreach>
     </insert>
 
-    <delete id="deleteDeviceListGrpInfo" parameterType="com.oauth.dto.AuthServerDTO">
+    <delete id="deleteDeviceListGrpInfo" parameterType="list">
         DELETE FROM
             TBR_IOT_DEVICE_GRP_INFO
         WHERE
             (DEVC_ID, GRP_ID) IN
         <foreach collection="list" item="item" open="(" separator="),(" close=")">
-            #{item.deviceId}, #{item.userId}
+            (#{item.deviceId}, #{item.userId})
         </foreach>
     </delete>
 
