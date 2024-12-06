@@ -144,7 +144,7 @@ public class UserServiceImpl implements UserService {
             params.setNewHp(params.getHp());
             if(!memberMapper.checkDuplicateHp(params.getNewHp()).getHpCount().equals("0")){
                 msg = "증복 전화번호 입력.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1007, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
@@ -292,7 +292,7 @@ public class UserServiceImpl implements UserService {
             params.setNewPassword(encoder.encode(params.getUserPassword()));
             if(memberMapper.updatePassword(params) <= 0){
                 msg = "비밀번호 변경 - 생성 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 new ResponseEntity<>(data, HttpStatus.OK);
             } else stringObject = "Y";
 
@@ -303,7 +303,7 @@ public class UserServiceImpl implements UserService {
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_1003, msg);
+                    : ApiResponse.ResponseType.CUSTOM_1018, msg);
 
             log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -1629,30 +1629,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> doGetFastHotWaterInfo(AuthServerDTO params) throws Exception {
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = "N";
+        String stringObject;
         String msg;
         String deviceId = params.getDeviceId();
 
         AuthServerDTO fwhInfo;
         try {
             fwhInfo = memberMapper.getFwhInfo(deviceId);
+            System.out.println(fwhInfo == null);
+
             if(fwhInfo == null){
                 msg = "빠른온수 예약 정보 없음";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
-                new ResponseEntity<>(result, HttpStatus.OK);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 result.setAwakeList(fwhInfo.getFastHotWater());
-                stringObject = "Y";
-            }
-
-            if(stringObject.equals("Y"))
                 msg = "빠른온수 예약 정보 조회 성공";
-            else
-                msg = "빠른온수 예약 정보 조회 실패";
-
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_1018, msg);
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
