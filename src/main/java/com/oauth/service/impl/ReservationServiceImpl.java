@@ -137,6 +137,7 @@ public class ReservationServiceImpl implements ReservationService{
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 if(stringObject.equals("Y")) {
                     msg = "24시간 예약 성공";
@@ -146,11 +147,13 @@ public class ReservationServiceImpl implements ReservationService{
                 else if(stringObject.equals("N")) {
                     msg = "24시간 예약 실패";
                     conMap.put("body", "24hSet FAIL");
-                    result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
                 else {
                     msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
                 household = memberMapper.getHouseholdByUserId(params.getUserId());
@@ -279,6 +282,7 @@ public class ReservationServiceImpl implements ReservationService{
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 if(stringObject.equals("Y")) {
                     msg = "12시간 예약 성공";
@@ -288,11 +292,13 @@ public class ReservationServiceImpl implements ReservationService{
                 else if(stringObject.equals("N")) {
                     msg = "12시간 예약 실패";
                     conMap.put("body", "12hSet FAIL");
-                    result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
                 else {
                     msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
                 dbMap.put("hr", params.getWorkPeriod());
@@ -469,6 +475,7 @@ public class ReservationServiceImpl implements ReservationService{
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 if(stringObject.equals("Y")) {
                     msg = "빠른 온수 예약 성공";
@@ -477,10 +484,12 @@ public class ReservationServiceImpl implements ReservationService{
                 } else if(stringObject.equals("N")) {
                     msg = "빠른 온수 예약 실패";
                     conMap.put("body", "FastHotWaterReservation FAIL");
-                    result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 } else {
                     msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
                 deviceInfo.setDeviceId(deviceId);
@@ -559,12 +568,6 @@ public class ReservationServiceImpl implements ReservationService{
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
 
-            if(params.getOnOffFlag().equals("of")){
-                msg = "최초 주간 예약 설정";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-
             firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
             userId = firstDeviceUser.getUserId();
 
@@ -620,6 +623,7 @@ public class ReservationServiceImpl implements ReservationService{
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 if(stringObject.equals("Y")) {
                     msg = "주간 예약 성공";
@@ -629,11 +633,13 @@ public class ReservationServiceImpl implements ReservationService{
                 else if(stringObject.equals("N")) {
                     msg = "주간 예약 실패";
                     conMap.put("body", "7wkSet FAIL");
-                    result.setResult(ApiResponse.ResponseType.CUSTOM_1008, msg);
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
                 else {
                     msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
                 deviceInfo.setWk7(JSON.toJson(weekList));
@@ -800,6 +806,7 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("body", "RemoteController WIFI ERROR");
                     msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 } else {
                     if(stringObject.equals("Y")) {
                         conMap.put("body", "Ventilation ON/OFF OK");
@@ -811,6 +818,7 @@ public class ReservationServiceImpl implements ReservationService{
                         conMap.put("body", "Service TIME-OUT");
                         msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                         result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
+                        return new ResponseEntity<>(result, HttpStatus.OK);
                     }
                 }
                 redisCommand.deleteValues(setSleepMode.getUuId());
@@ -879,7 +887,6 @@ public class ReservationServiceImpl implements ReservationService{
         String deviceId = params.getDeviceId();
         String controlAuthKey = params.getControlAuthKey();
         String redisValue;
-        String serialNumber;
         String responseMessage = null;
 
         String power = params.getPowerStatus();
@@ -920,26 +927,14 @@ public class ReservationServiceImpl implements ReservationService{
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
 
-            if (device == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            } else serialNumber = device.getSerialNumber();
+            stringObject = "Y";
 
-            if(serialNumber == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(setOnOffPower));
+            if (!response.getResponseCode().equals("201")) {
+                msg = "중계서버 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
-            }else {
-                stringObject = "Y";
-                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(setOnOffPower));
-                if (!response.getResponseCode().equals("201")) {
-                    msg = "중계서버 오류";
-                    result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
-                    return new ResponseEntity<>(result, HttpStatus.OK);
-                }
             }
-
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
                 gwMessagingSystem.printMessageQueues();
@@ -966,6 +961,7 @@ public class ReservationServiceImpl implements ReservationService{
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 if(stringObject.equals("Y")) {
                     conMap.put("body", "Device ON/OFF OK");
@@ -977,6 +973,7 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("body", "Service TIME-OUT");
                     msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
                 redisCommand.deleteValues(setOnOffPower.getUuId());

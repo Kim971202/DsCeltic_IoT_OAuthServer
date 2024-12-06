@@ -197,7 +197,7 @@ public class UserServiceImpl implements UserService {
 
             if(stringObject.equals("Y")) {
                 msg = "중복 되는 ID";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1001, msg);
             } else{
                 msg = "중복 되지 않는 ID";
                 data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -227,7 +227,7 @@ public class UserServiceImpl implements UserService {
             member = memberMapper.getUserByHp(userHp);
             if (member.isEmpty()) {
                 msg = "일치하는 회원정보가 없습니다.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             } else userId = Common.extractJson(member.toString(), "userId");
 
@@ -270,7 +270,7 @@ public class UserServiceImpl implements UserService {
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_1004, msg);
+                    : ApiResponse.ResponseType.CUSTOM_1018, msg);
 
             log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -326,7 +326,7 @@ public class UserServiceImpl implements UserService {
 
             if (member == null) {
                 msg = "사용자정보가 없습니다.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             } else {
                 data.setUserId(member.getUserId());
@@ -459,7 +459,7 @@ public class UserServiceImpl implements UserService {
             dbPassword = memberMapper.getPasswordByUserId(params.getUserId());
             if (dbPassword == null) {
                 msg = "계정이 존재하지 않습니다.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
@@ -515,7 +515,7 @@ public class UserServiceImpl implements UserService {
 
             if (account == null) {
                 msg = "계정이 존재하지 않습니다.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
             params.setNewPassword(encoder.encode(params.getNewPassword()));
@@ -540,7 +540,7 @@ public class UserServiceImpl implements UserService {
 
             data.setResult("Y".equalsIgnoreCase(stringObject)
                     ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_1003, msg);
+                    : ApiResponse.ResponseType.CUSTOM_1018, msg);
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
             log.info("data: " + data);
@@ -582,7 +582,7 @@ public class UserServiceImpl implements UserService {
                 }
             } else {
                 msg = "계정이 존재하지 않습니다.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
@@ -745,7 +745,7 @@ public class UserServiceImpl implements UserService {
                 }
             } else {
                 msg = "예기치 못한 오류로 인해 서버에 연결할 수 없습니다";
-                data.setResult(ApiResponse.ResponseType.HTTP_500, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
@@ -1201,7 +1201,7 @@ public class UserServiceImpl implements UserService {
 
             result.setResult("Y".equalsIgnoreCase(stringObject) ?
                     ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1003, msg);
+                    ApiResponse.ResponseType.CUSTOM_1018, msg);
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1228,7 +1228,7 @@ public class UserServiceImpl implements UserService {
             account = memberMapper.getAccountByUserId(userId);
             if (account == null) {
                 msg = "계정이 존재하지 않습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
@@ -1307,7 +1307,7 @@ public class UserServiceImpl implements UserService {
             member = memberMapper.getPushInfoList(params);
             if (member == null) {
                 msg = "계정이 존재하지 않습니다.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1004, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             } else {
                 for(AuthServerDTO authServerDTO : member){
@@ -1580,13 +1580,17 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> dogenerateTempKey(String userId) throws Exception {
 
         ApiResponse.Data result = new ApiResponse.Data();
+        String msg;
         try {
             result.setTmpRegistKey(userId + common.getCurrentDateTime());
             log.info("result: " + result);
+
+            msg = "임시저장키 생성 성공";
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e){
          log.error("", e);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
 
