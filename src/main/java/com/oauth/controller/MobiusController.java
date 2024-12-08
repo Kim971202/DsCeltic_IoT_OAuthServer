@@ -152,7 +152,7 @@ public class MobiusController {
             deviceInfo.setHtTp(common.readCon(jsonBody, "htTp"));
             deviceInfo.setWtTp(common.readCon(jsonBody, "wtTp"));
             deviceInfo.setHwTp(common.readCon(jsonBody, "hwTp"));
-            deviceInfo.setBCdt(common.readCon(jsonBody, "bCdt"));
+//            deviceInfo.setBCdt(common.readCon(jsonBody, "bCdt"));
             deviceInfo.setChTp(common.readCon(jsonBody, "chTp"));
             deviceInfo.setCwTp(common.readCon(jsonBody, "cwTp"));
             deviceInfo.setHwSt(common.readCon(jsonBody, "hwSt"));
