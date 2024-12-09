@@ -64,6 +64,7 @@ public class MobiusController {
         String errorCode = common.readCon(jsonBody, "erCd");
         String replyErrorCode = common.readCon(jsonBody, "errorCode");
         String errorMessage = common.readCon(jsonBody, "erMg");
+        String errorVersion = common.readCon(jsonBody, "erVr");
         String errorDateTime = common.readCon(jsonBody, "erDt");
 
         // serialNumber: [Mobius, 20202020303833413844433645333841, 083A8DC6E38A, 3957]
@@ -119,9 +120,10 @@ public class MobiusController {
             AuthServerDTO errorInfo = new AuthServerDTO();
             errorInfo.setErrorCode(errorCode);
             errorInfo.setErrorMessage(errorMessage);
+            errorInfo.setErrorVersion(errorVersion);
             errorInfo.setErrorDateTime(errorDateTime);
             errorInfo.setSerialNumber(serialNumber[2]);
-            pushService.sendPushMessage(jsonBody, errorCode, errorMessage, common.hexToString(modelCode[5]));
+            pushService.sendPushMessage(jsonBody, errorCode, errorMessage, common.hexToString(modelCode[5]), errorVersion);
             if(deviceMapper.insertErrorInfo(errorInfo) <= 0) {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, "DB_ERROR 잠시 후 다시 시도 해주십시오.");
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);

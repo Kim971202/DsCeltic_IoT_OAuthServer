@@ -148,6 +148,7 @@ public class AuthServerDTO implements Serializable {
 
     private String errorCode;
     private String errorMessage;
+    private String errorVersion;
     private String errorDateTime;
 
     private String codeType;                     // 코드 구분 (0 = 모드코드, 1 = 변경상태정보코드)
