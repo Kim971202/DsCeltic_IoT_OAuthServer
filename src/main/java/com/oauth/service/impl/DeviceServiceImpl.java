@@ -191,6 +191,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                     conMap.put("modelCode", modelCode);
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                    conMap.put("deviceId", deviceId);
                     String jsonString = objectMapper.writeValueAsString(conMap);
                     if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
                         log.info("PUSH 메세지 전송 오류");
@@ -637,6 +638,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "opMd");
+                    conMap.put("deviceId", deviceId);
                     conMap.put("id", "Mode Change ID");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
@@ -855,6 +857,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "htTp");
+                    conMap.put("deviceId", deviceId);
                     conMap.put("id", "TemperatureSet ID");
                     String jsonString = objectMapper.writeValueAsString(conMap);
 
@@ -1002,6 +1005,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "wtTp");
+                    conMap.put("deviceId", deviceId);
                     conMap.put("id", "BoiledWaterTempertureSet ID");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
@@ -1151,6 +1155,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "hwTp");
+                    conMap.put("deviceId", deviceId);
                     conMap.put("id", "WaterTempertureSet ID");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
@@ -1300,6 +1305,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "ftMd");
+                    conMap.put("deviceId", deviceId);
                     conMap.put("id", "FastHotWaterSet ID");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
@@ -1451,6 +1457,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "fcLc");
+                    conMap.put("deviceId", deviceId);
                     conMap.put("id", "LockSet ID");
                     String jsonString = objectMapper.writeValueAsString(conMap);
                     if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
@@ -2015,7 +2022,7 @@ public class DeviceServiceImpl implements DeviceService {
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                     conMap.put("modelCode", modelCode);
-
+                    conMap.put("deviceId", deviceId);
                     String jsonString = objectMapper.writeValueAsString(conMap);
                     log.info("doPowerOnOff jsonString: " + jsonString);
 

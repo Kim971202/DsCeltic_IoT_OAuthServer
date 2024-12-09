@@ -171,6 +171,7 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "24h");
+                    conMap.put("deviceId", deviceId);
                     conMap.put("id", "Set24 ID");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
@@ -323,6 +324,7 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "12h");
+                    conMap.put("deviceId", deviceId);
                     conMap.put("id", "Set12 ID");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
@@ -509,6 +511,7 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "fwh");
+                    conMap.put("deviceId", deviceId);
                     conMap.put("id", "AwakeAlarmSet ID");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
@@ -659,6 +662,7 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("title", "7wk");
+                    conMap.put("deviceId", deviceId);
                     conMap.put("id", "Mode Change ID");
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
@@ -858,7 +862,7 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
-
+                    conMap.put("deviceId", deviceId);
                     String jsonString = objectMapper.writeValueAsString(conMap);
 
                     if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
@@ -1012,7 +1016,7 @@ public class ReservationServiceImpl implements ReservationService{
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
-
+                    conMap.put("deviceId", deviceId);
                     String jsonString = objectMapper.writeValueAsString(conMap);
 
                     if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
