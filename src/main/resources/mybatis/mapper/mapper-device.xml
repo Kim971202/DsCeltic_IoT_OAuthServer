@@ -21,8 +21,7 @@
             regist.TEMP_DEVC_REG_KEY AS tmpRegistKey,
             regist.GRP_IDX AS groupIdx,
             regist.GRP_NM AS groupName,
-            regist.USER_ID AS userId,
-            ROW_NUMBER() OVER () AS regSort
+            regist.USER_ID AS userId
         FROM
             TBR_IOT_DEVICE AS device
         INNER JOIN
