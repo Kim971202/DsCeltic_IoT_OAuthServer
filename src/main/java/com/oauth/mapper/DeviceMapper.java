@@ -38,7 +38,7 @@ public interface DeviceMapper {
     public int updateGroupName(AuthServerDTO params);
     public int deleteNoDeviceGroupByList(List<String> groupIdxList);
     public int insertDeviceGrpInfo(AuthServerDTO params);
-    public int insertDeviceListGrpInfoinsertDeviceListGrpInfo(List<AuthServerDTO> device);
+    public int insertDeviceListGrpInfo(List<AuthServerDTO> device);
     public int deleteDeviceListGrpInfo(List<AuthServerDTO> device);
     public int updateDeviceErrorStatus(String deviceId);
     public int changeDeviceNicknameTemp(AuthServerDTO device);
