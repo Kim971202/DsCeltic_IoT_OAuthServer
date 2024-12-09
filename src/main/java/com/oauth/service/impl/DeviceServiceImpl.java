@@ -369,7 +369,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
 
                 // 기기없는 그룹 삭제
-                common.deleteNoDeviceGroup();
+//                common.deleteNoDeviceGroup();
 
                 stringObject = "Y";
             }
