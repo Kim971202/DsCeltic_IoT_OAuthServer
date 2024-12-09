@@ -10,7 +10,8 @@ import java.util.List;
 @Mapper
 public interface DeviceMapper {
 
-    public List<AuthServerDTO> getDeviceInfoSearchList (List<String> param);
+    public List<AuthServerDTO> getDeviceInfoSearchList (List<AuthServerDTO> param);
+    public List<AuthServerDTO> getDeviceInfoSearchIdx (List<String> param);
     public List<AuthServerDTO> getDeviceIdByGroupIdx (String groupIdx);
     public List<AuthServerDTO> getMultiSerialNumberBydeviceId(List<AuthServerDTO> deviceId);
     public List<AuthServerDTO> deviceAuthCheck(List<AuthServerDTO> device);

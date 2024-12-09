@@ -1823,7 +1823,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             groupIdxList = Arrays.asList(groupIdx.split(","));
             System.out.println(groupIdxList);
-            deviceInfoList = deviceMapper.getDeviceInfoSearchList(groupIdxList);
+            deviceInfoList = deviceMapper.getDeviceInfoSearchIdx(groupIdxList);
 
             if(!deviceInfoList.isEmpty()){
                 for (AuthServerDTO authServerDTO : deviceInfoList) {
