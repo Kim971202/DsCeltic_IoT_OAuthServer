@@ -227,7 +227,7 @@ public class UserServiceImpl implements UserService {
             member = memberMapper.getUserByHp(userHp);
             if (member.isEmpty()) {
                 msg = "일치하는 회원정보가 없습니다.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             } else userId = Common.extractJson(member.toString(), "userId");
 
@@ -1472,6 +1472,7 @@ public class UserServiceImpl implements UserService {
                 conMap1.put("userNickname", userNickname.getUserNickname());
                 conMap1.put("deviceNick", common.returnDeviceNickname(deviceId));
                 conMap1.put("title", "blCf");
+                conMap1.put("deviceId", deviceId);
                 conMap1.put("id", "Brightness Control ID");
 
                 String jsonString1 = objectMapper.writeValueAsString(conMap1);
