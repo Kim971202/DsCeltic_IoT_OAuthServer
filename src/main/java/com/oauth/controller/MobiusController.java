@@ -152,7 +152,7 @@ public class MobiusController {
             deviceInfo.setHtTp(common.readCon(jsonBody, "htTp"));
             deviceInfo.setWtTp(common.readCon(jsonBody, "wtTp"));
             deviceInfo.setHwTp(common.readCon(jsonBody, "hwTp"));
-//            deviceInfo.setBCdt(common.readCon(jsonBody, "bCdt"));
+            deviceInfo.setBCdt(common.readCon(jsonBody, "bCdt"));
             deviceInfo.setChTp(common.readCon(jsonBody, "chTp"));
             deviceInfo.setCwTp(common.readCon(jsonBody, "cwTp"));
             deviceInfo.setHwSt(common.readCon(jsonBody, "hwSt"));
@@ -180,16 +180,21 @@ public class MobiusController {
 
             AuthServerDTO info = new AuthServerDTO();
 
-            for (AuthServerDTO id : userIds) {
-                log.info("쿼리한 UserId: " + id.getUserId());
+            System.out.println("deviceInfo.getBCdt() == null");
+            System.out.println(deviceInfo.getBCdt() == null);
 
-                info.setUserId(id.getUserId());
-                info.setDeviceId(common.readCon(jsonBody, "deviceId"));
+            if(deviceInfo.getBCdt() == null){
+                for (AuthServerDTO id : userIds) {
+                    log.info("쿼리한 UserId: " + id.getUserId());
 
-                String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
-                String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
+                    info.setUserId(id.getUserId());
+                    info.setDeviceId(common.readCon(jsonBody, "deviceId"));
 
-                pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"));
+                    String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
+                    String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
+
+                    pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"));
+                }
             }
 
             AuthServerDTO params = new AuthServerDTO();

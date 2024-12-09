@@ -1816,7 +1816,6 @@ public class DeviceServiceImpl implements DeviceService {
         String stringObject = "N";
         String msg = null;
         List<String> groupIdxList;
-        List<AuthServerDTO> userIdList;
         List<Map<String, String>> appResponse = new ArrayList<>();
         List<AuthServerDTO> deviceInfoList;
 
@@ -1824,8 +1823,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             groupIdxList = Arrays.asList(groupIdx.split(","));
             System.out.println(groupIdxList);
-            userIdList = memberMapper.getFamilyMemberByGroupIdxList(groupIdxList);
-            deviceInfoList = deviceMapper.getDeviceInfoSearchList(userIdList);
+            deviceInfoList = deviceMapper.getDeviceInfoSearchList(groupIdxList);
 
             if(!deviceInfoList.isEmpty()){
                 for (AuthServerDTO authServerDTO : deviceInfoList) {

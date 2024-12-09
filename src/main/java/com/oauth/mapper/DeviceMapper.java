@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface DeviceMapper {
 
-    public List<AuthServerDTO> getDeviceInfoSearchList (List<AuthServerDTO> param);
+    public List<AuthServerDTO> getDeviceInfoSearchList (List<String> param);
     public List<AuthServerDTO> getDeviceIdByGroupIdx (String groupIdx);
     public List<AuthServerDTO> getMultiSerialNumberBydeviceId(List<AuthServerDTO> deviceId);
     public List<AuthServerDTO> deviceAuthCheck(List<AuthServerDTO> device);
@@ -37,7 +37,7 @@ public interface DeviceMapper {
     public int updateGroupName(AuthServerDTO params);
     public int deleteNoDeviceGroupByList(List<String> groupIdxList);
     public int insertDeviceGrpInfo(AuthServerDTO params);
-    public int insertDeviceListGrpInfo(List<AuthServerDTO> device);
+    public int insertDeviceListGrpInfoinsertDeviceListGrpInfo(List<AuthServerDTO> device);
     public int deleteDeviceListGrpInfo(List<AuthServerDTO> device);
     public int updateDeviceErrorStatus(String deviceId);
     public int changeDeviceNicknameTemp(AuthServerDTO device);

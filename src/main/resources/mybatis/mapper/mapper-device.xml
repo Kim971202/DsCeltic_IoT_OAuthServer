@@ -29,10 +29,14 @@
             TBT_OPR_DEVICE_REGIST AS regist
         ON
             device.DEVC_ID = regist.DEVC_ID
+        INNER JOIN
+            TBD_USER_INVITE_GROUP AS invite
+        ON
+            regist.GRP_IDX = invite.GRP_IDX
         WHERE
-            regist.USER_ID IN
+            invite.GRP_IDX IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.groupId}
+            #{item}
         </foreach>
     </select>
 
