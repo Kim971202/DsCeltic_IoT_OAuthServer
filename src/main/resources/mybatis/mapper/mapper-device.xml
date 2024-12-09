@@ -6,7 +6,7 @@
     <resultMap id="dr910w" type="com.oauth.dto.gw.DeviceStatusInfo$Device"> </resultMap>
     <resultMap id="String" type="String"> </resultMap>
 
-    <select id="getDeviceInfoSearchList" parameterType="java.util.List" resultMap="device">
+    <select id="getDeviceInfoSearchIdx" parameterType="java.util.List" resultMap="device">
         SELECT
             device.DEVC_MODL_CD AS modelCode,
             device.ATTC_ID AS controlAuthKey,
@@ -37,6 +37,37 @@
             invite.GRP_IDX IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}
+        </foreach>
+    </select>
+
+    <select id="getDeviceInfoSearchList" parameterType="java.util.List" resultMap="device">
+        SELECT
+        device.DEVC_MODL_CD AS modelCode,
+        device.ATTC_ID AS controlAuthKey,
+        device.DEVC_ID AS deviceId,
+        regist.DEVC_NICK AS deviceNickname,
+        regist.ZIP AS zipCode,
+        regist.OLD_ADDR AS oldAddr,
+        regist.NEW_ADDR AS newAddr,
+        regist.DTAIL_ADDR AS addrDetail,
+        regist.LAT AS latitude,
+        regist.LON AS longitude,
+        regist.TEMP_DEVC_REG_KEY AS tmpRegistKey,
+        regist.GRP_IDX AS groupIdx,
+        regist.GRP_NM AS groupName,
+        regist.USER_ID AS userId,
+        ROW_NUMBER() OVER () AS regSort
+        FROM
+        TBR_IOT_DEVICE AS device
+        INNER JOIN
+        TBT_OPR_DEVICE_REGIST AS regist
+        ON
+        device.DEVC_ID = regist.DEVC_ID
+        INNER JOIN
+        WHERE
+            regist.USER_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.groupId}
         </foreach>
     </select>
 
