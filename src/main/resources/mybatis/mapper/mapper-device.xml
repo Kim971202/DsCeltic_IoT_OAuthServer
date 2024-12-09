@@ -7,7 +7,7 @@
     <resultMap id="String" type="String"> </resultMap>
 
     <select id="getDeviceInfoSearchIdx" parameterType="java.util.List" resultMap="device">
-        SELECT
+        SELECT DISTINCT
             device.DEVC_MODL_CD AS modelCode,
             device.ATTC_ID AS controlAuthKey,
             device.DEVC_ID AS deviceId,
