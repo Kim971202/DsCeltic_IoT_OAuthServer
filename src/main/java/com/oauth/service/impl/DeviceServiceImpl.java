@@ -1478,7 +1478,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
             params.setPushTitle("기기제어");
-            params.setPushContent("화면잠금: " + params.getLockSet());
+            params.setPushContent("화면잠금 " + params.getLockSet());
             params.setDeviceId(deviceId);
             params.setDeviceType("01");
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
