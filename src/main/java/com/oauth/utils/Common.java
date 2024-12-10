@@ -408,4 +408,22 @@ public class Common {
         int endIndex = jsonBody.indexOf("},cr:");
         return jsonBody.substring(startIndex, endIndex + 1);
     }
+
+    public void insertPushHistory(){
+
+        /**
+         * TBR_OPR_USER_DEVICE_PUSH_INFO
+         * PUSH_TITLE
+         * PUSH_CONTENT
+         * PUSH_TYPE
+         * PUSH_DATETIME
+         * DEVC_ID
+         * DEVC_NICK
+         * DEVC_TYPE
+         * */
+
+
+
+    }
+
 }
