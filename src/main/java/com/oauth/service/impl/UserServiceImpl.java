@@ -693,7 +693,11 @@ public class UserServiceImpl implements UserService {
             *  1. 신규 세대원을 TBD_USER_INVITE_GROUP 테이블에 추가
             *  2. 신규 세대원 관련 PUSH Message Info 등록
             * */
-                memberMapper.insertInviteGroupMember(params);
+                if(memberMapper.insertInviteGroupMember(params) <= 0){
+                    msg = "사용자 초대 - 수락 실패";
+                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(data, HttpStatus.OK);
+                }
                 params.setUserId(responseUserId);
 
 //                params.setNewId(params.getRequestUserId());
