@@ -190,8 +190,8 @@ public class DeviceServiceImpl implements DeviceService {
                         "0",
                         deviceId,
                         params.getUserId(),
+                        "전원 변경",
                         "전원 " + params.getPowerStatus(),
-                        "",
                         deviceType);
             }
 
@@ -743,7 +743,7 @@ public class DeviceServiceImpl implements DeviceService {
                         "0",
                         deviceId,
                         params.getUserId(),
-                        "모드변경",
+                        "모드 변경",
                         params.getControlCodeName(),
                         common.getModelCode(modelCode));
 
