@@ -1486,20 +1486,32 @@ public class UserServiceImpl implements UserService {
                     log.info("PUSH 메세지 전송 오류");
             }
 
-            params.setCodeType("1");
-            params.setCommandId("blCf");
-            params.setControlCode("blCf");
-            params.setControlCodeName("밝기 설정");
-            params.setCommandFlow("0");
-            params.setDeviceId(deviceId);
-            params.setUserId(params.getUserId());
+            common.insertHistory(
+                    "1",
+                    "BrightnessControl",
+                    "blCf",
+                    "밝기 조절",
+                    "0",
+                    deviceId,
+                    params.getUserId(),
+                    "밝기 조절",
+                    params.getBrightnessLevel(),
+                    "01");
 
-            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-
-            params.setPushTitle("기기제어");
-            params.setPushContent("밝기 설정");
-            params.setDeviceType("01");
-            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+//            params.setCodeType("1");
+//            params.setCommandId("blCf");
+//            params.setControlCode("blCf");
+//            params.setControlCodeName("밝기 설정");
+//            params.setCommandFlow("0");
+//            params.setDeviceId(deviceId);
+//            params.setUserId(params.getUserId());
+//
+//            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+//
+//            params.setPushTitle("기기제어");
+//            params.setPushContent("밝기 설정");
+//            params.setDeviceType("01");
+//            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);

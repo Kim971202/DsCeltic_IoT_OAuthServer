@@ -409,7 +409,7 @@ public class Common {
         return jsonBody.substring(startIndex, endIndex + 1);
     }
 
-    public void insertPushHistory(){
+    public void insertHistory(String codeType, String commandId, String controlCode, String controlName, String commandFlow, String deviceId, String userId, String pushTitle, String pushContent, String deviceType){
 
         /**
          * TBR_OPR_USER_DEVICE_PUSH_INFO
@@ -422,8 +422,28 @@ public class Common {
          * DEVC_TYPE
          * */
 
+        //        params.setGroupName();
+        //        params.setDeviceNickname();
+        // 위 값은 쿼리에서 가져오는 값으므로 선언 X
+        AuthServerDTO params = deviceMapper.getGroupNameAndDeviceNickByDeviceId(deviceId);
 
+        params.setCodeType(codeType);
+        params.setCommandId(commandId);
+        params.setControlCode(controlCode);
+        params.setControlCodeName(controlName);
+        params.setCommandFlow(commandFlow);
+        params.setDeviceId(deviceId);
+        params.setUserId(userId);
+        if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
 
+        params.setPushTitle(pushTitle);
+        params.setPushContent(pushContent);
+        params.setPushType("01");
+        params.setDeviceId(deviceId);
+        params.setDeviceType(deviceType);
+
+        System.out.println(params);
+        if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
     }
 
 }

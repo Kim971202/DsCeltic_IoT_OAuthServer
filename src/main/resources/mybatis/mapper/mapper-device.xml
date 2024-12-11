@@ -961,4 +961,15 @@
             #{item}
         </foreach>
     </delete>
+
+    <select id="getGroupNameAndDeviceNickByDeviceId" parameterType="String" resultMap="device">
+        SELECT
+            GRP_NM AS groupName,
+            DEVC_NICK AS deviceNickname
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
 </mapper>
