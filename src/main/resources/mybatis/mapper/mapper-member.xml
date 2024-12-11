@@ -514,6 +514,7 @@
             now(),
             #{deviceId},
             #{deviceType},
+            #{deviceNickname},
             #{groupName}
         )
     </insert>
