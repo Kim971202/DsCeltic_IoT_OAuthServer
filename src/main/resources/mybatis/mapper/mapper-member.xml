@@ -300,6 +300,9 @@
             PUSH_IDX AS pushIdx,
             PUSH_TITLE AS pushTitle,
             PUSH_CONTENT AS pushContent,
+            PUSH_TYPE AS pushType,
+            DEVC_NICK AS deviceNick,
+            GRP_NM AS groupName,
             (
             CASE
                  WHEN DEVC_TYPE = '01' THEN '보일러'
@@ -307,7 +310,7 @@
                  WHEN DEVC_TYPE = '07' THEN '환기'
                  ELSE '-'
             END
-            ) AS pushType,
+            ) AS deviceType,
             DATE_FORMAT(PUSH_DATETIME, '%Y-%m-%d %H:%i:%s') AS pushDateTime
         FROM
             TBR_OPR_USER_DEVICE_PUSH_INFO
@@ -498,17 +501,20 @@
             PUSH_TYPE,
             PUSH_DATETIME,
             DEVC_ID,
-            DEVC_TYPE
+            DEVC_TYPE,
+            DEVC_NICK,
+            GRP_NM
         )
         VALUES
         (
             #{userId},
             #{pushTitle},
             #{pushContent},
-            '01',
+            #{pushType},
             now(),
             #{deviceId},
-            #{deviceType}
+            #{deviceType},
+            #{groupName}
         )
     </insert>
 
