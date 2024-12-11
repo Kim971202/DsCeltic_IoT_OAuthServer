@@ -161,21 +161,6 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-                params.setCodeType("1");
-                params.setCommandId("PowerOnOff");
-                params.setControlCode("powr");
-                params.setControlCodeName("전원 ON/OFF");
-                params.setCommandFlow("0");
-                params.setDeviceId(deviceId);
-                params.setUserId(params.getUserId());
-                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-
-                params.setPushTitle("기기제어");
-                params.setPushContent("전원: " + params.getPowerStatus());
-                params.setDeviceId(deviceId);
-                params.setDeviceType(deviceType);
-                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
-
                 household = memberMapper.getHouseholdByUserId(params.getUserId());
                 params.setGroupId(household.getGroupId());
                 List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
@@ -196,7 +181,36 @@ public class DeviceServiceImpl implements DeviceService {
                     if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
                         log.info("PUSH 메세지 전송 오류");
                 }
+
+                common.insertHistory(
+                        "1",
+                        "PowerOnOff",
+                        "powr",
+                        "전원 ON/OFF",
+                        "0",
+                        deviceId,
+                        params.getUserId(),
+                        "전원 " + params.getPowerStatus(),
+                        "",
+                        deviceType);
             }
+
+//            params.setCodeType("1");
+//            params.setCommandId("PowerOnOff");
+//            params.setControlCode("powr");
+//            params.setControlCodeName("전원 ON/OFF");
+//            params.setCommandFlow("0");
+//            params.setDeviceId(deviceId);
+//            params.setUserId(params.getUserId());
+//            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+//
+//            params.setPushTitle("기기제어");
+//            params.setPushContent("전원: " + params.getPowerStatus());
+//            params.setDeviceId(deviceId);
+//            params.setDeviceType(deviceType);
+//            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+
+
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -721,19 +735,31 @@ public class DeviceServiceImpl implements DeviceService {
                         break;
                 }
 
-                params.setCodeType("0");
-                params.setCommandId("ModeChange");
-                params.setControlCode(modeCode);
-                params.setCommandFlow("0");
-                params.setDeviceId(deviceId);
-                params.setUserId(params.getUserId());
-                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+                common.insertHistory(
+                        "0",
+                        "ModeChange",
+                        "modeCode",
+                        params.getControlCodeName(),
+                        "0",
+                        deviceId,
+                        params.getUserId(),
+                        "모드변경",
+                        params.getControlCodeName(),
+                        common.getModelCode(modelCode));
 
-                params.setPushTitle("기기제어");
-                params.setPushContent("모드변경");
-                params.setDeviceId(deviceId);
-                params.setDeviceType(common.getModelCode(modelCode));
-                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+//                params.setCodeType("0");
+//                params.setCommandId("ModeChange");
+//                params.setControlCode(modeCode);
+//                params.setCommandFlow("0");
+//                params.setDeviceId(deviceId);
+//                params.setUserId(params.getUserId());
+//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+//
+//                params.setPushTitle("기기제어");
+//                params.setPushContent("모드변경");
+//                params.setDeviceId(deviceId);
+//                params.setDeviceType(common.getModelCode(modelCode));
+//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
             log.info("result: " + result);
@@ -869,20 +895,32 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceInfo.setDeviceId(params.getDeviceId());
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-                params.setCodeType("1");
-                params.setCommandId("TemperatureSet");
-                params.setControlCode("hwTp");
-                params.setControlCodeName("실내 온도 설정");
-                params.setCommandFlow("0");
-                params.setDeviceId(deviceId);
-                params.setUserId(params.getUserId());
-                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+                common.insertHistory(
+                        "1",
+                        "TemperatureSet",
+                        "modeCode",
+                        "실내 온도 설정",
+                        "0",
+                        deviceId,
+                        params.getUserId(),
+                        "htTp",
+                        params.getTemperture(),
+                        "01");
 
-                params.setPushTitle("기기제어");
-                params.setPushContent("실내온도 설정");
-                params.setDeviceId(deviceId);
-                params.setDeviceType("01");
-                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+//                params.setCodeType("1");
+//                params.setCommandId("TemperatureSet");
+//                params.setControlCode("htTp");
+//                params.setControlCodeName("실내 온도 설정");
+//                params.setCommandFlow("0");
+//                params.setDeviceId(deviceId);
+//                params.setUserId(params.getUserId());
+//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+//
+//                params.setPushTitle("기기제어");
+//                params.setPushContent("실내온도 설정");
+//                params.setDeviceId(deviceId);
+//                params.setDeviceType("01");
+//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1019,20 +1057,32 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-                params.setCodeType("1");
-                params.setCommandId("BoiledWaterTempertureSet");
-                params.setControlCode("wtTp");
-                params.setControlCodeName("난방수 온도 설정");
-                params.setCommandFlow("0");
-                params.setDeviceId(deviceId);
-                params.setUserId(params.getUserId());
-                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+                common.insertHistory(
+                        "1",
+                        "BoiledWaterTempertureSet",
+                        "wtTp",
+                        "난방수 온도 설정",
+                        "0",
+                        deviceId,
+                        params.getUserId(),
+                        "wtTp",
+                        params.getTemperture(),
+                        "01");
 
-                params.setPushTitle("기기제어");
-                params.setPushContent("난방수온도 설정");
-                params.setDeviceId(deviceId);
-                params.setDeviceType("01");
-                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+//                params.setCodeType("1");
+//                params.setCommandId("BoiledWaterTempertureSet");
+//                params.setControlCode("wtTp");
+//                params.setControlCodeName("난방수 온도 설정");
+//                params.setCommandFlow("0");
+//                params.setDeviceId(deviceId);
+//                params.setUserId(params.getUserId());
+//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+//
+//                params.setPushTitle("기기제어");
+//                params.setPushContent("난방수온도 설정");
+//                params.setDeviceId(deviceId);
+//                params.setDeviceType("01");
+//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
             log.info("result: " + result);
@@ -1168,20 +1218,32 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-                params.setCodeType("1");
-                params.setCommandId("WaterTempertureSet");
-                params.setControlCode("hwTp");
-                params.setControlCodeName("온수 온도 설정");
-                params.setCommandFlow("0");
-                params.setDeviceId(deviceId);
-                params.setUserId(params.getUserId());
-                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+                common.insertHistory(
+                        "1",
+                        "WaterTempertureSet",
+                        "hwTp",
+                        "온수 온도 설정",
+                        "0",
+                        deviceId,
+                        params.getUserId(),
+                        "hwTp",
+                        params.getTemperture(),
+                        "01");
 
-                params.setPushTitle("기기제어");
-                params.setPushContent("온수온도 설정");
-                params.setDeviceId(deviceId);
-                params.setDeviceType("01");
-                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+//                params.setCodeType("1");
+//                params.setCommandId("WaterTempertureSet");
+//                params.setControlCode("hwTp");
+//                params.setControlCodeName("온수 온도 설정");
+//                params.setCommandFlow("0");
+//                params.setDeviceId(deviceId);
+//                params.setUserId(params.getUserId());
+//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+//
+//                params.setPushTitle("기기제어");
+//                params.setPushContent("온수온도 설정");
+//                params.setDeviceId(deviceId);
+//                params.setDeviceType("01");
+//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
             log.info("result: " + result);
@@ -1318,20 +1380,32 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-                params.setCodeType("1");
-                params.setCommandId("FastHotWaterSet");
-                params.setControlCode("ftMd");
-                params.setControlCodeName("빠른 온수 설정");
-                params.setCommandFlow("0");
-                params.setDeviceId(deviceId);
-                params.setUserId(params.getUserId());
-                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+                common.insertHistory(
+                        "1",
+                        "FastHotWaterSet",
+                        "ftMd",
+                        "빠른 온수 설정",
+                        "0",
+                        deviceId,
+                        params.getUserId(),
+                        "빠른온수 설정 " + params.getModeCode(),
+                        "",
+                        "01");
 
-                params.setPushTitle("기기제어");
-                params.setPushContent("빠른온수 설정");
-                params.setDeviceId(deviceId);
-                params.setDeviceType("01");
-                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+//                params.setCodeType("1");
+//                params.setCommandId("FastHotWaterSet");
+//                params.setControlCode("ftMd");
+//                params.setControlCodeName("빠른 온수 설정");
+//                params.setCommandFlow("0");
+//                params.setDeviceId(deviceId);
+//                params.setUserId(params.getUserId());
+//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+//
+//                params.setPushTitle("기기제어");
+//                params.setPushContent("빠른온수 설정");
+//                params.setDeviceId(deviceId);
+//                params.setDeviceType("01");
+//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1468,20 +1542,32 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
             }
 
-            params.setCodeType("1");
-            params.setCommandId("FastHotWaterSet");
-            params.setControlCode("ftMd");
-            params.setControlCodeName("빠른 온수 설정");
-            params.setCommandFlow("0");
-            params.setDeviceId(deviceId);
-            params.setUserId(params.getUserId());
-            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+            common.insertHistory(
+                    "1",
+                    "LockSet",
+                    "fcLc",
+                    "잠금 모드 설정",
+                    "0",
+                    deviceId,
+                    params.getUserId(),
+                    "화면잠금 " + params.getLockSet(),
+                    "",
+                    "01");
 
-            params.setPushTitle("기기제어");
-            params.setPushContent("화면잠금 " + params.getLockSet());
-            params.setDeviceId(deviceId);
-            params.setDeviceType("01");
-            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+//            params.setCodeType("1");
+//            params.setCommandId("LockSet");
+//            params.setControlCode("fcLc");
+//            params.setControlCodeName("잠금 모드 설정");
+//            params.setCommandFlow("0");
+//            params.setDeviceId(deviceId);
+//            params.setUserId(params.getUserId());
+//            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+//
+//            params.setPushTitle("기기제어");
+//            params.setPushContent("화면잠금 " + params.getLockSet());
+//            params.setDeviceId(deviceId);
+//            params.setDeviceType("01");
+//            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -2004,21 +2090,21 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-                params.setCodeType("1");
-                params.setCommandId("VentilationFanSpeedSet");
-                params.setControlCode("vtSp");
-                params.setControlCodeName("풍량 단수 설정");
-                params.setCommandFlow("0");
-                params.setDeviceId(deviceId);
-                params.setUserId(params.getUserId());
-
-                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-
-                params.setPushTitle("기기제어");
-                params.setPushContent("풍량 단수 설정");
-                params.setDeviceId(deviceId);
-                params.setDeviceType("07");
-                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+//                params.setCodeType("1");
+//                params.setCommandId("VentilationFanSpeedSet");
+//                params.setControlCode("vtSp");
+//                params.setControlCodeName("풍량 단수 설정");
+//                params.setCommandFlow("0");
+//                params.setDeviceId(deviceId);
+//                params.setUserId(params.getUserId());
+//
+//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+//
+//                params.setPushTitle("기기제어");
+//                params.setPushContent("풍량 단수 설정");
+//                params.setDeviceId(deviceId);
+//                params.setDeviceType("07");
+//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
                 household = memberMapper.getHouseholdByUserId(params.getUserId());
                 params.setGroupId(household.getGroupId());
@@ -2032,7 +2118,7 @@ public class DeviceServiceImpl implements DeviceService {
 
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("title", "VentilationFanSpeedSet");
-                    conMap.put("powr", params.getPowerStatus());
+                    conMap.put("vtSp", params.getFanSpeed());
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
@@ -2043,6 +2129,18 @@ public class DeviceServiceImpl implements DeviceService {
 
                     if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
                 }
+
+                common.insertHistory(
+                        "1",
+                        "VentilationFanSpeedSet",
+                        "vtSp",
+                        "풍량 단수 설정",
+                        "0",
+                        deviceId,
+                        params.getUserId(),
+                        "vtSp ",
+                        params.getFanSpeed(),
+                        "07");
             }
 
             log.info("result: " + result);

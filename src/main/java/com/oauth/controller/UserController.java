@@ -669,12 +669,8 @@ public class UserController {
 
     @PostMapping(value = "/test")
     public String test(String on) throws Exception {
-        DeviceStatusInfo.Device a = new DeviceStatusInfo.Device();
-        a.setPowr("on");
-        a.setOpMd("01");
-        a.setDeviceId("0.2.481.1.1.2045534365636f313353.20202020303833413844434146353435");
-        int b = deviceMapper.updateDeviceStatusFromApplication(a);
-        System.out.println(b);
+        common.insertHistory("codeType", "commandId", "controlCode", "controlName", "commandFlow", "0.2.481.1.1.2045534365636f313353.20202020303833413844434146353435"
+        , "yohan1202", "pushTitle", "pushContent", "deviceType");
         return null;
     }
 
