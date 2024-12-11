@@ -541,7 +541,8 @@
         UPDATE
             TBR_OPR_SAFE_ALARM
         SET
-            REC_BCDT_RUN_TIME = now()
+            REC_BCDT_RUN_TIME = now(),
+            BCDT_STATUS = #{bCdt}
         WHERE
             DEVC_ID = #{deviceId}
     </update>
@@ -558,6 +559,8 @@
             TBR_OPR_SAFE_ALARM
         WHERE
             SAFE_ALARM_STATUS = 'Y'
+        AND
+            BCDT_STATUS = 'on'
         AND
             (
                 REC_BCDT_RUN_TIME IS NULL OR
