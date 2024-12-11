@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -51,11 +52,13 @@ public class PushService {
     public void sendPushMessage(String jsonBody, String errroCode, String errorMesssage, String modelCode, String errorVersion) throws Exception {
         log.info("sendPushMessage jsonBody: " + jsonBody);
 
-        HashMap<String, String> pushMap = new HashMap<>();
-        List<AuthServerDTO> pushInfo = deviceMapper.getPushinfoByDeviceId(common.readCon(jsonBody, "deviceId"));
-        System.out.println(pushInfo);
+        String deviceId = common.readCon(jsonBody, "deviceId");
 
-        deviceMapper.updateDeviceErrorStatus(common.readCon(jsonBody, "deviceId"));
+        HashMap<String, String> pushMap = new HashMap<>();
+        List<AuthServerDTO> pushInfo = deviceMapper.getPushinfoByDeviceId(deviceId);
+        log.info("pushInfo: " + pushInfo);
+
+        deviceMapper.updateDeviceErrorStatus(deviceId);
 
         try {
             for (AuthServerDTO authServerDTO : pushInfo) {
@@ -66,10 +69,10 @@ public class PushService {
                 AuthServerDTO params = new AuthServerDTO();
                 params.setUserId(authServerDTO.getUserId());
                 params.setPushTitle(errroCode);
-                if(errorMesssage == null) params.setPushContent(errorVersion);
-                else params.setPushContent(errorMesssage);
-
-                params.setDeviceId(common.readCon(jsonBody, "deviceId"));
+                params.setPushType("02");
+                params.setPushContent(Objects.requireNonNullElse(errorVersion, ""));
+                params.setDeviceId(deviceId);
+                params.setDeviceNickname(deviceMapper.getGroupNameAndDeviceNickByDeviceId(deviceId).getDeviceNickname());
                 params.setDeviceType(common.getModelCode(modelCode));
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH ERROR HISTORY INSERT ERROR");
 

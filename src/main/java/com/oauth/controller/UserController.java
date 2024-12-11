@@ -669,8 +669,15 @@ public class UserController {
 
     @PostMapping(value = "/test")
     public String test(String on) throws Exception {
-        common.insertHistory("codeType", "commandId", "controlCode", "controlName", "commandFlow", "0.2.481.1.1.2045534365636f313353.20202020303833413844434146353435"
-        , "yohan1202", "pushTitle", "pushContent", "deviceType");
+
+        AuthServerDTO params = new AuthServerDTO();
+        params.setRequestUserId("yohan1202");
+        params.setResponseUserId("yohan971202");
+
+//        memberMapper.getInviteCount(params).getInviteCount();
+
+        System.out.println(Integer.parseInt(memberMapper.getInviteCount(params).getInviteCount()) <= 5);
+
         return null;
     }
 

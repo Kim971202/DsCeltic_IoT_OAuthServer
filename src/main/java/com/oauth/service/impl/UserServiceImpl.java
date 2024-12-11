@@ -608,54 +608,62 @@ public class UserServiceImpl implements UserService {
         String msg;
         AuthServerDTO userNickname;
         AuthServerDTO pushToken;
+        AuthServerDTO inviteCount;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
 
-            params.setUserId(params.getRequestUserId());
-            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+            // TODO: 동일한 사용자가 동일한 사용자에게 5회 이상 초대를 보낼경우 차단한다. (사용자 삭제 시 초기화 됨)
+            if(Integer.parseInt(memberMapper.getInviteCount(params).getInviteCount()) <= 5){
+                params.setUserId(params.getRequestUserId());
+                if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
-            userNickname = memberMapper.getUserNickname(params.getRequestUserId());
-            userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+                userNickname = memberMapper.getUserNickname(params.getRequestUserId());
+                userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-            pushToken = memberMapper.getPushTokenByUserId(params.getResponseUserId());
+                pushToken = memberMapper.getPushTokenByUserId(params.getResponseUserId());
 
-            if(pushToken == null){
-                msg = "PUSH TOKEN NULL";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
+                if(pushToken == null){
+                    msg = "PUSH TOKEN NULL";
+                    data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
+                    return new ResponseEntity<>(data, HttpStatus.OK);
+                }
+                params.setUserId(params.getResponseUserId());
+
+                conMap.put("targetToken", pushToken.getPushToken());
+                conMap.put("title", "adUr");
+                conMap.put("body", "adUr");
+                conMap.put("userNickname", userNickname.getUserNickname());
+                conMap.put("pushYn", "Y");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+                log.info("Add User jsonString: " + jsonString);
+
+                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")){
+                    log.info("PUSH 메세지 전송 오류");
+                } else {
+                    if(memberMapper.inviteHouseMember(params) <= 0){
+                        msg = "사용자 추가 - 초대 실패";
+                        data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                        new ResponseEntity<>(data, HttpStatus.OK);
+                    } else stringObject = "Y";
+                }
+
+                if(stringObject.equals("Y")) msg = "사용자 추가 - 초대 성공";
+                else msg = "사용자 추가 - 초대 실패";
+
+                data.setResult("Y".equalsIgnoreCase(stringObject)
+                        ? ApiResponse.ResponseType.HTTP_200
+                        : ApiResponse.ResponseType.CUSTOM_1018, msg);
+
+                log.info("data: " + data);
                 return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-            params.setUserId(params.getResponseUserId());
-
-            conMap.put("targetToken", pushToken.getPushToken());
-            conMap.put("title", "adUr");
-            conMap.put("body", "adUr");
-            conMap.put("userNickname", userNickname.getUserNickname());
-            conMap.put("pushYn", "Y");
-
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            log.info("Add User jsonString: " + jsonString);
-
-            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")){
-                log.info("PUSH 메세지 전송 오류");
             } else {
-                if(memberMapper.inviteHouseMember(params) <= 0){
-                    msg = "사용자 추가 - 초대 실패";
-                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                    new ResponseEntity<>(data, HttpStatus.OK);
-                } else stringObject = "Y";
+                msg = "초대 횟수 초과";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
             }
-
-            if(stringObject.equals("Y")) msg = "사용자 추가 - 초대 성공";
-            else msg = "사용자 추가 - 초대 실패";
-
-            data.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_1018, msg);
-
-            log.info("data: " + data);
-            return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
             log.error("", e);
             return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
