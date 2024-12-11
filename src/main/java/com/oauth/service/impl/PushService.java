@@ -54,6 +54,8 @@ public class PushService {
 
         String deviceId = common.readCon(jsonBody, "deviceId");
 
+        AuthServerDTO info = deviceMapper.getGroupNameAndDeviceNickByDeviceId(deviceId);
+
         HashMap<String, String> pushMap = new HashMap<>();
         List<AuthServerDTO> pushInfo = deviceMapper.getPushinfoByDeviceId(deviceId);
         log.info("pushInfo: " + pushInfo);
@@ -72,7 +74,8 @@ public class PushService {
                 params.setPushType("02");
                 params.setPushContent(Objects.requireNonNullElse(errorVersion, ""));
                 params.setDeviceId(deviceId);
-                params.setDeviceNickname(deviceMapper.getGroupNameAndDeviceNickByDeviceId(deviceId).getDeviceNickname());
+                params.setDeviceNickname(info.getDeviceNickname());
+                params.setGroupName(info.getGroupName());
                 params.setDeviceType(common.getModelCode(modelCode));
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH ERROR HISTORY INSERT ERROR");
 
