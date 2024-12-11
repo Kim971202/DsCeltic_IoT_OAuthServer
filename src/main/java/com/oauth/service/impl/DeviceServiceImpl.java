@@ -1388,7 +1388,7 @@ public class DeviceServiceImpl implements DeviceService {
                         "0",
                         deviceId,
                         params.getUserId(),
-                        "빠른온수 설정 ",
+                        "빠른온수 설정",
                         "빠른온수 " + params.getModeCode(),
                         "01");
 
@@ -1550,7 +1550,7 @@ public class DeviceServiceImpl implements DeviceService {
                     "0",
                     deviceId,
                     params.getUserId(),
-                    "잠금 변경 ",
+                    "잠금 변경",
                     "잠금 " + params.getLockSet(),
                     "01");
 
