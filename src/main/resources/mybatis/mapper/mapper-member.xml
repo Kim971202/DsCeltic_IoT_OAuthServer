@@ -301,7 +301,7 @@
             PUSH_TITLE AS pushTitle,
             PUSH_CONTENT AS pushContent,
             PUSH_TYPE AS pushType,
-            DEVC_NICK AS deviceNick,
+            DEVC_NICK AS deviceNickname,
             GRP_NM AS groupName,
             (
             CASE
