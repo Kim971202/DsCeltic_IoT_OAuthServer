@@ -608,7 +608,6 @@ public class UserServiceImpl implements UserService {
         String msg;
         AuthServerDTO userNickname;
         AuthServerDTO pushToken;
-        AuthServerDTO inviteCount;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -661,8 +660,8 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             } else {
                 msg = "초대 횟수 초과";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+                data.setResult(ApiResponse.ResponseType.CUSTOM_2001, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
         }catch (Exception e){
             log.error("", e);
