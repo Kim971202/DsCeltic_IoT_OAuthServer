@@ -466,28 +466,16 @@ public class UserServiceImpl implements UserService {
         AuthServerDTO dbPassword;
 
         try{
-//            dbPassword = memberMapper.getPasswordByUserId(params.getUserId());
-//            if (dbPassword == null) {
-//                msg = "계정이 존재하지 않습니다.";
-//                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
-//                return new ResponseEntity<>(data, HttpStatus.OK);
-//            }
-//
-//            if(!encoder.matches(userPassword, dbPassword.getUserPassword())) {
-//                msg = "비밀번호 오류.";
-//                data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-//                return new ResponseEntity<>(data, HttpStatus.OK);
-//            }
-
-            if(memberMapper.updateGrpNick(params) <= 0) {
-                msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+            dbPassword = memberMapper.getPasswordByUserId(params.getUserId());
+            if (dbPassword == null) {
+                msg = "계정이 존재하지 않습니다.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            if(memberMapper.updateUserNickname(params) <= 0) {
-                msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+            if(!encoder.matches(userPassword, dbPassword.getUserPassword())) {
+                msg = "비밀번호 오류.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
@@ -508,6 +496,18 @@ public class UserServiceImpl implements UserService {
             } else {
                 msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1007, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
+            if(memberMapper.updateGrpNick(params) <= 0) {
+                msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
+            if(memberMapper.updateUserNickname(params) <= 0) {
+                msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
