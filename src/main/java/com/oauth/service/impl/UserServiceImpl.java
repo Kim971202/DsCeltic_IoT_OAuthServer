@@ -492,7 +492,7 @@ public class UserServiceImpl implements UserService {
             }
 
             // TODO: 신규 전화번호 중복 확인
-            if(!memberMapper.checkDuplicateHp(params.getNewHp()).getHpCount().equals("0")){
+            if(memberMapper.checkDuplicateHp(params.getNewHp()).getHpCount().equals("0")){
                 // TODO: 신규 전화번호 가 본인 번호 인지 확인
                 if(memberMapper.checkDuplicateHpByUserId(params).getHpCount().equals("1")){
                     if(memberMapper.updateHp(params) <= 0) {
