@@ -185,18 +185,16 @@ public class MobiusController {
             System.out.println("deviceInfo.getBCdt() == null");
             System.out.println(deviceInfo.getBCdt() == null);
 
-            if(deviceInfo.getBCdt() == null){
-                for (AuthServerDTO id : userIds) {
-                    log.info("쿼리한 UserId: " + id.getUserId());
+            for (AuthServerDTO id : userIds) {
+                log.info("쿼리한 UserId: " + id.getUserId());
 
-                    info.setUserId(id.getUserId());
-                    info.setDeviceId(common.readCon(jsonBody, "deviceId"));
+                info.setUserId(id.getUserId());
+                info.setDeviceId(common.readCon(jsonBody, "deviceId"));
 
-                    String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
-                    String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
+                String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
+                String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
 
-                    pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"));
-                }
+                pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"));
             }
 
             AuthServerDTO params = new AuthServerDTO();

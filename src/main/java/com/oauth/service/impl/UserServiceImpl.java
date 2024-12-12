@@ -407,6 +407,14 @@ public class UserServiceImpl implements UserService {
 
             // 4
             memberMapper.deleteUserInviteGroupByGroupIdx(groupIdx);
+
+            // TODO: 5 그룹Idx 기준으로 TBR_OPR_USER_INVITE_STATUS에서 삭제
+            if(memberMapper.deleteInviteStatusByGroupIdx(groupIdx) <= 0){
+                msg = "그룹 정보 삭제 실패";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
             msg = "그룹 정보 삭제 성공";
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -613,8 +621,15 @@ public class UserServiceImpl implements UserService {
 
         try {
 
+            // TODO: 동일한 사용자가 동일한 그룹에 동일한 사용자의 수락 여부가 D인 경우에 초대할 경우 차단한다.
+            if(Integer.parseInt(memberMapper.getInviteCountFromInviteStatus(params).getInviteCount()) > 0){
+                msg = "이미 초대한 사용자 입니다.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_2002, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
             // TODO: 동일한 사용자가 동일한 사용자에게 5회 이상 초대를 보낼경우 차단한다. (사용자 삭제 시 초기화 됨)
-            if(Integer.parseInt(memberMapper.getInviteCount(params).getInviteCount()) <= 5){
+            if(Integer.parseInt(memberMapper.getInviteCount(params).getInviteCount()) <= 6){
                 params.setUserId(params.getRequestUserId());
                 if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
@@ -883,6 +898,11 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            if(memberMapper.deleteInviteStatusByHouseholdMembers(params) <= 0){
+                msg = "사용자(세대원) 강제탈퇴 실패";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
             msg = "사용자(세대원) - 강제탈퇴 성공";
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
@@ -1063,6 +1083,14 @@ public class UserServiceImpl implements UserService {
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
+
+            // TODO: 7. TBR_OPR_USER_INVITE_STATUS 테이블에서 세대주 관련 초대 그록 삭제
+            if(memberMapper.deleteInviteStatusByHouseholder(params) <= 0){
+                msg = "사용자(세대주) 강제탈퇴 실패";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
             msg = "사용자(세대주) 탈퇴 성공";
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");

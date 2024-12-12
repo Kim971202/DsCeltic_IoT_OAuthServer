@@ -37,6 +37,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
     public List<AuthServerDTO> getDeviceIdFromRegist(String userId);
     public AuthServerDTO getInviteCount(AuthServerDTO param);
+    public AuthServerDTO getInviteCountFromInviteStatus(AuthServerDTO param);
     public AuthServerDTO getDeviceNicknameByDeviceId(String deviceId);
     public AuthServerDTO checkDuplicateHp(String newHp);
     public AuthServerDTO getGroupLeaderId(Long idx);
@@ -72,6 +73,9 @@ public interface MemberMapper {
     public int deleteDeviceGrpInfo(List<AuthServerDTO> authServerDTOList);
     public int deleteUserInviteGroup(AuthServerDTO member);
     public int deleteUserInviteGroupByGroupIdx(String groupIdx);
+    public int deleteInviteStatusByHouseholdMembers(AuthServerDTO member);
+    public int deleteInviteStatusByHouseholder(AuthServerDTO member);
+    public int deleteInviteStatusByGroupIdx(String groupIdx);
     public int delHouseholdMember(String userId);
     public int insertHouseholder(AuthServerDTO member);
     public int updateRegistTable(AuthServerDTO member);
