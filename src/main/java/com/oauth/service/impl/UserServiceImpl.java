@@ -483,9 +483,15 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            if(memberMapper.updateUserNickname(params) <= 0) {
+                msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
             if(params.getNewHp() !=  null && !params.getNewHp().isEmpty()){
                 if(memberMapper.checkDuplicateHp(params.getNewHp()).getHpCount().equals("0")){
-                    if(memberMapper.updateUserNicknameAndHp(params) <= 0) {
+                    if(memberMapper.updateHp(params) <= 0) {
                         msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
                         data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                         return new ResponseEntity<>(data, HttpStatus.OK);

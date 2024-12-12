@@ -112,11 +112,19 @@
         WHERE USER_ID = #{userId};
     </select>
 
-    <update id="updateUserNicknameAndHp" parameterType="com.oauth.dto.AuthServerDTO">
+    <update id="updateHp" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBR_OPR_USER
         SET
-            HP = #{newHp},
+            HP = #{newHp}
+        WHERE
+            USER_ID = #{userId}
+    </update>
+
+    <update id="updateUserNickname" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_USER
+        SET
             USER_NICK = #{userNickname}
         WHERE
             USER_ID = #{userId}
