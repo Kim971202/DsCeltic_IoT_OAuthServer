@@ -492,7 +492,7 @@ public class UserServiceImpl implements UserService {
             }
 
             if(params.getNewHp() !=  null && !params.getNewHp().isEmpty()){
-                if(memberMapper.checkDuplicateHpByUserId(params).getHpCount().equals("1")){
+                if(Integer.parseInt(memberMapper.checkDuplicateHpByUserId(params).getHpCount()) > 1){
                     if(memberMapper.updateHp(params) <= 0) {
                         msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
                         data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
