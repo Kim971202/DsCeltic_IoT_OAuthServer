@@ -38,6 +38,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getDeviceIdFromRegist(String userId);
     public AuthServerDTO getInviteCount(AuthServerDTO param);
     public AuthServerDTO getInviteCountFromInviteStatus(AuthServerDTO param);
+    public AuthServerDTO getInviteCountByReqeustResponseUserId(AuthServerDTO param);
     public AuthServerDTO getDeviceNicknameByDeviceId(String deviceId);
     public AuthServerDTO checkDuplicateHp(String newHp);
     public AuthServerDTO getGroupLeaderId(Long idx);

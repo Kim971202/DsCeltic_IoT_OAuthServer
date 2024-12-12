@@ -1229,4 +1229,18 @@
             GRP_IDX = #{groupIdx}
     </delete>
 
+    <select id="getInviteCountByReqeustResponseUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS inviteCount
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            GRP_ID = #{requestUserId}
+        AND
+            USER_ID = #{responseUserId}
+        AND
+            GRP_IDX = #{groupIdx}
+    </select>
+
+
 </mapper>
