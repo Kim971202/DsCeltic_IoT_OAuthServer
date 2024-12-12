@@ -466,18 +466,18 @@ public class UserServiceImpl implements UserService {
         AuthServerDTO dbPassword;
 
         try{
-            dbPassword = memberMapper.getPasswordByUserId(params.getUserId());
-            if (dbPassword == null) {
-                msg = "계정이 존재하지 않습니다.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            if(!encoder.matches(userPassword, dbPassword.getUserPassword())) {
-                msg = "비밀번호 오류.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
+//            dbPassword = memberMapper.getPasswordByUserId(params.getUserId());
+//            if (dbPassword == null) {
+//                msg = "계정이 존재하지 않습니다.";
+//                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
+//                return new ResponseEntity<>(data, HttpStatus.OK);
+//            }
+//
+//            if(!encoder.matches(userPassword, dbPassword.getUserPassword())) {
+//                msg = "비밀번호 오류.";
+//                data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+//                return new ResponseEntity<>(data, HttpStatus.OK);
+//            }
 
             if(memberMapper.updateGrpNick(params) <= 0) {
                 msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
@@ -491,18 +491,20 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
-            if(params.getNewHp() !=  null && !params.getNewHp().isEmpty()){
-                if(Integer.parseInt(memberMapper.checkDuplicateHpByUserId(params).getHpCount()) > 1){
+            // TODO: 신규 전화번호 중복 확인
+            if(!memberMapper.checkDuplicateHp(params.getNewHp()).getHpCount().equals("0")){
+                // TODO: 신규 전화번호 가 본인 번호 인지 확인
+                if(memberMapper.checkDuplicateHpByUserId(params).getHpCount().equals("1")){
                     if(memberMapper.updateHp(params) <= 0) {
                         msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
                         data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                         return new ResponseEntity<>(data, HttpStatus.OK);
-                    } else msg = "회원 별칭(이름) 및 전화번호 변경 성공";
-                } else {
-                    msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
-                    data.setResult(ApiResponse.ResponseType.CUSTOM_1007, msg);
-                    return new ResponseEntity<>(data, HttpStatus.OK);
+                    }
                 }
+            } else {
+                msg = "회원 별칭(이름) 및 전화번호 변경 실패.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1007, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
