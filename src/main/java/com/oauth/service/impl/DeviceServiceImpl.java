@@ -878,7 +878,7 @@ public class DeviceServiceImpl implements DeviceService {
 
                 for(int i = 0; i < userIds.size(); ++i){
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
+                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
@@ -1038,7 +1038,7 @@ public class DeviceServiceImpl implements DeviceService {
 
                 for(int i = 0; i < userIds.size(); ++i){
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
+                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
@@ -1200,7 +1200,7 @@ public class DeviceServiceImpl implements DeviceService {
 
                 for(int i = 0; i < userIds.size(); ++i){
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
+                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
@@ -1362,7 +1362,7 @@ public class DeviceServiceImpl implements DeviceService {
 
                 for(int i = 0; i < userIds.size(); ++i){
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
+                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
@@ -1526,7 +1526,7 @@ public class DeviceServiceImpl implements DeviceService {
 
                 for(int i = 0; i < userIds.size(); ++i){
                     conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
+                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
                     conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap.put("userNickname", userNickname.getUserNickname());
                     conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
