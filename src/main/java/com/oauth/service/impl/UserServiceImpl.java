@@ -628,6 +628,13 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
+            // TODO: 이미 그룹에 존재하는 사용자를 초대할경우 차단 한다.
+            if(Integer.parseInt(memberMapper.getInviteCountByReqeustResponseUserId(params).getInviteCount()) > 0){
+                msg = "현재 그룹 세대원 입니다.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_2003, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
             // TODO: 동일한 사용자가 동일한 사용자에게 5회 이상 초대를 보낼경우 차단한다. (사용자 삭제 시 초기화 됨)
             if(Integer.parseInt(memberMapper.getInviteCount(params).getInviteCount()) <= 6){
                 params.setUserId(params.getRequestUserId());
