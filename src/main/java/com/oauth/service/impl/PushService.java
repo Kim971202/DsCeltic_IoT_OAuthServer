@@ -50,7 +50,6 @@ public class PushService {
     }
 
     public void sendPushMessage(String jsonBody, String errroCode, String errorMesssage, String modelCode, String errorVersion) throws Exception {
-        log.info("sendPushMessage jsonBody: " + jsonBody);
 
         String deviceId = common.readCon(jsonBody, "deviceId");
 
@@ -64,19 +63,19 @@ public class PushService {
 
         try {
             for (AuthServerDTO authServerDTO : pushInfo) {
-                log.info("authServerDTO.getPushToken(): " + authServerDTO.getPushToken());
-                log.info("authServerDTO.getUserId(): " + authServerDTO.getUserId());
-                log.info("authServerDTO.getSPushYn(): " + authServerDTO.getSPushYn());
 
                 AuthServerDTO params = new AuthServerDTO();
                 params.setUserId(authServerDTO.getUserId());
+
+                errroCode = String.valueOf(Integer.parseInt(errroCode, 16));
+
                 params.setPushTitle(errroCode);
                 params.setPushType("02");
                 params.setPushContent(Objects.requireNonNullElse(errorVersion, ""));
                 params.setDeviceId(deviceId);
                 params.setDeviceNickname(info.getDeviceNickname());
                 params.setGroupName(info.getGroupName());
-                params.setDeviceType(common.getModelCode(modelCode));
+                params.setDeviceType(common.getModelCode(modelCode.replaceAll(" ", "")));
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH ERROR HISTORY INSERT ERROR");
 
                 pushMap.put("targetToken", authServerDTO.getPushToken());
