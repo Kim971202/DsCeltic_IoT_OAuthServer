@@ -554,19 +554,20 @@
             SAFE_ALARM_TIME AS safeAlarmTime,
             SAFE_ALARM_STATUS AS safeAlarmStatus,
             NOW() + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
-            + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR AS CALCULATED_TIME
+            + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR AS CALCULATED_TIME,
+            REC_BCDT_RUN_TIME AS bCdtTime
         FROM
             TBR_OPR_SAFE_ALARM
         WHERE
             SAFE_ALARM_STATUS = 'Y'
         AND
-            BCDT_STATUS = 'on'
+            BCDT_STATUS = 'of'
         AND
             (
                 REC_BCDT_RUN_TIME IS NULL OR
-                NOW() + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
-                    + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR
-                > REC_BCDT_RUN_TIME
+                SAFE_ALARM_REG_TIME +
+                INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY +
+                INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR > REC_BCDT_RUN_TIME
             )
     </select>
 
@@ -1148,12 +1149,17 @@
 
     <select id="getPushTokenByUserIds" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
-            PUSH_TOKEN AS pushToken,
-            USER_ID AS userId
+            a.PUSH_TOKEN AS pushToken,
+            a.USER_ID AS userId,
+            b.USER_NICK AS userNickname
         FROM
-            TBR_OPR_ACCOUNT
+            TBR_OPR_ACCOUNT a
+        INNER JOIN
+            TBR_OPR_USER b
+        ON
+            a.USER_ID = b.USER_ID
         WHERE
-            USER_ID IN
+            a.USER_ID IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.userId}
         </foreach>
@@ -1177,5 +1183,58 @@
         AND
             RESPONSE_USER_ID = #{responseUserId}
     </select>
+
+    <delete id="deleteUserInviteGroupByGroupIdx" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBR_OPR_USER_INVITE_STATUS
+        WHERE
+            GRP_IDX = #{groupIdx}
+    </delete>
+
+    <select id="getInviteCountFromInviteStatus" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS inviteCount
+        FROM
+            TBR_OPR_USER_INVITE_STATUS
+        WHERE
+            REQUEST_USER_ID = #{requestUserId}
+        AND
+            RESPONSE_USER_ID = #{responseUserId}
+        AND
+            GRP_IDX = #{groupIdx}
+        AND
+            INVITE_ACCEPT_YN = 'D'
+    </select>
+
+    <delete id="deleteInviteStatusByHouseholdMembers" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBR_OPR_USER_INVITE_STATUS
+        WHERE
+            GRP_IDX = #{groupIdx}
+        AND
+            REQUEST_USER_ID = #{userId}
+        AND
+            RESPONSE_USER_ID = #{delUserId}
+    </delete>
+
+    <delete id="deleteInviteStatusByHouseholder" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBR_OPR_USER_INVITE_STATUS
+        WHERE
+            GRP_IDX = #{groupIdx}
+        AND
+            REQUEST_USER_ID = #{userId}
+    </delete>
+
+    <delete id="deleteInviteStatusByGroupIdx" parameterType="String" >
+        DELETE
+        FROM
+            TBR_OPR_USER_INVITE_STATUS
+        WHERE
+            GRP_IDX = #{groupIdx}
+    </delete>
 
 </mapper>

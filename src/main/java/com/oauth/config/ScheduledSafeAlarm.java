@@ -44,7 +44,8 @@ public class ScheduledSafeAlarm {
             for (AuthServerDTO user : userInfo) {
                 String userId = user.getUserId();
                 if (pushTokenMap.containsKey(userId)) {
-                    user.setPushToken(pushTokenMap.get(userId)); // pushToken 설정
+                    user.setPushToken(pushTokenMap.get(userId));    // pushToken 설정
+                    user.setUserNickname(pushTokenMap.get(userId)); // userNickname 설정
                 }
             }
 
@@ -54,8 +55,9 @@ public class ScheduledSafeAlarm {
                 ObjectMapper objectMapper = new ObjectMapper();
                 conMap.put("body", "SAFE ALARM PUSH");
                 conMap.put("targetToken", user.getPushToken());
-                conMap.put("title", "SAFE ALARM SET");
+                conMap.put("title", "saFe");
                 conMap.put("deviceNick", common.returnDeviceNickname(user.getDeviceId()));
+                conMap.put("userNickname", common.stringToHex(user.getUserNickname()));
                 String jsonString = objectMapper.writeValueAsString(conMap);
 
                 if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
