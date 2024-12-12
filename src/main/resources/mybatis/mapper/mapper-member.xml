@@ -138,6 +138,17 @@
         WHERE HP = #{newHp}
     </select>
 
+    <select id="checkDuplicateHpByUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(HP) AS hpCount
+        FROM
+            TBR_OPR_USER
+        WHERE
+            USER_ID = #{userId}
+        AND
+            HP = #{newHp}
+    </select>
+
     <update id="updateGrpNick" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBD_IOT_GRP_INFO
@@ -258,18 +269,18 @@
 <!--            USER_ID = #{userId} AND DEVC_ID = #{deviceId}-->
 <!--    </update>-->
 
-    <update id="updatePushCodeStatus" parameterType="com.oauth.dto.AuthServerDTO">
-        UPDATE
-        TBR_OPR_USER_DEVICE_PUSH
-        <set>
-            <if test="fPushYn != null">PUSH_YN_01 = CASE WHEN PUSH_YN_01 != #{fPushYn} THEN #{fPushYn} ELSE PUSH_YN_01 END,</if>
-            <if test="sPushYn != null">PUSH_YN_02 = CASE WHEN PUSH_YN_02 != #{sPushYn} THEN #{sPushYn} ELSE PUSH_YN_02 END,</if>
-            <if test="tPushYn != null">PUSH_YN_03 = CASE WHEN PUSH_YN_03 != #{tPushYn} THEN #{tPushYn} ELSE PUSH_YN_03 END,</if>
-        </set>
-        WHERE
-            USER_ID = #{userId}
-        AND
-            DEVC_ID = #{deviceId}
+    <update id="updatePushCodeStatusBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE TBR_OPR_USER_DEVICE_PUSH
+            SET
+                PUSH_YN_01 = #{item.fPushYn},
+                PUSH_YN_02 = #{item.sPushYn},
+                PUSH_YN_03 = #{item.tPushYn}
+            WHERE
+                USER_ID = #{item.userId}
+            AND
+                DEVC_ID = #{item.deviceId}
+        </foreach>
     </update>
 
     <select id="getPushCodeStatus" parameterType="map" resultMap="member">
