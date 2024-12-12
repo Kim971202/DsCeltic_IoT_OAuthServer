@@ -40,14 +40,28 @@ public class ScheduledSafeAlarm {
                 pushTokenMap.put(push.getUserId(), push.getPushToken());
             }
 
+            // pushInfo를 Map<String, String>으로 변환 (userId -> userNickname)
+            Map<String, String> userNicknameMap = new HashMap<>();
+            for (AuthServerDTO push : pushInfo) {
+                userNicknameMap.put(push.getUserId(), push.getUserNickname());
+            }
+
             // userInfo에 pushToken 값을 추가
             for (AuthServerDTO user : userInfo) {
                 String userId = user.getUserId();
                 if (pushTokenMap.containsKey(userId)) {
                     user.setPushToken(pushTokenMap.get(userId));    // pushToken 설정
-                    user.setUserNickname(pushTokenMap.get(userId)); // userNickname 설정
                 }
             }
+
+            // userInfo에 pushToken 값을 추가
+            for (AuthServerDTO user : userInfo) {
+                String userId = user.getUserId();
+                if (userNicknameMap.containsKey(userId)) {
+                    user.setUserNickname(userNicknameMap.get(userId));  // userNickname 설정
+                }
+            }
+            System.out.println(userInfo);
 
             // 이후 userInfo에 pushToken이 포함된 데이터를 기반으로 작업 수행
             for (AuthServerDTO user : userInfo) {

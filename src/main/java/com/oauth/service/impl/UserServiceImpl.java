@@ -1509,7 +1509,7 @@ public class UserServiceImpl implements UserService {
             for(int i = 0; i < userIds.size(); ++i){
                 log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                 conMap1.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap1.put("modelCode", common.getModelCodeFromDeviceId(deviceId));
+                conMap1.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
                 conMap1.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                 conMap1.put("userNickname", userNickname.getUserNickname());
                 conMap1.put("deviceNick", common.returnDeviceNickname(deviceId));
