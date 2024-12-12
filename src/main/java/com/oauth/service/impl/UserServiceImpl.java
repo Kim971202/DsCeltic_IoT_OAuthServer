@@ -20,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -968,6 +970,11 @@ public class UserServiceImpl implements UserService {
     }
 
     /** 홈 IoT 컨트롤러 알림 정보 조회 */
+    @Retryable(
+            value = {org.springframework.dao.DeadlockLoserDataAccessException.class}, // Deadlock 예외
+            maxAttempts = 3, // 최대 3회 재시도
+            backoff = @Backoff(delay = 1000) // 재시도 간격 1초
+    )
     @Override
     public HashMap<String, Object> doSearchPushSet(AuthServerDTO params)
             throws CustomException{
