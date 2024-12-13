@@ -2185,8 +2185,8 @@ public class DeviceServiceImpl implements DeviceService {
             activeStatus.setControlAuthKey(controlAuthKey);
             activeStatus.setUuId(activeStatus.getAccessToken());
 
-            if(modelCode.equals(modelCodeMap.get("newModel")) || modelCode.equals(modelCodeMap.get("oldModel"))) functionId = "bAcTv";
-            else if(modelCode.equals(modelCodeMap.get("ventilation"))) functionId = "vAcTv";
+            if(modelCode.equals(modelCodeMap.get("newModel")) || modelCode.equals(modelCodeMap.get("oldModel"))) functionId = "acTv";
+            else if(modelCode.equals(modelCodeMap.get("ventilation"))) functionId = "acTv";
 
             activeStatus.setFunctionId(functionId);
             redisValue = params.getUserId() + "," + activeStatus.getFunctionId();
