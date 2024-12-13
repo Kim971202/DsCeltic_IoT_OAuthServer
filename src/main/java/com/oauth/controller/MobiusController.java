@@ -156,7 +156,7 @@ public class MobiusController {
             deviceInfo.setBlCf(common.readCon(jsonBody, "blCf"));
             deviceInfo.setVtSp(common.readCon(jsonBody, "vtSp"));
 
-            if(deviceInfo.getBCdt() != null) memberMapper.updateSafeAlarmSet(deviceInfo);
+            if(deviceInfo.getHwSt() != null) memberMapper.updateSafeAlarmSet(deviceInfo);
 
             if(common.readCon(jsonBody, "rsPw") != null) deviceInfo.setRsPw(common.convertToJsonFormat(common.readCon(jsonBody, "rsPw")));
 
