@@ -594,7 +594,7 @@
         WHERE
             SAFE_ALARM_STATUS = 'Y'
         AND
-            BCDT_STATUS = 'of'
+            HWST_STATUS = 'of'
         AND
             (
                 REC_HWST_RUN_TIME IS NULL OR
