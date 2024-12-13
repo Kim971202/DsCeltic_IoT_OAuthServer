@@ -574,8 +574,8 @@
         UPDATE
             TBR_OPR_SAFE_ALARM
         SET
-            REC_BCDT_RUN_TIME = now(),
-            BCDT_STATUS = #{bCdt}
+            REC_HWST_RUN_TIME = now(),
+            HWST_STATUS = #{hwSt}
         WHERE
             DEVC_ID = #{deviceId}
     </update>
@@ -588,7 +588,7 @@
             SAFE_ALARM_STATUS AS safeAlarmStatus,
             NOW() + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
             + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR AS CALCULATED_TIME,
-            REC_BCDT_RUN_TIME AS bCdtTime
+            REC_HWST_RUN_TIME AS hwStTime
         FROM
             TBR_OPR_SAFE_ALARM
         WHERE
@@ -597,10 +597,10 @@
             BCDT_STATUS = 'of'
         AND
             (
-                REC_BCDT_RUN_TIME IS NULL OR
+                REC_HWST_RUN_TIME IS NULL OR
                 SAFE_ALARM_REG_TIME +
                 INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY +
-                INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR > REC_BCDT_RUN_TIME
+                INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR > REC_HWST_RUN_TIME
             )
     </select>
 

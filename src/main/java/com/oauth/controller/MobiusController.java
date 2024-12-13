@@ -176,9 +176,6 @@ public class MobiusController {
 
             AuthServerDTO info = new AuthServerDTO();
 
-            System.out.println("deviceInfo.getBCdt() == null");
-            System.out.println(deviceInfo.getBCdt() == null);
-
             for (AuthServerDTO id : userIds) {
                 log.info("쿼리한 UserId: " + id.getUserId());
 
