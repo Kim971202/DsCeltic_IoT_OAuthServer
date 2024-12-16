@@ -384,8 +384,6 @@
             OLD_ADDR = #{oldAddr},
             NEW_ADDR = #{newAddr},
             DTAIL_ADDR = #{addrDetail},
-            LAT = #{latitude},
-            LON = #{longitude},
             DEVC_NICK = #{deviceNickname}
         WHERE
             DEVC_ID = #{deviceId}
