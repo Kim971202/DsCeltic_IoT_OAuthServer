@@ -997,6 +997,13 @@ public class UserServiceImpl implements UserService {
                     else pushInfo.setSPushYn(pushYn.get(0));
                     // 리스트에 추가
                     inputList.add(pushInfo);
+
+                    if(memberMapper.updatePushCodeStatusSingle(pushInfo) > 0){
+                        msg = "기기 알림 설정 성공";
+                        data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                        log.info("data: " + data);
+                        return new ResponseEntity<>(data, HttpStatus.OK);
+                    }
                 }
 
                 if(memberMapper.updatePushCodeStatus(inputList) <= 0) log.info("기기 알림 설정 실패");
