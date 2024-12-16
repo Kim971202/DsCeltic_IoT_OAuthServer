@@ -970,10 +970,11 @@ public class UserServiceImpl implements UserService {
                 if(deviceIdList.size() > 1){
                     // 전체 제어
                     for (String deviceId : deviceIdList){
+                        System.out.println(deviceId);
                         // 새로운 AuthServerDTO 객체 생성
                         AuthServerDTO pushInfo = new AuthServerDTO();
                         pushInfo.setUserId(userId);
-                        pushInfo.setDelUserId(deviceId);
+                        pushInfo.setDeviceId(deviceId);
                         pushInfo.setFPushYn(pushYn.get(0));
                         pushInfo.setSPushYn(pushYn.get(1));
                         // 리스트에 추가
