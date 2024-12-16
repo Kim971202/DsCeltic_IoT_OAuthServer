@@ -272,22 +272,25 @@
     <update id="updatePushCodeStatus" parameterType="java.util.List">
         UPDATE TBR_OPR_USER_DEVICE_PUSH
         <set>
-            <if test="item.fPushYn != null">
-                PUSH_YN_01 = CASE
-                WHEN USER_ID = #{item.userId} AND DEVC_ID = #{item.deviceId} THEN #{item.fPushYn}
-                ELSE PUSH_YN_01 END,
-            </if>
-            <if test="item.sPushYn != null">
-                PUSH_YN_02 = CASE
-                WHEN USER_ID = #{item.userId} AND DEVC_ID = #{item.deviceId} THEN #{item.sPushYn}
-                ELSE PUSH_YN_02 END
-            </if>
+            <foreach collection="list" item="item" separator=",">
+                <if test="item.fPushYn != null">
+                    PUSH_YN_01 = CASE
+                    WHEN USER_ID = #{item.userId} AND DEVC_ID = #{item.deviceId} THEN #{item.fPushYn}
+                    ELSE PUSH_YN_01 END
+                </if>
+                <if test="item.sPushYn != null">
+                    PUSH_YN_02 = CASE
+                    WHEN USER_ID = #{item.userId} AND DEVC_ID = #{item.deviceId} THEN #{item.sPushYn}
+                    ELSE PUSH_YN_02 END
+                </if>
+            </foreach>
         </set>
         WHERE (USER_ID, DEVC_ID) IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             (#{item.userId}, #{item.deviceId})
         </foreach>
     </update>
+
 
 
 
