@@ -41,7 +41,7 @@ public class FcntCall {
             fcnt.setDeviceId(deviceId);
             fcnt.setControlAuthKey("0000");
 
-            fcnt.setFunctionId("fcnt");
+            fcnt.setFunctionId("mfAr");
             fcnt.setUuId(common.getTransactionId());
 
             String redisValue = fcnt.getUserId() + "," + fcnt.getFunctionId();

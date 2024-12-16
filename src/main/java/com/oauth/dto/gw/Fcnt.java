@@ -12,6 +12,9 @@ public class Fcnt {
     private String deviceId;
     private String controlAuthKey;
 
+    private String rcLt;
+    private String rcLg;
+
     private String functionId;
     private String uuId;
 
