@@ -966,13 +966,13 @@ public class UserServiceImpl implements UserService {
         List<AuthServerDTO> inputList = new ArrayList<>();
 
             try{
+                AuthServerDTO pushInfo = new AuthServerDTO();
 
                 if(deviceIdList.size() > 1){
                     // 전체 제어
                     for (String deviceId : deviceIdList){
                         System.out.println(deviceId);
                         // 새로운 AuthServerDTO 객체 생성
-                        AuthServerDTO pushInfo = new AuthServerDTO();
                         pushInfo.setUserId(userId);
                         pushInfo.setDeviceId(deviceId);
                         pushInfo.setFPushYn(pushYn.get(0));
@@ -981,13 +981,20 @@ public class UserServiceImpl implements UserService {
                         inputList.add(pushInfo);
 
                     }
-                } else {
+                } else if(pushCode.size() > 1){
                     // 단건의 전체
-                    AuthServerDTO pushInfo = new AuthServerDTO();
                     pushInfo.setUserId(userId);
                     pushInfo.setDelUserId(deviceIdList.get(0));
                     pushInfo.setFPushYn(pushYn.get(0));
                     pushInfo.setSPushYn(pushYn.get(1));
+                    // 리스트에 추가
+                    inputList.add(pushInfo);
+                } else {
+                    // 단건
+                    pushInfo.setUserId(userId);
+                    pushInfo.setDelUserId(deviceIdList.get(0));
+                    if(pushCode.get(0).equals("01")) pushInfo.setFPushYn(pushYn.get(0));
+                    else pushInfo.setSPushYn(pushYn.get(0));
                     // 리스트에 추가
                     inputList.add(pushInfo);
                 }
