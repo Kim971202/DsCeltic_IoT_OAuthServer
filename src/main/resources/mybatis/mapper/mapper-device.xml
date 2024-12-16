@@ -434,7 +434,9 @@
             regist.NEW_ADDR AS newAddr,
             regist.DTAIL_ADDR AS addrDetail,
             regist.LAT AS latitude,
-            regist.LON AS longitude
+            regist.LON AS longitude,
+            regist.GRP_IDX AS groupIdx,
+            regist.GRP_NM AS groupName
         FROM
             TBR_IOT_DEVICE AS device
         INNER JOIN

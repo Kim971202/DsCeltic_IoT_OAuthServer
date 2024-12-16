@@ -1841,6 +1841,8 @@ public class DeviceServiceImpl implements DeviceService {
             result.put("addrDetail", resultDto.getAddrDetail());
             result.put("latitude", resultDto.getLatitude());
             result.put("longitude", resultDto.getLongitude());
+            result.put("groupName", resultDto.getGroupName());
+            result.put("groupIdx", resultDto.getGroupIdx());
         }
             result.put("resultCode", rtCode);
             result.put("resultMsg", msg);
