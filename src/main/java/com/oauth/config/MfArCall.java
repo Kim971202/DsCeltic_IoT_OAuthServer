@@ -25,8 +25,6 @@ public class MfArCall {
     @Autowired
     private Common common;
     @Autowired
-    RedisCommand redisCommand;
-    @Autowired
     MobiusService mobiusService;
 
     public void callMfAr() throws Exception{
@@ -43,9 +41,6 @@ public class MfArCall {
 
             mfAr.setFunctionId("mfAr");
             mfAr.setUuId(common.getTransactionId());
-
-            String redisValue = mfAr.getUserId() + "," + mfAr.getFunctionId();
-            redisCommand.setValues(mfAr.getUuId(), redisValue);
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
             AuthServerDTO userId = memberMapper.getFirstDeviceUser(deviceId);

@@ -74,10 +74,11 @@ public class MobiusController {
         String functionId = common.readCon(jsonBody, "functionId");
         String redisValue = "false";
 
-        if(functionId == null) return "FUNCTION ID NULL";
+        if(functionId == null || functionId.equals("mfAr")) return "FUNCTION NO CHECK";
 
         if(!functionId.equals("rtSt") && !functionId.equals("mfSt") && !functionId.equals("opIf")) redisValue = redisCommand.getValues(uuId);
         log.info("uuId: " + uuId);
+
 
         log.info("functionId: " + functionId);
         log.info("redisValue: " + redisValue);
