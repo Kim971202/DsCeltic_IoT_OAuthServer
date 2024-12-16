@@ -268,19 +268,40 @@
             USER_ID = #{userId} AND DEVC_ID = #{deviceId}
     </update>
 
+<!--    <update id="updatePushCodeStatus" parameterType="java.util.List">-->
+<!--        <foreach collection="list" item="item" separator=";">-->
+<!--            UPDATE TBR_OPR_USER_DEVICE_PUSH-->
+<!--            SET-->
+<!--                PUSH_YN_01 = #{item.fPushYn},-->
+<!--                PUSH_YN_02 = #{item.sPushYn}-->
+<!--            WHERE-->
+<!--                USER_ID = #{item.userId}-->
+<!--            AND-->
+<!--                DEVC_ID = #{item.deviceId}-->
+<!--        </foreach>-->
+<!--    </update>-->
+
     <update id="updatePushCodeStatus" parameterType="java.util.List">
-        <foreach collection="list" item="item" separator=";">
-            UPDATE TBR_OPR_USER_DEVICE_PUSH
-            SET
-                PUSH_YN_01 = #{item.fPushYn},
-                PUSH_YN_02 = #{item.sPushYn}
-            WHERE
-                USER_ID = #{item.userId}
-            AND
-                DEVC_ID = #{item.deviceId}
+        UPDATE TBR_OPR_USER_DEVICE_PUSH
+        SET
+        PUSH_YN_01 = CASE
+        <foreach collection="list" item="item" index="index">
+            WHEN USER_ID = #{item.userId} AND DEVC_ID = #{item.deviceId} THEN #{item.fPushYn}
+        </foreach>
+        ELSE PUSH_YN_01
+        END,
+        PUSH_YN_02 = CASE
+        <foreach collection="list" item="item" index="index">
+            WHEN USER_ID = #{item.userId} AND DEVC_ID = #{item.deviceId} THEN #{item.sPushYn}
+        </foreach>
+        ELSE PUSH_YN_02
+        END
+        WHERE
+        (USER_ID, DEVC_ID) IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            (#{item.userId}, #{item.deviceId})
         </foreach>
     </update>
-
 
     <select id="getPushCodeStatus" parameterType="map" resultMap="member">
         SELECT
