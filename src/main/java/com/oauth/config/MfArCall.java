@@ -1,7 +1,7 @@
 package com.oauth.config;
 
 import com.oauth.dto.AuthServerDTO;
-import com.oauth.dto.gw.Fcnt;
+import com.oauth.dto.gw.MfAr;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.service.impl.MobiusService;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class FcntCall {
+public class MfArCall {
 
     @Autowired
     private DeviceMapper deviceMapper;
@@ -29,28 +29,28 @@ public class FcntCall {
     @Autowired
     MobiusService mobiusService;
 
-    public void callFcnt() throws Exception{
+    public void callMfAr() throws Exception{
 
         List<String> deviceIdList = deviceMapper.getDeviceIdByDeviceModelCode();
 
         for(String deviceId : deviceIdList){
-            Fcnt fcnt = new Fcnt();
+            MfAr mfAr = new MfAr();
 
-            fcnt.setAccessToken("AccessToken");
-            fcnt.setUserId(deviceId);
-            fcnt.setDeviceId(deviceId);
-            fcnt.setControlAuthKey("0000");
+            mfAr.setAccessToken("AccessToken");
+            mfAr.setUserId(deviceId);
+            mfAr.setDeviceId(deviceId);
+            mfAr.setControlAuthKey("0000");
 
-            fcnt.setFunctionId("mfAr");
-            fcnt.setUuId(common.getTransactionId());
+            mfAr.setFunctionId("mfAr");
+            mfAr.setUuId(common.getTransactionId());
 
-            String redisValue = fcnt.getUserId() + "," + fcnt.getFunctionId();
-            redisCommand.setValues(fcnt.getUuId(), redisValue);
+            String redisValue = mfAr.getUserId() + "," + mfAr.getFunctionId();
+            redisCommand.setValues(mfAr.getUuId(), redisValue);
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
             AuthServerDTO userId = memberMapper.getFirstDeviceUser(deviceId);
 
-            mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId.getUserId(), JSON.toJson(fcnt));
+            mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId.getUserId(), JSON.toJson(mfAr));
         }
 
     }

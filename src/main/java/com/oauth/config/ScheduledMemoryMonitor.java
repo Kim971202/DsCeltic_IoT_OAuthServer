@@ -11,7 +11,7 @@ public class ScheduledMemoryMonitor {
     ScheduledSafeAlarm scheduledSafeAlarm;
 
     @Autowired
-    FcntCall fcntCall;
+    MfArCall mfArCall;
 
 
     // 10분마다 메모리 상태를 출력
@@ -26,8 +26,8 @@ public class ScheduledMemoryMonitor {
         scheduledSafeAlarm.checkUserSafeAlarm();
     }
 
-    @Scheduled(fixedRate = 5000) // 5,000 밀리초 = 5초
-    public void callFcnt() throws Exception {
-        fcntCall.callFcnt();
+    @Scheduled(fixedRate = 60000) // 60,000 밀리초 = 1분
+    public void callMfAr() throws Exception {
+        mfArCall.callMfAr();
     }
 }

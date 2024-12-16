@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Fcnt {
+public class MfAr {
 
     private String accessToken;
     private String userId;
