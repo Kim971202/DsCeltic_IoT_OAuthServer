@@ -1425,6 +1425,7 @@ public class UserServiceImpl implements UserService {
                     map.put("deviceType", authServerDTO.getDeviceType());
                     map.put("deviceNickname", authServerDTO.getDeviceNickname());
                     map.put("groupName", authServerDTO.getGroupName());
+                    map.put("groupIdx", authServerDTO.getGroupIdx());
                     pushInfoList.add(map);
                 }
             }
