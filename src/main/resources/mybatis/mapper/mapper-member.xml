@@ -269,18 +269,15 @@
     </update>
 
     <update id="updatePushCodeStatus" parameterType="java.util.List">
-        <foreach collection="list" item="item" separator=";">
+        <foreach collection="list" item="item">
             UPDATE TBR_OPR_USER_DEVICE_PUSH
-            <set>
-                <if test="item.fPushYn != null">
-                    PUSH_YN_01 = #{item.fPushYn},
-                </if>
-                <if test="item.sPushYn != null">
-                    PUSH_YN_02 = #{item.sPushYn}
-                </if>
-            </set>
-            WHERE USER_ID = #{item.userId}
-            AND DEVC_ID = #{item.deviceId}
+            SET
+                PUSH_YN_01 = #{item.fPushYn},
+                PUSH_YN_02 = #{item.sPushYn}
+            WHERE
+                USER_ID = #{item.userId}
+            AND
+                DEVC_ID = #{item.deviceId}
         </foreach>
     </update>
 
