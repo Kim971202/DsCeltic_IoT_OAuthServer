@@ -967,7 +967,6 @@ public class UserServiceImpl implements UserService {
 
             try{
                 AuthServerDTO pushInfo = new AuthServerDTO();
-
                 if(deviceIdList.size() > 1){
                     // 전체 제어
                     for (String deviceId : deviceIdList){
@@ -986,8 +985,6 @@ public class UserServiceImpl implements UserService {
                     pushInfo.setDeviceId(deviceIdList.get(0));
                     if(pushCode.get(0).equals("01")) pushInfo.setFPushYn(pushYn.get(0));
                     else pushInfo.setSPushYn(pushYn.get(0));
-                    // 리스트에 추가
-                    inputList.add(pushInfo);
 
                     if(memberMapper.updatePushCodeStatusSingle(pushInfo) > 0){
                         msg = "기기 알림 설정 성공";
