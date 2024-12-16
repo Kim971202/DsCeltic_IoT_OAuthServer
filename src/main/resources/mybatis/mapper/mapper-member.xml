@@ -272,24 +272,18 @@
         UPDATE TBR_OPR_USER_DEVICE_PUSH
         SET
         PUSH_YN_01 = CASE
-            <foreach collection="list" item="item" index="index">
-                WHEN
-                    USER_ID = #{item.userId}
-                AND
-                    DEVC_ID = #{item.deviceId}
-                THEN
-                    #{item.fPushYn}
-            </foreach>
+        <foreach collection="list" item="item" index="index">
+            WHEN USER_ID = #{item.userId}
+            AND DEVC_ID = #{item.deviceId}
+            THEN #{item.fPushYn}
+        </foreach>
         ELSE PUSH_YN_01
         END,
         PUSH_YN_02 = CASE
         <foreach collection="list" item="item" index="index">
-                WHEN
-                    USER_ID = #{item.userId}
-                AND
-                    DEVC_ID = #{item.deviceId}
-                THEN
-                    #{item.sPushYn}
+            WHEN USER_ID = #{item.userId}
+            AND DEVC_ID = #{item.deviceId}
+            THEN #{item.sPushYn}
         </foreach>
         ELSE PUSH_YN_02
         END
@@ -299,7 +293,6 @@
             (#{item.userId}, #{item.deviceId})
         </foreach>
     </update>
-
 
     <select id="getPushCodeStatus" parameterType="map" resultMap="member">
         SELECT
