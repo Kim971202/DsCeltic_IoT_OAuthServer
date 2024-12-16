@@ -3,6 +3,7 @@ package com.oauth.config;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.Fcnt;
 import com.oauth.mapper.DeviceMapper;
+import com.oauth.mapper.MemberMapper;
 import com.oauth.service.impl.MobiusService;
 import com.oauth.utils.Common;
 import com.oauth.utils.JSON;
@@ -19,6 +20,8 @@ public class FcntCall {
 
     @Autowired
     private DeviceMapper deviceMapper;
+    @Autowired
+    private MemberMapper memberMapper;
     @Autowired
     private Common common;
     @Autowired
@@ -45,8 +48,9 @@ public class FcntCall {
             redisCommand.setValues(fcnt.getUuId(), redisValue);
 
             AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
+            AuthServerDTO userId = memberMapper.getFirstDeviceUser(deviceId);
 
-            mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), deviceId, JSON.toJson(fcnt));
+            mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId.getUserId(), JSON.toJson(fcnt));
         }
 
     }
