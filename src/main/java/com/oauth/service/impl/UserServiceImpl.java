@@ -984,7 +984,7 @@ public class UserServiceImpl implements UserService {
                 } else if(pushCode.size() > 1){
                     // 단건의 전체
                     pushInfo.setUserId(userId);
-                    pushInfo.setDelUserId(deviceIdList.get(0));
+                    pushInfo.setDeviceId(deviceIdList.get(0));
                     pushInfo.setFPushYn(pushYn.get(0));
                     pushInfo.setSPushYn(pushYn.get(1));
                     // 리스트에 추가
@@ -992,7 +992,7 @@ public class UserServiceImpl implements UserService {
                 } else {
                     // 단건
                     pushInfo.setUserId(userId);
-                    pushInfo.setDelUserId(deviceIdList.get(0));
+                    pushInfo.setDeviceId(deviceIdList.get(0));
                     if(pushCode.get(0).equals("01")) pushInfo.setFPushYn(pushYn.get(0));
                     else pushInfo.setSPushYn(pushYn.get(0));
                     // 리스트에 추가
