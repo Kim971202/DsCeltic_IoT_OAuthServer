@@ -979,17 +979,8 @@ public class UserServiceImpl implements UserService {
                         pushInfo.setSPushYn(pushYn.get(1));
                         // 리스트에 추가
                         inputList.add(pushInfo);
-
                     }
-                } else if(pushCode.size() > 1){
-                    // 단건의 전체
-                    pushInfo.setUserId(userId);
-                    pushInfo.setDeviceId(deviceIdList.get(0));
-                    pushInfo.setFPushYn(pushYn.get(0));
-                    pushInfo.setSPushYn(pushYn.get(1));
-                    // 리스트에 추가
-                    inputList.add(pushInfo);
-                } else {
+                } else if(pushCode.size() == 1) {
                     // 단건
                     pushInfo.setUserId(userId);
                     pushInfo.setDeviceId(deviceIdList.get(0));
@@ -1004,6 +995,14 @@ public class UserServiceImpl implements UserService {
                         log.info("data: " + data);
                         return new ResponseEntity<>(data, HttpStatus.OK);
                     }
+                } else {
+                    // 단건의 전체
+                    pushInfo.setUserId(userId);
+                    pushInfo.setDeviceId(deviceIdList.get(0));
+                    pushInfo.setFPushYn(pushYn.get(0));
+                    pushInfo.setSPushYn(pushYn.get(1));
+                    // 리스트에 추가
+                    inputList.add(pushInfo);
                 }
 
                 if(memberMapper.updatePushCodeStatus(inputList) <= 0) log.info("기기 알림 설정 실패");
