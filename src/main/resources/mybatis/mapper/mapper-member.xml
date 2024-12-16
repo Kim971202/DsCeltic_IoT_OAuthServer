@@ -271,11 +271,12 @@
     <update id="updatePushCodeStatus" parameterType="java.util.List">
         UPDATE TBR_OPR_USER_DEVICE_PUSH
         SET
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
             PUSH_YN_01 = #{item.fPushYn},
             PUSH_YN_02 = #{item.sPushYn}
         WHERE
         (USER_ID, DEVC_ID) IN
-        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+
             (#{item.userId}, #{item.deviceId})
         </foreach>
     </update>
