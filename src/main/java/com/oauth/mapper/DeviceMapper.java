@@ -20,6 +20,7 @@ public interface DeviceMapper {
     public List<AuthServerDTO> getDeviceNicknameAndDeviceLocNickname(List<AuthServerDTO> device);
     public List<AuthServerDTO> getDeviceErroInfo(String serialNumber);
     public List<AuthServerDTO> getPushinfoByDeviceId(String deviceId);
+    public List<String> getDeviceIdByDeviceModelCode();
     public List<String> getInviteGroupIdxList();
     public List<String> getRegistGroupIdxList();
     public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);

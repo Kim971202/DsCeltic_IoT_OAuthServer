@@ -972,4 +972,13 @@
             DEVC_ID = #{deviceId}
     </select>
 
+    <select id="getDeviceIdByDeviceModelCode" parameterType="String" resultMap="String">
+        SELECT
+            DEVC_ID AS deviceId
+        FROM
+            TBR_IOT_DEVICE
+        WHERE
+            DEVC_MODL_CD = 'ESCeco13S'
+    </select>
+
 </mapper>

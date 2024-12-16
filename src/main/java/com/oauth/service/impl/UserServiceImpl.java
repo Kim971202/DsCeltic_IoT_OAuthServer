@@ -1377,7 +1377,7 @@ public class UserServiceImpl implements UserService {
 
             msg = "기기 삭제(회원 매핑 삭제) 성공";
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
-            data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){
