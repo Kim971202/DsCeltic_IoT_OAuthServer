@@ -354,10 +354,13 @@
         UPDATE
             TBT_OPR_DEVICE_REGIST
         SET
+            ZIP = #{zipCode},
+            OLD_ADDR = #{oldAddr},
+            NEW_ADDR = #{newAddr},
+            DTAIL_ADDR = #{addrDetail},
             LAT = #{latitude},
             LON = #{longitude},
-            DEVC_NICK = #{deviceNickname},
-            GRP_NM = #{groupName}
+            DEVC_NICK = #{deviceNickname}
         WHERE
             TEMP_DEVC_REG_KEY = #{tmpRegistKey}
         AND
@@ -377,8 +380,12 @@
         UPDATE
             TBR_OPR_DEVICE_DETAIL
         SET
+            ZIP = #{zipCode},
             OLD_ADDR = #{oldAddr},
             NEW_ADDR = #{newAddr},
+            DTAIL_ADDR = #{addrDetail},
+            LAT = #{latitude},
+            LON = #{longitude},
             DEVC_NICK = #{deviceNickname}
         WHERE
             DEVC_ID = #{deviceId}
