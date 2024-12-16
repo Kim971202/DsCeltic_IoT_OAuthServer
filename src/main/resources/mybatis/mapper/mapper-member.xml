@@ -269,13 +269,12 @@
 <!--            USER_ID = #{userId} AND DEVC_ID = #{deviceId}-->
 <!--    </update>-->
 
-    <update id="updatePushCodeStatusBatch" parameterType="java.util.List">
+    <update id="updatePushCodeStatus" parameterType="java.util.List">
         <foreach collection="list" item="item" separator=";">
             UPDATE TBR_OPR_USER_DEVICE_PUSH
             SET
                 PUSH_YN_01 = #{item.fPushYn},
                 PUSH_YN_02 = #{item.sPushYn},
-                PUSH_YN_03 = #{item.tPushYn}
             WHERE
                 USER_ID = #{item.userId}
             AND

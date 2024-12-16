@@ -94,7 +94,7 @@ public interface MemberMapper {
     public int updateGrpNick(AuthServerDTO member);
     public int inviteHouseMember(AuthServerDTO member);
     public int acceptInvite(AuthServerDTO member);
-    public int updatePushCodeStatus(AuthServerDTO params);
+    public int updatePushCodeStatus(List<AuthServerDTO> authServerDTOList);
     public int updateDeviceLocationNicknameDeviceDetail(AuthServerDTO member);
     public int updateDeviceLocationNicknameDeviceRegist(AuthServerDTO member);
     public int insertCommandHistory(AuthServerDTO member);

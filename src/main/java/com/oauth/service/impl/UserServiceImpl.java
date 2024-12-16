@@ -940,27 +940,58 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doPushSet(AuthServerDTO params)
             throws CustomException{
 
+        /* *
+         * -------------------------
+         * 전체 제어의 경우
+         * PushYn: "Y,Y" OR "N,N"
+         * PushCode: "1,2"
+         * -------------------------
+         * 단건의 전체 제어
+         * PushYn: "Y,Y" OR "N,N"
+         * PushCode: "1,2"
+         * -------------------------
+         * 단건 제어
+         * PushYn: "Y" OR "N"
+         * PushYn: "Y" OR "N"
+         * PushCode: "1" OR "2"
+         * -------------------------
+         * */
+
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
+        String userId = params.getUserId();
         List<String> pushCode = params.getPushCd();
         List<String> pushYn = params.getPushYn();
+        List<String> deviceIdList = params.getDeviceIdList();
+        List<AuthServerDTO> inputList = new ArrayList<>();
 
             try{
 
-                for(int i = 0; i < pushCode.size(); ++i){
-                    switch (pushCode.get(i)) {
-                        case "01":
-                            params.setFPushYn(pushYn.get(i));
-                            break;
-                        case "02":
-                            params.setSPushYn(pushYn.get(i));
-                            break;
-                        case "03":
-                            params.setTPushYn(pushYn.get(i));
-                            break;
+                if(deviceIdList.size() > 1){
+                    // 전체 제어
+                    for (String deviceId : deviceIdList){
+                        // 새로운 AuthServerDTO 객체 생성
+                        AuthServerDTO pushInfo = new AuthServerDTO();
+                        pushInfo.setUserId(userId);
+                        pushInfo.setDelUserId(deviceId);
+                        pushInfo.setFPushYn(pushYn.get(0));
+                        pushInfo.setSPushYn(pushYn.get(1));
+                        // 리스트에 추가
+                        inputList.add(pushInfo);
+
                     }
+                } else {
+                    // 단건의 전체
+                    AuthServerDTO pushInfo = new AuthServerDTO();
+                    pushInfo.setUserId(userId);
+                    pushInfo.setDelUserId(deviceIdList.get(0));
+                    pushInfo.setFPushYn(pushYn.get(0));
+                    pushInfo.setSPushYn(pushYn.get(1));
+                    // 리스트에 추가
+                    inputList.add(pushInfo);
                 }
-                if(memberMapper.updatePushCodeStatus(params) <= 0) log.info("기기 알림 설정 실패");
+
+                if(memberMapper.updatePushCodeStatus(inputList) <= 0) log.info("기기 알림 설정 실패");
 
                 msg = "기기 알림 설정 성공";
 
@@ -1316,9 +1347,11 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doUserDeviceDelete(AuthServerDTO params)
             throws CustomException {
 
-        String stringObject = "N";
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
+        String userId = params.getUserId();
+        List<String> deviceIdList = params.getDeviceIdList();
+
         try{
 
             /* *
@@ -1328,21 +1361,23 @@ public class UserServiceImpl implements UserService {
              * 프로시져
              * */
 
-            if(!memberMapper.deleteControllerMapping(params).equals("100")){
-                msg = "기기 삭제(회원 매핑 삭제) 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                new ResponseEntity<>(data, HttpStatus.OK);
-            } else stringObject = "Y";
+            for(String deviceId : deviceIdList){
+                System.out.println(deviceId);
+                AuthServerDTO info = new AuthServerDTO();
+                info.setUserId(userId);
+                info.setDeviceId(deviceId);
+                info.setControlAuthKey("0000");
 
-            if(stringObject.equals("Y")) msg = "기기 삭제(회원 매핑 삭제) 성공";
-            else msg = "기기 삭제(회원 매핑 삭제) 실패";
+                if(!memberMapper.deleteControllerMapping(info).equals("100")){
+                    msg = "기기 삭제(회원 매핑 삭제) 실패";
+                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(data, HttpStatus.OK);
+                }
+            }
 
+            msg = "기기 삭제(회원 매핑 삭제) 성공";
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
-
-            data.setResult("Y".equalsIgnoreCase(stringObject) ?
-                    ApiResponse.ResponseType.HTTP_200 :
-                    ApiResponse.ResponseType.CUSTOM_1018, msg);
-
+            data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
             log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         }catch (Exception e){

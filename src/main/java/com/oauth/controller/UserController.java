@@ -364,7 +364,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserNickname()) ||
                 Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getDeviceIdList()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
@@ -500,7 +500,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getDeviceIdList()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode())){
