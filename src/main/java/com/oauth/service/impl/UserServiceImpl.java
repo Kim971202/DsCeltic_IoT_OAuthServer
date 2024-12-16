@@ -1405,10 +1405,17 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
+
+        int pageNo = params.getPageNo();
+        int numOfRows = params.getNumOfRows();
+
         List<AuthServerDTO> member;
         List<Map<String, String>> pushInfoList = new ArrayList<>();
 
         try{
+
+            params.setSRow((pageNo - 1) * numOfRows);
+
             member = memberMapper.getPushInfoList(params);
             if (member == null) {
                 msg = "계정이 존재하지 않습니다.";

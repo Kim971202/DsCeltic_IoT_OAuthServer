@@ -362,6 +362,8 @@
         <if test="deviceType != 00">
             AND DEVC_TYPE = #{deviceType}
         </if>
+        LIMIT
+            #{sRow}, #{numOfRows}
     </select>
 
     <select id="getNoticeList" resultMap="member">
