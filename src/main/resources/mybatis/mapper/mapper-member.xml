@@ -343,6 +343,7 @@
             PUSH_TYPE AS pushType,
             DEVC_NICK AS deviceNickname,
             GRP_NM AS groupName,
+            GRP_IDX AS groupIdx,
             (
             CASE
                  WHEN DEVC_TYPE = '01' THEN '보일러'
@@ -543,7 +544,8 @@
             DEVC_ID,
             DEVC_TYPE,
             DEVC_NICK,
-            GRP_NM
+            GRP_NM,
+            GRP_IDX
         )
         VALUES
         (
@@ -555,7 +557,8 @@
             #{deviceId},
             #{deviceType},
             #{deviceNickname},
-            #{groupName}
+            #{groupName},
+            #{groupIdx}
         )
     </insert>
 

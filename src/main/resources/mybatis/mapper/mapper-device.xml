@@ -970,7 +970,8 @@
     <select id="getGroupNameAndDeviceNickByDeviceId" parameterType="String" resultMap="device">
         SELECT
             GRP_NM AS groupName,
-            DEVC_NICK AS deviceNickname
+            DEVC_NICK AS deviceNickname,
+            GRP_IDX AS groupIdx
         FROM
             TBT_OPR_DEVICE_REGIST
         WHERE

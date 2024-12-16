@@ -424,6 +424,7 @@ public class Common {
 
         //        params.setGroupName();
         //        params.setDeviceNickname();
+        //        params.setGroupIdx();
         // 위 값은 쿼리에서 가져오는 값으므로 선언 X
         AuthServerDTO params = deviceMapper.getGroupNameAndDeviceNickByDeviceId(deviceId);
 
