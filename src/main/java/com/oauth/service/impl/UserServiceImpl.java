@@ -1001,7 +1001,7 @@ public class UserServiceImpl implements UserService {
                     // 리스트에 추가
                     inputList.add(pushInfo);
                 }
-
+                System.out.println(inputList);
                 if(memberMapper.updatePushCodeStatus(inputList) <= 0) log.info("기기 알림 설정 실패");
 
                 msg = "기기 알림 설정 성공";
