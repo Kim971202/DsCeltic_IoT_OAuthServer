@@ -968,6 +968,7 @@ public class UserServiceImpl implements UserService {
             try{
                 AuthServerDTO pushInfo = new AuthServerDTO();
                 if(deviceIdList.size() > 1){
+                    System.out.println("deviceIdList.size() > 1");
                     // 전체 제어
                     for (String deviceId : deviceIdList){
                         System.out.println(deviceId);
@@ -980,6 +981,7 @@ public class UserServiceImpl implements UserService {
                         inputList.add(pushInfo);
                     }
                 } else if(pushCode.size() == 1) {
+                    System.out.println("pushCode.size() == 1");
                     // 단건
                     pushInfo.setUserId(userId);
                     pushInfo.setDeviceId(deviceIdList.get(0));
@@ -993,6 +995,7 @@ public class UserServiceImpl implements UserService {
                         return new ResponseEntity<>(data, HttpStatus.OK);
                     }
                 } else {
+                    System.out.println("else");
                     // 단건의 전체
                     pushInfo.setUserId(userId);
                     pushInfo.setDeviceId(deviceIdList.get(0));
