@@ -1422,7 +1422,7 @@ public class UserServiceImpl implements UserService {
         List<Map<String, String>> pushInfoList = new ArrayList<>();
 
         try{
-            if(pageNo > 1) params.setFrontRow((numberOfRows / pageNo) + 1);
+            if(pageNo > 1) params.setFrontRow((numberOfRows * pageNo) - numberOfRows + 1);
             params.setSecondRow(numberOfRows * pageNo);
 
             member = memberMapper.getPushInfoList(params);
