@@ -1423,7 +1423,7 @@ public class UserServiceImpl implements UserService {
 
         try{
 
-            params.setFrontRow((numberOfRows / pageNo) + 1);
+            params.setFrontRow(numberOfRows / pageNo);
             params.setSecondRow(numberOfRows * pageNo);
 
             member = memberMapper.getPushInfoList(params);
