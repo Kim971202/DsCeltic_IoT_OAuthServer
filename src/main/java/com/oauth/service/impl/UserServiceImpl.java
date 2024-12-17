@@ -1025,6 +1025,7 @@ public class UserServiceImpl implements UserService {
         String householderId;
         HashMap<String, Object> resultMap = new LinkedHashMap<String, Object>();
         List<AuthServerDTO> deviceIdList;
+        List<AuthServerDTO> groupInfoList;
 
         // "push" 부분을 표현하는 List 생성
         List<Map<String, String>> pushList = new ArrayList<>();
@@ -1033,6 +1034,9 @@ public class UserServiceImpl implements UserService {
             // TDOD: 세대주 ID 쿼리
             householderId = memberMapper.getHouseholdByUserId(userId).getGroupId();
             deviceIdList = memberMapper.getDeviceIdByUserIds(householderId);
+
+            // TODO: deviceIdList로 regist 테이블에서 groupName, groupIdx 추출
+            groupInfoList = memberMapper.getGroupInfoByDeviceId(deviceIdList);
 
             // deviceIds를 쉼표로 구분된 String으로 변환
             String deviceIds = deviceIdList.stream()
@@ -1055,6 +1059,8 @@ public class UserServiceImpl implements UserService {
                 push1.put("deviceId", pushCodeInfo.get(i).getDeviceId());
                 push1.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
                 push1.put("modelCode", pushCodeInfo.get(i).getModelCode());
+                push1.put("groupIdx", groupInfoList.get(i).getGroupIdx());
+                push1.put("groupName", groupInfoList.get(i).getGroupName());
                 pushList.add(push1);
 
                 Map<String, String> push2 = new LinkedHashMap<>();
@@ -1063,6 +1069,8 @@ public class UserServiceImpl implements UserService {
                 push2.put("deviceId", pushCodeInfo.get(i).getDeviceId());
                 push2.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
                 push2.put("modelCode", pushCodeInfo.get(i).getModelCode());
+                push2.put("groupIdx", groupInfoList.get(i).getGroupIdx());
+                push2.put("groupName", groupInfoList.get(i).getGroupName());
                 pushList.add(push2);
 
                 Map<String, String> push3 = new LinkedHashMap<>();
@@ -1071,6 +1079,8 @@ public class UserServiceImpl implements UserService {
                 push3.put("deviceId", pushCodeInfo.get(i).getDeviceId());
                 push3.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
                 push3.put("modelCode", pushCodeInfo.get(i).getModelCode());
+                push3.put("groupIdx", groupInfoList.get(i).getGroupIdx());
+                push3.put("groupName", groupInfoList.get(i).getGroupName());
                 pushList.add(push3);
             }
 

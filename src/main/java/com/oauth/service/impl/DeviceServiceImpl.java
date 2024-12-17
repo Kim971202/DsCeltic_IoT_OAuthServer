@@ -195,22 +195,6 @@ public class DeviceServiceImpl implements DeviceService {
                         deviceType);
             }
 
-//            params.setCodeType("1");
-//            params.setCommandId("PowerOnOff");
-//            params.setControlCode("powr");
-//            params.setControlCodeName("전원 ON/OFF");
-//            params.setCommandFlow("0");
-//            params.setDeviceId(deviceId);
-//            params.setUserId(params.getUserId());
-//            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//            params.setPushTitle("기기제어");
-//            params.setPushContent("전원: " + params.getPowerStatus());
-//            params.setDeviceId(deviceId);
-//            params.setDeviceType(deviceType);
-//            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
-
-
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);

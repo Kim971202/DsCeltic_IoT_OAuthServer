@@ -13,6 +13,7 @@ import java.util.Map;
 @Mapper
 public interface MemberMapper {
 
+    public List<AuthServerDTO> getGroupInfoByDeviceId(List<AuthServerDTO> deviceIdList);
     public List<AuthServerDTO> getRegistDeviceIdByUserId(AuthServerDTO params);
     public List<AuthServerDTO> getGroupIdxByUserIdAndIdx(AuthServerDTO params);
     public List<AuthServerDTO> getGroupIdxByUserId(String userId);
