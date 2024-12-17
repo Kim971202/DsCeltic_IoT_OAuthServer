@@ -360,6 +360,8 @@
         <if test="deviceType != 00">
             AND DEVC_TYPE = #{deviceType}
         </if>
+        ORDER BY
+            PUSH_DATETIME DESC
         LIMIT
             #{frontRow}, #{secondRow}
     </select>
