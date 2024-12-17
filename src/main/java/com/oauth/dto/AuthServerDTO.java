@@ -25,9 +25,9 @@ public class AuthServerDTO implements Serializable {
 
     private static final long serialVersionUID = 54436712726576487L;
 
-    private int pageNo;
-    private int numOfRows;
-    private int sRow;
+    private Integer pageNo = 2;
+    private Integer numOfRows = 1;
+    private Integer sRow = 1;
 
 
     private Long idx;
