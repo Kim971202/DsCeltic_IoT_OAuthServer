@@ -196,20 +196,6 @@ public class ReservationServiceImpl implements ReservationService{
                         "24시간 예약",
                         "01");
 
-//                params.setCodeType("1");
-//                params.setCommandId("Set24");
-//                params.setControlCode("24h");
-//                params.setControlCodeName("24시간 예약");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("24시간 예약");
-//                params.setDeviceType("01");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
             log.info("result: " + result);
@@ -357,20 +343,6 @@ public class ReservationServiceImpl implements ReservationService{
                         "12시간 예약",
                         "01");
 
-//                params.setCodeType("1");
-//                params.setCommandId("Set12");
-//                params.setControlCode("12h");
-//                params.setControlCodeName("12시간 예약");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("12시간 예약");
-//                params.setDeviceType("01");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
             log.info("result: " + result);
@@ -556,20 +528,6 @@ public class ReservationServiceImpl implements ReservationService{
                         "빠른온수 예약",
                         "01");
 
-//                params.setCodeType("1");
-//                params.setCommandId("AwakeAlarmSet");
-//                params.setControlCode("fwh");
-//                params.setControlCodeName("빠른온수 예약");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("빠른온수 예약");
-//                params.setDeviceType("01");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
             log.info("result: " + result);
@@ -717,20 +675,6 @@ public class ReservationServiceImpl implements ReservationService{
                         "예약 설정",
                         "주간 예약",
                         "01");
-
-//                params.setCodeType("1");
-//                params.setCommandId("SetWeek");
-//                params.setControlCode("7wk");
-//                params.setControlCodeName("주간 예약");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("주간 예약");
-//                params.setDeviceType("01");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
                 params.setWeekList("");
                 redisCommand.deleteValues(setWeek.getUuId());
@@ -1033,21 +977,6 @@ public class ReservationServiceImpl implements ReservationService{
                 deviceInfo.setPowr(params.getPowerStatus());
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
-
-//                params.setCodeType("1");
-//                params.setCommandId("SetOnOffPower");
-//                params.setControlCode("rsPw");
-//                params.setControlCodeName("환기 꺼짐/켜짐 예약");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("환기 꺼짐/켜짐 예약");
-//                params.setDeviceId(deviceId);
-//                params.setDeviceType("07");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
                 household = memberMapper.getHouseholdByUserId(params.getUserId());
                 params.setGroupId(household.getGroupId());
