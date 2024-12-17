@@ -29,6 +29,8 @@ public class AuthServerDTO implements Serializable {
     private Integer numOfRows = 1;
     private Integer sRow = 0;
 
+    private Integer frontRow = 0;
+    private Integer secondRow = 0;
 
     private Long idx;
     private String newId;

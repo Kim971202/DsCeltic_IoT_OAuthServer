@@ -361,7 +361,7 @@
             AND DEVC_TYPE = #{deviceType}
         </if>
         LIMIT
-            #{sRow}, #{numOfRows}
+            #{frontRow}, #{secondRow}
     </select>
 
     <select id="getNoticeList" resultMap="member">

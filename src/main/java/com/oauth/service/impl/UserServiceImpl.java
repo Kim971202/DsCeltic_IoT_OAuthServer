@@ -1417,13 +1417,14 @@ public class UserServiceImpl implements UserService {
         String msg;
 
         int pageNo = params.getPageNo();
-
+        int numberOfRows = params.getNumOfRows();
         List<AuthServerDTO> member;
         List<Map<String, String>> pushInfoList = new ArrayList<>();
 
         try{
 
-            params.setSRow(pageNo - 1);
+            params.setFrontRow((numberOfRows / pageNo) + 1);
+            params.setSecondRow(numberOfRows * pageNo);
 
             member = memberMapper.getPushInfoList(params);
             if (member == null) {
