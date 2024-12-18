@@ -177,6 +177,7 @@ public class MobiusController {
 
             AuthServerDTO info = new AuthServerDTO();
 
+            info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
             for (AuthServerDTO id : userIds) {
                 log.info("쿼리한 UserId: " + id.getUserId());
 
@@ -186,7 +187,7 @@ public class MobiusController {
                 String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
                 String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
 
-                pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"));
+                pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"), info.getDeviceNickname());
             }
 
             AuthServerDTO params = new AuthServerDTO();

@@ -31,7 +31,7 @@ public class PushService {
     @Autowired
     MemberMapper memberMapper;
 
-    public void sendPushMessage(String jsonBody, String pushToken, String fPushYn, String userId, String modelCode, String title) throws Exception {
+    public void sendPushMessage(String jsonBody, String pushToken, String fPushYn, String userId, String modelCode, String title, String deviceNickname) throws Exception {
         log.info("sendPushMessage jsonBody: " + jsonBody);
 
         HashMap<String, String> pushMap = new HashMap<>();

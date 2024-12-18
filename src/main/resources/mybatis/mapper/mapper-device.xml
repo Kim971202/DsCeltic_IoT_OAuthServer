@@ -980,13 +980,14 @@
             DEVC_ID = #{deviceId}
     </select>
 
-    <select id="getDeviceIdByDeviceModelCode" parameterType="String" resultMap="String">
+    <select id="getDeviceNicknameByDeviceId" parameterType="String" resultMap="device">
         SELECT
-            DEVC_ID AS deviceId
+            DEVC_NICK AS deviceNickname
         FROM
-            TBR_IOT_DEVICE
+            TBT_OPR_DEVICE_REGIST
         WHERE
-            DEVC_MODL_CD = 'ESCeco13S'
+            DEVC_ID =  #{deviceId}
     </select>
+
 
 </mapper>
