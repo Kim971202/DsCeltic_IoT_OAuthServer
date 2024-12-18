@@ -58,7 +58,6 @@ public class PushService {
 
         HashMap<String, String> pushMap = new HashMap<>();
         List<AuthServerDTO> pushInfo = deviceMapper.getPushinfoByDeviceId(deviceId);
-        log.info("pushInfo: " + pushInfo);
 
         deviceMapper.updateDeviceErrorStatus(deviceId);
 
@@ -68,8 +67,6 @@ public class PushService {
                 AuthServerDTO params = new AuthServerDTO();
                 params.setUserId(authServerDTO.getUserId());
 
-                errroCode = String.valueOf(Integer.parseInt(errroCode, 16));
-
                 params.setPushTitle(errroCode);
                 params.setPushType("02");
                 params.setPushContent(Objects.requireNonNullElse(errorVersion, ""));
@@ -78,6 +75,7 @@ public class PushService {
                 params.setGroupName(info.getGroupName());
                 params.setGroupIdx(info.getGroupIdx());
                 params.setDeviceType(common.getModelCode(modelCode.replaceAll(" ", "")));
+                System.out.println(params);
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH ERROR HISTORY INSERT ERROR");
 
                 pushMap.put("targetToken", authServerDTO.getPushToken());
