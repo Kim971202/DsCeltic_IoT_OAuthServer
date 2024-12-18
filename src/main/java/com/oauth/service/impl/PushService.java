@@ -76,6 +76,7 @@ public class PushService {
                 params.setDeviceId(deviceId);
                 params.setDeviceNickname(info.getDeviceNickname());
                 params.setGroupName(info.getGroupName());
+                params.setGroupIdx(info.getGroupIdx());
                 params.setDeviceType(common.getModelCode(modelCode.replaceAll(" ", "")));
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH ERROR HISTORY INSERT ERROR");
 
