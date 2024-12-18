@@ -40,6 +40,7 @@ public class PushService {
             pushMap.put("pushYn", fPushYn);
             pushMap.put("modelCode", modelCode.replaceAll(" ", ""));
             pushMap.put("title", title);
+            pushMap.put("deviceNickname", common.hexToString(deviceNickname));
             pushMap.put("body", common.putQuotes(common.returnConValue(jsonBody)));
             pushMap.put("id", userId);
 
