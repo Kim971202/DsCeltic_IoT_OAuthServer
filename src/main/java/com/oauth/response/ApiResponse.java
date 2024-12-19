@@ -89,6 +89,7 @@ public class ApiResponse {
         // GW에서 받은 값을 던지는 시험용 변수
         private Object testVariable;
         private String awakeList;
+        private String ventFanLifeStatus;
         private String deviceId;
         private String errorCode;
         private String errorName;

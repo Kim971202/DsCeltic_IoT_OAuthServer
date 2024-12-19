@@ -179,6 +179,7 @@ public class AuthServerDTO implements Serializable {
     private String deviceInfo;                   // Y/N 기기 존재 여부
 
     private String fastHotWater;                 // 빠른온수 예약 정보 조회용 변수
+    private String ventFanLifeStatus;
 
     private List<String> deviceIdList;
 

@@ -88,6 +88,7 @@ public class DeviceStatusInfo {
       private String addrNickname;
       private String serialNumber;
       
+      private String vfLs;
       private String vtSp;
       private String onHour;
       private String onMinute;

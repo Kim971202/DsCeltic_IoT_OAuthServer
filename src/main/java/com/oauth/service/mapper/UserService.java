@@ -108,5 +108,8 @@ public interface UserService {
     /** 빠른온수 예약 정보 조회 */
     ResponseEntity<?> doGetFastHotWaterInfo(AuthServerDTO params) throws Exception;
 
+    /** 환기 필터 잔여 수명 정보 조회 */
+    ResponseEntity<?> doGetFanLifeStatus(AuthServerDTO params) throws Exception;
+
 
 }

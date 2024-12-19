@@ -1797,4 +1797,32 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
+
+    /** 환기 필터 잔여 수명 정보 조회 */
+    @Override
+    public ResponseEntity<?> doGetFanLifeStatus(AuthServerDTO params) throws Exception {
+        ApiResponse.Data result = new ApiResponse.Data();
+        String msg;
+        String deviceId = params.getDeviceId();
+
+        AuthServerDTO fanInfo;
+        try {
+            fanInfo = memberMapper.getFanLifeStatus(deviceId);
+
+            if(fanInfo == null){
+                msg = "환기 필터 잔여 수명 정보 없음";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                result.setVentFanLifeStatus(fanInfo.getVentFanLifeStatus());
+                msg = "환기 필터 잔여 수명 정보 조회 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+
+            log.info("result: " + result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }    }
 }

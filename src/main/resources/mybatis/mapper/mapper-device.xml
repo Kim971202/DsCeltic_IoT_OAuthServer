@@ -477,6 +477,7 @@
             <if test="inAq != null">INAQ,</if>
             <if test="ven7Wk != null">7WK,</if>
             <if test="vtSp != null">VTSP,</if>
+            <if test="vfLs != null">VFLS,</if>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -507,6 +508,7 @@
             <if test="inAq != null">#{inAq},</if>
             <if test="ven7Wk != null">#{ven7Wk},</if>
             <if test="vtSp != null">#{vtSp},</if>
+            <if test="vfLs != null">#{VFLS},</if>
         </trim>
     </insert>
 
@@ -561,6 +563,7 @@
                     <if test="blCf != null">BLCF = #{blCf},</if>
                     SLCD = #{slCd},
                     VTSP = #{vtSp},
+                    VFLS = #{vfLs},
                     <if test="rsSl != null">RSSL = #{rsSl},</if>
                     <if test="rsPw != null">RSPW = #{rsPw},</if>
                     INAQ = #{inAq},

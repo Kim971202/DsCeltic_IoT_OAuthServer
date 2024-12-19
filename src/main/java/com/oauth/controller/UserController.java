@@ -667,6 +667,24 @@ public class UserController {
         return userService.doGetFastHotWaterInfo(params);
     }
 
+    /**
+     * 환기 필터 잔여 수명 정보 조회
+     * */
+    @PostMapping(value = "/getFanLifeStatus")
+    @ResponseBody
+    public ResponseEntity<?> doGetFanLifeStatus(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws Exception {
+
+        log.info("환기 필터 잔여 수명 정보 조회");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId())){
+            throw new CustomException("404", "환기 필터 잔여 수명 정보 조회 오류");
+        }
+        return userService.doGetFanLifeStatus(params);
+    }
+
     @PostMapping(value = "/test")
     public String test(String on) throws Exception {
 

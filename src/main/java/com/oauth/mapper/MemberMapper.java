@@ -60,6 +60,7 @@ public interface MemberMapper {
     public AuthServerDTO getPushYnStatusByDeviceIdAndUserId(AuthServerDTO info);
     public AuthServerDTO getFirstDeviceUser(String deviceId);
     public AuthServerDTO getFwhInfo(String deviceId);
+    public AuthServerDTO getFanLifeStatus(String deviceId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
     public int updateNewHouseHolder(AuthServerDTO info);

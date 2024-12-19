@@ -292,6 +292,7 @@ public class Common {
         commandMap.put("mfAr", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
         commandMap.put("vtSp", new String[]{"VentilationSpeed", "vtSp", "환기 풍량 설정"});
         commandMap.put("rsPw", new String[]{"VentilationOnOffSet", "rsPw", "환기 켜짐 꺼짐 예약"});
+        commandMap.put("vfLs", new String[]{"VentilationFanLifeStatus", "vfLs", "환기 필터 잔여 수명"});
 
         log.info("commandMap: " + commandMap);
 

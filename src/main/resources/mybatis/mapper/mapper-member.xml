@@ -1045,6 +1045,15 @@
             DEVC_ID = #{deviceId}
     </select>
 
+    <select id="getFanLifeStatus" parameterType="String" resultMap="member">
+        SELECT
+            VFLS AS ventFanLifeStatus
+        FROM
+            TBR_OPR_DEVICE_STATUS
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
     <select id="getDeviceNicknameByDeviceId" parameterType="String" resultMap="member">
         SELECT
             DEVC_NICK AS deviceNickname
