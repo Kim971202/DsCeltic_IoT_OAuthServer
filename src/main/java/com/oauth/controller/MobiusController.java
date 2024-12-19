@@ -211,7 +211,12 @@ public class MobiusController {
 
             if(common.readCon(jsonBody, "rsPw") != null) deviceInfo.setRsPw(common.convertToJsonFormat(common.readCon(jsonBody, "rsPw")));
 
-            if(common.readCon(jsonBody, "7wk") != null) deviceInfo.setWk7(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")));
+            if(common.readCon(jsonBody, "7wk") != null){
+                if(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")).equals("[{wk:,\"hs\":[]}]"))
+                    deviceInfo.setWk7("[{\"wk\":\"\",\"hs\":[]}]");
+                else
+                    deviceInfo.setWk7(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")));
+            }
 
             if(common.readCon(jsonBody, "12h") != null) deviceInfo.setH12(common.convertToJsonFormat(common.readCon(jsonBody, "12h")));
 
