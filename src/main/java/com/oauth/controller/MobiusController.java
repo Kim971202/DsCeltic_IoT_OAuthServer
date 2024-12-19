@@ -139,7 +139,6 @@ public class MobiusController {
             if(common.readCon(jsonBody, "mfCd").equals("acTv")){
                 deviceInfo.setSerialNumber(common.readCon(jsonBody, "srNo"));
                 mobiusService.actvHandler(deviceInfo);
-                return "OK";
             }
 
             deviceInfo.setMfcd(common.readCon(jsonBody, "mfcd"));
@@ -175,9 +174,7 @@ public class MobiusController {
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
             List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
 
-            AuthServerDTO info = new AuthServerDTO();
-
-            info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
+            AuthServerDTO info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
             for (AuthServerDTO id : userIds) {
                 log.info("쿼리한 UserId: " + id.getUserId());
 
