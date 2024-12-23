@@ -250,6 +250,7 @@ public class MobiusController {
             }
 
             AuthServerDTO params = new AuthServerDTO();
+            params.setUserId("RC");
 
             if(!common.readCon(jsonBody, "mfCd").equals("acTv")){
                 Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
@@ -269,7 +270,6 @@ public class MobiusController {
                 params.setCodeType("1");
                 params.setCommandFlow("1");
                 params.setDeviceId(deviceInfo.getDeviceId());
-                params.setUserId("RC");
 
                 int insertCommandHistoryResult = memberMapper.insertCommandHistory(params);
                 log.info("insertCommandHistoryResult: " + insertCommandHistoryResult);
