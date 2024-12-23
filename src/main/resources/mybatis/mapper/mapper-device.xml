@@ -519,6 +519,7 @@
             <if test="serialNumber != null">SERIAL_NO,</if>
             <if test="ftMdActv != null">FTMD,</if>
             <if test="fcLcActv != null">FCLC,</if>
+            <if test="ecOpActv != null">ECOP,</if>
             <if test="past != null">PAST,</if>
             <if test="inDr != null">INDR,</if>
             <if test="inCl != null">INCL,</if>
@@ -529,8 +530,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="deviceId != null">#{deviceId},</if>
             <if test="serialNumber != null">#{serialNumber},</if>
-            <if test="ftMd != null">#{ftMd},</if>
-            <if test="fcLc != null">#{fcLc},</if>
+            <if test="ftMdActv != null">#{ftMdActv},</if>
+            <if test="fcLcActv != null">#{fcLcActv},</if>
+            <if test="ecOpActv != null">#{ecOpActv},</if>
             <if test="past != null">#{past},</if>
             <if test="inDr != null">#{inDr},</if>
             <if test="inCl != null">#{inCl},</if>
@@ -579,6 +581,7 @@
             <if test="serialNumber != null">SERIAL_NO = #{serialNumber},</if>
             <if test="fcLcActv != null">FTMD = #{fcLcActv},</if>
             <if test="ftMdActv != null">FCLC = #{ftMdActv},</if>
+            <if test="ecOpActv != null">ECOP = #{ecOpActv},</if>
             <if test="past != null">PAST = #{past},</if>
             <if test="inDr != null">INDR = #{inDr},</if>
             <if test="inCl != null">INCL = #{inCl},</if>
@@ -729,6 +732,7 @@
             IFNULL(SERIAL_NO, '') AS serialNumber,
             IFNULL(FTMD, '') AS ftMd,
             IFNULL(FCLC, '') AS fcLc,
+            IFNULL(ECOP, '') AS ecOp,
             IFNULL(PAST, '') AS past,
             IFNULL(INDR, '') AS inDr,
             IFNULL(INCL, '') AS inCl,

@@ -181,6 +181,7 @@ public class MobiusController {
 
             deviceInfo.setFtMd(common.readCon(jsonBody, "ftMd"));
             deviceInfo.setFcLc(common.readCon(jsonBody, "fcLc"));
+            deviceInfo.setEcOp(common.readCon(jsonBody, "ecOp"));
 
             deviceInfo.setPast(common.readCon(jsonBody, "past"));
             deviceInfo.setInDr(common.readCon(jsonBody, "inDr"));
@@ -190,9 +191,11 @@ public class MobiusController {
             if(common.readCon(jsonBody, "mfCd").equals("acTv")){
                 deviceInfo.setFtMdActv(common.readCon(jsonBody, "ftMd"));
                 deviceInfo.setFcLcActv(common.readCon(jsonBody, "fcLc"));
+                deviceInfo.setEcOpActv(common.readCon(jsonBody, "ecOp"));
                 deviceInfo.setSerialNumber(common.readCon(jsonBody, "srNo"));
                 deviceInfo.setFcLc(null);
                 deviceInfo.setFtMd(null);
+                deviceInfo.setEcOp(null);
                 mobiusService.actvHandler(deviceInfo);
             }
 
@@ -207,7 +210,6 @@ public class MobiusController {
             deviceInfo.setChTp(common.readCon(jsonBody, "chTp"));
             deviceInfo.setCwTp(common.readCon(jsonBody, "cwTp"));
             deviceInfo.setHwSt(common.readCon(jsonBody, "hwSt"));
-            deviceInfo.setEcOp(common.readCon(jsonBody, "ecOp"));
             deviceInfo.setBlCf(common.readCon(jsonBody, "blCf"));
             deviceInfo.setVtSp(common.readCon(jsonBody, "vtSp"));
 
