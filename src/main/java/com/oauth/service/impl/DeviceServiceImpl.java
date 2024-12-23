@@ -2034,7 +2034,7 @@ public class DeviceServiceImpl implements DeviceService {
                         "0",
                         deviceId,
                         params.getUserId(),
-                        "vtSp ",
+                        "vtSp",
                         params.getFanSpeed(),
                         "07");
             }

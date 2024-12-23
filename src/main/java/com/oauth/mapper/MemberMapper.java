@@ -37,6 +37,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getUserIdFromDeviceGroup(String deviceId);
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
     public List<AuthServerDTO> getDeviceIdFromRegist(String userId);
+    public AuthServerDTO checkLastIndex(AuthServerDTO params);
     public AuthServerDTO getInviteCount(AuthServerDTO param);
     public AuthServerDTO getInviteCountFromInviteStatus(AuthServerDTO param);
     public AuthServerDTO getInviteCountByReqeustResponseUserId(AuthServerDTO param);

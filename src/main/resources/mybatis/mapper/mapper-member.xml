@@ -366,6 +366,22 @@
             #{frontRow}, #{secondRow}
     </select>
 
+    <select id="checkLastIndex" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS lastIndex
+        FROM
+            TBR_OPR_USER_DEVICE_PUSH_INFO
+        WHERE
+            USER_ID = #{userId}
+        <if test="deviceType != 00">
+            AND DEVC_TYPE = #{deviceType}
+        </if>
+        ORDER BY
+            PUSH_DATETIME DESC
+        LIMIT
+            #{frontRow}, #{secondRow}
+    </select>
+
     <select id="getNoticeList" resultMap="member">
         SELECT
             NOTI_IDX AS noticeIdx,

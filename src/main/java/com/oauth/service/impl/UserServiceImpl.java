@@ -1417,8 +1417,10 @@ public class UserServiceImpl implements UserService {
         String msg;
 
         int pageNo = params.getPageNo();
+        System.out.println(pageNo);
         int numberOfRows = params.getNumOfRows();
         List<AuthServerDTO> member;
+        AuthServerDTO lastIndex;
         List<Map<String, String>> pushInfoList = new ArrayList<>();
 
         try{
@@ -1431,6 +1433,12 @@ public class UserServiceImpl implements UserService {
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             } else {
+                params.setSecondRow(params.getSecondRow() + 1);
+                lastIndex = memberMapper.checkLastIndex(params);
+
+                if (lastIndex == null) data.setInEnd("T");
+                else if(Integer.parseInt(lastIndex.getLastIndex()) > member.size()) data.setInEnd("F");
+                else data.setInEnd("T");
                 for(AuthServerDTO authServerDTO : member){
                     Map<String, String> map = new HashMap<>();
                     map.put("pushIdx", authServerDTO.getPushIdx());
