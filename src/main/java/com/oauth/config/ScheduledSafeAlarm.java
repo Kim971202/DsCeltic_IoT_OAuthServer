@@ -79,7 +79,7 @@ public class ScheduledSafeAlarm {
                 }
             }
         } else {
-            System.out.println("userInfo is NULL");
+            log.info("userInfo is NULL");
         }
     }
 

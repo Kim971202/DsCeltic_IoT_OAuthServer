@@ -26,8 +26,9 @@ public class ScheduledMemoryMonitor {
         scheduledSafeAlarm.checkUserSafeAlarm();
     }
 
-    @Scheduled(fixedRate = 60000) // 60,000 밀리초 = 1분
-    public void callMfAr() throws Exception {
-        mfArCall.callMfAr();
-    }
+    // TODO: 910W Awake 메시지 전송 X
+//    @Scheduled(fixedRate = 60000) // 60,000 밀리초 = 1분
+//    public void callMfAr() throws Exception {
+//        mfArCall.callMfAr();
+//    }
 }
