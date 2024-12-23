@@ -251,27 +251,29 @@ public class MobiusController {
 
             AuthServerDTO params = new AuthServerDTO();
 
-            Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
-            System.out.println("Non-null fields: " + nonNullFields);
+            if(!common.readCon(jsonBody, "mfCd").equals("acTv")){
+                Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
+                System.out.println("Non-null fields: " + nonNullFields);
 
-            common.setCommandParams(nonNullFields, params);
+                common.setCommandParams(nonNullFields, params);
 
-            // 결과 출력
-            System.out.println("CommandId: " + params.getCommandId());
-            System.out.println("ControlCode: " + params.getControlCode());
-            System.out.println("ControlCodeName: " + params.getControlCodeName());
+                // 결과 출력
+                System.out.println("CommandId: " + params.getCommandId());
+                System.out.println("ControlCode: " + params.getControlCode());
+                System.out.println("ControlCodeName: " + params.getControlCodeName());
 
-            params.setCommandId(params.getCommandId());
-            params.setControlCode(params.getControlCode());
-            params.setControlCodeName(params.getControlCodeName());
+                params.setCommandId(params.getCommandId());
+                params.setControlCode(params.getControlCode());
+                params.setControlCodeName(params.getControlCodeName());
 
-            params.setCodeType("1");
-            params.setCommandFlow("1");
-            params.setDeviceId(deviceInfo.getDeviceId());
-            params.setUserId("RC");
+                params.setCodeType("1");
+                params.setCommandFlow("1");
+                params.setDeviceId(deviceInfo.getDeviceId());
+                params.setUserId("RC");
 
-            int insertCommandHistoryResult = memberMapper.insertCommandHistory(params);
-            log.info("insertCommandHistoryResult: " + insertCommandHistoryResult);
+                int insertCommandHistoryResult = memberMapper.insertCommandHistory(params);
+                log.info("insertCommandHistoryResult: " + insertCommandHistoryResult);
+            }
 
             params.setPushTitle("기기 제어");
             params.setPushContent(params.getControlCodeName());

@@ -1436,9 +1436,9 @@ public class UserServiceImpl implements UserService {
                 params.setSecondRow(params.getSecondRow() + 1);
                 lastIndex = memberMapper.checkLastIndex(params);
 
-                if (lastIndex == null) data.setInEnd("T");
-                else if(Integer.parseInt(lastIndex.getLastIndex()) > member.size()) data.setInEnd("F");
-                else data.setInEnd("T");
+                if (lastIndex == null) data.setIsEnd("T");
+                else if(Integer.parseInt(lastIndex.getLastIndex()) > member.size()) data.setIsEnd("F");
+                else data.setIsEnd("T");
                 for(AuthServerDTO authServerDTO : member){
                     Map<String, String> map = new HashMap<>();
                     map.put("pushIdx", authServerDTO.getPushIdx());
