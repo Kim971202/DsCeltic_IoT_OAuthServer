@@ -66,6 +66,9 @@ public class DeviceStatusInfo {
       private String wk7;
       private String fwh;
 
+      private String fcLcActv;
+      private String ftMdActv;
+
       private String past;
       private String inDr;
       private String inCl;

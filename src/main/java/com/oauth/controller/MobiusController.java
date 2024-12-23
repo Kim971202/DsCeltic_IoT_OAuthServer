@@ -188,6 +188,8 @@ public class MobiusController {
             deviceInfo.setEcSt(common.readCon(jsonBody, "ecSt"));
 
             if(common.readCon(jsonBody, "mfCd").equals("acTv")){
+                deviceInfo.setFtMdActv(common.readCon(jsonBody, "ftMd"));
+                deviceInfo.setFcLcActv(common.readCon(jsonBody, "fcLc"));
                 deviceInfo.setSerialNumber(common.readCon(jsonBody, "srNo"));
                 mobiusService.actvHandler(deviceInfo);
             }

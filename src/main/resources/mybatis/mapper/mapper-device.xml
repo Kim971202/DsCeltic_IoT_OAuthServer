@@ -517,8 +517,8 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="deviceId != null">DEVC_ID,</if>
             <if test="serialNumber != null">SERIAL_NO,</if>
-            <if test="ftMd != null">FTMD,</if>
-            <if test="fcLc != null">FCLC,</if>
+            <if test="ftMdActv != null">FTMD,</if>
+            <if test="fcLcActv != null">FCLC,</if>
             <if test="past != null">PAST,</if>
             <if test="inDr != null">INDR,</if>
             <if test="inCl != null">INCL,</if>
@@ -577,8 +577,8 @@
             TBR_OPR_ACTIVE_DEVICE_STATUS
         SET
             <if test="serialNumber != null">SERIAL_NO = #{serialNumber},</if>
-            <if test="ftMd != null">FTMD = #{ftMd},</if>
-            <if test="fcLc != null">FCLC = #{fcLc},</if>
+            <if test="fcLcActv != null">FTMD = #{fcLcActv},</if>
+            <if test="ftMdActv != null">FCLC = #{ftMdActv},</if>
             <if test="past != null">PAST = #{past},</if>
             <if test="inDr != null">INDR = #{inDr},</if>
             <if test="inCl != null">INCL = #{inCl},</if>
