@@ -1417,14 +1417,15 @@ public class UserServiceImpl implements UserService {
         String msg;
 
         int pageNo = params.getPageNo();
-        System.out.println(pageNo);
         int numberOfRows = params.getNumOfRows();
         List<AuthServerDTO> member;
         AuthServerDTO lastIndex;
         List<Map<String, String>> pushInfoList = new ArrayList<>();
 
         try{
-            if(pageNo > 1) params.setFrontRow((numberOfRows * pageNo) - numberOfRows + 1);
+            if(pageNo > 1) params.setFrontRow((numberOfRows * pageNo) - numberOfRows);
+            else params.setFrontRow(0);
+
             params.setSecondRow(numberOfRows);
 
             member = memberMapper.getPushInfoList(params);
@@ -1433,12 +1434,13 @@ public class UserServiceImpl implements UserService {
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             } else {
-                params.setSecondRow(params.getSecondRow() + 1);
+                params.setFrontRow(pageNo * numberOfRows);
                 lastIndex = memberMapper.checkLastIndex(params);
 
-                if (lastIndex == null) data.setIsEnd("T");
-                else if(Integer.parseInt(lastIndex.getLastIndex()) > member.size()) data.setIsEnd("F");
-                else data.setIsEnd("T");
+                if(lastIndex == null) data.setIsEnd("T");
+                else if (lastIndex.getLastIndex().equals("0")) data.setIsEnd("T");
+                else data.setIsEnd("F");
+
                 for(AuthServerDTO authServerDTO : member){
                     Map<String, String> map = new HashMap<>();
                     map.put("pushIdx", authServerDTO.getPushIdx());
