@@ -831,7 +831,7 @@ public class UserServiceImpl implements UserService {
             pushInfo.setGroupIdx(groupIdx);
             pushInfo.setUserId(requestUserId);
 
-            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+            if(memberMapper.insertPushHistory(pushInfo) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             log.info("data: " + data);
