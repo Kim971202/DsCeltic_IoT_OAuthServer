@@ -349,6 +349,7 @@
                  WHEN DEVC_TYPE = '01' THEN '보일러'
                  WHEN DEVC_TYPE = '05' THEN '각방'
                  WHEN DEVC_TYPE = '07' THEN '환기'
+                 WHEN DEVC_TYPE = 'invite' THEN 'invite'
                  ELSE '-'
             END
             ) AS deviceType,
