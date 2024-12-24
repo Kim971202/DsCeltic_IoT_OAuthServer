@@ -1425,7 +1425,7 @@ public class UserServiceImpl implements UserService {
 
         try{
             if(pageNo > 1) params.setFrontRow((numberOfRows * pageNo) - numberOfRows + 1);
-            params.setSecondRow(numberOfRows * pageNo);
+            params.setSecondRow(numberOfRows);
 
             member = memberMapper.getPushInfoList(params);
             if (member == null) {

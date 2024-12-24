@@ -1005,5 +1005,4 @@
             DEVC_ID =  #{deviceId}
     </select>
 
-
 </mapper>
