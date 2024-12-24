@@ -1329,7 +1329,7 @@
             </foreach>
         ORDER BY
             FIELD(DEVC_ID
-            <foreach collection="list" item="item" open="(" separator="," close=")">
+            <foreach collection="list" item="item" separator=",">
                 #{item.deviceId}
             </foreach>
         );
