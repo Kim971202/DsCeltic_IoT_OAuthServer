@@ -1075,6 +1075,7 @@ public class UserServiceImpl implements UserService {
                 push1.put("modelCode", pushCodeInfo.get(i).getModelCode());
                 push1.put("groupIdx", groupInfoList.get(i).getGroupIdx());
                 push1.put("groupName", groupInfoList.get(i).getGroupName());
+                push1.put("deviceNick", groupInfoList.get(i).getDeviceNickname());
                 pushList.add(push1);
 
                 Map<String, String> push2 = new LinkedHashMap<>();
@@ -1085,6 +1086,7 @@ public class UserServiceImpl implements UserService {
                 push2.put("modelCode", pushCodeInfo.get(i).getModelCode());
                 push2.put("groupIdx", groupInfoList.get(i).getGroupIdx());
                 push2.put("groupName", groupInfoList.get(i).getGroupName());
+                push2.put("deviceNick", groupInfoList.get(i).getDeviceNickname());
                 pushList.add(push2);
 
                 Map<String, String> push3 = new LinkedHashMap<>();
@@ -1095,6 +1097,7 @@ public class UserServiceImpl implements UserService {
                 push3.put("modelCode", pushCodeInfo.get(i).getModelCode());
                 push3.put("groupIdx", groupInfoList.get(i).getGroupIdx());
                 push3.put("groupName", groupInfoList.get(i).getGroupName());
+                push3.put("deviceNick", groupInfoList.get(i).getDeviceNickname());
                 pushList.add(push3);
             }
 

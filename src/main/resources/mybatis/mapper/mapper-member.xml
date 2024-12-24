@@ -501,7 +501,7 @@
     <select id="getWorkTime" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             DATE_FORMAT(INSERT_DATETIME, '%Y%m%d') AS workDate,
-            SUM(WORK_TIME) AS workTime
+            CAST(SUM(WORK_TIME) AS UNSIGNED) AS workTime
         FROM
             TBR_OPR_DEVICE_WORK_DATETIME
         WHERE
@@ -1318,7 +1318,8 @@
     <select id="getGroupInfoByDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             GRP_IDX AS groupIdx,
-            GRP_NM AS groupName
+            GRP_NM AS groupName,
+            DEVC_NICK AS deviceNickname
         FROM
             TBT_OPR_DEVICE_REGIST
         WHERE
