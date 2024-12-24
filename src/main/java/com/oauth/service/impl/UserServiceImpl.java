@@ -1766,14 +1766,26 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = "N";
         String msg;
+        AuthServerDTO safeAlarmInfo;
 
         try {
 
-            if(memberMapper.InsertSafeAlarmSet(params) <= 0){
-                msg = "안전안심 알람 설정 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                new ResponseEntity<>(result, HttpStatus.OK);
-            } else stringObject = "Y";
+            // TODO: 먼저 같은 USER_ID, DEVC_ID 가 있는지 확인 하고 있으면 UPDATE 없으면 INSERT를 한다.
+            safeAlarmInfo = memberMapper.checkSafeAlarmSet(params);
+            // 이미 존재 하는 경우
+            if(safeAlarmInfo.getLastIndex().equals("1")){
+                if(memberMapper.updateSafeAlarmSet(params) <= 0){
+                    msg = "안전안심 알람 설정 실패";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    new ResponseEntity<>(result, HttpStatus.OK);
+                } else stringObject = "Y";
+            } else {
+                if(memberMapper.InsertSafeAlarmSet(params) <= 0){
+                    msg = "안전안심 알람 설정 실패";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    new ResponseEntity<>(result, HttpStatus.OK);
+                } else stringObject = "Y";
+            }
 
             if(stringObject.equals("Y"))
                 msg = "안전안심 알람 설정 성공";

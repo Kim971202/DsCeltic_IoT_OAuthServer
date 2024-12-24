@@ -508,7 +508,7 @@
             <if test="inAq != null">#{inAq},</if>
             <if test="ven7Wk != null">#{ven7Wk},</if>
             <if test="vtSp != null">#{vtSp},</if>
-            <if test="vfLs != null">#{VFLS},</if>
+            <if test="vfLs != null">#{vfLs},</if>
         </trim>
     </insert>
 

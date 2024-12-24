@@ -37,6 +37,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getUserIdFromDeviceGroup(String deviceId);
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
     public List<AuthServerDTO> getDeviceIdFromRegist(String userId);
+    public AuthServerDTO checkSafeAlarmSet(AuthServerDTO params);
     public AuthServerDTO checkLastIndex(AuthServerDTO params);
     public AuthServerDTO getInviteCount(AuthServerDTO param);
     public AuthServerDTO getInviteCountFromInviteStatus(AuthServerDTO param);
@@ -64,6 +65,7 @@ public interface MemberMapper {
     public AuthServerDTO getFanLifeStatus(String deviceId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
+    public int updateSafeAlarmSet(AuthServerDTO info);
     public int updateNewHouseHolder(AuthServerDTO info);
     public int updateDeviceRegist(AuthServerDTO info);
     public int updateUserDevice(AuthServerDTO info);

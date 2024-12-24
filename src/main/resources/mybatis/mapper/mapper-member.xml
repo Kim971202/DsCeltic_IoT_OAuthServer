@@ -601,6 +601,36 @@
         )
     </insert>
 
+    <update id="updateSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_SAFE_ALARM
+        SET
+            SAFE_ALARM_TIME = #{safeAlarmTime}
+            SAFE_ALARM_STATUS = #{safeAlarmStatus}
+            SAFE_ALARM_REG_TIME = now()
+        WHERE
+            USER_ID = #{userId}
+        AND
+            DEVC_ID = #{deviceId}
+    </update>
+
+    <select id="checkSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS lastIndex
+        FROM (
+            SELECT
+                USER_ID
+            FROM
+                TBR_OPR_SAFE_ALARM
+            WHERE
+                USER_ID = #{userId}
+            AND
+                DEVC_ID = #{deviceId}
+            ORDER BY
+                SAFE_ALARM_REG_TIME DESC
+        ) AS subquery;
+    </select>
+
     <update id="updateSafeAlarmSet" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
         UPDATE
             TBR_OPR_SAFE_ALARM
