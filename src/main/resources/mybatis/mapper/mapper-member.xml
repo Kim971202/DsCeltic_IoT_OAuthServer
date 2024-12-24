@@ -601,7 +601,7 @@
         )
     </insert>
 
-    <update id="updateSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO">
+    <update id="updateSafeAlarm" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBR_OPR_SAFE_ALARM
         SET
