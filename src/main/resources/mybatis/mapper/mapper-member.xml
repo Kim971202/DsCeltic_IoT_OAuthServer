@@ -500,8 +500,8 @@
 
     <select id="getWorkTime" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
-            WORK_TIME AS workTime,
-            DATE_FORMAT(INSERT_DATETIME, '%Y%m%d') AS workDate
+            DATE_FORMAT(INSERT_DATETIME, '%Y%m%d') AS workDate,
+            SUM(WORK_TIME) AS workTime
         FROM
             TBR_OPR_DEVICE_WORK_DATETIME
         WHERE
@@ -510,6 +510,10 @@
             USER_ID = #{userId}
         AND
             INSERT_DATETIME BETWEEN #{startDate} AND #{endDate}
+        GROUP BY
+            DATE_FORMAT(INSERT_DATETIME, '%Y%m%d')
+        ORDER BY
+            workDate ASC;
     </select>
 
     <insert id="insertWorkTime" parameterType="java.util.List">
