@@ -716,6 +716,8 @@ public class UserServiceImpl implements UserService {
         List<AuthServerDTO> deviceIdList;
         List<AuthServerDTO> inputList;
 
+        String groupName = params.getGroupName();
+        String groupIdx = params.getGroupIdx();
         String requestUserId = params.getRequestUserId();
         String responseUserId = params.getResponseUserId();
         String responseHp = params.getResponseHp();
@@ -809,8 +811,8 @@ public class UserServiceImpl implements UserService {
             conMap.put("pushYn", "Y");
             conMap.put("targetToken", pushToken.getPushToken());
             conMap.put("userNickname", userNickname.getUserNickname());
-            conMap.put("title", "acIv");
-            conMap.put("acIv", inviteAcceptYn);
+            conMap.put("title", "acIv"); // PUSH TITLE
+            conMap.put("acIv", inviteAcceptYn); // PUSH CONTENT
             conMap.put("id", "Accept Invite ID");
             conMap.put("isEnd", "false");
 
@@ -819,6 +821,17 @@ public class UserServiceImpl implements UserService {
 
             if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
                 log.info("PUSH 메세지 전송 오류");
+            AuthServerDTO pushInfo = new AuthServerDTO();
+            pushInfo.setPushTitle("acIv");
+            pushInfo.setPushContent(inviteAcceptYn);
+            pushInfo.setPushType("01");
+            pushInfo.setDeviceId("deviceId");
+            pushInfo.setDeviceType("invite");
+            pushInfo.setGroupName(groupName);
+            pushInfo.setGroupIdx(groupIdx);
+            pushInfo.setUserId(requestUserId);
+
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             log.info("data: " + data);
