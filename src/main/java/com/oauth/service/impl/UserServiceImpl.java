@@ -829,6 +829,7 @@ public class UserServiceImpl implements UserService {
             pushInfo.setDeviceType("invite");
             pushInfo.setGroupName(groupName);
             pushInfo.setGroupIdx(groupIdx);
+            pushInfo.setDeviceNickname("");
             pushInfo.setUserId(requestUserId);
 
             if(memberMapper.insertPushHistory(pushInfo) <= 0) log.info("PUSH HISTORY INSERT ERROR");
