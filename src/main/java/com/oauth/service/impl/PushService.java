@@ -52,6 +52,7 @@ public class PushService {
 
     public void sendPushMessage(String jsonBody, String errroCode, String errorMesssage, String modelCode, String errorVersion) throws Exception {
 
+        System.out.println("modelCode: " + modelCode);
         String deviceId = common.readCon(jsonBody, "deviceId");
 
         AuthServerDTO info = deviceMapper.getGroupNameAndDeviceNickByDeviceId(deviceId);
@@ -83,7 +84,7 @@ public class PushService {
                 pushMap.put("body", common.putQuotes(common.returnConValue(common.readCon(jsonBody, "con"))));
                 pushMap.put("id", authServerDTO.getUserId());
                 pushMap.put("pushYn", authServerDTO.getSPushYn());
-                pushMap.put("modelCode", common.getModelCode(modelCode.replaceAll(" ", "")));
+                pushMap.put("modelCode", modelCode.replaceAll(" ", ""));
                 pushMap.put("deviceNick", common.stringToHex(info.getDeviceNickname()));
 
                 mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
