@@ -605,8 +605,8 @@
         UPDATE
             TBR_OPR_SAFE_ALARM
         SET
-            SAFE_ALARM_TIME = #{safeAlarmTime}
-            SAFE_ALARM_STATUS = #{safeAlarmStatus}
+            SAFE_ALARM_TIME = #{safeAlarmTime},
+            SAFE_ALARM_STATUS = #{safeAlarmStatus},
             SAFE_ALARM_REG_TIME = now()
         WHERE
             USER_ID = #{userId}

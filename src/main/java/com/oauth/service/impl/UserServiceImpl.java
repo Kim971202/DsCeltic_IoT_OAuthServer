@@ -1774,7 +1774,7 @@ public class UserServiceImpl implements UserService {
             safeAlarmInfo = memberMapper.checkSafeAlarmSet(params);
             // 이미 존재 하는 경우
             if(safeAlarmInfo.getLastIndex().equals("1")){
-                if(memberMapper.updateSafeAlarmSet(params) <= 0){
+                if(memberMapper.updateSafeAlarm(params) <= 0){
                     msg = "안전안심 알람 설정 실패";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     new ResponseEntity<>(result, HttpStatus.OK);

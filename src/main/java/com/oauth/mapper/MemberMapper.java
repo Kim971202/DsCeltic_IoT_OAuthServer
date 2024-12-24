@@ -65,7 +65,7 @@ public interface MemberMapper {
     public AuthServerDTO getFanLifeStatus(String deviceId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
-    public int updateSafeAlarmSet(AuthServerDTO info);
+    public int updateSafeAlarm(AuthServerDTO info);
     public int updateNewHouseHolder(AuthServerDTO info);
     public int updateDeviceRegist(AuthServerDTO info);
     public int updateUserDevice(AuthServerDTO info);
