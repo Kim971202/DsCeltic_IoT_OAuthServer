@@ -84,6 +84,7 @@ public class PushService {
                 pushMap.put("id", authServerDTO.getUserId());
                 pushMap.put("pushYn", authServerDTO.getSPushYn());
                 pushMap.put("modelCode", modelCode);
+                pushMap.put("deviceNick", info.getDeviceNickname());
 
                 mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
             }
