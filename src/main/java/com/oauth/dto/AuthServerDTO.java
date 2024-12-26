@@ -186,6 +186,7 @@ public class AuthServerDTO implements Serializable {
     private List<String> deviceIdList;
 
     private String groupNameCount;
+    private String loginoutStatus;
 
     @Override
     public boolean equals(Object o) {

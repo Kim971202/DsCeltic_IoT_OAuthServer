@@ -171,17 +171,19 @@ public class DeviceServiceImpl implements DeviceService {
 
                 if(onOffFlag.equals("on")){
                     for(int i = 0; i < userIds.size(); ++i){
-                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                        conMap.put("title", "powr");
-                        conMap.put("powr", params.getPowerStatus());
-                        conMap.put("userNickname", userNickname.getUserNickname());
-                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                        conMap.put("modelCode", modelCode);
-                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                        conMap.put("deviceId", deviceId);
-                        String jsonString = objectMapper.writeValueAsString(conMap);
-                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                            log.info("PUSH 메세지 전송 오류");
+                        if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("title", "powr");
+                            conMap.put("powr", params.getPowerStatus());
+                            conMap.put("userNickname", userNickname.getUserNickname());
+                            conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                            conMap.put("modelCode", modelCode);
+                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                            conMap.put("deviceId", deviceId);
+                            String jsonString = objectMapper.writeValueAsString(conMap);
+                            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                                log.info("PUSH 메세지 전송 오류");
+                        }
                     }
 
                     common.insertHistory(
@@ -634,21 +636,22 @@ public class DeviceServiceImpl implements DeviceService {
 
                 if(onOffFlag.equals("on")){
                     for(int i = 0; i < userIds.size(); ++i){
-                        log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                        conMap.put("modelCode", modelCode);
-                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                        conMap.put("userNickname", userNickname.getUserNickname());
-                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                        conMap.put("title", "opMd");
-                        conMap.put("deviceId", deviceId);
-                        conMap.put("id", "Mode Change ID");
+                        if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                            log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                            conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                            conMap.put("modelCode", modelCode);
+                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("userNickname", userNickname.getUserNickname());
+                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                            conMap.put("title", "opMd");
+                            conMap.put("deviceId", deviceId);
+                            conMap.put("id", "Mode Change ID");
 
-                        String jsonString = objectMapper.writeValueAsString(conMap);
+                            String jsonString = objectMapper.writeValueAsString(conMap);
 
-                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                            log.info("PUSH 메세지 전송 오류");
-
+                            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                                log.info("PUSH 메세지 전송 오류");
+                        }
                     }
 
                     deviceInfo.setOpMd(modeCode);
@@ -855,18 +858,20 @@ public class DeviceServiceImpl implements DeviceService {
 
                 if(onOffFlag.equals("on")){
                     for(int i = 0; i < userIds.size(); ++i){
-                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                        conMap.put("userNickname", userNickname.getUserNickname());
-                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                        conMap.put("title", "htTp");
-                        conMap.put("deviceId", deviceId);
-                        conMap.put("id", "TemperatureSet ID");
-                        String jsonString = objectMapper.writeValueAsString(conMap);
+                        if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                            conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                            conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("userNickname", userNickname.getUserNickname());
+                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                            conMap.put("title", "htTp");
+                            conMap.put("deviceId", deviceId);
+                            conMap.put("id", "TemperatureSet ID");
+                            String jsonString = objectMapper.writeValueAsString(conMap);
 
-                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                            log.info("PUSH 메세지 전송 오류");
+                            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                                log.info("PUSH 메세지 전송 오류");
+                        }
                     }
 
                     deviceInfo.setHtTp(params.getTemperture());
@@ -1004,20 +1009,22 @@ public class DeviceServiceImpl implements DeviceService {
 
                 if(onOffFlag.equals("on")){
                     for(int i = 0; i < userIds.size(); ++i){
-                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                        conMap.put("userNickname", userNickname.getUserNickname());
-                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                        conMap.put("title", "wtTp");
-                        conMap.put("deviceId", deviceId);
-                        conMap.put("id", "BoiledWaterTempertureSet ID");
+                        if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                            conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                            conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("userNickname", userNickname.getUserNickname());
+                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                            conMap.put("title", "wtTp");
+                            conMap.put("deviceId", deviceId);
+                            conMap.put("id", "BoiledWaterTempertureSet ID");
 
-                        String jsonString = objectMapper.writeValueAsString(conMap);
-                        log.info("jsonString: " + jsonString);
+                            String jsonString = objectMapper.writeValueAsString(conMap);
+                            log.info("jsonString: " + jsonString);
 
-                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                            log.info("PUSH 메세지 전송 오류");
+                            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                                log.info("PUSH 메세지 전송 오류");
+                        }
                     }
 
                     deviceInfo.setWtTp(params.getTemperture());
@@ -1152,19 +1159,21 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
                 for(int i = 0; i < userIds.size(); ++i){
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "hwTp");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "WaterTempertureSet ID");
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("title", "hwTp");
+                        conMap.put("deviceId", deviceId);
+                        conMap.put("id", "WaterTempertureSet ID");
 
-                    String jsonString = objectMapper.writeValueAsString(conMap);
+                        String jsonString = objectMapper.writeValueAsString(conMap);
 
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                        log.info("PUSH 메세지 전송 오류");
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                            log.info("PUSH 메세지 전송 오류");
+                    }
                 }
 
                 deviceInfo.setHwTp(params.getTemperture());
@@ -1300,19 +1309,21 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
                 for(int i = 0; i < userIds.size(); ++i){
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "ftMd");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "FastHotWaterSet ID");
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("title", "ftMd");
+                        conMap.put("deviceId", deviceId);
+                        conMap.put("id", "FastHotWaterSet ID");
 
-                    String jsonString = objectMapper.writeValueAsString(conMap);
+                        String jsonString = objectMapper.writeValueAsString(conMap);
 
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                        log.info("PUSH 메세지 전송 오류");
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                            log.info("PUSH 메세지 전송 오류");
+                    }
                 }
 
                 deviceInfo.setFtMd(params.getModeCode());
@@ -1450,16 +1461,18 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
                 for(int i = 0; i < userIds.size(); ++i){
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "fcLc");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "LockSet ID");
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("title", "fcLc");
+                        conMap.put("deviceId", deviceId);
+                        conMap.put("id", "LockSet ID");
+                        String jsonString = objectMapper.writeValueAsString(conMap);
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                    }
                 }
 
                 deviceInfo.setFcLc(params.getLockSet());
@@ -2012,19 +2025,20 @@ public class DeviceServiceImpl implements DeviceService {
 
                 for(int i = 0; i < userIds.size(); ++i){
                     log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("title", "VentilationFanSpeedSet");
+                        conMap.put("vtSp", params.getFanSpeed());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("modelCode", modelCode);
+                        conMap.put("deviceId", deviceId);
+                        String jsonString = objectMapper.writeValueAsString(conMap);
+                        log.info("doPowerOnOff jsonString: " + jsonString);
 
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("title", "VentilationFanSpeedSet");
-                    conMap.put("vtSp", params.getFanSpeed());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", modelCode);
-                    conMap.put("deviceId", deviceId);
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-                    log.info("doPowerOnOff jsonString: " + jsonString);
-
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                    }
                 }
 
                 common.insertHistory(

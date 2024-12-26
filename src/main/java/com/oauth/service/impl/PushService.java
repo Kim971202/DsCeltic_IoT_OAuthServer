@@ -79,15 +79,18 @@ public class PushService {
                 System.out.println(params);
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH ERROR HISTORY INSERT ERROR");
 
-                pushMap.put("targetToken", authServerDTO.getPushToken());
-                pushMap.put("title","ERROR");
-                pushMap.put("body", common.putQuotes(common.returnConValue(common.readCon(jsonBody, "con"))));
-                pushMap.put("id", authServerDTO.getUserId());
-                pushMap.put("pushYn", authServerDTO.getSPushYn());
-                pushMap.put("modelCode", modelCode.replaceAll(" ", ""));
-                pushMap.put("deviceNick", common.stringToHex(info.getDeviceNickname()));
+                if(memberMapper.getUserLoginoutStatus(authServerDTO.getUserId()).getLoginoutStatus().equals("Y")){
+                    pushMap.put("targetToken", authServerDTO.getPushToken());
+                    pushMap.put("title","ERROR");
+                    pushMap.put("body", common.putQuotes(common.returnConValue(common.readCon(jsonBody, "con"))));
+                    pushMap.put("id", authServerDTO.getUserId());
+                    pushMap.put("pushYn", authServerDTO.getSPushYn());
+                    pushMap.put("modelCode", modelCode.replaceAll(" ", ""));
+                    pushMap.put("deviceNick", common.stringToHex(info.getDeviceNickname()));
 
-                mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
+                    mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
+                }
+
             }
 
         } catch (Exception e){

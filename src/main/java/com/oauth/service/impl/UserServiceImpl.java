@@ -125,6 +125,31 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /** 회원 로그아웃 */
+    @Override
+    public ResponseEntity<?> doLogout(String userId, String pushToken) throws CustomException {
+        ApiResponse.Data result = new ApiResponse.Data();
+        String msg;
+
+        try {
+
+            if(memberMapper.updateLoginoutStatus(userId) <= 0) {
+                msg = "회원 로그아웃 실패.";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            msg = "회원 로그아웃 성공";
+
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("result: " + result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     /** 회원가입 */
     @Override
     public ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException {
@@ -417,6 +442,7 @@ public class UserServiceImpl implements UserService {
 
             msg = "그룹 정보 삭제 성공";
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -455,6 +481,7 @@ public class UserServiceImpl implements UserService {
 
             msg = "사용자 그룹 명칭 변경 성공";
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e){
             log.error("", e);
@@ -495,6 +522,7 @@ public class UserServiceImpl implements UserService {
             msg = "사용자 그룹 생성 성공";
             
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e){
             log.error("error", e);
@@ -1665,21 +1693,23 @@ public class UserServiceImpl implements UserService {
             userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
             for(int i = 0; i < userIds.size(); ++i){
-                log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-                conMap1.put("pushYn", pushYnList.get(i).getFPushYn());
-                conMap1.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                conMap1.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                conMap1.put("userNickname", userNickname.getUserNickname());
-                conMap1.put("deviceNick", common.returnDeviceNickname(deviceId));
-                conMap1.put("title", "blCf");
-                conMap1.put("deviceId", deviceId);
-                conMap1.put("id", "Brightness Control ID");
+                if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                    log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                    conMap1.put("pushYn", pushYnList.get(i).getFPushYn());
+                    conMap1.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                    conMap1.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                    conMap1.put("userNickname", userNickname.getUserNickname());
+                    conMap1.put("deviceNick", common.returnDeviceNickname(deviceId));
+                    conMap1.put("title", "blCf");
+                    conMap1.put("deviceId", deviceId);
+                    conMap1.put("id", "Brightness Control ID");
 
-                String jsonString1 = objectMapper.writeValueAsString(conMap1);
-                log.info("jsonString: " + jsonString);
+                    String jsonString1 = objectMapper.writeValueAsString(conMap1);
+                    log.info("jsonString: " + jsonString);
 
-                if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201"))
-                    log.info("PUSH 메세지 전송 오류");
+                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode().equals("201"))
+                        log.info("PUSH 메세지 전송 오류");
+                }
             }
 
             common.insertHistory(
@@ -1693,21 +1723,6 @@ public class UserServiceImpl implements UserService {
                     "밝기 조절",
                     params.getBrightnessLevel(),
                     "01");
-
-//            params.setCodeType("1");
-//            params.setCommandId("blCf");
-//            params.setControlCode("blCf");
-//            params.setControlCodeName("밝기 설정");
-//            params.setCommandFlow("0");
-//            params.setDeviceId(deviceId);
-//            params.setUserId(params.getUserId());
-//
-//            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//            params.setPushTitle("기기제어");
-//            params.setPushContent("밝기 설정");
-//            params.setDeviceType("01");
-//            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);

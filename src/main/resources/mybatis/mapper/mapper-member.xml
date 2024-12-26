@@ -1162,6 +1162,24 @@
             USER_ID = #{userId};
     </update>
 
+    <update id="updateLoginoutStatus" parameterType="String">
+        UPDATE
+            TBR_OPR_USER
+        SET
+            USER_STATUS_LOG_INOUT = 'N'
+        WHERE
+            USER_ID = #{userId}
+    </update>
+
+    <select id="getUserLoginoutStatus" parameterType="String" resultMap="member">
+        SELECT
+            USER_STATUS_LOG_INOUT AS loginoutStatus
+        FROM
+            TBR_OPR_USER
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
     <update id="updateUserDevice" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBR_OPR_USER_DEVICE

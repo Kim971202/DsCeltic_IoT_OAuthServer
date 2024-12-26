@@ -135,14 +135,13 @@ public class MobiusController {
             AuthServerDTO info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
             for (AuthServerDTO id : userIds) {
                 log.info("쿼리한 UserId: " + id.getUserId());
-
-                info.setUserId(id.getUserId());
-                info.setDeviceId(common.readCon(jsonBody, "deviceId"));
-
-                String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
-                String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
-
-                pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"), info.getDeviceNickname());
+                if(memberMapper.getUserLoginoutStatus(id.getUserId()).getLoginoutStatus().equals("Y")){
+                    info.setUserId(id.getUserId());
+                    info.setDeviceId(common.readCon(jsonBody, "deviceId"));
+                    String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
+                    String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
+                    pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"), info.getDeviceNickname());
+                }
             }
             AuthServerDTO params = new AuthServerDTO();
 
@@ -237,16 +236,18 @@ public class MobiusController {
             List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
 
             AuthServerDTO info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
+
             for (AuthServerDTO id : userIds) {
                 log.info("쿼리한 UserId: " + id.getUserId());
+                if(memberMapper.getUserLoginoutStatus(id.getUserId()).getLoginoutStatus().equals("Y")){
+                    info.setUserId(id.getUserId());
+                    info.setDeviceId(common.readCon(jsonBody, "deviceId"));
 
-                info.setUserId(id.getUserId());
-                info.setDeviceId(common.readCon(jsonBody, "deviceId"));
+                    String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
+                    String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
 
-                String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
-                String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
-
-                pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"), info.getDeviceNickname());
+                    pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"), info.getDeviceNickname());
+                }
             }
 
             AuthServerDTO params = new AuthServerDTO();

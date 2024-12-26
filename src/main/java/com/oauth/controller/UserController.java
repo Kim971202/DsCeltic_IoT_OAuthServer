@@ -69,6 +69,22 @@ public class UserController {
         return userService.doLogin(params.getUserId(), params.getUserPassword(), params.getPushToken());
     }
 
+    /** 회원 로그아웃 */
+    @PostMapping(value = "/logout")
+    @ResponseBody
+    public ResponseEntity<?> doLogout(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws Exception {
+
+        log.info("[회원 로그아웃]");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getUserId())) {
+            throw new CustomException("404", "회원 로그아웃 입력 값 오류");
+        }
+
+        return userService.doLogout(params.getUserId(), params.getPushToken());
+    }
+
     /** 회원가입 */
     @PostMapping(value = "/regist")
     @ResponseBody

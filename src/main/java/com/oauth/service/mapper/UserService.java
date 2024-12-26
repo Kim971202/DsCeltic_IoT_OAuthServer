@@ -12,6 +12,9 @@ public interface UserService {
     /** 회원 로그인 */
     ResponseEntity<?> doLogin(String userId, String userPassword, String pushToken) throws CustomException;
 
+    /** 회원 로그아웃 */
+    ResponseEntity<?> doLogout(String userId, String pushToken) throws CustomException;
+
     /** 회원가입 */
     ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException, SQLException;
 
