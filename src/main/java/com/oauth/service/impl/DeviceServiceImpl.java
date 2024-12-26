@@ -1704,7 +1704,7 @@ public class DeviceServiceImpl implements DeviceService {
                             DeviceStatusInfo.Device activeInfo = activeStatusInfo.get(i);
                             data.put("ftMdAcTv", activeInfo.getFtMd());
                             data.put("fcLcAcTv", activeInfo.getFcLc());
-                            data.put("ecOpActv", activeInfo.getEcOp());
+                            data.put("ecOpAcTv", activeInfo.getEcOp());
                         } else if (!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-47/WF")) {
                             DeviceStatusInfo.Device activeInfo = activeStatusInfo.get(i);
                             data.put("pastAcTv", activeInfo.getPast());
