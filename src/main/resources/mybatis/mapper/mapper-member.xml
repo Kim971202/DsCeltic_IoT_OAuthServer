@@ -1162,11 +1162,11 @@
             USER_ID = #{userId};
     </update>
 
-    <update id="updateLoginoutStatus" parameterType="String">
+    <update id="updateLoginoutStatus" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBR_OPR_USER
         SET
-            USER_STATUS_LOG_INOUT = 'N'
+            USER_STATUS_LOG_INOUT = #{loginoutStatus}
         WHERE
             USER_ID = #{userId}
     </update>

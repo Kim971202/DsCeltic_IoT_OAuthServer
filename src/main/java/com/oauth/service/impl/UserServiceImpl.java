@@ -62,6 +62,7 @@ public class UserServiceImpl implements UserService {
         String hp;
 
         AuthServerDTO householdStatus;
+        AuthServerDTO info = new AuthServerDTO();
         try {
 
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
@@ -98,6 +99,11 @@ public class UserServiceImpl implements UserService {
             result.setAccessToken(token);
             result.setUserNickname(userNickname);
 
+            // TODO: TBR_OPR_USER 테이블의 USER_STATUS_LOG_INOUT의 값을 Y
+            info.setUserId(userId);
+            info.setLoginoutStatus("Y");
+            if(memberMapper.updateLoginoutStatus(info) <= 0) log.info("LOGIN 상태 Y로 변경 실패 .");
+
             msg = "로그인 성공";
 
             hp = memberMapper.getHpByUserId(userId).getHp();
@@ -130,10 +136,13 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doLogout(String userId, String pushToken) throws CustomException {
         ApiResponse.Data result = new ApiResponse.Data();
         String msg;
-
+        AuthServerDTO info = new AuthServerDTO();
         try {
 
-            if(memberMapper.updateLoginoutStatus(userId) <= 0) {
+            info.setUserId(userId);
+            info.setLoginoutStatus("N");
+
+            if(memberMapper.updateLoginoutStatus(info) <= 0) {
                 msg = "회원 로그아웃 실패.";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);

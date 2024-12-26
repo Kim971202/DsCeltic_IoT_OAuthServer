@@ -67,7 +67,7 @@ public interface MemberMapper {
     public AuthServerDTO getUserLoginoutStatus(String userId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
-    public int updateLoginoutStatus(String userId);
+    public int updateLoginoutStatus(AuthServerDTO info);
     public int updateSafeAlarm(AuthServerDTO info);
     public int updateNewHouseHolder(AuthServerDTO info);
     public int updateDeviceRegist(AuthServerDTO info);
