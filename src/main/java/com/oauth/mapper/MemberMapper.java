@@ -63,6 +63,7 @@ public interface MemberMapper {
     public AuthServerDTO getFirstDeviceUser(String deviceId);
     public AuthServerDTO getFwhInfo(String deviceId);
     public AuthServerDTO getFanLifeStatus(String deviceId);
+    public AuthServerDTO checkDuplicateGroupName(AuthServerDTO info);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
     public int updateSafeAlarm(AuthServerDTO info);

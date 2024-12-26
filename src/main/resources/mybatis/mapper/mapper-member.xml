@@ -1141,6 +1141,17 @@
             idx = #{idx}
     </update>
 
+    <select id="checkDuplicateGroupName" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS groupNameCount
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            GRP_ID = #{userId}
+        AND
+            GRP_NM = #{groupName}
+    </select>
+
     <update id="updateDeviceRegist" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBT_OPR_DEVICE_REGIST

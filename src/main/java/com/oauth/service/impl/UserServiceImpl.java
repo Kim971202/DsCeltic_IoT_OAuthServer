@@ -429,8 +429,17 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doChangeGroupName(AuthServerDTO params) throws CustomException {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
+        AuthServerDTO duplicateResult;
 
         try {
+
+            // TODO: groupName 중복 여부 확인
+            duplicateResult = memberMapper.checkDuplicateGroupName(params);
+            if(duplicateResult.getGroupNameCount().equals("1")){
+                msg = "그룹 명칭 중복";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1019, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
 
             if(deviceMapper.updateGroupName(params) <= 0) {
                 msg = "사용자 그룹 명칭 변경 실패.";
@@ -451,6 +460,45 @@ public class UserServiceImpl implements UserService {
             log.error("", e);
             return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
 
+        }
+    }
+
+    /** 사용자 그룹 생성 */
+    @Override
+    public ResponseEntity<?> doCreateNewGroup(AuthServerDTO params) throws CustomException {
+        ApiResponse.Data data = new ApiResponse.Data();
+        String msg;
+        String userId = params.getUserId();
+        AuthServerDTO duplicateResult;
+        try {
+            // TODO: groupName 중복 여부 확인
+            duplicateResult = memberMapper.checkDuplicateGroupName(params);
+            if(duplicateResult.getGroupNameCount().equals("1")){
+                msg = "그룹 명칭 중복";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1019, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
+            params.setGroupId(userId);
+
+            if(memberMapper.insertInviteGroup(params) <= 0) {
+                msg = "사용자 그룹 명칭 변경 실패.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+            if(memberMapper.updateInviteGroup(params) <= 0) {
+                msg = "사용자 그룹 명칭 변경 실패.";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
+
+            msg = "사용자 그룹 생성 성공";
+            
+            data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("error", e);
+            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
         }
     }
 

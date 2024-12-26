@@ -213,11 +213,29 @@ public class UserController {
         log.info("[사용자정보 조회]");
         common.logParams(params);
 
-        if(Validator.isNullOrEmpty(params.getGroupIdx()) || Validator.isNullOrEmpty(params.getGroupName())){
+        if(Validator.isNullOrEmpty(params.getGroupIdx()) ||
+                Validator.isNullOrEmpty(params.getGroupName()) ||
+                Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException("404", "사용자정보 조회 입력 값 오류");
         }
 
         return userService.doChangeGroupName(params);
+    }
+
+    /** 사용자 그룹 생성 */
+    @PostMapping(value = "/createNewGroup")
+    @ResponseBody
+    public ResponseEntity<?> doCreateNewGroup(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException{
+
+        log.info("[사용자 그룹 생성]");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getGroupName())){
+            throw new CustomException("404", "사용자 그룹 생성 입력 값 오류");
+        }
+
+        return userService.doCreateNewGroup(params);
     }
 
     /** 회원 별칭(이름) 및 전화번호 변경 */

@@ -185,6 +185,8 @@ public class AuthServerDTO implements Serializable {
 
     private List<String> deviceIdList;
 
+    private String groupNameCount;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
