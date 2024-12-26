@@ -429,14 +429,16 @@ public class Common {
         // 위 값은 쿼리에서 가져오는 값으므로 선언 X
         AuthServerDTO params = deviceMapper.getGroupNameAndDeviceNickByDeviceId(deviceId);
 
-        params.setCodeType(codeType);
-        params.setCommandId(commandId);
-        params.setControlCode(controlCode);
-        params.setControlCodeName(controlName);
-        params.setCommandFlow(commandFlow);
-        params.setDeviceId(deviceId);
-        params.setUserId(userId);
-        if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+        if(!codeType.equals("PUSH_ONLY")){
+            params.setCodeType(codeType);
+            params.setCommandId(commandId);
+            params.setControlCode(controlCode);
+            params.setControlCodeName(controlName);
+            params.setCommandFlow(commandFlow);
+            params.setDeviceId(deviceId);
+            params.setUserId(userId);
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+        }
 
         params.setPushTitle(pushTitle);
         params.setPushContent(pushContent);

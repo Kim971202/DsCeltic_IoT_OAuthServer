@@ -77,7 +77,22 @@ public class ScheduledSafeAlarm {
                 if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
                     log.info("PUSH 메세지 전송 오류");
                 }
+                common.insertHistory(
+                        "PUSH_ONLY",
+                        "commandId",
+                        "controlCode",
+                        "controlName",
+                        "commandFlow",
+                        user.getDeviceId(),
+                        user.getUserId(),
+                        "saFe",
+                        "SAFE ALARM PUSH",
+                        "01"
+                        );
             }
+
+
+
         } else {
             log.info("userInfo is NULL");
         }
