@@ -1735,8 +1735,6 @@ public class DeviceServiceImpl implements DeviceService {
 
         try {
 
-
-
         resultDto = deviceMapper.getDeviceInfoSearch(params);
 
         if(resultDto == null){

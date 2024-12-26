@@ -653,16 +653,17 @@
         FROM
             TBR_OPR_SAFE_ALARM
         WHERE
-            SAFE_ALARM_STATUS = 'Y'
-        AND
-            HWST_STATUS = 'of'
-        AND
-            (
-                REC_HWST_RUN_TIME IS NULL OR
-                SAFE_ALARM_REG_TIME +
-                INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY +
-                INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR > REC_HWST_RUN_TIME
-            )
+            (SAFE_ALARM_STATUS = 'Y' OR SAFE_ALARM_STATUS IS NULL)
+        AND (HWST_STATUS = 'of' OR HWST_STATUS IS NULL)
+        AND (
+            REC_HWST_RUN_TIME IS NULL
+            OR SAFE_ALARM_REG_TIME + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
+            + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR > REC_HWST_RUN_TIME
+        )
+        AND (
+            SAFE_ALARM_REG_TIME + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
+            + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR &lt; NOW()
+        );
     </select>
 
     <select id="getUserIdsByDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
