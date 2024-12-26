@@ -61,7 +61,7 @@ public class ScheduledSafeAlarm {
                     user.setUserNickname(userNicknameMap.get(userId));  // userNickname 설정
                 }
             }
-            System.out.println(userInfo);
+            log.info("userInfo: " + userInfo);
 
             // 이후 userInfo에 pushToken이 포함된 데이터를 기반으로 작업 수행
             for (AuthServerDTO user : userInfo) {
@@ -72,6 +72,10 @@ public class ScheduledSafeAlarm {
                 conMap.put("title", "saFe");
                 conMap.put("deviceNick", common.returnDeviceNickname(user.getDeviceId()));
                 conMap.put("userNickname", common.stringToHex(user.getUserNickname()));
+                conMap.put("modelCode", common.getModelCodeFromDeviceId(user.getDeviceId()).replaceAll(" ", ""));
+                conMap.put("pushYn", "Y");
+
+
                 String jsonString = objectMapper.writeValueAsString(conMap);
 
                 if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {

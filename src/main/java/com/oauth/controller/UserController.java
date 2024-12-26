@@ -269,7 +269,6 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getGroupIdxList())){
             throw new CustomException("404", "사용자(세대원) 정보 조회 값 오류");
         }
-
         return userService.doViewHouseholdMemebers(params);
     }
 
