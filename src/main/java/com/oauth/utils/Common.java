@@ -439,11 +439,11 @@ public class Common {
             params.setUserId(userId);
             if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
         }
-
         params.setPushTitle(pushTitle);
         params.setPushContent(pushContent);
         params.setPushType("01");
         params.setDeviceId(deviceId);
+        params.setUserId(userId);
         params.setDeviceType(deviceType);
 
         System.out.println(params);
