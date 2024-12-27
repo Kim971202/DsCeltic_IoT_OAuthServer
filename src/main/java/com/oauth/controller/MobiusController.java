@@ -333,6 +333,7 @@ public class MobiusController {
                 dr910WDevice.setVfLs(common.readCon(jsonBody, "vfLs"));
                 dr910WDevice.setVtSp(common.readCon(jsonBody, "vtSp"));
                 dr910WDevice.setInAq(common.readCon(jsonBody, "inAq"));
+                dr910WDevice.setOtHm(common.readCon(jsonBody, "otHm"));
             }
 
             mobiusService.rtstHandler(dr910WDevice);

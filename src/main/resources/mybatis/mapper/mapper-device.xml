@@ -478,6 +478,7 @@
             <if test="ven7Wk != null">7WK,</if>
             <if test="vtSp != null">VTSP,</if>
             <if test="vfLs != null">VFLS,</if>
+            <if test="otHm != null">OTHM,</if>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -509,6 +510,7 @@
             <if test="ven7Wk != null">#{ven7Wk},</if>
             <if test="vtSp != null">#{vtSp},</if>
             <if test="vfLs != null">#{vfLs},</if>
+            <if test="otHm != null">#{OTHM},</if>
         </trim>
     </insert>
 
@@ -568,6 +570,7 @@
                     VFLS = #{vfLs},
                     <if test="rsSl != null">RSSL = #{rsSl},</if>
                     <if test="rsPw != null">RSPW = #{rsPw},</if>
+                    <if test="otHm != null">#{OTHM},</if>
                     INAQ = #{inAq},
                     MFDT = now()
         WHERE
