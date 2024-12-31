@@ -176,6 +176,7 @@ public class AuthServerDTO implements Serializable {
     private String waitMinute;                   // 대기 분
     private String newControlAuthKey;            // 신규 RKey
     private String deviceCount;
+    private String userCount;
     private String inviteCount;
 
     private String deviceInfo;                   // Y/N 기기 존재 여부

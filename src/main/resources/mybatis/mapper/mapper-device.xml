@@ -931,6 +931,15 @@
             DEVC_ID = #{deviceId}
     </select>
 
+    <select id="checkDeviceUserId" parameterType="String" resultMap="device">
+        SELECT
+            COUNT(*) AS deviceCount
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
     <select id="getCheckedDeviceExist" parameterType="String" resultMap="device">
         SELECT
             a.DEVC_ID AS deviceId,

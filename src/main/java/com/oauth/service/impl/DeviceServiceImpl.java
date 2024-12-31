@@ -220,8 +220,10 @@ public class DeviceServiceImpl implements DeviceService {
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String registYn = params.getRegistYn();
+        String modelCode = params.getModelCode();
 
         AuthServerDTO checkDeviceExist;
+        AuthServerDTO checkDeviceUser;
         AuthServerDTO groupLeaderId;
         AuthServerDTO groupLeaderIdByGroupIdx;
 
@@ -232,7 +234,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(registYn.equals("N")){
 
                 if(params.getTmpRegistKey() == null || params.getDeviceId() == null) {
-                    msg = "TEMP-KEY-MISSING";
+                    msg = "TEMP-KEY-MISGSING";
                     result.setResult(ApiResponse.ResponseType.HTTP_400, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
@@ -289,8 +291,26 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setModelCode(params.getModelCode().replaceAll(" ", ""));
                 params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
 
-                // TODO: 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
+                // TODO: 해당 기기가 기존에 등록된 기기 인지 확인
                 checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
+                if(!checkDeviceExist.getDeviceCount().equals("0")){
+                    // TODO: 해당 기기를 등록하는 사람인 요청자와 동일한 ID인지 확인 (동일할 경우 24시간, 빠른온수 예약 초기화 X)
+                    checkDeviceUser = deviceMapper.checkDeviceUserId(userId);
+                    if(!checkDeviceUser.getUserCount().equals("0")){
+                        // TODO: 신규 사용자의 경우 24시간 예약과 빠른온수 예약을 초기화 한다
+                        // [{"wk":"","hs":[]}] - 24시간
+                        // [{"tf":"","ws":[""],"hr":"","mn":"","i":""}] - 빠른온수
+
+
+                    }
+                    // TODO: 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
+                    List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(deviceId);
+                    for(AuthServerDTO authServerDTO : authServerDTOList){
+                        memberMapper.deleteControllerMapping(authServerDTO);
+                    }
+                }
+
+
                 if(!checkDeviceExist.getDeviceCount().equals("0")){
                     List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(deviceId);
                     for(AuthServerDTO authServerDTO : authServerDTOList){
