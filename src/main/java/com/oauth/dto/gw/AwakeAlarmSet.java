@@ -17,6 +17,7 @@ public class AwakeAlarmSet {
     private String controlAuthKey;
 
     private List<HashMap<String, Object>> awakeList;
+    private String awakeListInit;
 
     private String functionId;
     private String uuId;

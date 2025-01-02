@@ -328,6 +328,11 @@ public class Common {
         return hexToString(modelCode[5]);
     }
 
+    public String getHexSerialNumberFromDeviceId(String deviceId){
+        String[] modelCode = deviceId.split("\\.");
+        return modelCode[6];
+    }
+
     /** 기기별칭 쿼리 함수 */
     public String returnDeviceNickname(String deviceId){ return stringToHex(memberMapper.getDeviceNicknameByDeviceId(deviceId).getDeviceNickname()); }
 

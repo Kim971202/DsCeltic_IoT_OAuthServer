@@ -14,6 +14,7 @@ public class SetWeek {
     private String deviceId;
     private String controlAuthKey;
     private List<HashMap<String, Object>> weekList;
+    private String weekListInit;
     private String onOffFlag;
 
     private String functionId;

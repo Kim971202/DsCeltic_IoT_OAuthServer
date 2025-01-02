@@ -221,6 +221,10 @@ public class DeviceServiceImpl implements DeviceService {
         String deviceId = params.getDeviceId();
         String registYn = params.getRegistYn();
         String modelCode = params.getModelCode();
+        String controlAuthKey = params.getControlAuthKey();
+        String redisValue;
+
+        MobiusResponse response;
 
         AuthServerDTO checkDeviceExist;
         AuthServerDTO checkDeviceUser;
@@ -297,10 +301,37 @@ public class DeviceServiceImpl implements DeviceService {
                     // TODO: 해당 기기를 등록하는 사람인 요청자와 동일한 ID인지 확인 (동일할 경우 24시간, 빠른온수 예약 초기화 X)
                     checkDeviceUser = deviceMapper.checkDeviceUserId(userId);
                     if(!checkDeviceUser.getUserCount().equals("0")){
-                        // TODO: 신규 사용자의 경우 24시간 예약과 빠른온수 예약을 초기화 한다
+                        // TODO: 신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다
                         // [{"wk":"","hs":[]}] - 24시간
                         // [{"tf":"","ws":[""],"hr":"","mn":"","i":""}] - 빠른온수
 
+                        SetWeek setWeek = new SetWeek();
+                        setWeek.setUserId(userId);
+                        setWeek.setDeviceId(deviceId);
+                        setWeek.setControlAuthKey(controlAuthKey);
+                        setWeek.setFunctionId("7wk");
+                        setWeek.setUuId(common.getTransactionId());
+                        setWeek.setWeekListInit("[{\"wk\":\"\",\"hs\":[]}]");
+
+                        redisValue = params.getUserId() + "," + setWeek.getFunctionId();
+                        redisCommand.setValues(setWeek.getUuId(), redisValue);
+
+                        response = mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId, JSON.toJson(setWeek));
+
+                        if(!response.getResponseCode().equals("201")) log.info("setWeek 중계서버 오류");
+
+                        AwakeAlarmSet awakeAlarmSet = new AwakeAlarmSet();
+                        awakeAlarmSet.setUserId(userId);
+                        awakeAlarmSet.setAccessToken(common.getTransactionId());
+                        awakeAlarmSet.setDeviceId(deviceId);
+                        awakeAlarmSet.setControlAuthKey(controlAuthKey);
+                        awakeAlarmSet.setFunctionId("fwh");
+                        awakeAlarmSet.setUuId(common.getTransactionId());
+                        awakeAlarmSet.setAwakeListInit("[{\"tf\":\"\",\"ws\":[\"\"],\"hr\":\"\",\"mn\":\"\",\"i\":\"\"}]");
+
+                        response = mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId, JSON.toJson(awakeAlarmSet));
+
+                        if(!response.getResponseCode().equals("201")) log.info("awakeAlarmSet 중계서버 오류");
 
                     }
                     // TODO: 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
@@ -433,6 +464,8 @@ public class DeviceServiceImpl implements DeviceService {
         } catch (CustomException e){
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
