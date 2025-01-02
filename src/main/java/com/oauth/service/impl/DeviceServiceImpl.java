@@ -330,23 +330,15 @@ public class DeviceServiceImpl implements DeviceService {
                         awakeAlarmSet.setFunctionId("fwh");
                         awakeAlarmSet.setUuId(common.getTransactionId());
 
-                        Gson gson = new Gson();
-                        // 데이터 객체 생성
-                        Map<String, Object> item = new HashMap<>();
-                        item.put("tf", "");
-                        item.put("ws", Collections.singletonList(""));
-                        item.put("hr", "");
-                        item.put("mn", "");
-                        item.put("i", "");
-
-                        Map<String, Object> fwh = new HashMap<>();
-                        fwh.put("fwh", Collections.singletonList(item));
-
-                        // JSON 문자열로 변환
-                        String json = gson.toJson(Collections.singletonList(fwh));
-
-                        // 메서드 호출
-                        awakeAlarmSet.setAwakeListInit(json);
+                        List<HashMap<String, Object>> awakeList = new ArrayList<HashMap<String, Object>>();
+                        HashMap<String, Object> map = new LinkedHashMap<>();
+                        map.put("tf", "");
+                        map.put("ws", Collections.singletonList(""));
+                        map.put("hr", "");
+                        map.put("mn", "");
+                        map.put("i", "");
+                        awakeList.add(map);
+                        awakeAlarmSet.setAwakeList(awakeList);
 
                         response = mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId, JSON.toJson(awakeAlarmSet));
 
