@@ -208,9 +208,12 @@ public class UserServiceImpl implements UserService {
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
+        } catch (CustomException e){
+            log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             log.error("", e);
-            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
+            throw new RuntimeException(e);
         }
     }
 
