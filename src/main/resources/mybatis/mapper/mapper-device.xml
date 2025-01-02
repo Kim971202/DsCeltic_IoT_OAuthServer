@@ -582,8 +582,8 @@
             TBR_OPR_ACTIVE_DEVICE_STATUS
         SET
             <if test="serialNumber != null">SERIAL_NO = #{serialNumber},</if>
-            <if test="fcLcActv != null">FTMD = #{fcLcActv},</if>
-            <if test="ftMdActv != null">FCLC = #{ftMdActv},</if>
+            <if test="ftMdActv != null">FTMD = #{ftMdActv},</if>
+            <if test="fcLcActv != null">FCLC = #{fcLcActv},</if>
             <if test="ecOpActv != null">ECOP = #{ecOpActv},</if>
             <if test="past != null">PAST = #{past},</if>
             <if test="inDr != null">INDR = #{inDr},</if>

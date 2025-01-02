@@ -97,8 +97,6 @@ public class ScheduledSafeAlarm {
                         );
             }
 
-
-
         } else {
             log.info("userInfo is NULL");
         }

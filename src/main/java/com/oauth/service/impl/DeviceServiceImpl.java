@@ -352,7 +352,6 @@ public class DeviceServiceImpl implements DeviceService {
                     }
                 }
 
-
                 if(!checkDeviceExist.getDeviceCount().equals("0")){
                     List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(deviceId);
                     for(AuthServerDTO authServerDTO : authServerDTOList){
