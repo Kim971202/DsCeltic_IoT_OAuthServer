@@ -299,7 +299,7 @@ public class DeviceServiceImpl implements DeviceService {
                 checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
                 if(!checkDeviceExist.getDeviceCount().equals("0")){
                     // TODO: 해당 기기를 등록하는 사람인 요청자와 동일한 ID인지 확인 (동일할 경우 24시간, 빠른온수 예약 초기화 X)
-                    checkDeviceUser = deviceMapper.checkDeviceUserId(userId);
+                    checkDeviceUser = deviceMapper.checkDeviceUserId(params);
                     if(checkDeviceUser.getDeviceCount().equals("0")){
                         log.info("신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다");
                         // TODO: 신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다

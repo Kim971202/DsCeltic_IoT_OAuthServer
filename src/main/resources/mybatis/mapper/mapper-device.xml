@@ -938,6 +938,8 @@
             TBT_OPR_DEVICE_REGIST
         WHERE
             USER_ID = #{userId}
+        AND
+            DEVC_ID = #{deviceId}
     </select>
 
     <select id="getCheckedDeviceExist" parameterType="String" resultMap="device">

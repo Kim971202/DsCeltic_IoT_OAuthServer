@@ -28,7 +28,7 @@ public interface DeviceMapper {
     public List<AuthServerDTO> getCheckedDeviceExist(String deviceId);
     public AuthServerDTO getDeviceNicknameByDeviceId(String deviceId);
     public AuthServerDTO checkDeviceExist(String deviceId);
-    public AuthServerDTO checkDeviceUserId(String userId);
+    public AuthServerDTO checkDeviceUserId(AuthServerDTO info);
     public AuthServerDTO getGroupNameAndDeviceNickByDeviceId(String deviceId);
     public AuthServerDTO getSingleSerialNumberBydeviceId(String deviceId);
     public AuthServerDTO getPushTokenByUserId(String userId);
