@@ -1395,4 +1395,15 @@
             );
     </select>
 
+    <update id="updateSafePushAlarmTime" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_SAFE_ALARM
+        SET
+            SAFE_ALARM_REG_TIME = now()
+        WHERE
+            USER_ID = #{userId}
+        AND
+            DEVC_ID = #{deviceId}
+    </update>
+
 </mapper>

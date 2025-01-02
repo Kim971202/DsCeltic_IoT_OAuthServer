@@ -80,6 +80,9 @@ public class ScheduledSafeAlarm {
 
                     if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
                         log.info("PUSH 메세지 전송 오류");
+
+                    // TODO: 해당 사용자에게 PUSH 전송 이후 SAFE_ALARM_REG_TIME을 now()값으로 수정
+                    memberMapper.updateSafePushAlarmTime(user);
                 }
 
 
