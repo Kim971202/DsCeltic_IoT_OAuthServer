@@ -2,6 +2,7 @@ package com.oauth.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.*;
@@ -328,7 +329,24 @@ public class DeviceServiceImpl implements DeviceService {
                         awakeAlarmSet.setControlAuthKey(controlAuthKey);
                         awakeAlarmSet.setFunctionId("fwh");
                         awakeAlarmSet.setUuId(common.getTransactionId());
-                        awakeAlarmSet.setAwakeListInit("[{\"tf\":\"\",\"ws\":[\"\"],\"hr\":\"\",\"mn\":\"\",\"i\":\"\"}]");
+
+                        Gson gson = new Gson();
+                        // 데이터 객체 생성
+                        Map<String, Object> item = new HashMap<>();
+                        item.put("tf", "");
+                        item.put("ws", Collections.singletonList(""));
+                        item.put("hr", "");
+                        item.put("mn", "");
+                        item.put("i", "");
+
+                        Map<String, Object> fwh = new HashMap<>();
+                        fwh.put("fwh", Collections.singletonList(item));
+
+                        // JSON 문자열로 변환
+                        String json = gson.toJson(Collections.singletonList(fwh));
+
+                        // 메서드 호출
+                        awakeAlarmSet.setAwakeListInit(json);
 
                         response = mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId, JSON.toJson(awakeAlarmSet));
 
