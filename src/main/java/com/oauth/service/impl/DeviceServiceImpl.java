@@ -344,6 +344,11 @@ public class DeviceServiceImpl implements DeviceService {
 
                         if(!response.getResponseCode().equals("201")) log.info("awakeAlarmSet 중계서버 오류");
 
+                        DeviceStatusInfo.Device device = new DeviceStatusInfo.Device();
+                        device.setDeviceId(deviceId);
+                        device.setWk7(setWeek.getWeekListInit());
+                        device.setFwh(JSON.toJson(awakeList));
+                        deviceMapper.updateDeviceStatusFromApplication(device);
                     }
                     // TODO: 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
                     List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(deviceId);
@@ -1753,6 +1758,7 @@ public class DeviceServiceImpl implements DeviceService {
                         data.put("hwTp", statusInfo.getHwTp());
                         data.put("ftMd", statusInfo.getFtMd());
                         data.put("chTp", statusInfo.getChTp());
+                        data.put("bCdt", statusInfo.getBCdt());
                         data.put("mfDt", statusInfo.getMfDt());
                         data.put("hwSt", statusInfo.getHwSt());
                         data.put("fcLc", statusInfo.getFcLc());
