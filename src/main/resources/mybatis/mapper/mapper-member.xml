@@ -4,6 +4,26 @@
 
     <resultMap id="member" type="com.oauth.dto.AuthServerDTO"> </resultMap>
 
+    <select id="getPhoneIdInfo" parameterType="String" resultMap="member">
+        SELECT
+            HP_ID AS phoneId,
+            USER_ID AS userId,
+            PUSH_TOKEN AS pushToken
+        FROM
+            TBR_OPR_ACCOUNT
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
+        <update id="updatePhoneId" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_ACCOUNT
+        SET
+            HP_ID = #{phoneId}
+        WHERE
+            USER_ID = #{userId}
+    </update>
+
     <select id="getUserByUserId" parameterType="String" resultMap="member">
         SELECT
             HP AS hp,
@@ -390,6 +410,8 @@
             NOTI_END_DATE AS noticeEndDate
         FROM
             TBR_OPR_USER_NOTICE
+        WHERE
+            DATE_FORMAT(NOTI_START_DATE, '%Y%m%d') BETWEEN #{startDatetime} AND #{endDatetime}
     </select>
 
     <update id="updateDeviceLocationNicknameDeviceDetail" parameterType="com.oauth.dto.AuthServerDTO">

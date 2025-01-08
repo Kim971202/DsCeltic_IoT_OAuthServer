@@ -6,9 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.oauth.dto.AuthServerDTO;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface MemberMapper {
@@ -37,6 +35,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getUserIdFromDeviceGroup(String deviceId);
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
     public List<AuthServerDTO> getDeviceIdFromRegist(String userId);
+    public AuthServerDTO getPhoneIdInfo(String userId);
     public AuthServerDTO checkSafeAlarmSet(AuthServerDTO params);
     public AuthServerDTO checkLastIndex(AuthServerDTO params);
     public AuthServerDTO getInviteCount(AuthServerDTO param);
@@ -67,6 +66,7 @@ public interface MemberMapper {
     public AuthServerDTO getUserLoginoutStatus(String userId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
+    public int updatePhoneId(AuthServerDTO info);
     public int updateSafePushAlarmTime(AuthServerDTO info);
     public int updateLoginoutStatus(AuthServerDTO info);
     public int updateSafeAlarm(AuthServerDTO info);

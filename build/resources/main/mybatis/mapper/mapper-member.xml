@@ -4,6 +4,26 @@
 
     <resultMap id="member" type="com.oauth.dto.AuthServerDTO"> </resultMap>
 
+    <select id="getPhoneIdInfo" parameterType="String" resultMap="member">
+        SELECT
+            HP_ID AS phoneId,
+            USER_ID AS userId,
+            PUSH_TOKEN AS pushToken
+        FROM
+            TBR_OPR_ACCOUNT
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
+        <update id="updatePhoneId" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_ACCOUNT
+        SET
+            HP_ID = #{phoneId}
+        WHERE
+            USER_ID = #{userId}
+    </update>
+
     <select id="getUserByUserId" parameterType="String" resultMap="member">
         SELECT
             HP AS hp,
@@ -112,11 +132,19 @@
         WHERE USER_ID = #{userId};
     </select>
 
-    <update id="updateUserNicknameAndHp" parameterType="com.oauth.dto.AuthServerDTO">
+    <update id="updateHp" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBR_OPR_USER
         SET
-            HP = #{newHp},
+            HP = #{newHp}
+        WHERE
+            USER_ID = #{userId}
+    </update>
+
+    <update id="updateUserNickname" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_USER
+        SET
             USER_NICK = #{userNickname}
         WHERE
             USER_ID = #{userId}
@@ -128,6 +156,17 @@
         FROM
             TBR_OPR_USER
         WHERE HP = #{newHp}
+    </select>
+
+    <select id="checkDuplicateHpByUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(HP) AS hpCount
+        FROM
+            TBR_OPR_USER
+        WHERE
+            USER_ID = #{userId}
+        AND
+            HP = #{newHp}
     </select>
 
     <update id="updateGrpNick" parameterType="com.oauth.dto.AuthServerDTO">
@@ -238,16 +277,37 @@
         WHERE INVITATION_IDX = #{invitationIdx}
     </update>
 
-    <update id="updatePushCodeStatus" parameterType="com.oauth.dto.AuthServerDTO">
+    <update id="updatePushCodeStatusSingle" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBR_OPR_USER_DEVICE_PUSH
         <set>
             <if test="fPushYn != null">PUSH_YN_01 = #{fPushYn},</if>
             <if test="sPushYn != null">PUSH_YN_02 = #{sPushYn},</if>
-            <if test="tPushYn != null">PUSH_YN_03 = #{tPushYn},</if>
         </set>
         WHERE
             USER_ID = #{userId} AND DEVC_ID = #{deviceId}
+    </update>
+
+    <update id="updatePushCodeStatus" parameterType="java.util.List">
+        UPDATE TBR_OPR_USER_DEVICE_PUSH
+        SET
+        PUSH_YN_01 = CASE
+        <foreach collection="list" item="item" index="index">
+            WHEN USER_ID = #{item.userId} AND DEVC_ID = #{item.deviceId} THEN #{item.fPushYn}
+        </foreach>
+        ELSE PUSH_YN_01
+        END,
+        PUSH_YN_02 = CASE
+        <foreach collection="list" item="item" index="index">
+            WHEN USER_ID = #{item.userId} AND DEVC_ID = #{item.deviceId} THEN #{item.sPushYn}
+        </foreach>
+        ELSE PUSH_YN_02
+        END
+        WHERE
+        (USER_ID, DEVC_ID) IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            (#{item.userId}, #{item.deviceId})
+        </foreach>
     </update>
 
     <select id="getPushCodeStatus" parameterType="map" resultMap="member">
@@ -300,24 +360,45 @@
             PUSH_IDX AS pushIdx,
             PUSH_TITLE AS pushTitle,
             PUSH_CONTENT AS pushContent,
+            PUSH_TYPE AS pushType,
+            DEVC_NICK AS deviceNickname,
+            GRP_NM AS groupName,
+            GRP_IDX AS groupIdx,
             (
             CASE
                  WHEN DEVC_TYPE = '01' THEN '보일러'
                  WHEN DEVC_TYPE = '05' THEN '각방'
                  WHEN DEVC_TYPE = '07' THEN '환기'
+                 WHEN DEVC_TYPE = 'invite' THEN 'invite'
                  ELSE '-'
             END
-            ) AS pushType,
+            ) AS deviceType,
             DATE_FORMAT(PUSH_DATETIME, '%Y-%m-%d %H:%i:%s') AS pushDateTime
         FROM
             TBR_OPR_USER_DEVICE_PUSH_INFO
         WHERE
             USER_ID = #{userId}
-        AND
-            PUSH_DATETIME BETWEEN #{startDatetime} AND #{endDatetime}
         <if test="deviceType != 00">
             AND DEVC_TYPE = #{deviceType}
         </if>
+        ORDER BY
+            PUSH_DATETIME DESC
+        LIMIT
+            #{frontRow}, #{secondRow}
+    </select>
+
+    <select id="checkLastIndex" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT COUNT(*) AS lastIndex
+        FROM (
+            SELECT PUSH_TITLE
+            FROM TBR_OPR_USER_DEVICE_PUSH_INFO
+            WHERE USER_ID = #{userId}
+            <if test="deviceType != '00'">
+                AND DEVC_TYPE = #{deviceType}
+            </if>
+            ORDER BY PUSH_DATETIME DESC
+            LIMIT #{frontRow}, #{secondRow}
+        ) AS subquery
     </select>
 
     <select id="getNoticeList" resultMap="member">
@@ -329,6 +410,8 @@
             NOTI_END_DATE AS noticeEndDate
         FROM
             TBR_OPR_USER_NOTICE
+        WHERE
+            DATE_FORMAT(NOTI_START_DATE, '%Y%m%d') BETWEEN #{startDatetime} AND #{endDatetime}
     </select>
 
     <update id="updateDeviceLocationNicknameDeviceDetail" parameterType="com.oauth.dto.AuthServerDTO">
@@ -439,8 +522,8 @@
 
     <select id="getWorkTime" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
-            WORK_TIME AS workTime,
-            DATE_FORMAT(INSERT_DATETIME, '%Y%m%d') AS workDate
+            DATE_FORMAT(INSERT_DATETIME, '%Y%m%d') AS workDate,
+            CAST(SUM(WORK_TIME) AS UNSIGNED) AS workTime
         FROM
             TBR_OPR_DEVICE_WORK_DATETIME
         WHERE
@@ -449,6 +532,10 @@
             USER_ID = #{userId}
         AND
             INSERT_DATETIME BETWEEN #{startDate} AND #{endDate}
+        GROUP BY
+            DATE_FORMAT(INSERT_DATETIME, '%Y%m%d')
+        ORDER BY
+            workDate ASC;
     </select>
 
     <insert id="insertWorkTime" parameterType="java.util.List">
@@ -498,17 +585,23 @@
             PUSH_TYPE,
             PUSH_DATETIME,
             DEVC_ID,
-            DEVC_TYPE
+            DEVC_TYPE,
+            DEVC_NICK,
+            GRP_NM,
+            GRP_IDX
         )
         VALUES
         (
             #{userId},
             #{pushTitle},
             #{pushContent},
-            '01',
+            #{pushType},
             now(),
             #{deviceId},
-            #{deviceType}
+            #{deviceType},
+            #{deviceNickname},
+            #{groupName},
+            #{groupIdx}
         )
     </insert>
 
@@ -530,11 +623,42 @@
         )
     </insert>
 
+    <update id="updateSafeAlarm" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_SAFE_ALARM
+        SET
+            SAFE_ALARM_TIME = #{safeAlarmTime},
+            SAFE_ALARM_STATUS = #{safeAlarmStatus},
+            SAFE_ALARM_REG_TIME = now()
+        WHERE
+            USER_ID = #{userId}
+        AND
+            DEVC_ID = #{deviceId}
+    </update>
+
+    <select id="checkSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS lastIndex
+        FROM (
+            SELECT
+                USER_ID
+            FROM
+                TBR_OPR_SAFE_ALARM
+            WHERE
+                USER_ID = #{userId}
+            AND
+                DEVC_ID = #{deviceId}
+            ORDER BY
+                SAFE_ALARM_REG_TIME DESC
+        ) AS subquery;
+    </select>
+
     <update id="updateSafeAlarmSet" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
         UPDATE
             TBR_OPR_SAFE_ALARM
         SET
-            REC_BCDT_RUN_TIME = #{bCdt}
+            REC_HWST_RUN_TIME = now(),
+            HWST_STATUS = #{hwSt}
         WHERE
             DEVC_ID = #{deviceId}
     </update>
@@ -546,18 +670,22 @@
             SAFE_ALARM_TIME AS safeAlarmTime,
             SAFE_ALARM_STATUS AS safeAlarmStatus,
             NOW() + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
-            + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR AS CALCULATED_TIME
+            + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR AS CALCULATED_TIME,
+            REC_HWST_RUN_TIME AS hwStTime
         FROM
             TBR_OPR_SAFE_ALARM
         WHERE
-            SAFE_ALARM_STATUS = 'Y'
-        AND
-            (
-                REC_BCDT_RUN_TIME IS NULL OR
-                NOW() + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
-                    + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR
-                > REC_BCDT_RUN_TIME
-            )
+            (SAFE_ALARM_STATUS = 'Y' OR SAFE_ALARM_STATUS IS NULL)
+        AND (HWST_STATUS = 'of' OR HWST_STATUS IS NULL)
+        AND (
+            REC_HWST_RUN_TIME IS NULL
+            OR SAFE_ALARM_REG_TIME + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
+            + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR > REC_HWST_RUN_TIME
+        )
+        AND (
+            SAFE_ALARM_REG_TIME + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
+            + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR &lt; NOW()
+        );
     </select>
 
     <select id="getUserIdsByDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
@@ -989,6 +1117,15 @@
             DEVC_ID = #{deviceId}
     </select>
 
+    <select id="getFanLifeStatus" parameterType="String" resultMap="member">
+        SELECT
+            VFLS AS ventFanLifeStatus
+        FROM
+            TBR_OPR_DEVICE_STATUS
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
     <select id="getDeviceNicknameByDeviceId" parameterType="String" resultMap="member">
         SELECT
             DEVC_NICK AS deviceNickname
@@ -1026,6 +1163,17 @@
             idx = #{idx}
     </update>
 
+    <select id="checkDuplicateGroupName" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS groupNameCount
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            GRP_ID = #{userId}
+        AND
+            GRP_NM = #{groupName}
+    </select>
+
     <update id="updateDeviceRegist" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBT_OPR_DEVICE_REGIST
@@ -1035,6 +1183,24 @@
         WHERE
             USER_ID = #{userId};
     </update>
+
+    <update id="updateLoginoutStatus" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_USER
+        SET
+            USER_STATUS_LOG_INOUT = #{loginoutStatus}
+        WHERE
+            USER_ID = #{userId}
+    </update>
+
+    <select id="getUserLoginoutStatus" parameterType="String" resultMap="member">
+        SELECT
+            USER_STATUS_LOG_INOUT AS loginoutStatus
+        FROM
+            TBR_OPR_USER
+        WHERE
+            USER_ID = #{userId}
+    </select>
 
     <update id="updateUserDevice" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
@@ -1138,14 +1304,128 @@
 
     <select id="getPushTokenByUserIds" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
-            PUSH_TOKEN AS pushToken,
-            USER_ID AS userId
+            a.PUSH_TOKEN AS pushToken,
+            a.USER_ID AS userId,
+            b.USER_NICK AS userNickname
         FROM
-            TBR_OPR_ACCOUNT
+            TBR_OPR_ACCOUNT a
+        INNER JOIN
+            TBR_OPR_USER b
+        ON
+            a.USER_ID = b.USER_ID
         WHERE
-            USER_ID IN
+            a.USER_ID IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.userId}
         </foreach>
     </select>
+
+    <delete id="deleteUserInviteGroupByGroupIdx" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            GRP_IDX = #{groupIdx}
+    </delete>
+
+    <select id="getInviteCount" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS inviteCount
+        FROM
+            TBR_OPR_USER_INVITE_STATUS
+        WHERE
+            REQUEST_USER_ID = #{requestUserId}
+        AND
+            RESPONSE_USER_ID = #{responseUserId}
+    </select>
+
+    <select id="getInviteCountFromInviteStatus" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS inviteCount
+        FROM
+            TBR_OPR_USER_INVITE_STATUS
+        WHERE
+            REQUEST_USER_ID = #{requestUserId}
+        AND
+            RESPONSE_USER_ID = #{responseUserId}
+        AND
+            GRP_IDX = #{groupIdx}
+        AND
+            INVITE_ACCEPT_YN = 'D'
+    </select>
+
+    <delete id="deleteInviteStatusByHouseholdMembers" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBR_OPR_USER_INVITE_STATUS
+        WHERE
+            GRP_IDX = #{groupIdx}
+        AND
+            REQUEST_USER_ID = #{userId}
+        AND
+            RESPONSE_USER_ID = #{delUserId}
+    </delete>
+
+    <delete id="deleteInviteStatusByHouseholder" parameterType="com.oauth.dto.AuthServerDTO" >
+        DELETE
+        FROM
+            TBR_OPR_USER_INVITE_STATUS
+        WHERE
+            GRP_IDX = #{groupIdx}
+        AND
+            REQUEST_USER_ID = #{userId}
+    </delete>
+
+    <delete id="deleteInviteStatusByGroupIdx" parameterType="String" >
+        DELETE
+        FROM
+            TBR_OPR_USER_INVITE_STATUS
+        WHERE
+            GRP_IDX = #{groupIdx}
+    </delete>
+
+    <select id="getInviteCountByReqeustResponseUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS inviteCount
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            GRP_ID = #{requestUserId}
+        AND
+            USER_ID = #{responseUserId}
+        AND
+            GRP_IDX = #{groupIdx}
+    </select>
+
+    <select id="getGroupInfoByDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            GRP_IDX AS groupIdx,
+            GRP_NM AS groupName,
+            DEVC_NICK AS deviceNickname
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            DEVC_ID IN
+            <foreach collection="list" item="item" open="(" separator="," close=")">
+                #{item.deviceId}
+            </foreach>
+        ORDER BY
+            FIELD(DEVC_ID,
+            <foreach collection="list" item="item" separator=",">
+                #{item.deviceId}
+            </foreach>
+            );
+    </select>
+
+    <update id="updateSafePushAlarmTime" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_SAFE_ALARM
+        SET
+            SAFE_ALARM_REG_TIME = now()
+        WHERE
+            USER_ID = #{userId}
+        AND
+            DEVC_ID = #{deviceId}
+    </update>
+
 </mapper>
