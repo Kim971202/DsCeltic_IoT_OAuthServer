@@ -74,10 +74,11 @@ public class MobiusController {
         String functionId = common.readCon(jsonBody, "functionId");
         String redisValue = "false";
 
-        if(functionId == null) return "FUNCTION ID NULL";
+        if(functionId == null || functionId.equals("mfAr")) return "FUNCTION NO CHECK";
 
         if(!functionId.equals("rtSt") && !functionId.equals("mfSt") && !functionId.equals("opIf")) redisValue = redisCommand.getValues(uuId);
         log.info("uuId: " + uuId);
+
 
         log.info("functionId: " + functionId);
         log.info("redisValue: " + redisValue);
@@ -117,80 +118,32 @@ public class MobiusController {
             errorInfo.setErrorVersion(errorVersion);
             errorInfo.setErrorDateTime(errorDateTime);
             errorInfo.setSerialNumber(serialNumber[2]);
-            pushService.sendPushMessage(jsonBody, errorCode, errorMessage, common.hexToString(modelCode[5]), errorVersion);
+            if(!errorCode.equals("00")) pushService.sendPushMessage(jsonBody, errorCode, errorMessage, common.hexToString(modelCode[5]), errorVersion);
             if(deviceMapper.insertErrorInfo(errorInfo) <= 0) {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, "DB_ERROR 잠시 후 다시 시도 해주십시오.");
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
-        } else if (functionId.equals("mfSt")) {
-
+        } else if (functionId.equals("vfLs")){
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
-            deviceInfo.setDeviceId(common.readCon(jsonBody, "deviceId"));
+            deviceInfo.setDeviceId(deviceId);
 
-            deviceInfo.setFtMd(common.readCon(jsonBody, "ftMd"));
-            deviceInfo.setFcLc(common.readCon(jsonBody, "fcLc"));
-
-            deviceInfo.setPast(common.readCon(jsonBody, "past"));
-            deviceInfo.setInDr(common.readCon(jsonBody, "inDr"));
-            deviceInfo.setInCl(common.readCon(jsonBody, "inCl"));
-            deviceInfo.setEcSt(common.readCon(jsonBody, "ecSt"));
-
-            if(common.readCon(jsonBody, "mfCd").equals("acTv")){
-                deviceInfo.setSerialNumber(common.readCon(jsonBody, "srNo"));
-                mobiusService.actvHandler(deviceInfo);
-                return "OK";
-            }
-
-            deviceInfo.setMfcd(common.readCon(jsonBody, "mfcd"));
-            deviceInfo.setPowr(common.readCon(jsonBody, "powr"));
-            deviceInfo.setOpMd(common.readCon(jsonBody, "opMd"));
-            deviceInfo.setSlCd(common.readCon(jsonBody, "slCd"));
-            deviceInfo.setHtTp(common.readCon(jsonBody, "htTp"));
-            deviceInfo.setWtTp(common.readCon(jsonBody, "wtTp"));
-            deviceInfo.setHwTp(common.readCon(jsonBody, "hwTp"));
-            deviceInfo.setBCdt(common.readCon(jsonBody, "bCdt"));
-            deviceInfo.setChTp(common.readCon(jsonBody, "chTp"));
-            deviceInfo.setCwTp(common.readCon(jsonBody, "cwTp"));
-            deviceInfo.setHwSt(common.readCon(jsonBody, "hwSt"));
-            deviceInfo.setEcOp(common.readCon(jsonBody, "ecOp"));
-            deviceInfo.setBlCf(common.readCon(jsonBody, "blCf"));
-            deviceInfo.setVtSp(common.readCon(jsonBody, "vtSp"));
-
-            if(deviceInfo.getBCdt() != null) memberMapper.updateSafeAlarmSet(deviceInfo);
-
-            if(common.readCon(jsonBody, "rsPw") != null) deviceInfo.setRsPw(common.convertToJsonFormat(common.readCon(jsonBody, "rsPw")));
-
-            if(common.readCon(jsonBody, "7wk") != null) deviceInfo.setWk7(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")));
-
-            if(common.readCon(jsonBody, "12h") != null) deviceInfo.setH12(common.convertToJsonFormat(common.readCon(jsonBody, "12h")));
-
-            if(common.readCon(jsonBody, "24h") != null) deviceInfo.setH24(common.convertToJsonFormat(common.readCon(jsonBody, "24h")));
-
-            deviceInfo.setFwh(common.readCon(jsonBody, "fwh"));
-
-            int rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
-            log.info("rcUpdateResult: " + rcUpdateResult);
+            deviceInfo.setVfLs(common.readCon(jsonBody, "vfLs"));
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
-            List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
+            List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(deviceId);
 
-            AuthServerDTO info = new AuthServerDTO();
-
-            System.out.println("deviceInfo.getBCdt() == null");
-            System.out.println(deviceInfo.getBCdt() == null);
-
+            AuthServerDTO info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
             for (AuthServerDTO id : userIds) {
                 log.info("쿼리한 UserId: " + id.getUserId());
-
-                info.setUserId(id.getUserId());
-                info.setDeviceId(common.readCon(jsonBody, "deviceId"));
-
-                String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
-                String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
-
-                pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"));
+                if(memberMapper.getUserLoginoutStatus(id.getUserId()).getLoginoutStatus().equals("Y")){
+                    info.setUserId(id.getUserId());
+                    info.setDeviceId(deviceId);
+                    info.setDeviceId(deviceId);
+                    String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
+                    String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
+                    pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"), info.getDeviceNickname());
+                }
             }
-
             AuthServerDTO params = new AuthServerDTO();
 
             Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
@@ -199,9 +152,9 @@ public class MobiusController {
             common.setCommandParams(nonNullFields, params);
 
             // 결과 출력
-            System.out.println("CommandId: " + params.getCommandId());
-            System.out.println("ControlCode: " + params.getControlCode());
-            System.out.println("ControlCodeName: " + params.getControlCodeName());
+            log.info("CommandId: " + params.getCommandId());
+            log.info("ControlCode: " + params.getControlCode());
+            log.info("ControlCodeName: " + params.getControlCodeName());
 
             params.setCommandId(params.getCommandId());
             params.setControlCode(params.getControlCode());
@@ -221,13 +174,122 @@ public class MobiusController {
             params.setDeviceType(common.getModelCode(common.getModelCodeFromDeviceId(deviceId).replace(" ", "")));
             if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
+        } else if (functionId.equals("mfSt")) {
+
+            DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
+            deviceInfo.setDeviceId(deviceId);
+
+            deviceInfo.setFtMd(common.readCon(jsonBody, "ftMd"));
+            deviceInfo.setFcLc(common.readCon(jsonBody, "fcLc"));
+            deviceInfo.setEcOp(common.readCon(jsonBody, "ecOp"));
+
+            deviceInfo.setPast(common.readCon(jsonBody, "past"));
+            deviceInfo.setInDr(common.readCon(jsonBody, "inDr"));
+            deviceInfo.setInCl(common.readCon(jsonBody, "inCl"));
+            deviceInfo.setEcSt(common.readCon(jsonBody, "ecSt"));
+
+            if(common.readCon(jsonBody, "mfCd").equals("acTv")){
+                deviceInfo.setFtMdActv(common.readCon(jsonBody, "ftMd"));
+                deviceInfo.setFcLcActv(common.readCon(jsonBody, "fcLc"));
+                deviceInfo.setEcOpActv(common.readCon(jsonBody, "ecOp"));
+                deviceInfo.setSerialNumber(common.readCon(jsonBody, "srNo"));
+                deviceInfo.setFcLc(null);
+                deviceInfo.setFtMd(null);
+                deviceInfo.setEcOp(null);
+                mobiusService.actvHandler(deviceInfo);
+            }
+
+            deviceInfo.setMfcd(common.readCon(jsonBody, "mfcd"));
+            deviceInfo.setPowr(common.readCon(jsonBody, "powr"));
+            deviceInfo.setOpMd(common.readCon(jsonBody, "opMd"));
+            deviceInfo.setSlCd(common.readCon(jsonBody, "slCd"));
+            deviceInfo.setHtTp(common.readCon(jsonBody, "htTp"));
+            deviceInfo.setWtTp(common.readCon(jsonBody, "wtTp"));
+            deviceInfo.setHwTp(common.readCon(jsonBody, "hwTp"));
+            deviceInfo.setBCdt(common.readCon(jsonBody, "bCdt"));
+            deviceInfo.setChTp(common.readCon(jsonBody, "chTp"));
+            deviceInfo.setCwTp(common.readCon(jsonBody, "cwTp"));
+            deviceInfo.setHwSt(common.readCon(jsonBody, "hwSt"));
+            deviceInfo.setBlCf(common.readCon(jsonBody, "blCf"));
+            deviceInfo.setVtSp(common.readCon(jsonBody, "vtSp"));
+
+            if(deviceInfo.getHwSt() != null) memberMapper.updateSafeAlarmSet(deviceInfo);
+
+            if(common.readCon(jsonBody, "rsPw") != null) deviceInfo.setRsPw(common.convertToJsonFormat(common.readCon(jsonBody, "rsPw")));
+
+            if(common.readCon(jsonBody, "7wk") != null){
+                if(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")).equals("[{wk:,\"hs\":[]}]"))
+                    deviceInfo.setWk7("[{\"wk\":\"\",\"hs\":[]}]");
+                else
+                    deviceInfo.setWk7(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")));
+            }
+
+            if(common.readCon(jsonBody, "12h") != null) deviceInfo.setH12(common.convertToJsonFormat(common.readCon(jsonBody, "12h")));
+
+            if(common.readCon(jsonBody, "24h") != null) deviceInfo.setH24(common.convertToJsonFormat(common.readCon(jsonBody, "24h")));
+
+            deviceInfo.setFwh(common.readCon(jsonBody, "fwh"));
+
+            int rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+            log.info("rcUpdateResult: " + rcUpdateResult);
+
+            // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
+            List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(deviceId);
+
+            AuthServerDTO info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
+
+            for (AuthServerDTO id : userIds) {
+                log.info("쿼리한 UserId: " + id.getUserId());
+                if(memberMapper.getUserLoginoutStatus(id.getUserId()).getLoginoutStatus().equals("Y")){
+                    info.setUserId(id.getUserId());
+                    info.setDeviceId(deviceId);
+
+                    String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
+                    String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
+
+                    pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"), info.getDeviceNickname());
+                }
+            }
+
+            AuthServerDTO params = new AuthServerDTO();
+            params.setUserId("RC");
+
+            if(!common.readCon(jsonBody, "mfCd").equals("acTv")){
+                Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
+                log.info("Non-null fields: " + nonNullFields);
+
+                common.setCommandParams(nonNullFields, params);
+
+                // 결과 출력
+                log.info("CommandId: " + params.getCommandId());
+                log.info("ControlCode: " + params.getControlCode());
+                log.info("ControlCodeName: " + params.getControlCodeName());
+
+                params.setCommandId(params.getCommandId());
+                params.setControlCode(params.getControlCode());
+                params.setControlCodeName(params.getControlCodeName());
+
+                params.setCodeType("1");
+                params.setCommandFlow("1");
+                params.setDeviceId(deviceInfo.getDeviceId());
+
+                int insertCommandHistoryResult = memberMapper.insertCommandHistory(params);
+                log.info("insertCommandHistoryResult: " + insertCommandHistoryResult);
+            }
+
+            params.setPushTitle("기기 제어");
+            params.setPushContent(params.getControlCodeName());
+            params.setDeviceId(deviceId);
+            params.setDeviceType(common.getModelCode(common.getModelCodeFromDeviceId(deviceId).replace(" ", "")));
+            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+
         } else if (functionId.equals("rtSt")) {
 
             // 주기상태보고
             DeviceStatusInfo.Device dr910WDevice = new DeviceStatusInfo.Device();
 
             // 공통 필드 설정
-            dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));
+            dr910WDevice.setDeviceId(deviceId);
             dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
             dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
             dr910WDevice.setPowr(common.readCon(jsonBody, "powr")); // 전원 ON/OF
@@ -269,8 +331,10 @@ public class MobiusController {
             } else if (modelType.equals(modelCodeMap.get("ventilation"))) {
                 dr910WDevice.setRsSl(common.convertToJsonString(common.readCon(jsonBody, "rsSl")));
                 dr910WDevice.setRsPw(common.convertToJsonString(common.readCon(jsonBody, "rsPw")));
+                dr910WDevice.setVfLs(common.readCon(jsonBody, "vfLs"));
                 dr910WDevice.setVtSp(common.readCon(jsonBody, "vtSp"));
                 dr910WDevice.setInAq(common.readCon(jsonBody, "inAq"));
+                dr910WDevice.setOtHm(common.readCon(jsonBody, "otHm"));
             }
 
             mobiusService.rtstHandler(dr910WDevice);

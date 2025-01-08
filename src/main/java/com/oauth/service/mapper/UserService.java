@@ -12,6 +12,9 @@ public interface UserService {
     /** 회원 로그인 */
     ResponseEntity<?> doLogin(String userId, String userPassword, String pushToken) throws CustomException;
 
+    /** 회원 로그아웃 */
+    ResponseEntity<?> doLogout(String userId, String pushToken) throws CustomException;
+
     /** 회원가입 */
     ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException, SQLException;
 
@@ -38,6 +41,9 @@ public interface UserService {
 
     /** 사용자 그룹 명칭 변경 */
     ResponseEntity<?> doChangeGroupName(AuthServerDTO params) throws CustomException;
+
+    /** 사용자 그룹 생성 */
+    ResponseEntity<?> doCreateNewGroup(AuthServerDTO params) throws CustomException;
 
     /** 회원 별칭(이름) 및 전화번호 변경 */
     ResponseEntity<?> doUpdateUserNicknameHp(AuthServerDTO params) throws CustomException;
@@ -107,6 +113,9 @@ public interface UserService {
 
     /** 빠른온수 예약 정보 조회 */
     ResponseEntity<?> doGetFastHotWaterInfo(AuthServerDTO params) throws Exception;
+
+    /** 환기 필터 잔여 수명 정보 조회 */
+    ResponseEntity<?> doGetFanLifeStatus(AuthServerDTO params) throws Exception;
 
 
 }

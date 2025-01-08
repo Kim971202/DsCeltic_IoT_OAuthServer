@@ -292,6 +292,7 @@ public class Common {
         commandMap.put("mfAr", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
         commandMap.put("vtSp", new String[]{"VentilationSpeed", "vtSp", "환기 풍량 설정"});
         commandMap.put("rsPw", new String[]{"VentilationOnOffSet", "rsPw", "환기 켜짐 꺼짐 예약"});
+        commandMap.put("vfLs", new String[]{"VentilationFanLifeStatus", "vfLs", "환기 필터 잔여 수명"});
 
         log.info("commandMap: " + commandMap);
 
@@ -325,6 +326,11 @@ public class Common {
     public String getModelCodeFromDeviceId(String deviceId){
         String[] modelCode = deviceId.split("\\.");
         return hexToString(modelCode[5]);
+    }
+
+    public String getHexSerialNumberFromDeviceId(String deviceId){
+        String[] modelCode = deviceId.split("\\.");
+        return modelCode[6];
     }
 
     /** 기기별칭 쿼리 함수 */
@@ -424,22 +430,25 @@ public class Common {
 
         //        params.setGroupName();
         //        params.setDeviceNickname();
+        //        params.setGroupIdx();
         // 위 값은 쿼리에서 가져오는 값으므로 선언 X
         AuthServerDTO params = deviceMapper.getGroupNameAndDeviceNickByDeviceId(deviceId);
 
-        params.setCodeType(codeType);
-        params.setCommandId(commandId);
-        params.setControlCode(controlCode);
-        params.setControlCodeName(controlName);
-        params.setCommandFlow(commandFlow);
-        params.setDeviceId(deviceId);
-        params.setUserId(userId);
-        if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-
+        if(!codeType.equals("PUSH_ONLY")){
+            params.setCodeType(codeType);
+            params.setCommandId(commandId);
+            params.setControlCode(controlCode);
+            params.setControlCodeName(controlName);
+            params.setCommandFlow(commandFlow);
+            params.setDeviceId(deviceId);
+            params.setUserId(userId);
+            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+        }
         params.setPushTitle(pushTitle);
         params.setPushContent(pushContent);
         params.setPushType("01");
         params.setDeviceId(deviceId);
+        params.setUserId(userId);
         params.setDeviceType(deviceType);
 
         System.out.println(params);

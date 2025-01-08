@@ -13,6 +13,7 @@ import java.util.Map;
 @Mapper
 public interface MemberMapper {
 
+    public List<AuthServerDTO> getGroupInfoByDeviceId(List<AuthServerDTO> deviceIdList);
     public List<AuthServerDTO> getRegistDeviceIdByUserId(AuthServerDTO params);
     public List<AuthServerDTO> getGroupIdxByUserIdAndIdx(AuthServerDTO params);
     public List<AuthServerDTO> getGroupIdxByUserId(String userId);
@@ -36,6 +37,8 @@ public interface MemberMapper {
     public List<AuthServerDTO> getUserIdFromDeviceGroup(String deviceId);
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
     public List<AuthServerDTO> getDeviceIdFromRegist(String userId);
+    public AuthServerDTO checkSafeAlarmSet(AuthServerDTO params);
+    public AuthServerDTO checkLastIndex(AuthServerDTO params);
     public AuthServerDTO getInviteCount(AuthServerDTO param);
     public AuthServerDTO getInviteCountFromInviteStatus(AuthServerDTO param);
     public AuthServerDTO getInviteCountByReqeustResponseUserId(AuthServerDTO param);
@@ -59,8 +62,14 @@ public interface MemberMapper {
     public AuthServerDTO getPushYnStatusByDeviceIdAndUserId(AuthServerDTO info);
     public AuthServerDTO getFirstDeviceUser(String deviceId);
     public AuthServerDTO getFwhInfo(String deviceId);
+    public AuthServerDTO getFanLifeStatus(String deviceId);
+    public AuthServerDTO checkDuplicateGroupName(AuthServerDTO info);
+    public AuthServerDTO getUserLoginoutStatus(String userId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
+    public int updateSafePushAlarmTime(AuthServerDTO info);
+    public int updateLoginoutStatus(AuthServerDTO info);
+    public int updateSafeAlarm(AuthServerDTO info);
     public int updateNewHouseHolder(AuthServerDTO info);
     public int updateDeviceRegist(AuthServerDTO info);
     public int updateUserDevice(AuthServerDTO info);
@@ -94,7 +103,8 @@ public interface MemberMapper {
     public int updateGrpNick(AuthServerDTO member);
     public int inviteHouseMember(AuthServerDTO member);
     public int acceptInvite(AuthServerDTO member);
-    public int updatePushCodeStatus(AuthServerDTO params);
+    public int updatePushCodeStatus(List<AuthServerDTO> authServerDTOList);
+    public int updatePushCodeStatusSingle(AuthServerDTO param);
     public int updateDeviceLocationNicknameDeviceDetail(AuthServerDTO member);
     public int updateDeviceLocationNicknameDeviceRegist(AuthServerDTO member);
     public int insertCommandHistory(AuthServerDTO member);

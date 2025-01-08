@@ -165,19 +165,21 @@ public class ReservationServiceImpl implements ReservationService{
 
                 for(int i = 0; i < userIds.size(); ++i){
                     log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "24h");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "Set24 ID");
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("title", "24h");
+                        conMap.put("deviceId", deviceId);
+                        conMap.put("id", "Set24 ID");
 
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-                    log.info("jsonString: " + jsonString);
+                        String jsonString = objectMapper.writeValueAsString(conMap);
+                        log.info("jsonString: " + jsonString);
 
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                    }
                 }
 
                 deviceInfo.setH24(JSON.toJson(map));
@@ -196,20 +198,6 @@ public class ReservationServiceImpl implements ReservationService{
                         "24시간 예약",
                         "01");
 
-//                params.setCodeType("1");
-//                params.setCommandId("Set24");
-//                params.setControlCode("24h");
-//                params.setControlCodeName("24시간 예약");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("24시간 예약");
-//                params.setDeviceType("01");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
             log.info("result: " + result);
@@ -330,19 +318,21 @@ public class ReservationServiceImpl implements ReservationService{
 
                 for(int i = 0; i < userIds.size(); ++i){
                     log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "12h");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "Set12 ID");
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("title", "12h");
+                        conMap.put("deviceId", deviceId);
+                        conMap.put("id", "Set12 ID");
 
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-                    log.info("jsonString: " + jsonString);
+                        String jsonString = objectMapper.writeValueAsString(conMap);
+                        log.info("jsonString: " + jsonString);
 
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                    }
                 }
 
                 common.insertHistory(
@@ -357,20 +347,6 @@ public class ReservationServiceImpl implements ReservationService{
                         "12시간 예약",
                         "01");
 
-//                params.setCodeType("1");
-//                params.setCommandId("Set12");
-//                params.setControlCode("12h");
-//                params.setControlCodeName("12시간 예약");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("12시간 예약");
-//                params.setDeviceType("01");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
             log.info("result: " + result);
@@ -529,19 +505,21 @@ public class ReservationServiceImpl implements ReservationService{
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
                 for(int i = 0; i < userIds.size(); ++i){
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "fwh");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "AwakeAlarmSet ID");
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("title", "fwh");
+                        conMap.put("deviceId", deviceId);
+                        conMap.put("id", "AwakeAlarmSet ID");
 
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-                    log.info("jsonString: " + jsonString);
+                        String jsonString = objectMapper.writeValueAsString(conMap);
+                        log.info("jsonString: " + jsonString);
 
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                    }
                 }
 
                 common.insertHistory(
@@ -556,20 +534,6 @@ public class ReservationServiceImpl implements ReservationService{
                         "빠른온수 예약",
                         "01");
 
-//                params.setCodeType("1");
-//                params.setCommandId("AwakeAlarmSet");
-//                params.setControlCode("fwh");
-//                params.setControlCodeName("빠른온수 예약");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("빠른온수 예약");
-//                params.setDeviceType("01");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
             log.info("result: " + result);
@@ -691,19 +655,22 @@ public class ReservationServiceImpl implements ReservationService{
                 List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+
                 for(int i = 0; i < userIds.size(); ++i){
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "7wk");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "Mode Change ID");
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("title", "7wk");
+                        conMap.put("deviceId", deviceId);
+                        conMap.put("id", "Mode Change ID");
 
-                    String jsonString = objectMapper.writeValueAsString(conMap);
+                        String jsonString = objectMapper.writeValueAsString(conMap);
 
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                    }
                 }
 
                 common.insertHistory(
@@ -717,20 +684,6 @@ public class ReservationServiceImpl implements ReservationService{
                         "예약 설정",
                         "주간 예약",
                         "01");
-
-//                params.setCodeType("1");
-//                params.setCommandId("SetWeek");
-//                params.setControlCode("7wk");
-//                params.setControlCodeName("주간 예약");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("주간 예약");
-//                params.setDeviceType("01");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
                 params.setWeekList("");
                 redisCommand.deleteValues(setWeek.getUuId());
@@ -959,7 +912,7 @@ public class ReservationServiceImpl implements ReservationService{
 
             firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
             userId = firstDeviceUser.getUserId();
-            
+
             setOnOffPower.setUserId(params.getUserId());
             setOnOffPower.setDeviceId(deviceId);
             setOnOffPower.setControlAuthkey(controlAuthKey);
@@ -1030,24 +983,9 @@ public class ReservationServiceImpl implements ReservationService{
 
                 redisCommand.deleteValues(setOnOffPower.getUuId());
 
-                deviceInfo.setPowr(params.getPowerStatus());
+                deviceInfo.setRsPw(JSON.toJson(onOffTimerList));
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
-
-//                params.setCodeType("1");
-//                params.setCommandId("SetOnOffPower");
-//                params.setControlCode("rsPw");
-//                params.setControlCodeName("환기 꺼짐/켜짐 예약");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("환기 꺼짐/켜짐 예약");
-//                params.setDeviceId(deviceId);
-//                params.setDeviceType("07");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
                 household = memberMapper.getHouseholdByUserId(params.getUserId());
                 params.setGroupId(household.getGroupId());
@@ -1057,18 +995,20 @@ public class ReservationServiceImpl implements ReservationService{
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
                 for(int i = 0; i < userIds.size(); ++i){
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("title", "rsPw");
-                    conMap.put("rsPw", params.getPowerStatus());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("deviceId", deviceId);
-                    String jsonString = objectMapper.writeValueAsString(conMap);
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("title", "rsPw");
+                        conMap.put("rsPw", params.getPowerStatus());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                        conMap.put("deviceId", deviceId);
+                        String jsonString = objectMapper.writeValueAsString(conMap);
 
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                        log.info("PUSH 메세지 전송 오류");
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                            log.info("PUSH 메세지 전송 오류");
+                    }
                 }
 
                 common.insertHistory(

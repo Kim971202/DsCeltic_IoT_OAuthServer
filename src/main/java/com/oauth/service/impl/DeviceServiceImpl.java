@@ -2,6 +2,7 @@ package com.oauth.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.*;
@@ -66,6 +67,7 @@ public class DeviceServiceImpl implements DeviceService {
         String deviceId = params.getDeviceId();
         String deviceType = params.getDeviceType();
         String modelCode = params.getModelCode();
+        String onOffFlag = params.getOnOffFlag();
         String redisValue;
         String serialNumber;
         String responseMessage = null;
@@ -168,48 +170,36 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-                for(int i = 0; i < userIds.size(); ++i){
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("title", "powr");
-                    conMap.put("powr", params.getPowerStatus());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", modelCode);
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("deviceId", deviceId);
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                        log.info("PUSH 메세지 전송 오류");
+                if(onOffFlag.equals("on")){
+                    for(int i = 0; i < userIds.size(); ++i){
+                        if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("title", "powr");
+                            conMap.put("powr", params.getPowerStatus());
+                            conMap.put("userNickname", userNickname.getUserNickname());
+                            conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                            conMap.put("modelCode", modelCode);
+                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                            conMap.put("deviceId", deviceId);
+                            String jsonString = objectMapper.writeValueAsString(conMap);
+                            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                                log.info("PUSH 메세지 전송 오류");
+                        }
+                    }
+
+                    common.insertHistory(
+                            "1",
+                            "PowerOnOff",
+                            "powr",
+                            "전원 ON/OFF",
+                            "0",
+                            deviceId,
+                            params.getUserId(),
+                            "전원 변경",
+                            "전원 " + params.getPowerStatus(),
+                            deviceType);
                 }
-
-                common.insertHistory(
-                        "1",
-                        "PowerOnOff",
-                        "powr",
-                        "전원 ON/OFF",
-                        "0",
-                        deviceId,
-                        params.getUserId(),
-                        "전원 변경",
-                        "전원 " + params.getPowerStatus(),
-                        deviceType);
             }
-
-//            params.setCodeType("1");
-//            params.setCommandId("PowerOnOff");
-//            params.setControlCode("powr");
-//            params.setControlCodeName("전원 ON/OFF");
-//            params.setCommandFlow("0");
-//            params.setDeviceId(deviceId);
-//            params.setUserId(params.getUserId());
-//            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//            params.setPushTitle("기기제어");
-//            params.setPushContent("전원: " + params.getPowerStatus());
-//            params.setDeviceId(deviceId);
-//            params.setDeviceType(deviceType);
-//            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
-
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
             log.info("result: " + result);
@@ -231,8 +221,14 @@ public class DeviceServiceImpl implements DeviceService {
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String registYn = params.getRegistYn();
+        String modelCode = params.getModelCode();
+        String controlAuthKey = params.getControlAuthKey();
+        String redisValue;
+
+        MobiusResponse response;
 
         AuthServerDTO checkDeviceExist;
+        AuthServerDTO checkDeviceUser;
         AuthServerDTO groupLeaderId;
         AuthServerDTO groupLeaderIdByGroupIdx;
 
@@ -243,7 +239,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(registYn.equals("N")){
 
                 if(params.getTmpRegistKey() == null || params.getDeviceId() == null) {
-                    msg = "TEMP-KEY-MISSING";
+                    msg = "TEMP-KEY-MISGSING";
                     result.setResult(ApiResponse.ResponseType.HTTP_400, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
@@ -300,8 +296,67 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setModelCode(params.getModelCode().replaceAll(" ", ""));
                 params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
 
-                // TODO: 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
+                // TODO: 해당 기기가 기존에 등록된 기기 인지 확인
                 checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
+                if(!checkDeviceExist.getDeviceCount().equals("0")){
+                    // TODO: 해당 기기를 등록하는 사람인 요청자와 동일한 ID인지 확인 (동일할 경우 24시간, 빠른온수 예약 초기화 X)
+                    checkDeviceUser = deviceMapper.checkDeviceUserId(params);
+                    if(checkDeviceUser.getDeviceCount().equals("0")){
+                        log.info("신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다");
+                        // TODO: 신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다
+                        // [{"wk":"","hs":[]}] - 24시간
+                        // [{"tf":"","ws":[""],"hr":"","mn":"","i":""}] - 빠른온수
+
+                        SetWeek setWeek = new SetWeek();
+                        setWeek.setUserId(userId);
+                        setWeek.setDeviceId(deviceId);
+                        setWeek.setControlAuthKey(controlAuthKey);
+                        setWeek.setFunctionId("7wk");
+                        setWeek.setUuId(common.getTransactionId());
+                        setWeek.setWeekListInit("[{\"wk\":\"\",\"hs\":[]}]");
+
+                        redisValue = params.getUserId() + "," + setWeek.getFunctionId();
+                        redisCommand.setValues(setWeek.getUuId(), redisValue);
+
+                        response = mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId, JSON.toJson(setWeek));
+
+                        if(!response.getResponseCode().equals("201")) log.info("setWeek 중계서버 오류");
+
+                        AwakeAlarmSet awakeAlarmSet = new AwakeAlarmSet();
+                        awakeAlarmSet.setUserId(userId);
+                        awakeAlarmSet.setAccessToken(common.getTransactionId());
+                        awakeAlarmSet.setDeviceId(deviceId);
+                        awakeAlarmSet.setControlAuthKey(controlAuthKey);
+                        awakeAlarmSet.setFunctionId("fwh");
+                        awakeAlarmSet.setUuId(common.getTransactionId());
+
+                        List<HashMap<String, Object>> awakeList = new ArrayList<HashMap<String, Object>>();
+                        HashMap<String, Object> map = new LinkedHashMap<>();
+                        map.put("tf", "");
+                        map.put("ws", Collections.singletonList(""));
+                        map.put("hr", "");
+                        map.put("mn", "");
+                        map.put("i", "");
+                        awakeList.add(map);
+                        awakeAlarmSet.setAwakeList(awakeList);
+
+                        response = mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId, JSON.toJson(awakeAlarmSet));
+
+                        if(!response.getResponseCode().equals("201")) log.info("awakeAlarmSet 중계서버 오류");
+
+                        DeviceStatusInfo.Device device = new DeviceStatusInfo.Device();
+                        device.setDeviceId(deviceId);
+                        device.setWk7(setWeek.getWeekListInit());
+                        device.setFwh(JSON.toJson(awakeList));
+                        deviceMapper.updateDeviceStatusFromApplication(device);
+                    }
+                    // TODO: 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
+                    List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(deviceId);
+                    for(AuthServerDTO authServerDTO : authServerDTOList){
+                        memberMapper.deleteControllerMapping(authServerDTO);
+                    }
+                }
+
                 if(!checkDeviceExist.getDeviceCount().equals("0")){
                     List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(deviceId);
                     for(AuthServerDTO authServerDTO : authServerDTOList){
@@ -340,7 +395,7 @@ public class DeviceServiceImpl implements DeviceService {
                     // 리스트에 추가
                     inputList.add(memberInfo);
                 }
-                System.out.println(inputList);
+
                 if(memberMapper.insertUserDevicePushByList(inputList) <= 0){
                     msg = "사용자 PUSH 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
@@ -424,6 +479,8 @@ public class DeviceServiceImpl implements DeviceService {
         } catch (CustomException e){
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -539,6 +596,7 @@ public class DeviceServiceImpl implements DeviceService {
         String msg;
         String serialNumber;
         String modeCode = params.getModeCode();
+        String onOffFlag = params.getOnOffFlag();
         String userId;
         String deviceId = params.getDeviceId();
         String modelCode = params.getModelCode();
@@ -644,122 +702,111 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-                for(int i = 0; i < userIds.size(); ++i){
-                    log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", modelCode);
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "opMd");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "Mode Change ID");
-
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                        log.info("PUSH 메세지 전송 오류");
-
-                }
-
                 deviceInfo.setOpMd(modeCode);
                 deviceInfo.setDeviceId(deviceId);
                 if(params.getModeCode().equals("06")) deviceInfo.setSlCd(sleepCode);
 
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-                switch (modeCode){
-                    case "01":
-                        params.setControlCodeName("실내난방");
-                        break;
-                    case "02":
-                        params.setControlCodeName("온돌난방");
-                        break;
-                    case "03":
-                        params.setControlCodeName("외출");
-                        break;
-                    case "04":
-                        params.setControlCodeName("자동");
-                        break;
-                    case "05":
-                        params.setControlCodeName("절약난방");
-                        break;
-                    case "06":
-                        params.setControlCodeName("취침");
-                        break;
-                    case "07":
-                        params.setControlCodeName("온수전용");
-                        break;
-                    case "08":
-                        params.setControlCodeName("온수-빠른온수");
-                        break;
-                    case "09":
-                        params.setControlCodeName("귀가");
-                        break;
-                    case "10":
-                        params.setControlCodeName("예약난방-24시간");
-                        break;
-                    case "11":
-                        params.setControlCodeName("예약난방-반복(12시간)");
-                        break;
-                    case "12":
-                        params.setControlCodeName("예약난방-주간");
-                        break;
-                    case "21":
-                        params.setControlCodeName("수동-전열환기모드");
-                        break;
-                    case "22":
-                        params.setControlCodeName("수동-청정환기모드");
-                        break;
-                    case "23":
-                        params.setControlCodeName("수동-실내청정모드");
-                        break;
-                    case "24":
-                        params.setControlCodeName("수동-취침운전모드");
-                        break;
-                    case "25":
-                        params.setControlCodeName("자동-예약설정모드");
-                        break;
-                    case "26":
-                        params.setControlCodeName("자동-외출설정모드");
-                        break;
-                    case "27":
-                        params.setControlCodeName("자동-전열환기모드");
-                        break;
-                    case "29":
-                        params.setControlCodeName("자동-실내청정모드");
-                        break;
-                    // TODO: 각방, 히트펌프 추가
-                    default:
-                        params.setControlCodeName("NONE_MODE");
-                        break;
+                if(onOffFlag.equals("on")){
+                    for(int i = 0; i < userIds.size(); ++i){
+                        if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                            log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                            conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                            conMap.put("modelCode", modelCode);
+                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("userNickname", userNickname.getUserNickname());
+                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                            conMap.put("title", "opMd");
+                            conMap.put("deviceId", deviceId);
+                            conMap.put("id", "Mode Change ID");
+
+                            String jsonString = objectMapper.writeValueAsString(conMap);
+
+                            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                                log.info("PUSH 메세지 전송 오류");
+                        }
+                    }
+
+                    switch (modeCode){
+                        case "01":
+                            params.setControlCodeName("실내난방");
+                            break;
+                        case "02":
+                            params.setControlCodeName("온돌난방");
+                            break;
+                        case "03":
+                            params.setControlCodeName("외출");
+                            break;
+                        case "04":
+                            params.setControlCodeName("자동");
+                            break;
+                        case "05":
+                            params.setControlCodeName("절약난방");
+                            break;
+                        case "06":
+                            params.setControlCodeName("취침");
+                            break;
+                        case "07":
+                            params.setControlCodeName("온수전용");
+                            break;
+                        case "08":
+                            params.setControlCodeName("온수-빠른온수");
+                            break;
+                        case "09":
+                            params.setControlCodeName("귀가");
+                            break;
+                        case "10":
+                            params.setControlCodeName("예약난방-24시간");
+                            break;
+                        case "11":
+                            params.setControlCodeName("예약난방-반복");
+                            break;
+                        case "12":
+                            params.setControlCodeName("예약난방-주간"); // 91 - 예약난방-24시간주간
+                            break;
+                        case "21":
+                            params.setControlCodeName("수동-전열환기모드");
+                            break;
+                        case "22":
+                            params.setControlCodeName("수동-청정환기모드");
+                            break;
+                        case "23":
+                            params.setControlCodeName("수동-실내청정모드");
+                            break;
+                        case "24":
+                            params.setControlCodeName("수동-취침운전모드");
+                            break;
+                        case "25":
+                            params.setControlCodeName("자동-예약설정모드");
+                            break;
+                        case "26":
+                            params.setControlCodeName("자동-외출설정모드");
+                            break;
+                        case "27":
+                            params.setControlCodeName("자동-전열환기모드");
+                            break;
+                        case "29":
+                            params.setControlCodeName("자동-실내청정모드");
+                            break;
+                        // TODO: 각방, 히트펌프 추가
+                        default:
+                            params.setControlCodeName("NONE_MODE");
+                            break;
+                    }
+
+                    common.insertHistory(
+                            "0",
+                            "ModeChange",
+                            "modeCode",
+                            params.getControlCodeName(),
+                            "0",
+                            deviceId,
+                            params.getUserId(),
+                            "모드 변경",
+                            params.getControlCodeName(),
+                            common.getModelCode(modelCode));
                 }
-
-                common.insertHistory(
-                        "0",
-                        "ModeChange",
-                        "modeCode",
-                        params.getControlCodeName(),
-                        "0",
-                        deviceId,
-                        params.getUserId(),
-                        "모드 변경",
-                        params.getControlCodeName(),
-                        common.getModelCode(modelCode));
-
-//                params.setCodeType("0");
-//                params.setCommandId("ModeChange");
-//                params.setControlCode(modeCode);
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("모드변경");
-//                params.setDeviceId(deviceId);
-//                params.setDeviceType(common.getModelCode(modelCode));
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
             log.info("result: " + result);
@@ -782,6 +829,7 @@ public class DeviceServiceImpl implements DeviceService {
         String userId;
         String deviceId = params.getDeviceId();
         String redisValue;
+        String onOffFlag = params.getOnOffFlag();
         MobiusResponse response;
         String serialNumber;
         AuthServerDTO userNickname;
@@ -876,51 +924,41 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-                for(int i = 0; i < userIds.size(); ++i){
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "htTp");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "TemperatureSet ID");
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                        log.info("PUSH 메세지 전송 오류");
-                }
-
                 deviceInfo.setHtTp(params.getTemperture());
                 deviceInfo.setDeviceId(params.getDeviceId());
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-                common.insertHistory(
-                        "1",
-                        "TemperatureSet",
-                        "modeCode",
-                        "실내 온도 설정",
-                        "0",
-                        deviceId,
-                        params.getUserId(),
-                        "htTp",
-                        params.getTemperture(),
-                        "01");
+                if(onOffFlag.equals("on")){
+                    for(int i = 0; i < userIds.size(); ++i){
+                        if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                            conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                            conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("userNickname", userNickname.getUserNickname());
+                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                            conMap.put("title", "htTp");
+                            conMap.put("deviceId", deviceId);
+                            conMap.put("id", "TemperatureSet ID");
+                            String jsonString = objectMapper.writeValueAsString(conMap);
 
-//                params.setCodeType("1");
-//                params.setCommandId("TemperatureSet");
-//                params.setControlCode("htTp");
-//                params.setControlCodeName("실내 온도 설정");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("실내온도 설정");
-//                params.setDeviceId(deviceId);
-//                params.setDeviceType("01");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+                            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                                log.info("PUSH 메세지 전송 오류");
+                        }
+                    }
+
+                    common.insertHistory(
+                            "1",
+                            "TemperatureSet",
+                            "modeCode",
+                            "실내 온도 설정",
+                            "0",
+                            deviceId,
+                            params.getUserId(),
+                            "htTp",
+                            params.getTemperture(),
+                            "01");
+                }
+
             }
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -941,6 +979,7 @@ public class DeviceServiceImpl implements DeviceService {
         String userId;
         String deviceId = params.getDeviceId();
         String redisValue;
+        String onOffFlag = params.getOnOffFlag();
         String responseMessage = null;
         MobiusResponse response;
         String serialNumber;
@@ -1036,53 +1075,42 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-                for(int i = 0; i < userIds.size(); ++i){
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "wtTp");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "BoiledWaterTempertureSet ID");
-
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-                    log.info("jsonString: " + jsonString);
-
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                        log.info("PUSH 메세지 전송 오류");
-                }
-
                 deviceInfo.setWtTp(params.getTemperture());
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-                common.insertHistory(
-                        "1",
-                        "BoiledWaterTempertureSet",
-                        "wtTp",
-                        "난방수 온도 설정",
-                        "0",
-                        deviceId,
-                        params.getUserId(),
-                        "wtTp",
-                        params.getTemperture(),
-                        "01");
+                if(onOffFlag.equals("on")){
+                    for(int i = 0; i < userIds.size(); ++i){
+                        if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                            conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                            conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("userNickname", userNickname.getUserNickname());
+                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                            conMap.put("title", "wtTp");
+                            conMap.put("deviceId", deviceId);
+                            conMap.put("id", "BoiledWaterTempertureSet ID");
 
-//                params.setCodeType("1");
-//                params.setCommandId("BoiledWaterTempertureSet");
-//                params.setControlCode("wtTp");
-//                params.setControlCodeName("난방수 온도 설정");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("난방수온도 설정");
-//                params.setDeviceId(deviceId);
-//                params.setDeviceType("01");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+                            String jsonString = objectMapper.writeValueAsString(conMap);
+                            log.info("jsonString: " + jsonString);
+
+                            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                                log.info("PUSH 메세지 전송 오류");
+                        }
+                    }
+
+                    common.insertHistory(
+                            "1",
+                            "BoiledWaterTempertureSet",
+                            "wtTp",
+                            "난방수 온도 설정",
+                            "0",
+                            deviceId,
+                            params.getUserId(),
+                            "wtTp",
+                            params.getTemperture(),
+                            "01");
+                }
             }
 
             log.info("result: " + result);
@@ -1198,25 +1226,27 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-                for(int i = 0; i < userIds.size(); ++i){
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "hwTp");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "WaterTempertureSet ID");
-
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                        log.info("PUSH 메세지 전송 오류");
-                }
-
                 deviceInfo.setHwTp(params.getTemperture());
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
+                for(int i = 0; i < userIds.size(); ++i){
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("title", "hwTp");
+                        conMap.put("deviceId", deviceId);
+                        conMap.put("id", "WaterTempertureSet ID");
+
+                        String jsonString = objectMapper.writeValueAsString(conMap);
+
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                            log.info("PUSH 메세지 전송 오류");
+                    }
+                }
 
                 common.insertHistory(
                         "1",
@@ -1230,20 +1260,6 @@ public class DeviceServiceImpl implements DeviceService {
                         params.getTemperture(),
                         "01");
 
-//                params.setCodeType("1");
-//                params.setCommandId("WaterTempertureSet");
-//                params.setControlCode("hwTp");
-//                params.setControlCodeName("온수 온도 설정");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("온수온도 설정");
-//                params.setDeviceId(deviceId);
-//                params.setDeviceType("01");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
 
             log.info("result: " + result);
@@ -1361,19 +1377,21 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
                 for(int i = 0; i < userIds.size(); ++i){
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "ftMd");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "FastHotWaterSet ID");
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("title", "ftMd");
+                        conMap.put("deviceId", deviceId);
+                        conMap.put("id", "FastHotWaterSet ID");
 
-                    String jsonString = objectMapper.writeValueAsString(conMap);
+                        String jsonString = objectMapper.writeValueAsString(conMap);
 
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                        log.info("PUSH 메세지 전송 오류");
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                            log.info("PUSH 메세지 전송 오류");
+                    }
                 }
 
                 deviceInfo.setFtMd(params.getModeCode());
@@ -1392,20 +1410,6 @@ public class DeviceServiceImpl implements DeviceService {
                         "빠른온수 " + params.getModeCode(),
                         "01");
 
-//                params.setCodeType("1");
-//                params.setCommandId("FastHotWaterSet");
-//                params.setControlCode("ftMd");
-//                params.setControlCodeName("빠른 온수 설정");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("빠른온수 설정");
-//                params.setDeviceId(deviceId);
-//                params.setDeviceType("01");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
             }
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1525,16 +1529,18 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
                 for(int i = 0; i < userIds.size(); ++i){
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("title", "fcLc");
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("id", "LockSet ID");
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("title", "fcLc");
+                        conMap.put("deviceId", deviceId);
+                        conMap.put("id", "LockSet ID");
+                        String jsonString = objectMapper.writeValueAsString(conMap);
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                    }
                 }
 
                 deviceInfo.setFcLc(params.getLockSet());
@@ -1553,21 +1559,6 @@ public class DeviceServiceImpl implements DeviceService {
                     "잠금 변경",
                     "잠금 " + params.getLockSet(),
                     "01");
-
-//            params.setCodeType("1");
-//            params.setCommandId("LockSet");
-//            params.setControlCode("fcLc");
-//            params.setControlCodeName("잠금 모드 설정");
-//            params.setCommandFlow("0");
-//            params.setDeviceId(deviceId);
-//            params.setUserId(params.getUserId());
-//            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//            params.setPushTitle("기기제어");
-//            params.setPushContent("화면잠금 " + params.getLockSet());
-//            params.setDeviceId(deviceId);
-//            params.setDeviceType("01");
-//            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1767,6 +1758,7 @@ public class DeviceServiceImpl implements DeviceService {
                         data.put("hwTp", statusInfo.getHwTp());
                         data.put("ftMd", statusInfo.getFtMd());
                         data.put("chTp", statusInfo.getChTp());
+                        data.put("bCdt", statusInfo.getBCdt());
                         data.put("mfDt", statusInfo.getMfDt());
                         data.put("hwSt", statusInfo.getHwSt());
                         data.put("fcLc", statusInfo.getFcLc());
@@ -1781,6 +1773,7 @@ public class DeviceServiceImpl implements DeviceService {
                             DeviceStatusInfo.Device activeInfo = activeStatusInfo.get(i);
                             data.put("ftMdAcTv", activeInfo.getFtMd());
                             data.put("fcLcAcTv", activeInfo.getFcLc());
+                            data.put("ecOpAcTv", activeInfo.getEcOp());
                         } else if (!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-47/WF")) {
                             DeviceStatusInfo.Device activeInfo = activeStatusInfo.get(i);
                             data.put("pastAcTv", activeInfo.getPast());
@@ -1841,6 +1834,8 @@ public class DeviceServiceImpl implements DeviceService {
             result.put("addrDetail", resultDto.getAddrDetail());
             result.put("latitude", resultDto.getLatitude());
             result.put("longitude", resultDto.getLongitude());
+            result.put("groupName", resultDto.getGroupName());
+            result.put("groupIdx", resultDto.getGroupIdx());
         }
             result.put("resultCode", rtCode);
             result.put("resultMsg", msg);
@@ -2090,22 +2085,6 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-//                params.setCodeType("1");
-//                params.setCommandId("VentilationFanSpeedSet");
-//                params.setControlCode("vtSp");
-//                params.setControlCodeName("풍량 단수 설정");
-//                params.setCommandFlow("0");
-//                params.setDeviceId(deviceId);
-//                params.setUserId(params.getUserId());
-//
-//                if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
-//
-//                params.setPushTitle("기기제어");
-//                params.setPushContent("풍량 단수 설정");
-//                params.setDeviceId(deviceId);
-//                params.setDeviceType("07");
-//                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
-
                 household = memberMapper.getHouseholdByUserId(params.getUserId());
                 params.setGroupId(household.getGroupId());
                 List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
@@ -2115,19 +2094,20 @@ public class DeviceServiceImpl implements DeviceService {
 
                 for(int i = 0; i < userIds.size(); ++i){
                     log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
+                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("title", "VentilationFanSpeedSet");
+                        conMap.put("vtSp", params.getFanSpeed());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("modelCode", modelCode);
+                        conMap.put("deviceId", deviceId);
+                        String jsonString = objectMapper.writeValueAsString(conMap);
+                        log.info("doPowerOnOff jsonString: " + jsonString);
 
-                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("title", "VentilationFanSpeedSet");
-                    conMap.put("vtSp", params.getFanSpeed());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("modelCode", modelCode);
-                    conMap.put("deviceId", deviceId);
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-                    log.info("doPowerOnOff jsonString: " + jsonString);
-
-                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                    }
                 }
 
                 common.insertHistory(
@@ -2138,7 +2118,7 @@ public class DeviceServiceImpl implements DeviceService {
                         "0",
                         deviceId,
                         params.getUserId(),
-                        "vtSp ",
+                        "vtSp",
                         params.getFanSpeed(),
                         "07");
             }
@@ -2185,8 +2165,8 @@ public class DeviceServiceImpl implements DeviceService {
             activeStatus.setControlAuthKey(controlAuthKey);
             activeStatus.setUuId(activeStatus.getAccessToken());
 
-            if(modelCode.equals(modelCodeMap.get("newModel")) || modelCode.equals(modelCodeMap.get("oldModel"))) functionId = "bAcTv";
-            else if(modelCode.equals(modelCodeMap.get("ventilation"))) functionId = "vAcTv";
+            if(modelCode.equals(modelCodeMap.get("newModel")) || modelCode.equals(modelCodeMap.get("oldModel"))) functionId = "acTv";
+            else if(modelCode.equals(modelCodeMap.get("ventilation"))) functionId = "acTv";
 
             activeStatus.setFunctionId(functionId);
             redisValue = params.getUserId() + "," + activeStatus.getFunctionId();

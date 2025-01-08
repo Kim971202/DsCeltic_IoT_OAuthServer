@@ -25,6 +25,15 @@ public class AuthServerDTO implements Serializable {
 
     private static final long serialVersionUID = 54436712726576487L;
 
+    private String lastIndex;
+
+    private Integer pageNo = 1;
+    private Integer numOfRows = 1;
+    private Integer sRow = 0;
+
+    private Integer frontRow = 0;
+    private Integer secondRow = 0;
+
     private Long idx;
     private String newId;
     private String houseLeaderFlag;
@@ -167,11 +176,18 @@ public class AuthServerDTO implements Serializable {
     private String waitMinute;                   // 대기 분
     private String newControlAuthKey;            // 신규 RKey
     private String deviceCount;
+    private String userCount;
     private String inviteCount;
 
     private String deviceInfo;                   // Y/N 기기 존재 여부
 
     private String fastHotWater;                 // 빠른온수 예약 정보 조회용 변수
+    private String ventFanLifeStatus;
+
+    private List<String> deviceIdList;
+
+    private String groupNameCount;
+    private String loginoutStatus;
 
     @Override
     public boolean equals(Object o) {

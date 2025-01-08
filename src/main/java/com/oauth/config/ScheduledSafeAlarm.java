@@ -61,25 +61,47 @@ public class ScheduledSafeAlarm {
                     user.setUserNickname(userNicknameMap.get(userId));  // userNickname 설정
                 }
             }
-            System.out.println(userInfo);
+            log.info("userInfo: " + userInfo);
 
             // 이후 userInfo에 pushToken이 포함된 데이터를 기반으로 작업 수행
             for (AuthServerDTO user : userInfo) {
-                Map<String, String> conMap = new HashMap<>();
-                ObjectMapper objectMapper = new ObjectMapper();
-                conMap.put("body", "SAFE ALARM PUSH");
-                conMap.put("targetToken", user.getPushToken());
-                conMap.put("title", "saFe");
-                conMap.put("deviceNick", common.returnDeviceNickname(user.getDeviceId()));
-                conMap.put("userNickname", common.stringToHex(user.getUserNickname()));
-                String jsonString = objectMapper.writeValueAsString(conMap);
+                if(memberMapper.getUserLoginoutStatus(user.getUserId()).getLoginoutStatus().equals("Y")){
+                    Map<String, String> conMap = new HashMap<>();
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    conMap.put("body", "SAFE ALARM PUSH");
+                    conMap.put("targetToken", user.getPushToken());
+                    conMap.put("title", "saFe");
+                    conMap.put("deviceNick", common.returnDeviceNickname(user.getDeviceId()));
+                    conMap.put("userNickname", common.stringToHex(user.getUserNickname()));
+                    conMap.put("modelCode", common.getModelCodeFromDeviceId(user.getDeviceId()).replaceAll(" ", ""));
+                    conMap.put("pushYn", "Y");
 
-                if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) {
-                    log.info("PUSH 메세지 전송 오류");
+                    String jsonString = objectMapper.writeValueAsString(conMap);
+
+                    if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                        log.info("PUSH 메세지 전송 오류");
+
+                    // TODO: 해당 사용자에게 PUSH 전송 이후 SAFE_ALARM_REG_TIME을 now()값으로 수정
+                    memberMapper.updateSafePushAlarmTime(user);
                 }
+
+
+                common.insertHistory(
+                        "PUSH_ONLY",
+                        "commandId",
+                        "controlCode",
+                        "controlName",
+                        "commandFlow",
+                        user.getDeviceId(),
+                        user.getUserId(),
+                        "saFe",
+                        "SAFE ALARM PUSH",
+                        "01"
+                        );
             }
+
         } else {
-            System.out.println("userInfo is NULL");
+            log.info("userInfo is NULL");
         }
     }
 

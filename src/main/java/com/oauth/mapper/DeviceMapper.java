@@ -20,12 +20,15 @@ public interface DeviceMapper {
     public List<AuthServerDTO> getDeviceNicknameAndDeviceLocNickname(List<AuthServerDTO> device);
     public List<AuthServerDTO> getDeviceErroInfo(String serialNumber);
     public List<AuthServerDTO> getPushinfoByDeviceId(String deviceId);
+    public List<String> getDeviceIdByDeviceModelCode();
     public List<String> getInviteGroupIdxList();
     public List<String> getRegistGroupIdxList();
     public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);
     public List<DeviceStatusInfo.Device> getActiveStauts(List<String> serialNumber);
     public List<AuthServerDTO> getCheckedDeviceExist(String deviceId);
+    public AuthServerDTO getDeviceNicknameByDeviceId(String deviceId);
     public AuthServerDTO checkDeviceExist(String deviceId);
+    public AuthServerDTO checkDeviceUserId(AuthServerDTO info);
     public AuthServerDTO getGroupNameAndDeviceNickByDeviceId(String deviceId);
     public AuthServerDTO getSingleSerialNumberBydeviceId(String deviceId);
     public AuthServerDTO getPushTokenByUserId(String userId);

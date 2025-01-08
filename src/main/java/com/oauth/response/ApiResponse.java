@@ -37,7 +37,7 @@ public class ApiResponse {
         CUSTOM_1016("1016", "쿼리 결과 없음"),
         CUSTOM_1017("1017", "API 입력항목 검증 실패"),
         CUSTOM_1018("1018", "API 요청 실패 (DB 쿼리 오류)"),
-        CUSTOM_1019("1019", "제어 요청 Key 미정의(서버오류)"),
+        CUSTOM_1019("1019", "그룹명칭 중복"),
         CUSTOM_1020("1020", "제어 요청 Value 미정의(서버오류)"),
         CUSTOM_1021("1021", "제어 요청 Key-Value 항목 불일치(서버오류)"),
         CUSTOM_1022("1022", "하위 디바이스 정보 미존재"),
@@ -89,12 +89,13 @@ public class ApiResponse {
         // GW에서 받은 값을 던지는 시험용 변수
         private Object testVariable;
         private String awakeList;
+        private String ventFanLifeStatus;
         private String deviceId;
         private String errorCode;
         private String errorName;
         private String errorMessage;
         private String deviceInfo;
-
+        private String isEnd;
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);

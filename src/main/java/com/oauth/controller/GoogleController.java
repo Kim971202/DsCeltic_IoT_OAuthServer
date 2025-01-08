@@ -63,10 +63,14 @@ public class GoogleController {
         String[] deviceArray = deviceId.split("\\.");
        // [0, 2, 481, 1, 1, 2045534365636f313353, 20202020303833413844433645333841] - deviceArray
 
-        log.info("userId:{}, functionId:{}, deviceId:{}, ", userId, functionId, deviceId);
+        log.info("userId:{}, functionId:{}, deviceId:{}, value:{}", userId, functionId, deviceId, value);
 
         if(functionId.equals("powr")) {
             conMap.put("powerStatus", value);
+        }
+
+        if(functionId.equals("htTp")){
+            conMap.put("temperature", value);
         }
 
         /*

@@ -31,7 +31,7 @@ public class PushService {
     @Autowired
     MemberMapper memberMapper;
 
-    public void sendPushMessage(String jsonBody, String pushToken, String fPushYn, String userId, String modelCode, String title) throws Exception {
+    public void sendPushMessage(String jsonBody, String pushToken, String fPushYn, String userId, String modelCode, String title, String deviceNickname) throws Exception {
         log.info("sendPushMessage jsonBody: " + jsonBody);
 
         HashMap<String, String> pushMap = new HashMap<>();
@@ -40,6 +40,7 @@ public class PushService {
             pushMap.put("pushYn", fPushYn);
             pushMap.put("modelCode", modelCode.replaceAll(" ", ""));
             pushMap.put("title", title);
+            pushMap.put("deviceNick", common.stringToHex(deviceNickname));
             pushMap.put("body", common.putQuotes(common.returnConValue(jsonBody)));
             pushMap.put("id", userId);
 
@@ -51,13 +52,13 @@ public class PushService {
 
     public void sendPushMessage(String jsonBody, String errroCode, String errorMesssage, String modelCode, String errorVersion) throws Exception {
 
+        System.out.println("modelCode: " + modelCode);
         String deviceId = common.readCon(jsonBody, "deviceId");
 
         AuthServerDTO info = deviceMapper.getGroupNameAndDeviceNickByDeviceId(deviceId);
 
         HashMap<String, String> pushMap = new HashMap<>();
         List<AuthServerDTO> pushInfo = deviceMapper.getPushinfoByDeviceId(deviceId);
-        log.info("pushInfo: " + pushInfo);
 
         deviceMapper.updateDeviceErrorStatus(deviceId);
 
@@ -67,25 +68,29 @@ public class PushService {
                 AuthServerDTO params = new AuthServerDTO();
                 params.setUserId(authServerDTO.getUserId());
 
-                errroCode = String.valueOf(Integer.parseInt(errroCode, 16));
-
                 params.setPushTitle(errroCode);
                 params.setPushType("02");
                 params.setPushContent(Objects.requireNonNullElse(errorVersion, ""));
                 params.setDeviceId(deviceId);
                 params.setDeviceNickname(info.getDeviceNickname());
                 params.setGroupName(info.getGroupName());
+                params.setGroupIdx(info.getGroupIdx());
                 params.setDeviceType(common.getModelCode(modelCode.replaceAll(" ", "")));
+                System.out.println(params);
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH ERROR HISTORY INSERT ERROR");
 
-                pushMap.put("targetToken", authServerDTO.getPushToken());
-                pushMap.put("title","ERROR");
-                pushMap.put("body", common.putQuotes(common.returnConValue(common.readCon(jsonBody, "con"))));
-                pushMap.put("id", authServerDTO.getUserId());
-                pushMap.put("pushYn", authServerDTO.getSPushYn());
-                pushMap.put("modelCode", modelCode);
+                if(memberMapper.getUserLoginoutStatus(authServerDTO.getUserId()).getLoginoutStatus().equals("Y")){
+                    pushMap.put("targetToken", authServerDTO.getPushToken());
+                    pushMap.put("title","ERROR");
+                    pushMap.put("body", common.putQuotes(common.returnConValue(common.readCon(jsonBody, "con"))));
+                    pushMap.put("id", authServerDTO.getUserId());
+                    pushMap.put("pushYn", authServerDTO.getSPushYn());
+                    pushMap.put("modelCode", modelCode.replaceAll(" ", ""));
+                    pushMap.put("deviceNick", common.stringToHex(info.getDeviceNickname()));
 
-                mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
+                    mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
+                }
+
             }
 
         } catch (Exception e){

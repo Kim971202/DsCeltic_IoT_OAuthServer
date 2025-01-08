@@ -10,6 +10,10 @@ public class ScheduledMemoryMonitor {
     @Autowired
     ScheduledSafeAlarm scheduledSafeAlarm;
 
+    @Autowired
+    MfArCall mfArCall;
+
+
     // 10분마다 메모리 상태를 출력
     @Scheduled(fixedRate = 600000) // 600,000 밀리초 = 10분
     public void monitorMemory() {
@@ -19,6 +23,12 @@ public class ScheduledMemoryMonitor {
 //    @Scheduled(fixedRate = 5000) // 5,000 밀리초 = 5초
     @Scheduled(fixedRate = 600000) // 600,000 밀리초 = 10분
     public void safeAlarmMemory() throws Exception {
-            scheduledSafeAlarm.checkUserSafeAlarm();
+        scheduledSafeAlarm.checkUserSafeAlarm();
     }
+
+    // TODO: 910W Awake 메시지 전송 X
+//    @Scheduled(fixedRate = 60000) // 60,000 밀리초 = 1분
+//    public void callMfAr() throws Exception {
+//        mfArCall.callMfAr();
+//    }
 }

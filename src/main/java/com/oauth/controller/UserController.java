@@ -69,6 +69,22 @@ public class UserController {
         return userService.doLogin(params.getUserId(), params.getUserPassword(), params.getPushToken());
     }
 
+    /** 회원 로그아웃 */
+    @PostMapping(value = "/logout")
+    @ResponseBody
+    public ResponseEntity<?> doLogout(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws Exception {
+
+        log.info("[회원 로그아웃]");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getUserId())) {
+            throw new CustomException("404", "회원 로그아웃 입력 값 오류");
+        }
+
+        return userService.doLogout(params.getUserId(), params.getPushToken());
+    }
+
     /** 회원가입 */
     @PostMapping(value = "/regist")
     @ResponseBody
@@ -213,11 +229,29 @@ public class UserController {
         log.info("[사용자정보 조회]");
         common.logParams(params);
 
-        if(Validator.isNullOrEmpty(params.getGroupIdx()) || Validator.isNullOrEmpty(params.getGroupName())){
+        if(Validator.isNullOrEmpty(params.getGroupIdx()) ||
+                Validator.isNullOrEmpty(params.getGroupName()) ||
+                Validator.isNullOrEmpty(params.getUserId())){
             throw new CustomException("404", "사용자정보 조회 입력 값 오류");
         }
 
         return userService.doChangeGroupName(params);
+    }
+
+    /** 사용자 그룹 생성 */
+    @PostMapping(value = "/createNewGroup")
+    @ResponseBody
+    public ResponseEntity<?> doCreateNewGroup(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws CustomException{
+
+        log.info("[사용자 그룹 생성]");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getGroupName())){
+            throw new CustomException("404", "사용자 그룹 생성 입력 값 오류");
+        }
+
+        return userService.doCreateNewGroup(params);
     }
 
     /** 회원 별칭(이름) 및 전화번호 변경 */
@@ -269,7 +303,6 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getGroupIdxList())){
             throw new CustomException("404", "사용자(세대원) 정보 조회 값 오류");
         }
-
         return userService.doViewHouseholdMemebers(params);
     }
 
@@ -364,7 +397,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserNickname()) ||
                 Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getDeviceIdList()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
@@ -500,7 +533,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getDeviceIdList()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode())){
@@ -522,8 +555,8 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
-                Validator.isNullOrEmpty(params.getStartDatetime()) ||
-                Validator.isNullOrEmpty(params.getEndDatetime())){
+                Validator.isNullOrEmpty(params.getPageNo()) ||
+                Validator.isNullOrEmpty(params.getNumOfRows())){
             throw new CustomException("404", "스마트알림 - PUSH 이력 조회 값 오류");
         }
         return userService.doViewPushHistory(params);
@@ -665,6 +698,24 @@ public class UserController {
             throw new CustomException("404", "빠른온수 예약 정보 조회 오류");
         }
         return userService.doGetFastHotWaterInfo(params);
+    }
+
+    /**
+     * 환기 필터 잔여 수명 정보 조회
+     * */
+    @PostMapping(value = "/getFanLifeStatus")
+    @ResponseBody
+    public ResponseEntity<?> doGetFanLifeStatus(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws Exception {
+
+        log.info("환기 필터 잔여 수명 정보 조회");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId())){
+            throw new CustomException("404", "환기 필터 잔여 수명 정보 조회 오류");
+        }
+        return userService.doGetFanLifeStatus(params);
     }
 
     @PostMapping(value = "/test")

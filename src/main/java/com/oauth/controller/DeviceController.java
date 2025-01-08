@@ -62,6 +62,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getPowerStatus()) ||
+                Validator.isNullOrEmpty(params.getOnOffFlag()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey())){
             throw new CustomException("404", "전원 On/Off 값 오류");
         }
@@ -126,6 +127,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getOnOffFlag()) ||
                 Validator.isNullOrEmpty(params.getModeCode())){
             throw new CustomException("404", "모드변경 값 오류");
         }
@@ -144,6 +146,7 @@ public class DeviceController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getOnOffFlag()) ||
                 Validator.isNullOrEmpty(params.getTemperture())){
             throw new CustomException("404", "실내온도 설정 값 오류");
         }
@@ -162,6 +165,7 @@ public class DeviceController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getOnOffFlag()) ||
                 Validator.isNullOrEmpty(params.getTemperture())){
             throw new CustomException("404", "난방수온도 설정 값 오류");
         }

@@ -1,5 +1,8 @@
 package com.oauth.config;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class MemoryMonitor {
     public static void logMemoryUsage() {
         Runtime runtime = Runtime.getRuntime();
@@ -8,9 +11,9 @@ public class MemoryMonitor {
         long usedMemory = totalMemory - freeMemory;
         long maxMemory = runtime.maxMemory();
 
-        System.out.println("Used Memory: " + usedMemory / (1024 * 1024) + " MB");
-        System.out.println("Free Memory: " + freeMemory / (1024 * 1024) + " MB");
-        System.out.println("Total Memory: " + totalMemory / (1024 * 1024) + " MB");
-        System.out.println("Max Memory: " + maxMemory / (1024 * 1024) + " MB");
+        log.info("Used Memory: " + usedMemory / (1024 * 1024) + " MB");
+        log.info("Free Memory: " + freeMemory / (1024 * 1024) + " MB");
+        log.info("Total Memory: " + totalMemory / (1024 * 1024) + " MB");
+        log.info("Max Memory: " + maxMemory / (1024 * 1024) + " MB");
     }
 }

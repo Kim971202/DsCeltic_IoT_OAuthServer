@@ -66,6 +66,10 @@ public class DeviceStatusInfo {
       private String wk7;
       private String fwh;
 
+      private String fcLcActv;
+      private String ftMdActv;
+      private String ecOpActv;
+
       private String past;
       private String inDr;
       private String inCl;
@@ -88,6 +92,7 @@ public class DeviceStatusInfo {
       private String addrNickname;
       private String serialNumber;
       
+      private String vfLs;
       private String vtSp;
       private String onHour;
       private String onMinute;
@@ -100,5 +105,6 @@ public class DeviceStatusInfo {
       private String rsSl;
       private String rsPw;
       private String inAq;
+      private String otHm;
    }
 }
