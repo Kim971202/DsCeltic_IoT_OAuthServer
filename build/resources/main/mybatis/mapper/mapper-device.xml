@@ -6,8 +6,8 @@
     <resultMap id="dr910w" type="com.oauth.dto.gw.DeviceStatusInfo$Device"> </resultMap>
     <resultMap id="String" type="String"> </resultMap>
 
-    <select id="getDeviceInfoSearchList" parameterType="java.util.List" resultMap="device">
-        SELECT
+    <select id="getDeviceInfoSearchIdx" parameterType="java.util.List" resultMap="device">
+        SELECT DISTINCT
             device.DEVC_MODL_CD AS modelCode,
             device.ATTC_ID AS controlAuthKey,
             device.DEVC_ID AS deviceId,
@@ -21,14 +21,48 @@
             regist.TEMP_DEVC_REG_KEY AS tmpRegistKey,
             regist.GRP_IDX AS groupIdx,
             regist.GRP_NM AS groupName,
-            regist.USER_ID AS userId,
-            ROW_NUMBER() OVER () AS regSort
+            regist.USER_ID AS userId
         FROM
             TBR_IOT_DEVICE AS device
         INNER JOIN
             TBT_OPR_DEVICE_REGIST AS regist
         ON
             device.DEVC_ID = regist.DEVC_ID
+        INNER JOIN
+            TBD_USER_INVITE_GROUP AS invite
+        ON
+            regist.GRP_IDX = invite.GRP_IDX
+        WHERE
+            invite.GRP_IDX IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getDeviceInfoSearchList" parameterType="java.util.List" resultMap="device">
+        SELECT
+        device.DEVC_MODL_CD AS modelCode,
+        device.ATTC_ID AS controlAuthKey,
+        device.DEVC_ID AS deviceId,
+        regist.DEVC_NICK AS deviceNickname,
+        regist.ZIP AS zipCode,
+        regist.OLD_ADDR AS oldAddr,
+        regist.NEW_ADDR AS newAddr,
+        regist.DTAIL_ADDR AS addrDetail,
+        regist.LAT AS latitude,
+        regist.LON AS longitude,
+        regist.TEMP_DEVC_REG_KEY AS tmpRegistKey,
+        regist.GRP_IDX AS groupIdx,
+        regist.GRP_NM AS groupName,
+        regist.USER_ID AS userId,
+        ROW_NUMBER() OVER () AS regSort
+        FROM
+        TBR_IOT_DEVICE AS device
+        INNER JOIN
+        TBT_OPR_DEVICE_REGIST AS regist
+        ON
+        device.DEVC_ID = regist.DEVC_ID
+        INNER JOIN
         WHERE
             regist.USER_ID IN
         <foreach collection="list" item="item" open="(" separator="," close=")">
@@ -156,13 +190,13 @@
         </foreach>
     </insert>
 
-    <delete id="deleteDeviceListGrpInfo" parameterType="com.oauth.dto.AuthServerDTO">
+    <delete id="deleteDeviceListGrpInfo" parameterType="list">
         DELETE FROM
-            TBD_USER_INVITE_GROUP
+            TBR_IOT_DEVICE_GRP_INFO
         WHERE
             (DEVC_ID, GRP_ID) IN
         <foreach collection="list" item="item" open="(" separator="),(" close=")">
-            #{item.deviceId}, #{item.userId}
+            (#{item.deviceId}, #{item.userId})
         </foreach>
     </delete>
 
@@ -320,10 +354,13 @@
         UPDATE
             TBT_OPR_DEVICE_REGIST
         SET
+            ZIP = #{zipCode},
+            OLD_ADDR = #{oldAddr},
+            NEW_ADDR = #{newAddr},
+            DTAIL_ADDR = #{addrDetail},
             LAT = #{latitude},
             LON = #{longitude},
-            DEVC_NICK = #{deviceNickname},
-            GRP_NM = #{groupName}
+            DEVC_NICK = #{deviceNickname}
         WHERE
             TEMP_DEVC_REG_KEY = #{tmpRegistKey}
         AND
@@ -343,8 +380,10 @@
         UPDATE
             TBR_OPR_DEVICE_DETAIL
         SET
+            ZIP = #{zipCode},
             OLD_ADDR = #{oldAddr},
             NEW_ADDR = #{newAddr},
+            DTAIL_ADDR = #{addrDetail},
             DEVC_NICK = #{deviceNickname}
         WHERE
             DEVC_ID = #{deviceId}
@@ -395,7 +434,9 @@
             regist.NEW_ADDR AS newAddr,
             regist.DTAIL_ADDR AS addrDetail,
             regist.LAT AS latitude,
-            regist.LON AS longitude
+            regist.LON AS longitude,
+            regist.GRP_IDX AS groupIdx,
+            regist.GRP_NM AS groupName
         FROM
             TBR_IOT_DEVICE AS device
         INNER JOIN
@@ -403,7 +444,7 @@
         ON
             device.DEVC_ID = regist.DEVC_ID
         WHERE
-            device.DEVC_ID =  #{deviceId} AND regist.USER_ID = #{userId};
+            device.DEVC_ID =  #{deviceId}
     </select>
 
     <insert id="insertDeviceStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
@@ -436,6 +477,8 @@
             <if test="inAq != null">INAQ,</if>
             <if test="ven7Wk != null">7WK,</if>
             <if test="vtSp != null">VTSP,</if>
+            <if test="vfLs != null">VFLS,</if>
+            <if test="otHm != null">OTHM,</if>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -466,6 +509,8 @@
             <if test="inAq != null">#{inAq},</if>
             <if test="ven7Wk != null">#{ven7Wk},</if>
             <if test="vtSp != null">#{vtSp},</if>
+            <if test="vfLs != null">#{vfLs},</if>
+            <if test="otHm != null">#{OTHM},</if>
         </trim>
     </insert>
 
@@ -474,8 +519,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="deviceId != null">DEVC_ID,</if>
             <if test="serialNumber != null">SERIAL_NO,</if>
-            <if test="ftMd != null">FTMD,</if>
-            <if test="fcLc != null">FCLC,</if>
+            <if test="ftMdActv != null">FTMD,</if>
+            <if test="fcLcActv != null">FCLC,</if>
+            <if test="ecOpActv != null">ECOP,</if>
             <if test="past != null">PAST,</if>
             <if test="inDr != null">INDR,</if>
             <if test="inCl != null">INCL,</if>
@@ -486,8 +532,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="deviceId != null">#{deviceId},</if>
             <if test="serialNumber != null">#{serialNumber},</if>
-            <if test="ftMd != null">#{ftMd},</if>
-            <if test="fcLc != null">#{fcLc},</if>
+            <if test="ftMdActv != null">#{ftMdActv},</if>
+            <if test="fcLcActv != null">#{fcLcActv},</if>
+            <if test="ecOpActv != null">#{ecOpActv},</if>
             <if test="past != null">#{past},</if>
             <if test="inDr != null">#{inDr},</if>
             <if test="inCl != null">#{inCl},</if>
@@ -520,8 +567,10 @@
                     <if test="blCf != null">BLCF = #{blCf},</if>
                     SLCD = #{slCd},
                     VTSP = #{vtSp},
+                    VFLS = #{vfLs},
                     <if test="rsSl != null">RSSL = #{rsSl},</if>
                     <if test="rsPw != null">RSPW = #{rsPw},</if>
+                    <if test="otHm != null">#{OTHM},</if>
                     INAQ = #{inAq},
                     MFDT = now()
         WHERE
@@ -533,8 +582,9 @@
             TBR_OPR_ACTIVE_DEVICE_STATUS
         SET
             <if test="serialNumber != null">SERIAL_NO = #{serialNumber},</if>
-            <if test="ftMd != null">FTMD = #{ftMd},</if>
-            <if test="fcLc != null">FCLC = #{fcLc},</if>
+            <if test="ftMdActv != null">FTMD = #{ftMdActv},</if>
+            <if test="fcLcActv != null">FCLC = #{fcLcActv},</if>
+            <if test="ecOpActv != null">ECOP = #{ecOpActv},</if>
             <if test="past != null">PAST = #{past},</if>
             <if test="inDr != null">INDR = #{inDr},</if>
             <if test="inCl != null">INCL = #{inCl},</if>
@@ -685,6 +735,7 @@
             IFNULL(SERIAL_NO, '') AS serialNumber,
             IFNULL(FTMD, '') AS ftMd,
             IFNULL(FCLC, '') AS fcLc,
+            IFNULL(ECOP, '') AS ecOp,
             IFNULL(PAST, '') AS past,
             IFNULL(INDR, '') AS inDr,
             IFNULL(INCL, '') AS inCl,
@@ -880,6 +931,17 @@
             DEVC_ID = #{deviceId}
     </select>
 
+    <select id="checkDeviceUserId" parameterType="String" resultMap="device">
+        SELECT
+            COUNT(*) AS deviceCount
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            USER_ID = #{userId}
+        AND
+            DEVC_ID = #{deviceId}
+    </select>
+
     <select id="getCheckedDeviceExist" parameterType="String" resultMap="device">
         SELECT
             a.DEVC_ID AS deviceId,
@@ -927,4 +989,34 @@
             #{item}
         </foreach>
     </delete>
+
+    <select id="getGroupNameAndDeviceNickByDeviceId" parameterType="String" resultMap="device">
+        SELECT
+            GRP_NM AS groupName,
+            DEVC_NICK AS deviceNickname,
+            GRP_IDX AS groupIdx
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
+    <select id="getDeviceIdByDeviceModelCode" parameterType="String" resultMap="String">
+        SELECT
+            DEVC_ID AS deviceId
+        FROM
+            TBR_IOT_DEVICE
+        WHERE
+            DEVC_MODL_CD = 'ESCeco13S'
+    </select>
+
+    <select id="getDeviceNicknameByDeviceId" parameterType="String" resultMap="device">
+        SELECT
+            DEVC_NICK AS deviceNickname
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            DEVC_ID =  #{deviceId}
+    </select>
+
 </mapper>

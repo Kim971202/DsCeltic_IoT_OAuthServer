@@ -34,6 +34,7 @@ public class AuthServerDTO implements Serializable {
     private Integer frontRow = 0;
     private Integer secondRow = 0;
 
+    private String phoneId;
     private Long idx;
     private String newId;
     private String houseLeaderFlag;

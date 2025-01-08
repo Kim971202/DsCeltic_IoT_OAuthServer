@@ -37,10 +37,11 @@ public class ReservationController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getType24h()) ||
-                Validator.isNullOrEmpty(params.getOnOffFlag())) {
+            Validator.isNullOrEmpty(params.getDeviceId()) ||
+            Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+            Validator.isNullOrEmpty(params.getType24h()) ||
+            Validator.isNullOrEmpty(params.getHours()) ||
+            Validator.isNullOrEmpty(params.getPushToken())) {
             throw new CustomException("404", "24시간 예약 값 오류");
         }
 
@@ -61,7 +62,7 @@ public class ReservationController {
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getWorkPeriod()) ||
                 Validator.isNullOrEmpty(params.getWorkTime()) ||
-                Validator.isNullOrEmpty(params.getOnOffFlag())) {
+                Validator.isNullOrEmpty(params.getPushToken())) {
             throw new CustomException("404", "반복(12시간) 예약 값 오류");
         }
 
@@ -79,7 +80,9 @@ public class ReservationController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey())){
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getAwakeList()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "빠른 온수 예약 값 오류");
         }
 
@@ -98,7 +101,9 @@ public class ReservationController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getOnOffFlag())){
+                Validator.isNullOrEmpty(params.getWeekList()) ||
+                Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "주간 예약 값 오류");
         }
 

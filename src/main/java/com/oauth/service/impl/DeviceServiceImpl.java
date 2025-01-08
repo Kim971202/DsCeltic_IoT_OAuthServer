@@ -224,7 +224,6 @@ public class DeviceServiceImpl implements DeviceService {
         String modelCode = params.getModelCode();
         String controlAuthKey = params.getControlAuthKey();
         String redisValue;
-
         MobiusResponse response;
 
         AuthServerDTO checkDeviceExist;
@@ -437,10 +436,6 @@ public class DeviceServiceImpl implements DeviceService {
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
-
-                // 기기없는 그룹 삭제
-//                common.deleteNoDeviceGroup();
-
                 stringObject = "Y";
             }
 
@@ -461,8 +456,6 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setLongitude(params.getLongitude());
                 result.setTmpRegistKey("NULL");
             }
-
-            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
 
             params.setUserId(userId);
             params.setPushTitle("기기제어");

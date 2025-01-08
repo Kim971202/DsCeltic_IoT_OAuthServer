@@ -41,7 +41,8 @@ public class DeviceController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getModelCode())) {
+                Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getPushToken())) {
             throw new CustomException("404", "홈 IoT 컨트롤러 상태 정보 조회 값 오류");
         }
 
@@ -63,7 +64,8 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getPowerStatus()) ||
                 Validator.isNullOrEmpty(params.getOnOffFlag()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey())){
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "전원 On/Off 값 오류");
         }
         return deviceService.doPowerOnOff(params);
@@ -108,7 +110,8 @@ public class DeviceController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
            Validator.isNullOrEmpty(params.getDeviceId()) ||
-           Validator.isNullOrEmpty(params.getControlAuthKey())){
+           Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+           Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "홈 IoT 컨트롤러 정보 조회-단건 값 오류");
         }
         return deviceService.doDeviceInfoSearch(params);
@@ -128,7 +131,8 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getOnOffFlag()) ||
-                Validator.isNullOrEmpty(params.getModeCode())){
+                Validator.isNullOrEmpty(params.getModeCode()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "모드변경 값 오류");
         }
         return deviceService.doModeChange(params);
@@ -147,7 +151,8 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getOnOffFlag()) ||
-                Validator.isNullOrEmpty(params.getTemperture())){
+                Validator.isNullOrEmpty(params.getTemperture()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "실내온도 설정 값 오류");
         }
         return deviceService.doTemperatureSet(params);
@@ -166,7 +171,8 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getOnOffFlag()) ||
-                Validator.isNullOrEmpty(params.getTemperture())){
+                Validator.isNullOrEmpty(params.getTemperture()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "난방수온도 설정 값 오류");
         }
         return deviceService.doBoiledWaterTempertureSet(params);
@@ -184,7 +190,8 @@ public class DeviceController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getTemperture())){
+                Validator.isNullOrEmpty(params.getTemperture()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "온수온도 설정 값 오류");
         }
         return deviceService.doWaterTempertureSet(params);
@@ -202,7 +209,8 @@ public class DeviceController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getModeCode())){
+                Validator.isNullOrEmpty(params.getModeCode()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "빠른온수 설정 값 오류");
         }
         return deviceService.doFastHotWaterSet(params);
@@ -220,7 +228,8 @@ public class DeviceController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getLockSet())){
+                Validator.isNullOrEmpty(params.getLockSet()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "잠금 모드 설정 값 오류");
         }
         return deviceService.doLockSet(params);
@@ -235,7 +244,7 @@ public class DeviceController {
         log.info("[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]");
         common.logParams(params);
 
-        if(Validator.isNullOrEmpty(params.getUserId())){
+        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 값 오류");
         }
         return deviceService.doBasicDeviceStatusInfo(params);
@@ -254,7 +263,8 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey())||
                 Validator.isNullOrEmpty(params.getDeviceType())||
-                Validator.isNullOrEmpty(params.getModelCode())){
+                Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "홈 IoT 컨트롤러 에러 정보 조회 값 오류");
         }
         return deviceService.doDeviceErrorInfo(params);
@@ -269,7 +279,9 @@ public class DeviceController {
         log.info("[홈 IoT 정보 조회 - 리스트]");
         common.logParams(params);
 
-        if(Validator.isNullOrEmpty(params.getUserId())|| Validator.isNullOrEmpty(params.getGroupIdxList())){
+        if(Validator.isNullOrEmpty(params.getUserId()) || 
+            Validator.isNullOrEmpty(params.getGroupIdxList()) ||
+            Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "홈 IoT 정보 조회 - 리스트 값 오류");
         }
         return deviceService.doDeviceInfoSearchList(params);
@@ -288,7 +300,8 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getFanSpeed()) ||
-                Validator.isNullOrEmpty(params.getModelCode())){
+                Validator.isNullOrEmpty(params.getModelCode()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "홈 IoT 컨트롤러 풍량 단수 설정 - 리스트 값 오류");
         }
         return deviceService.doVentilationFanSpeedSet(params);
@@ -305,7 +318,8 @@ public class DeviceController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey())){
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
             throw new CustomException("404", "홈 IoT 컨트롤러 활성/비활성 정보 요청 오류");
         }
         return deviceService.doActiveStatus(params);

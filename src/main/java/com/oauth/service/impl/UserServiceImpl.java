@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     /** 회원 로그인 */
     @Override
-    public ResponseEntity<?> doLogin(String userId, String userPassword, String pushToken) throws CustomException {
+    public ResponseEntity<?> doLogin(String userId, String userPassword, String phoneId, String pushToken) throws CustomException {
 
         String userNickname;
         String password;
@@ -61,8 +61,13 @@ public class UserServiceImpl implements UserService {
         String token;
         String hp;
 
+        AuthServerDTO params = new AuthServerDTO();
         AuthServerDTO householdStatus;
+        AuthServerDTO phoneIdInfo;
         AuthServerDTO info = new AuthServerDTO();
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
         try {
 
             AuthServerDTO account = memberMapper.getAccountByUserId(userId);
@@ -98,6 +103,22 @@ public class UserServiceImpl implements UserService {
             result.setRegistUserType(registUserType);
             result.setAccessToken(token);
             result.setUserNickname(userNickname);
+            
+            // TODO: phoneId의 값이 DEFAULT인 경우 최초 로그인 이므로 PASS
+            phoneIdInfo = memberMapper.getPhoneIdInfo(userId);
+            if(!phoneIdInfo.getPhoneId().equals("DEFAULT")){
+                // TODO: phoneId의 값이 입력 받은 쿼리한 phoneId와 다른 경우 PUSH 전송
+                if(!phoneId.equals(phoneIdInfo.getPhoneId())){
+                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userId).getPushToken());
+                    conMap.put("title", "Duplicated_Login");
+                    String jsonString = objectMapper.writeValueAsString(conMap);
+                    if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                        log.info("PUSH 메세지 전송 오류");
+                }
+            }
+            params.setUserId(userId);
+            params.setPhoneId(phoneId);
+            memberMapper.updatePhoneId(params);
 
             // TODO: TBR_OPR_USER 테이블의 USER_STATUS_LOG_INOUT의 값을 Y
             info.setUserId(userId);
@@ -113,11 +134,9 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else result.setHp(hp);
 
-            AuthServerDTO params = new AuthServerDTO();
 
             params.setAccessToken(token);
             params.setPushToken(pushToken);
-            params.setUserId(userId);
 
             if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
             if(memberMapper.updateLoginDatetime(params) <= 0) log.info("LOGIN_INFO_UPDATE_ERROR");
@@ -1758,8 +1777,7 @@ public class UserServiceImpl implements UserService {
                 msg = "공지사항 목록이 없습니다.";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-            else {
+            } else {
                 for(AuthServerDTO authServerDTO : notice){
                     Map<String, String> map = new HashMap<>();
                     map.put("noticeIdx", authServerDTO.getNoticeIdx());
