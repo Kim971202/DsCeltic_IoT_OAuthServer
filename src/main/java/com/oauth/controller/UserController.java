@@ -64,7 +64,6 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) || 
             Validator.isNullOrEmpty(params.getUserPassword()) ||
-            Validator.isNullOrEmpty(params.getPhoneId()) ||
             Validator.isNullOrEmpty(params.getPushToken())) {
             throw new CustomException("404", "회원 로그인 입력 값 오류");
         }
