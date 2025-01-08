@@ -702,6 +702,12 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
+                deviceInfo.setOpMd(modeCode);
+                deviceInfo.setDeviceId(deviceId);
+                if(params.getModeCode().equals("06")) deviceInfo.setSlCd(sleepCode);
+
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
                 if(onOffFlag.equals("on")){
                     for(int i = 0; i < userIds.size(); ++i){
                         if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
@@ -721,12 +727,6 @@ public class DeviceServiceImpl implements DeviceService {
                                 log.info("PUSH 메세지 전송 오류");
                         }
                     }
-
-                    deviceInfo.setOpMd(modeCode);
-                    deviceInfo.setDeviceId(deviceId);
-                    if(params.getModeCode().equals("06")) deviceInfo.setSlCd(sleepCode);
-
-                    deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
                     switch (modeCode){
                         case "01":
@@ -760,10 +760,10 @@ public class DeviceServiceImpl implements DeviceService {
                             params.setControlCodeName("예약난방-24시간");
                             break;
                         case "11":
-                            params.setControlCodeName("예약난방-반복(12시간)");
+                            params.setControlCodeName("예약난방-반복");
                             break;
                         case "12":
-                            params.setControlCodeName("예약난방-주간");
+                            params.setControlCodeName("예약난방-주간"); // 91 - 예약난방-24시간주간
                             break;
                         case "21":
                             params.setControlCodeName("수동-전열환기모드");
@@ -924,6 +924,10 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
+                deviceInfo.setHtTp(params.getTemperture());
+                deviceInfo.setDeviceId(params.getDeviceId());
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
                 if(onOffFlag.equals("on")){
                     for(int i = 0; i < userIds.size(); ++i){
                         if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
@@ -941,10 +945,6 @@ public class DeviceServiceImpl implements DeviceService {
                                 log.info("PUSH 메세지 전송 오류");
                         }
                     }
-
-                    deviceInfo.setHtTp(params.getTemperture());
-                    deviceInfo.setDeviceId(params.getDeviceId());
-                    deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
                     common.insertHistory(
                             "1",
@@ -1075,6 +1075,10 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
+                deviceInfo.setWtTp(params.getTemperture());
+                deviceInfo.setDeviceId(deviceId);
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
                 if(onOffFlag.equals("on")){
                     for(int i = 0; i < userIds.size(); ++i){
                         if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
@@ -1094,10 +1098,6 @@ public class DeviceServiceImpl implements DeviceService {
                                 log.info("PUSH 메세지 전송 오류");
                         }
                     }
-
-                    deviceInfo.setWtTp(params.getTemperture());
-                    deviceInfo.setDeviceId(deviceId);
-                    deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
                     common.insertHistory(
                             "1",
@@ -1226,6 +1226,10 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
+                deviceInfo.setHwTp(params.getTemperture());
+                deviceInfo.setDeviceId(deviceId);
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+
                 for(int i = 0; i < userIds.size(); ++i){
                     if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
                         conMap.put("pushYn", pushYnList.get(i).getFPushYn());
@@ -1243,10 +1247,6 @@ public class DeviceServiceImpl implements DeviceService {
                             log.info("PUSH 메세지 전송 오류");
                     }
                 }
-
-                deviceInfo.setHwTp(params.getTemperture());
-                deviceInfo.setDeviceId(deviceId);
-                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
                 common.insertHistory(
                         "1",

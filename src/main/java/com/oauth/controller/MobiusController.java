@@ -125,19 +125,20 @@ public class MobiusController {
             }
         } else if (functionId.equals("vfLs")){
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
-            deviceInfo.setDeviceId(common.readCon(jsonBody, "deviceId"));
+            deviceInfo.setDeviceId(deviceId);
 
             deviceInfo.setVfLs(common.readCon(jsonBody, "vfLs"));
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
-            List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
+            List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(deviceId);
 
             AuthServerDTO info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
             for (AuthServerDTO id : userIds) {
                 log.info("쿼리한 UserId: " + id.getUserId());
                 if(memberMapper.getUserLoginoutStatus(id.getUserId()).getLoginoutStatus().equals("Y")){
                     info.setUserId(id.getUserId());
-                    info.setDeviceId(common.readCon(jsonBody, "deviceId"));
+                    info.setDeviceId(deviceId);
+                    info.setDeviceId(deviceId);
                     String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
                     String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
                     pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"), info.getDeviceNickname());
@@ -151,9 +152,9 @@ public class MobiusController {
             common.setCommandParams(nonNullFields, params);
 
             // 결과 출력
-            System.out.println("CommandId: " + params.getCommandId());
-            System.out.println("ControlCode: " + params.getControlCode());
-            System.out.println("ControlCodeName: " + params.getControlCodeName());
+            log.info("CommandId: " + params.getCommandId());
+            log.info("ControlCode: " + params.getControlCode());
+            log.info("ControlCodeName: " + params.getControlCodeName());
 
             params.setCommandId(params.getCommandId());
             params.setControlCode(params.getControlCode());
@@ -176,7 +177,7 @@ public class MobiusController {
         } else if (functionId.equals("mfSt")) {
 
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
-            deviceInfo.setDeviceId(common.readCon(jsonBody, "deviceId"));
+            deviceInfo.setDeviceId(deviceId);
 
             deviceInfo.setFtMd(common.readCon(jsonBody, "ftMd"));
             deviceInfo.setFcLc(common.readCon(jsonBody, "fcLc"));
@@ -233,7 +234,7 @@ public class MobiusController {
             log.info("rcUpdateResult: " + rcUpdateResult);
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
-            List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(common.readCon(jsonBody, "deviceId"));
+            List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(deviceId);
 
             AuthServerDTO info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
 
@@ -241,7 +242,7 @@ public class MobiusController {
                 log.info("쿼리한 UserId: " + id.getUserId());
                 if(memberMapper.getUserLoginoutStatus(id.getUserId()).getLoginoutStatus().equals("Y")){
                     info.setUserId(id.getUserId());
-                    info.setDeviceId(common.readCon(jsonBody, "deviceId"));
+                    info.setDeviceId(deviceId);
 
                     String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
                     String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
@@ -255,14 +256,14 @@ public class MobiusController {
 
             if(!common.readCon(jsonBody, "mfCd").equals("acTv")){
                 Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
-                System.out.println("Non-null fields: " + nonNullFields);
+                log.info("Non-null fields: " + nonNullFields);
 
                 common.setCommandParams(nonNullFields, params);
 
                 // 결과 출력
-                System.out.println("CommandId: " + params.getCommandId());
-                System.out.println("ControlCode: " + params.getControlCode());
-                System.out.println("ControlCodeName: " + params.getControlCodeName());
+                log.info("CommandId: " + params.getCommandId());
+                log.info("ControlCode: " + params.getControlCode());
+                log.info("ControlCodeName: " + params.getControlCodeName());
 
                 params.setCommandId(params.getCommandId());
                 params.setControlCode(params.getControlCode());
@@ -288,7 +289,7 @@ public class MobiusController {
             DeviceStatusInfo.Device dr910WDevice = new DeviceStatusInfo.Device();
 
             // 공통 필드 설정
-            dr910WDevice.setDeviceId(common.readCon(jsonBody, "deviceId"));
+            dr910WDevice.setDeviceId(deviceId);
             dr910WDevice.setRKey(common.readCon(jsonBody, "rKey"));
             dr910WDevice.setSerialNumber(common.readCon(jsonBody, "srNo"));
             dr910WDevice.setPowr(common.readCon(jsonBody, "powr")); // 전원 ON/OF
