@@ -1,5 +1,5 @@
 <configuration>
-    <property name="LOG_PATH" value="/home/ubuntu/DsCeltic_IoT_OAuthServer/logs"/>
+    <property name="LOG_PATH" value="/app/logs"/>
 
     <!-- Console Appender -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
