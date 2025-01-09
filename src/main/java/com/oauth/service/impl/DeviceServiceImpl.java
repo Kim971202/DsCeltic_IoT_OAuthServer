@@ -753,7 +753,7 @@ public class DeviceServiceImpl implements DeviceService {
                             params.setControlCodeName("예약난방-24시간");
                             break;
                         case "11":
-                            params.setControlCodeName("예약난방-반복");
+                            params.setControlCodeName("예약난방-반복예약");
                             break;
                         case "12":
                             if(modelCode.equals("DCR-91/WF"))
