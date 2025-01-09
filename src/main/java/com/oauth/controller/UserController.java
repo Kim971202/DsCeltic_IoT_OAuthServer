@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -65,7 +66,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) || 
             Validator.isNullOrEmpty(params.getUserPassword()) ||
             Validator.isNullOrEmpty(params.getPushToken())) {
-            throw new CustomException("404", "회원 로그인 입력 값 오류");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body( "회원 로그인 입력 값 오류");
         }
 
         return userService.doLogin(params.getUserId(), params.getUserPassword(), params.getPhoneId(), params.getPushToken());
@@ -81,7 +82,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getPushToken())) {
-            throw new CustomException("404", "회원 로그아웃 입력 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body( "회원 로그아웃 입력 값 오류");
         }
 
         return userService.doLogout(params.getUserId(), params.getPushToken());
@@ -102,7 +103,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getUserPassword()) ||
                 Validator.isNullOrEmpty(params.getRegistUserType()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "회원 가입 입력 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 가입 입력 값 오류");
         }
         return userService.doRegist(params);
     }
@@ -117,7 +118,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId())){
-            throw new CustomException("404", "ID 중복 확인 입력 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID 중복 확인 입력 값 오류");
         }
 
         return userService.doDuplicationCheck(params);
@@ -135,7 +136,8 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getHp()) ||
            Validator.isNullOrEmpty(params.getDeviceType()) ||
            Validator.isNullOrEmpty(params.getModelCode())){
-            throw new CustomException("404", "ID 찾기 확인 입력 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID 찾기 확인 입력 값 오류");
+
         }
 
         return userService.doIdFind(params);
@@ -155,7 +157,8 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "비밀번호 찾기 - 초기화 입력 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("비밀번호 찾기 - 초기화 입력 값 오류");
+
         }
 
         return userService.doResetPassword(params);
@@ -173,7 +176,8 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) || 
             Validator.isNullOrEmpty(params.getUserPassword()) ||
             Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "비밀번호 변경 - 생성 입력 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("비밀번호 변경 - 생성 입력 값 오류");
+
         }
         return userService.doChangePassword(params);
     }
@@ -188,7 +192,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "사용자정보 조회 입력 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자정보 조회 입력 값 오류");
         }
 
         return userService.doSearch(params);
@@ -206,7 +210,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) || 
             Validator.isNullOrEmpty(params.getHouseLeaderFlag()) ||
             Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "사용자정보 조회 입력 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자정보 조회 입력 값 오류");
         }
 
         return userService.doSearchGroupInfo(params);
@@ -222,7 +226,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getGroupIdx()) || Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "사용자정보 조회 입력 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자정보 조회 입력 값 오류");
         }
 
         return userService.doDeleteGroup(params);
@@ -241,7 +245,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getGroupName()) ||
                 Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "사용자정보 조회 입력 값 오류");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자정보 조회 입력 값 오류");
         }
 
         return userService.doChangeGroupName(params);
@@ -259,7 +263,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) || 
             Validator.isNullOrEmpty(params.getGroupName()) ||
             Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "사용자 그룹 생성 입력 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 그룹 생성 입력 값 오류");
         }
 
         return userService.doCreateNewGroup(params);
@@ -279,7 +283,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getUserNickname()) ||
                 Validator.isNullOrEmpty(params.getNewHp()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "회원 별칭(이름) 및 전화번호 변경 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 별칭(이름) 및 전화번호 변경 값 오류");
         }
 
         return userService.doUpdateUserNicknameHp(params);
@@ -298,7 +302,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getOldPassword()) ||
                 Validator.isNullOrEmpty(params.getNewPassword()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "회원 별칭(이름) 및 전화번호 변경 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 별칭(이름) 및 전화번호 변경 값 오류");
         }
 
         return userService.doUpdatePassword(params);
@@ -316,7 +320,7 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) || 
             Validator.isNullOrEmpty(params.getGroupIdxList())){
-            throw new CustomException("404", "사용자(세대원) 정보 조회 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자(세대원) 정보 조회 값 오류");
         }
         return userService.doViewHouseholdMemebers(params);
     }
@@ -338,7 +342,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getGroupIdx()) ||
                 Validator.isNullOrEmpty(params.getGroupName()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "사용자 추가 - 초대 값 오류");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 추가 - 초대 값 오류");
         }
 
         return userService.doAddUser(params);
@@ -362,7 +366,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getInvitationIdx()) ||
                 Validator.isNullOrEmpty(params.getGroupName()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "사용자 초대 - 수락여부 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 초대 - 수락여부 값 오류");
         }
 
         return userService.doInviteStatus(params);
@@ -378,7 +382,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId())){
-            throw new CustomException("404", "회원 별칭(이름) 및 전화번호 변경 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 별칭(이름) 및 전화번호 변경 값 오류");
         }
 
         return userService.doInviteListView(params);
@@ -398,7 +402,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getGroupIdx()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "사용자(세대원) - 강제탈퇴 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자(세대원) - 강제탈퇴 값 오류");
         }
         return userService.doDelHouseholdMembers(params);
     }
@@ -421,7 +425,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getPushCd()) ||
                 Validator.isNullOrEmpty(params.getPushYn())){
-            throw new CustomException("404", "홈 IoT 컨트롤러 알림 설정 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 컨트롤러 알림 설정 값 오류");
         }
 
         return userService.doPushSet(params);
@@ -432,18 +436,20 @@ public class UserController {
      */
     @PostMapping(value = "/searchPushSet")
     @ResponseBody
-    public HashMap<String, Object> doSearchPushSet(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+    public HashMap<String, Object> doSearchPushSet(HttpServletRequest request, HttpServletResponse response, @ModelAttribute AuthServerDTO params)
             throws CustomException{
 
         log.info("[홈 IoT 컨트롤러 알림 정보 조회]");
         common.logParams(params);
-
+        HashMap<String, Object> result  = new HashMap<>();
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getSearchFlag())){
-            throw new CustomException("404", "홈 IoT 컨트롤러 알림 정보 조회 값 오류");
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404 상태 코드 설정
+                    result .put("message", "홈 IoT 컨트롤러 알림 정보 조회 값 오류");
+                    return result; // 404 Bad Request
         }
         return userService.doSearchPushSet(params);
     }
@@ -463,7 +469,7 @@ public class UserController {
             Validator.isNullOrEmpty(params.getUserId())|| 
             Validator.isNullOrEmpty(params.getGroupIdx()) ||
             Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "사용자(세대주) 탈퇴 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자(세대주) 탈퇴 값 오류");
         }
         return userService.doDelHouseholder(params);
     }
@@ -481,7 +487,7 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||  
             Validator.isNullOrEmpty(params.getUserPassword())){
-            throw new CustomException("404", "홈IoT 서비스 회원 탈퇴 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈IoT 서비스 회원 탈퇴 값 오류");
         }
         return userService.doWithdrawal(params);
     }
@@ -498,7 +504,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getDeviceId()) || Validator.isNullOrEmpty(params.getControlAuthKey())){
-            throw new CustomException("404", "홈 IoT 컨트롤러 인증 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 컨트롤러 인증 값 오류");
         }
 
         return userService.doDeviceAuthCheck(params);
@@ -518,7 +524,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) || 
             Validator.isNullOrEmpty(params.getAccessToken()) ||
             Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "API인증키 갱신 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("API인증키 갱신 값 오류");
         }
         return userService.doAccessTokenVerification(params);
     }
@@ -541,7 +547,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "홈 IoT 최초 등록 인증 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 최초 등록 인증 값 오류");
         }
         return userService.doFirstDeviceAuthCheck(params);
     }
@@ -564,7 +570,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getGroupIdx()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 값 오류");
         }
         return userService.doUserDeviceDelete(params);
     }
@@ -585,7 +591,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getPageNo()) ||
                 Validator.isNullOrEmpty(params.getNumOfRows()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "스마트알림 - PUSH 이력 조회 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("스마트알림 - PUSH 이력 조회 값 오류");
         }
         return userService.doViewPushHistory(params);
 
@@ -608,7 +614,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getNewDeviceNickname()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "기기 별칭 수정 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("기기 별칭 수정 값 오류");
         }
         return userService.doDeviceNicknameChange(params);
     }
@@ -632,7 +638,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getBrightnessLevel()) ||
                 Validator.isNullOrEmpty(params.getPushToken())
                 ){
-            throw new CustomException("404", "기기 밝기 조절 값 오류");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("기기 밝기 조절 값 오류");
         }
         return userService.doBrightnessControl(params);
     }
@@ -653,7 +659,7 @@ public class UserController {
             Validator.isNullOrEmpty(params.getEndDatetime()) ||
             Validator.isNullOrEmpty(params.getPushToken())
             ){
-            throw new CustomException("404", "공지사항 조회 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("공지사항 조회 값 오류");
         }
         return userService.doNotice(params);
     }
@@ -674,7 +680,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getNewDeviceLocNickname()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "기기 설치 위치 별칭 수정 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("기기 설치 위치 별칭 수정 값 오류");
         }
         return userService.doUpdateDeviceLocationNickname(params);
     }
@@ -691,7 +697,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId())){
-            throw new CustomException("404", "임시 저장키 생성 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("임시 저장키 생성 오류");
         }
         return userService.dogenerateTempKey(params.getUserId());
     }
@@ -712,7 +718,7 @@ public class UserController {
             Validator.isNullOrEmpty(params.getSafeAlarmStatus()) ||
             Validator.isNullOrEmpty(params.getDeviceId()) ||
             Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "안전안심 알람 설정 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("안전안심 알람 설정 값 오류");
         }
         return userService.doSafeAlarmSet(params);
     }
@@ -731,7 +737,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "빠른온수 예약 정보 조회 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("빠른온수 예약 정보 조회 오류");
         }
         return userService.doGetFastHotWaterInfo(params);
     }
@@ -750,7 +756,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            throw new CustomException("404", "환기 필터 잔여 수명 정보 조회 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("환기 필터 잔여 수명 정보 조회 오류");
         }
         return userService.doGetFanLifeStatus(params);
     }

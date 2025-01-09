@@ -1,5 +1,5 @@
 <configuration>
-    <property name="LOG_PATH" value="/home/ubuntu/DsCeltic_IoT_OAuthServer/logs"/>
+    <property name="LOG_PATH" value="/app/logs"/>
 
     <!-- Console Appender -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -13,7 +13,7 @@
         <file>${LOG_PATH}/oauthserver.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH}/oauthserver.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
+            <maxHistory>365</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
@@ -21,11 +21,8 @@
     </appender>
 
     <!-- Root Logger -->
-    <root level="warn">
+    <root level="info">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
-    <!-- 특정 패키지 로그 레벨 설정 -->
-    <logger name="org.springframework" level="warn" />
-    <logger name="com.zaxxer.hikari" level="warn" />
 </configuration>

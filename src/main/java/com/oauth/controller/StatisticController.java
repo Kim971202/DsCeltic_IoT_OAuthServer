@@ -8,6 +8,7 @@ import com.oauth.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,19 +35,22 @@ public class StatisticController {
 
     /* 홈 IoT 가동시간 통계조회 */
     @RequestMapping("/infoDaily")
-    public HashMap<String, Object> doInfoDaily(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+    public HashMap<String, Object> doInfoDaily(HttpServletRequest request, HttpServletResponse response, @ModelAttribute AuthServerDTO params)
             throws CustomException {
 
         log.info("[홈 IoT가동시간 통계조회]");
         common.logParams(params);
-
+        HashMap<String, Object> result  = new HashMap<>();
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getStartDate()) ||
                 Validator.isNullOrEmpty(params.getEndDate()) ||
                 Validator.isNullOrEmpty(params.getPushToken())) {
-            throw new CustomException("404", "홈 IoT가동시간 통계조회 값 오류");
+
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404 상태 코드 설정
+                    result .put("message", "홈 IoT가동시간 통계조회 값 오류");
+                    return result; // 404 Bad Request
         }
 
         return statisticService.doInfoDaily(params);
