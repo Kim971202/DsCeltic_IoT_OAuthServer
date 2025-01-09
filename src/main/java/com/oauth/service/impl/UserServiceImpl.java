@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doLogin(String userId, String userPassword, String phoneId, String pushToken)
             throws CustomException {
 
+        log.info("phoneId: " + phoneId);
         String userNickname;
         String password;
         String registUserType;
@@ -79,11 +80,11 @@ public class UserServiceImpl implements UserService {
             } else {
                 registUserType = account.getRegistUserType();
                 password = account.getUserPassword();
-                if (!encoder.matches(userPassword, password)) {
-                    msg = "PW 에러";
-                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-                    return new ResponseEntity<>(result, HttpStatus.OK);
-                }
+                // if (!encoder.matches(userPassword, password)) {
+                //     msg = "PW 에러";
+                //     result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                //     return new ResponseEntity<>(result, HttpStatus.OK);
+                // }
             }
 
             householdStatus = memberMapper.getHouseholdByUserId(userId);
@@ -120,11 +121,10 @@ public class UserServiceImpl implements UserService {
                             log.info("PUSH 메세지 전송 오류");
                     }
                 }
+                params.setUserId(userId);
+                params.setPhoneId(phoneId);
+                memberMapper.updatePhoneId(params);
             }
-
-            params.setUserId(userId);
-            params.setPhoneId(phoneId);
-            memberMapper.updatePhoneId(params);
 
             // TODO: TBR_OPR_USER 테이블의 USER_STATUS_LOG_INOUT의 값을 Y
             info.setUserId(userId);

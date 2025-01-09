@@ -1,8 +1,12 @@
 version: '3.8'
 services:
   redis:
-    image: redis
+    image: redis:latest # Redis 최신 버전 사용
     container_name: redis
+    restart: unless-stopped # 컨테이너 비정상 종료 시 자동 재시작
+    networks:
+      - oauth_network
+
   oauthserver:
     build: .
     container_name: oauthserver
@@ -13,4 +17,8 @@ services:
       SPRING_REDIS_PORT: 6379
     volumes:
       - /home/ubuntu/DsCeltic_IoT_OAuthServer/logs:/app/logs
-
+    depends_on:
+      - redis # Redis 컨테이너가 먼저 실행되도록 설정
+    restart: unless-stopped
+    networks:
+      - oauth_network
