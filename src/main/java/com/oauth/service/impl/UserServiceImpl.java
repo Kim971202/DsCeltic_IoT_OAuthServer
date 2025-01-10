@@ -80,11 +80,11 @@ public class UserServiceImpl implements UserService {
             } else {
                 registUserType = account.getRegistUserType();
                 password = account.getUserPassword();
-                // if (!encoder.matches(userPassword, password)) {
-                //     msg = "PW 에러";
-                //     result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-                //     return new ResponseEntity<>(result, HttpStatus.OK);
-                // }
+                 if (!encoder.matches(userPassword, password)) {
+                     msg = "PW 에러";
+                     result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                     return new ResponseEntity<>(result, HttpStatus.OK);
+                 }
             }
 
             householdStatus = memberMapper.getHouseholdByUserId(userId);
@@ -116,8 +116,7 @@ public class UserServiceImpl implements UserService {
                         conMap.put("targetToken", memberMapper.getPushTokenByUserId(userId).getPushToken());
                         conMap.put("title", "Duplicated_Login");
                         String jsonString = objectMapper.writeValueAsString(conMap);
-                        if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode()
-                                .equals("201"))
+                        if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
                             log.info("PUSH 메세지 전송 오류");
                     }
                 }
@@ -311,7 +310,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /** 비밀번호 찾기 - 초기화 */
+    /** 비밀번호 찾기 */
     @Override
     public ResponseEntity<?> doResetPassword(AuthServerDTO params) throws CustomException {
 
@@ -350,7 +349,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /** 비밀번호 변경 - 생성 */
+    /** 비밀번호 변경 */
     @Override
     public ResponseEntity<?> doChangePassword(AuthServerDTO params) throws CustomException {
 
@@ -551,7 +550,7 @@ public class UserServiceImpl implements UserService {
         try {
             // TODO: groupName 중복 여부 확인
             duplicateResult = memberMapper.checkDuplicateGroupName(params);
-            if (duplicateResult.getGroupNameCount().equals("1")) {
+            if (duplicateResult.getGroupNameCount().equals("2")) {
                 msg = "그룹 명칭 중복";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1019, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);
@@ -587,23 +586,8 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data data = new ApiResponse.Data();
         String msg = null;
-        String userPassword = params.getUserPassword();
-        AuthServerDTO dbPassword;
 
         try {
-            dbPassword = memberMapper.getPasswordByUserId(params.getUserId());
-            if (dbPassword == null) {
-                msg = "계정이 존재하지 않습니다.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            if (!encoder.matches(userPassword, dbPassword.getUserPassword())) {
-                msg = "비밀번호 오류.";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
             // TODO: 신규 전화번호 가 본인 번호 인지 확인
             if (memberMapper.checkDuplicateHpByUserId(params).getHpCount().equals("1")) {
                 if (memberMapper.updateHp(params) <= 0) {
@@ -879,10 +863,6 @@ public class UserServiceImpl implements UserService {
                 }
                 params.setUserId(responseUserId);
 
-                // params.setNewId(params.getRequestUserId());
-                // params.setOldId(params.getResponseUserId());
-                // memberMapper.updateGrpInfoTableForNewHousehold(params);
-
                 inputList = new ArrayList<>();
                 for (AuthServerDTO authServerDTO : deviceIdList) {
                     AuthServerDTO newDevice = new AuthServerDTO();
@@ -937,7 +917,6 @@ public class UserServiceImpl implements UserService {
 
             // params에 userId 추가
             params.setUserId(params.getResponseUserId());
-
             if (memberMapper.updatePushToken(params) <= 0)
                 log.info("구글 FCM TOKEN 갱신 실패.");
             pushToken = memberMapper.getPushTokenByUserId(requestUserId);
@@ -958,6 +937,7 @@ public class UserServiceImpl implements UserService {
 
             if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
                 log.info("PUSH 메세지 전송 오류");
+
             AuthServerDTO pushInfo = new AuthServerDTO();
             pushInfo.setPushTitle("acIv");
             pushInfo.setPushContent(inviteAcceptYn);
@@ -1028,7 +1008,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /** 사용자(세대원) - 강제탈퇴 */
+    /** 사용자(세대원) - 그룹 탈퇴 */
     @Override
     public ResponseEntity<?> doDelHouseholdMembers(AuthServerDTO params)
             throws CustomException {
@@ -1077,6 +1057,7 @@ public class UserServiceImpl implements UserService {
             }
             msg = "사용자(세대원) - 강제탈퇴 성공";
 
+            params.setUserId(delUserId);
             if (memberMapper.updatePushToken(params) <= 0)
                 log.info("구글 FCM TOKEN 갱신 실패.");
 
@@ -1184,68 +1165,120 @@ public class UserServiceImpl implements UserService {
         HashMap<String, Object> resultMap = new LinkedHashMap<String, Object>();
         List<AuthServerDTO> deviceIdList;
         List<AuthServerDTO> groupInfoList;
+        AuthServerDTO pushCode;
+        AuthServerDTO groupInfo;
+        String searchFlag = params.getSearchFlag();
 
-        // "push" 부분을 표현하는 List 생성
-        List<Map<String, String>> pushList = new ArrayList<>();
         try {
 
-            // TDOD: 세대주 ID 쿼리
-            householderId = memberMapper.getHouseholdByUserId(userId).getGroupId();
-            deviceIdList = memberMapper.getDeviceIdByUserIds(householderId);
+            log.info("00-단건, 01-전체");
 
-            // TODO: deviceIdList로 regist 테이블에서 groupName, groupIdx 추출
-            groupInfoList = memberMapper.getGroupInfoByDeviceId(deviceIdList);
+            // "push" 부분을 표현하는 List 생성
+            List<Map<String, String>> pushList = new ArrayList<>();
 
-            // deviceIds를 쉼표로 구분된 String으로 변환
-            String deviceIds = deviceIdList.stream()
-                    .map(AuthServerDTO::getDeviceId)
-                    .collect(Collectors.joining("','", "'", "'"));
+            if(searchFlag.equals("00")){
+                String deviceId = params.getDeviceId();
+                String controlAuthkey = params.getControlAuthKey();
 
-            List<AuthServerDTO> pushCodeInfo = memberMapper.getPushCodeStatus(params.getUserId(), deviceIds);
-            if (pushCodeInfo == null) {
-                resultMap.put("resultCode", "1016");
-                resultMap.put("resultMsg", "쿼리 결과 없음");
-                return resultMap;
-            }
-            // 사용자가 가진 DeviceId 리스트 개수 만큼 생성
-            for (int i = 0; pushCodeInfo.size() > i; ++i) {
-                System.out.println("int i: " + i);
-                // 각각의 "pushCd"와 "pushYn"을 가지는 Map을 생성하여 리스트에 추가
+                pushCode = memberMapper.getSinglePushCodeStatus(params);
+                groupInfo = memberMapper.getGroupInfoForPush(deviceId);
+
                 Map<String, String> push1 = new LinkedHashMap<>();
                 push1.put("pushCd", "01");
-                push1.put("pushYn", pushCodeInfo.get(i).getFPushYn());
-                push1.put("deviceId", pushCodeInfo.get(i).getDeviceId());
-                push1.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
-                push1.put("modelCode", pushCodeInfo.get(i).getModelCode());
-                push1.put("groupIdx", groupInfoList.get(i).getGroupIdx());
-                push1.put("groupName", groupInfoList.get(i).getGroupName());
-                push1.put("deviceNick", groupInfoList.get(i).getDeviceNickname());
+                push1.put("pushYn", pushCode.getFPushYn());
+                push1.put("deviceId", pushCode.getDeviceId());
+                push1.put("controlAuthKey", pushCode.getControlAuthKey());
+                push1.put("modelCode", pushCode.getModelCode());
+                push1.put("groupIdx", groupInfo.getGroupIdx());
+                push1.put("groupName", groupInfo.getGroupName());
+                push1.put("deviceNick", groupInfo.getDeviceNickname());
                 pushList.add(push1);
 
                 Map<String, String> push2 = new LinkedHashMap<>();
                 push2.put("pushCd", "02");
-                push2.put("pushYn", pushCodeInfo.get(i).getSPushYn());
-                push2.put("deviceId", pushCodeInfo.get(i).getDeviceId());
-                push2.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
-                push2.put("modelCode", pushCodeInfo.get(i).getModelCode());
-                push2.put("groupIdx", groupInfoList.get(i).getGroupIdx());
-                push2.put("groupName", groupInfoList.get(i).getGroupName());
-                push2.put("deviceNick", groupInfoList.get(i).getDeviceNickname());
+                push2.put("pushYn", pushCode.getSPushYn());
+                push2.put("deviceId", pushCode.getDeviceId());
+                push2.put("controlAuthKey", pushCode.getControlAuthKey());
+                push2.put("modelCode", pushCode.getModelCode());
+                push2.put("groupIdx", groupInfo.getGroupIdx());
+                push2.put("groupName", groupInfo.getGroupName());
+                push2.put("deviceNick", groupInfo.getDeviceNickname());
                 pushList.add(push2);
 
                 Map<String, String> push3 = new LinkedHashMap<>();
                 push3.put("pushCd", "03");
-                push3.put("pushYn", pushCodeInfo.get(i).getTPushYn());
-                push3.put("deviceId", pushCodeInfo.get(i).getDeviceId());
-                push3.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
-                push3.put("modelCode", pushCodeInfo.get(i).getModelCode());
-                push3.put("groupIdx", groupInfoList.get(i).getGroupIdx());
-                push3.put("groupName", groupInfoList.get(i).getGroupName());
-                push3.put("deviceNick", groupInfoList.get(i).getDeviceNickname());
+                push3.put("pushYn", pushCode.getTPushYn());
+                push3.put("deviceId", pushCode.getDeviceId());
+                push3.put("controlAuthKey", pushCode.getControlAuthKey());
+                push3.put("modelCode", pushCode.getModelCode());
+                push3.put("groupIdx", groupInfo.getGroupIdx());
+                push3.put("groupName", groupInfo.getGroupName());
+                push3.put("deviceNick", groupInfo.getDeviceNickname());
                 pushList.add(push3);
+
+                resultMap.put("push", pushList);
+
+            } else if(searchFlag.equals("01")){
+
+                // TDOD: 세대주 ID 쿼리
+                householderId = memberMapper.getHouseholdByUserId(userId).getGroupId();
+                deviceIdList = memberMapper.getDeviceIdByUserIds(householderId);
+
+                // TODO: deviceIdList로 regist 테이블에서 groupName, groupIdx 추출
+                groupInfoList = memberMapper.getGroupInfoByDeviceId(deviceIdList);
+
+                // deviceIds를 쉼표로 구분된 String으로 변환
+                String deviceIds = deviceIdList.stream()
+                        .map(AuthServerDTO::getDeviceId)
+                        .collect(Collectors.joining("','", "'", "'"));
+
+                List<AuthServerDTO> pushCodeInfo = memberMapper.getPushCodeStatus(params.getUserId(), deviceIds);
+                if (pushCodeInfo == null) {
+                    resultMap.put("resultCode", "1016");
+                    resultMap.put("resultMsg", "쿼리 결과 없음");
+                    return resultMap;
+                }
+                // 사용자가 가진 DeviceId 리스트 개수 만큼 생성
+                for (int i = 0; pushCodeInfo.size() > i; ++i) {
+                    System.out.println("int i: " + i);
+                    // 각각의 "pushCd"와 "pushYn"을 가지는 Map을 생성하여 리스트에 추가
+                    Map<String, String> push1 = new LinkedHashMap<>();
+                    push1.put("pushCd", "01");
+                    push1.put("pushYn", pushCodeInfo.get(i).getFPushYn());
+                    push1.put("deviceId", pushCodeInfo.get(i).getDeviceId());
+                    push1.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
+                    push1.put("modelCode", pushCodeInfo.get(i).getModelCode());
+                    push1.put("groupIdx", groupInfoList.get(i).getGroupIdx());
+                    push1.put("groupName", groupInfoList.get(i).getGroupName());
+                    push1.put("deviceNick", groupInfoList.get(i).getDeviceNickname());
+                    pushList.add(push1);
+
+                    Map<String, String> push2 = new LinkedHashMap<>();
+                    push2.put("pushCd", "02");
+                    push2.put("pushYn", pushCodeInfo.get(i).getSPushYn());
+                    push2.put("deviceId", pushCodeInfo.get(i).getDeviceId());
+                    push2.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
+                    push2.put("modelCode", pushCodeInfo.get(i).getModelCode());
+                    push2.put("groupIdx", groupInfoList.get(i).getGroupIdx());
+                    push2.put("groupName", groupInfoList.get(i).getGroupName());
+                    push2.put("deviceNick", groupInfoList.get(i).getDeviceNickname());
+                    pushList.add(push2);
+
+                    Map<String, String> push3 = new LinkedHashMap<>();
+                    push3.put("pushCd", "03");
+                    push3.put("pushYn", pushCodeInfo.get(i).getTPushYn());
+                    push3.put("deviceId", pushCodeInfo.get(i).getDeviceId());
+                    push3.put("controlAuthKey", pushCodeInfo.get(i).getControlAuthKey());
+                    push3.put("modelCode", pushCodeInfo.get(i).getModelCode());
+                    push3.put("groupIdx", groupInfoList.get(i).getGroupIdx());
+                    push3.put("groupName", groupInfoList.get(i).getGroupName());
+                    push3.put("deviceNick", groupInfoList.get(i).getDeviceNickname());
+                    pushList.add(push3);
+                }
+
+                resultMap.put("push", pushList);
             }
 
-            resultMap.put("push", pushList);
             resultMap.put("resultCode", "200");
             resultMap.put("resultMsg", "기기 알림 정보 조회 성공");
 
@@ -1301,7 +1334,7 @@ public class UserServiceImpl implements UserService {
             }
             deviceMapper.deleteDeviceListGrpInfo(inputList);
 
-            // TODO: 2. TBD_USER_INVITE_GROUP 다음 세대주 ID로 UPDATE
+            // TODO: 2.  다음 세대주TBD_USER_INVITE_GROUP ID로 UPDATE
             memberMapper.updateNewHouseHolder(params);
 
             // TODO: 3. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제

@@ -35,6 +35,8 @@ public interface MemberMapper {
     public List<AuthServerDTO> getUserIdFromDeviceGroup(String deviceId);
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
     public List<AuthServerDTO> getDeviceIdFromRegist(String userId);
+    public AuthServerDTO getGroupInfoForPush(String deviceId);
+    public AuthServerDTO getSinglePushCodeStatus(AuthServerDTO params);
     public AuthServerDTO getPhoneIdInfo(String userId);
     public AuthServerDTO checkSafeAlarmSet(AuthServerDTO params);
     public AuthServerDTO checkLastIndex(AuthServerDTO params);
