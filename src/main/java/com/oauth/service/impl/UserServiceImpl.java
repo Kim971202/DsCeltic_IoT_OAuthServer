@@ -107,6 +107,8 @@ public class UserServiceImpl implements UserService {
             result.setAccessToken(token);
             result.setUserNickname(userNickname);
 
+            params.setUserId(userId);
+
             if (phoneId != null) {
                 // TODO: phoneId의 값이 DEFAULT인 경우 최초 로그인 이므로 PASS
                 phoneIdInfo = memberMapper.getPhoneIdInfo(userId);
@@ -120,7 +122,6 @@ public class UserServiceImpl implements UserService {
                             log.info("PUSH 메세지 전송 오류");
                     }
                 }
-                params.setUserId(userId);
                 params.setPhoneId(phoneId);
                 memberMapper.updatePhoneId(params);
             }
