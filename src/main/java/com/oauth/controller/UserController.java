@@ -144,13 +144,13 @@ public class UserController {
 
     }
 
-    /** 비밀번호 찾기 - 초기화 */
+    /** 비밀번호 찾기 */
     @PostMapping(value = "/resetPassword")
     @ResponseBody
     public ResponseEntity<?> doResetPassword(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException{
 
-        log.info("[비밀번호 찾기 - 초기화]");
+        log.info("[비밀번호 찾기]");
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getHp()) ||
@@ -165,13 +165,13 @@ public class UserController {
         return userService.doResetPassword(params);
     }
 
-    /** 비밀번호 변경 - 생성 */
+    /** 비밀번호 변경 */
     @PostMapping(value = "/changePassword")
     @ResponseBody
     public ResponseEntity<?> doChangePassword(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException{
 
-        log.info("[비밀번호 변경 - 생성]");
+        log.info("[비밀번호 변경]");
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) || 
@@ -280,7 +280,6 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getUserPassword()) ||
                 Validator.isNullOrEmpty(params.getUserNickname()) ||
                 Validator.isNullOrEmpty(params.getNewHp()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
@@ -389,13 +388,13 @@ public class UserController {
         return userService.doInviteListView(params);
     }
 
-    /** 사용자(세대원) - 강제탈퇴 */
+    /** 사용자(세대원) - 그룹 탈퇴 */
     @PostMapping(value = "/delHouseholdMembers")
     @ResponseBody
     public ResponseEntity<?> doDelHouseholdMembers(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException{
 
-        log.info("[사용자(세대원) - 강제탈퇴경]");
+        log.info("[사용자(세대원) - 그룹 탈퇴]");
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getHp()) ||
@@ -403,7 +402,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getGroupIdx()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자(세대원) - 강제탈퇴 값 오류");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자(세대원) - 그룹 탈퇴 값 오류");
         }
         return userService.doDelHouseholdMembers(params);
     }
