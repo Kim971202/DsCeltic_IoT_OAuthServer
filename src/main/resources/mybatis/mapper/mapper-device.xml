@@ -194,9 +194,8 @@
         DELETE FROM
             TBR_IOT_DEVICE_GRP_INFO
         WHERE
-            (DEVC_ID, GRP_ID) IN
-        <foreach collection="list" item="item" open="(" separator="),(" close=")">
-            (#{item.deviceId}, #{item.userId})
+        <foreach collection="list" item="item" separator=" OR ">
+            (DEVC_ID = #{item.deviceId} AND GRP_ID = #{item.userId})
         </foreach>
     </delete>
 
