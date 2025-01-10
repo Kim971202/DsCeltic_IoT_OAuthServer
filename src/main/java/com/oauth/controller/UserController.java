@@ -154,6 +154,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getHp()) ||
+                Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
@@ -444,7 +445,6 @@ public class UserController {
         HashMap<String, Object> result  = new HashMap<>();
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getHp()) ||
-                Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getSearchFlag())){
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404 상태 코드 설정
