@@ -15,7 +15,7 @@
             USER_ID = #{userId}
     </select>
 
-        <update id="updatePhoneId" parameterType="com.oauth.dto.AuthServerDTO">
+    <update id="updatePhoneId" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBR_OPR_ACCOUNT
         SET
@@ -328,6 +328,37 @@
             push.USER_ID = #{userId}
         AND
             push.DEVC_ID IN (${deviceIds})
+    </select>
+
+    <select id="getSinglePushCodeStatus" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            push.PUSH_YN_01 AS fPushYn,
+            push.PUSH_YN_02 AS sPushYn,
+            push.PUSH_YN_03 AS tPushYn,
+            push.DEVC_ID AS deviceId,
+            device.ATTC_ID AS controlAuthKey,
+            device.DEVC_MODL_CD AS modelCode
+        FROM
+            TBR_OPR_USER_DEVICE_PUSH AS push
+        INNER JOIN
+            TBR_IOT_DEVICE AS device
+        ON
+            push.DEVC_ID = device.DEVC_ID
+        WHERE
+            push.USER_ID = #{userId}
+        AND
+            push.DEVC_ID = #{deviceId}
+    </select>
+
+    <select id="getGroupInfoForPush" parameterType="String" resultMap="member">
+        SELECT
+            DEVC_NICK AS deviceNickname,
+            GRP_IDX AS groupIdx,
+            GRP_NM AS groupName
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            DEVC_ID = #{deviceId}
     </select>
 
     <select id="getNextHouseholderUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
@@ -1428,4 +1459,25 @@
             DEVC_ID = #{deviceId}
     </update>
 
+    <select id="getSafeAlarmInfo" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            SAFE_ALARM_TIME AS safeAlarmTime
+        FROM
+            TBR_OPR_SAFE_ALARM
+        WHERE
+            USER_ID = #{userId}
+        AND 
+            DEVC_ID = #{deviceId}
+    </select>
+
+    <select id="getSafeAlarmInfoCount" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS safeAlarmCount
+        FROM
+            TBR_OPR_SAFE_ALARM
+        WHERE
+            USER_ID = #{userId}
+        AND 
+            DEVC_ID = #{deviceId}
+    </select>
 </mapper>

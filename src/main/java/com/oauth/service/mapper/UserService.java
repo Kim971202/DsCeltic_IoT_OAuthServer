@@ -117,5 +117,7 @@ public interface UserService {
     /** 환기 필터 잔여 수명 정보 조회 */
     ResponseEntity<?> doGetFanLifeStatus(AuthServerDTO params) throws Exception;
 
+    /** 안전 안심 알람 정보 조회 */
+    ResponseEntity<?> doGetSafeAlarmSetInfo(AuthServerDTO params) throws Exception;
 
 }

@@ -2050,6 +2050,44 @@ public class UserServiceImpl implements UserService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
 
+            if (memberMapper.updatePushToken(params) <= 0)
+            log.info("구글 FCM TOKEN 갱신 실패.");
+
+            log.info("result: " + result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /** 안전 안심 알람 정보 조회 */
+    @Override
+    public ResponseEntity<?> doGetSafeAlarmSetInfo(AuthServerDTO params) throws Exception {
+        
+        ApiResponse.Data result = new ApiResponse.Data();
+        String msg = "";
+
+        AuthServerDTO safeAlarmCount;
+        AuthServerDTO safeAlarmInfo;
+
+        try {
+            
+            safeAlarmCount = memberMapper.getSafeAlarmInfoCount(params);
+            if(safeAlarmCount.getSafeAlarmCount().equals("0")){
+                msg = "안전 안심 알람 정보 조회 성공";
+                result.setSafeAlarmTime("0000");
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            } else {
+                msg = "안전 안심 알람 정보 조회 성공";
+                safeAlarmInfo = memberMapper.getSafeAlarmInfo(params);
+                result.setSafeAlarmTime(safeAlarmInfo.getSafeAlarmTime());
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+
+            if (memberMapper.updatePushToken(params) <= 0)
+            log.info("구글 FCM TOKEN 갱신 실패.");
+
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {

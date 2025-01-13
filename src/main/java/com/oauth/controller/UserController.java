@@ -760,6 +760,25 @@ public class UserController {
         return userService.doGetFanLifeStatus(params);
     }
 
+    /**
+     * 안전 안심 알람 정보 조회
+     * */
+    @PostMapping(value = "/getSafeAlarmSetInfo")
+    @ResponseBody
+    public ResponseEntity<?> doGetSafeAlarmSetInfo(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws Exception {
+
+        log.info("안전 안심 알람 정보 조회");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getPushToken())){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("안전 안심 알람 정보 조회 오류");
+        }
+        return userService.doGetSafeAlarmSetInfo(params);
+    }
+
     @PostMapping(value = "/test")
     public String test(String on) throws Exception {
 

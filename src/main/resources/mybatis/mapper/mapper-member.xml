@@ -694,6 +694,16 @@
             DEVC_ID = #{deviceId}
     </update>
 
+    <update id="updateSafeAlarmSetByBcDt" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE
+            TBR_OPR_SAFE_ALARM
+        SET
+            REC_HWST_RUN_TIME = now(),
+            HWST_STATUS = #{bCdt}
+        WHERE
+            DEVC_ID = #{deviceId}
+    </update>
+
     <select id="getSafeAlarmSet" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             USER_ID AS userId,
@@ -1459,4 +1469,25 @@
             DEVC_ID = #{deviceId}
     </update>
 
+    <select id="getSafeAlarmInfo" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            SAFE_ALARM_TIME AS safeAlarmTime
+        FROM
+            TBR_OPR_SAFE_ALARM
+        WHERE
+            USER_ID = #{userId}
+        AND 
+            DEVC_ID = #{deviceId}
+    </select>
+
+    <select id="getSafeAlarmInfoCount" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            COUNT(*) AS safeAlarmCount
+        FROM
+            TBR_OPR_SAFE_ALARM
+        WHERE
+            USER_ID = #{userId}
+        AND 
+            DEVC_ID = #{deviceId}
+    </select>
 </mapper>

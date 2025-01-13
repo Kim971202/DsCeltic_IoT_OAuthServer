@@ -179,6 +179,7 @@ public class AuthServerDTO implements Serializable {
     private String deviceCount;
     private String userCount;
     private String inviteCount;
+    private String safeAlarmCount;
 
     private String deviceInfo;                   // Y/N 기기 존재 여부
 

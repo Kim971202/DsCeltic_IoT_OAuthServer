@@ -35,6 +35,8 @@ public interface MemberMapper {
     public List<AuthServerDTO> getUserIdFromDeviceGroup(String deviceId);
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
     public List<AuthServerDTO> getDeviceIdFromRegist(String userId);
+    public AuthServerDTO getSafeAlarmInfo(AuthServerDTO params);
+    public AuthServerDTO getSafeAlarmInfoCount(AuthServerDTO params);
     public AuthServerDTO getGroupInfoForPush(String deviceId);
     public AuthServerDTO getSinglePushCodeStatus(AuthServerDTO params);
     public AuthServerDTO getPhoneIdInfo(String userId);
@@ -94,6 +96,7 @@ public interface MemberMapper {
     public int updateRegistTable(AuthServerDTO member);
     public int InsertSafeAlarmSet(AuthServerDTO member);
     public int updateSafeAlarmSet(DeviceStatusInfo.Device deviceStatusInfo);
+    public int updateSafeAlarmSetByBcDt(DeviceStatusInfo.Device deviceStatusInfo);
     public int insertPushHistory(AuthServerDTO member);
     public int updatePushToken(AuthServerDTO member);
     public int insertUserDevicePush(AuthServerDTO member);
