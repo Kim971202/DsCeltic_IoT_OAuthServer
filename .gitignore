@@ -21,6 +21,11 @@ build/tmp/
 !build/
 !build/libs/*.jarnohup.out
 
+build/
+*.class
+*.bin
+
+
 launch.json
 settings.json
 build/tmp/compileJava/compileTransaction/stash-dir/UserServiceImpl.class.uniqueId20
