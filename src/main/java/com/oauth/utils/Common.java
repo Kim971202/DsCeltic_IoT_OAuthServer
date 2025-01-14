@@ -1,32 +1,24 @@
 package com.oauth.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.oauth.dto.AuthServerDTO;
+import com.oauth.dto.gw.DeviceStatusInfo;
 import com.oauth.jwt.ApiTokenUtils;
 import com.oauth.jwt.TokenMaterial;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
-import com.oauth.response.ApiResponse;
+import com.oauth.service.impl.MobiusService;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -41,6 +33,8 @@ public class Common {
     private MemberMapper memberMapper;
     @Autowired
     private DeviceMapper deviceMapper;
+    @Autowired
+    MobiusService mobiusService;
 
     public static List<String> extractJson(String inputList, String inputKey) {
 
@@ -455,4 +449,17 @@ public class Common {
         if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
     }
 
+    public void updateStatusGoogle(DeviceStatusInfo.Device deviceInfo, String deviceId){
+
+        HashMap<String, String> conMap = new HashMap<>();
+        try {
+            if(deviceInfo.getPowr() != null) conMap.put("value", deviceInfo.getPowr());
+            if(deviceInfo.getHtTp() != null) conMap.put("value", deviceInfo.getHtTp());
+            conMap.put("deviceId", deviceId);
+
+            mobiusService.createCin("ToGoogleServer", "ToGoogleServerCnt", JSON.toJson(conMap));
+        } catch (Exception e){
+            log.error("", e);
+        }
+    }
 }

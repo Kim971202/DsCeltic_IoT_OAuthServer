@@ -597,7 +597,18 @@ public class ReservationServiceImpl implements ReservationService{
                 weekList.add(map);
                 map = new HashMap<>();
             }
-            setWeek.setWeekList(weekList);
+            
+            HashMap<String, Object> mnValue = new HashMap<>();
+            // 최종 결과에 `weekList`와 `mn` 추가
+            mnValue.put("7wk", weekList);
+            mnValue.put("mn", params.getMn());
+        
+            List<HashMap<String, Object>> resultList = new ArrayList<>();
+            resultList.add(mnValue);  // mn 값 추가
+
+            setWeek.setWeekList(resultList);
+            System.out.println(setWeek.getWeekList());
+
             redisValue = params.getUserId() + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
 
@@ -651,6 +662,7 @@ public class ReservationServiceImpl implements ReservationService{
                 }
 
                 deviceInfo.setWk7(JSON.toJson(weekList));
+                deviceInfo.setMn(params.getMn());
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 

@@ -9,7 +9,6 @@ import com.oauth.response.ApiResponse;
 import com.oauth.service.impl.MobiusService;
 import com.oauth.service.impl.PushService;
 import com.oauth.utils.Common;
-import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 @Slf4j
 @RestController
@@ -220,7 +218,7 @@ public class MobiusController {
 
             if(common.readCon(jsonBody, "7wk") != null){
                 if(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")).equals("[{wk:,\"hs\":[]}]"))
-                    deviceInfo.setWk7("[{\"wk\":\"\",\"hs\":[]}]");
+                    deviceInfo.setWk7("[{\"wk\":\"\",\"hs\":[]}],\"mn\":\"\"");
                 else
                     deviceInfo.setWk7(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")));
             }

@@ -34,6 +34,7 @@ public class AuthServerDTO implements Serializable {
     private Integer frontRow = 0;
     private Integer secondRow = 0;
 
+    private String mn;
     private String phoneId;
     private Long idx;
     private String newId;
@@ -131,7 +132,7 @@ public class AuthServerDTO implements Serializable {
     private String awakeList;                    // 기상모드 설정 리스트 아이템
     private String[][] ws;
     private String[] hr;
-    private String[] mn;
+    // private String[] mn;
     private String weekList;                     // 요일: 0,1,2,3,4,5,6 (일,월,화,수,목,금,토)
     private String[] dayWeek;                    // 주간예약 요일별 가동시간
     private String pushToken;                    // 푸시 토큰

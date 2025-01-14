@@ -522,7 +522,8 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("slCd", value.getSlCd());
                         resultMap.put("hwSt", value.getHwSt());
                         resultMap.put("fcLc", value.getFcLc());
-
+                        resultMap.put("mn", value.getMn());
+                        
                         ConcurrentHashMap<String, ConcurrentHashMap<String, String>> rscfMap = new ConcurrentHashMap<>();
                         ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
 

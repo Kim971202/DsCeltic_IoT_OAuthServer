@@ -611,6 +611,7 @@
             <if test="hwSt != null">HWST = #{hwSt},</if>
             <if test="blCf != null">BLCF = #{blCf},</if>
             <if test="wk7 != null">7WK = #{wk7},</if>
+            <if test="mn != null">MN = #{mn},</if>
             <if test="h12 != null">12H = #{h12},</if>
             <if test="h24 != null">24H = #{h24},</if>
             <if test="fwh != null">FWH = #{fwh},</if>
@@ -712,6 +713,7 @@
             IFNULL(MFDT, '') AS mfDt,
             IFNULL(SLCD, '') AS slCd,
             IFNULL(BCDT, '') AS bCdt,
+            IFNULL(MN, '') AS mn,
             IFNULL(CWTP, 0.0) AS cwTp,
             IFNULL(BLCF, 0.0) AS blCf,
             IFNULL(VTSP, 0.0) AS vtSp,
