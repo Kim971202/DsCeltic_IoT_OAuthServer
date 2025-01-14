@@ -607,11 +607,9 @@ public class ReservationServiceImpl implements ReservationService{
                 List<HashMap<String, Object>> resultList = new ArrayList<>();
                 resultList.add(mnValue);  // mn 값 추가
                 setWeek.setWeekList(resultList);
-                deviceInfo.setWk7(JSON.toJson(resultList));
                 deviceInfo.setMn(params.getMn());
             } else {
                 setWeek.setWeekList(weekList);
-                deviceInfo.setWk7(JSON.toJson(weekList));
             }
 
             redisValue = params.getUserId() + "," + setWeek.getFunctionId();
@@ -666,6 +664,7 @@ public class ReservationServiceImpl implements ReservationService{
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
+                deviceInfo.setWk7(JSON.toJson(weekList));
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
