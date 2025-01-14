@@ -552,7 +552,7 @@ public class ReservationServiceImpl implements ReservationService{
     @Override
     public ResponseEntity<?> doSetWeek(AuthServerDTO params) throws CustomException {
 
-        log.info("Params:" + params);
+        log.info("mn:" + params.getMn());
 
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = "N";
