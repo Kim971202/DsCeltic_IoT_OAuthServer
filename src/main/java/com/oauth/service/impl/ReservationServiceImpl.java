@@ -560,6 +560,7 @@ public class ReservationServiceImpl implements ReservationService{
         String userId;
         String deviceId = params.getDeviceId();
         String onOffFlag = params.getOnOffFlag();
+        String modelCode = params.getModelCode();
         SetWeek setWeek = new SetWeek();
         List<HashMap<String, Object>> weekList = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map = new HashMap<>();
@@ -598,16 +599,20 @@ public class ReservationServiceImpl implements ReservationService{
                 map = new HashMap<>();
             }
             
-            HashMap<String, Object> mnValue = new HashMap<>();
-            // 최종 결과에 `weekList`와 `mn` 추가
-            mnValue.put("7wk", weekList);
-            mnValue.put("mn", params.getMn());
-        
-            List<HashMap<String, Object>> resultList = new ArrayList<>();
-            resultList.add(mnValue);  // mn 값 추가
-
-            setWeek.setWeekList(resultList);
-            System.out.println(setWeek.getWeekList());
+            if(modelCode.equals("DCR-91/WF")){
+                HashMap<String, Object> mnValue = new HashMap<>();
+                // 최종 결과에 `weekList`와 `mn` 추가
+                mnValue.put("7wk", weekList);
+                mnValue.put("mn", params.getMn());
+                List<HashMap<String, Object>> resultList = new ArrayList<>();
+                resultList.add(mnValue);  // mn 값 추가
+                setWeek.setWeekList(resultList);
+                deviceInfo.setWk7(JSON.toJson(resultList));
+                deviceInfo.setMn(params.getMn());
+            } else {
+                setWeek.setWeekList(weekList);
+                deviceInfo.setWk7(JSON.toJson(weekList));
+            }
 
             redisValue = params.getUserId() + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
@@ -661,8 +666,6 @@ public class ReservationServiceImpl implements ReservationService{
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                deviceInfo.setWk7(JSON.toJson(weekList));
-                deviceInfo.setMn(params.getMn());
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
