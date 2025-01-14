@@ -218,7 +218,7 @@ public class MobiusController {
 
             if(common.readCon(jsonBody, "7wk") != null){
                 if(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")).equals("[{wk:,\"hs\":[]}]"))
-                    deviceInfo.setWk7("[{\"wk\":\"\",\"hs\":[]}],\"mn\":\"\"");
+                    deviceInfo.setWk7("[{\"wk\":\"\",\"hs\":[]}]");
                 else
                     deviceInfo.setWk7(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")));
             }
@@ -249,6 +249,8 @@ public class MobiusController {
                     pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"), info.getDeviceNickname());
                 }
             }
+
+            common.updateStatusGoogle(deviceInfo, deviceId);
 
             AuthServerDTO params = new AuthServerDTO();
             params.setUserId("RC");
