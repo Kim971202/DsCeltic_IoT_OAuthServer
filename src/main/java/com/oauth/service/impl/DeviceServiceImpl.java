@@ -1284,6 +1284,7 @@ public class DeviceServiceImpl implements DeviceService {
         String msg;
         String userId;
         String deviceId = params.getDeviceId();
+        String modeCode = params.getModeCode();
         String redisValue;
         MobiusResponse response;
         String responseMessage = null;
@@ -1356,12 +1357,12 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 if(stringObject.equals("Y")) {
-                    conMap.put("body", "FastHotWaterSet OK");
+                    conMap.put("body", "FastHotWaterSet " + modeCode);
                     msg = "빠른온수 설정 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 }
                 else if(stringObject.equals("N")) {
-                    conMap.put("body", "FastHotWaterSet FAIL");
+                    conMap.put("body", "FastHotWaterSet " + modeCode);
                     msg = "빠른온수 설정 실패";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
