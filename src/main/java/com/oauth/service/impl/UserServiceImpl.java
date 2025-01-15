@@ -549,9 +549,9 @@ public class UserServiceImpl implements UserService {
         String userId = params.getUserId();
         AuthServerDTO duplicateResult;
         try {
-            // TODO: groupName 중복 여부 확인
+            // groupName 중복 여부 확인
             duplicateResult = memberMapper.checkDuplicateGroupName(params);
-            if (duplicateResult.getGroupNameCount().equals("2")) {
+            if (Integer.parseInt(duplicateResult.getGroupNameCount()) >= 1) {
                 msg = "그룹 명칭 중복";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1019, msg);
                 return new ResponseEntity<>(data, HttpStatus.OK);

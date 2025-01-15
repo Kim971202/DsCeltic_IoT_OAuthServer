@@ -39,6 +39,7 @@ public interface DeviceMapper {
     public DeviceStatusInfo.Device getSingleDeviceStauts(String deviceId);
     public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public DeviceStatusInfo.Device getActiveStautsByDeviceId(String deviceId);
+    public int insertDeviceGrpInfoByList(List<AuthServerDTO> info);
     public int updateGroupName(AuthServerDTO params);
     public int deleteNoDeviceGroupByList(List<String> groupIdxList);
     public int insertDeviceGrpInfo(AuthServerDTO params);

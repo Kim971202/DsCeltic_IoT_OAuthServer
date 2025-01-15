@@ -295,14 +295,14 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setModelCode(params.getModelCode().replaceAll(" ", ""));
                 params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
 
-                // TODO: 해당 기기가 기존에 등록된 기기 인지 확인
+                // 해당 기기가 기존에 등록된 기기 인지 확인
                 checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
                 if(!checkDeviceExist.getDeviceCount().equals("0")){
-                    // TODO: 해당 기기를 등록하는 사람인 요청자와 동일한 ID인지 확인 (동일할 경우 24시간, 빠른온수 예약 초기화 X)
+                    // 해당 기기를 등록하는 사람인 요청자와 동일한 ID인지 확인 (동일할 경우 24시간, 빠른온수 예약 초기화 X)
                     checkDeviceUser = deviceMapper.checkDeviceUserId(params);
                     if(checkDeviceUser.getDeviceCount().equals("0")){
                         log.info("신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다");
-                        // TODO: 신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다
+                        // 신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다
                         // [{"wk":"","hs":[]}] - 24시간
                         // [{"tf":"","ws":[""],"hr":"","mn":"","i":""}] - 빠른온수
 
@@ -349,7 +349,7 @@ public class DeviceServiceImpl implements DeviceService {
                         device.setFwh(JSON.toJson(awakeList));
                         deviceMapper.updateDeviceStatusFromApplication(device);
                     }
-                    // TODO: 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
+                    // 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
                     List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(deviceId);
                     for(AuthServerDTO authServerDTO : authServerDTOList){
                         memberMapper.deleteControllerMapping(authServerDTO);
@@ -364,23 +364,23 @@ public class DeviceServiceImpl implements DeviceService {
                 }
 
                 params.setGroupId(userId);
-                // TODO: getGroupIdx가 null이 아니고 비어있지 않은 경우의 처리
+                // getGroupIdx가 null이 아니고 비어있지 않은 경우의 처리
                 if(params.getGroupIdx() != null && !params.getGroupIdx().isEmpty()){
                     params.setIdx(Long.parseLong(params.getGroupIdx()));
                     groupLeaderIdByGroupIdx = memberMapper.getGroupLeaderIdByGroupIdx(params.getGroupIdx());
                     params.setGroupId(groupLeaderIdByGroupIdx.getGroupId());
                     familyMemberList = memberMapper.getFailyMemberByUserId(params);
                 } else {
-                    // TODO: getGroupIdx가 null이거나 비어있는 경우의 처리
+                    // getGroupIdx가 null이거나 비어있는 경우의 처리
                     memberMapper.insertInviteGroup(params);
                     memberMapper.updateInviteGroup(params);
-                    // TODO: 신규 등록 시 등록한 Idx를 기반으로 사용자 ID 쿼리
+                    // 신규 등록 시 등록한 Idx를 기반으로 사용자 ID 쿼리
                     groupLeaderId = memberMapper.getGroupLeaderId(params.getIdx());
                     params.setGroupId(groupLeaderId.getGroupId());
                     params.setGroupIdx(Long.toString(params.getIdx()));
                     familyMemberList = memberMapper.getFailyMemberByUserId(params);
                 }
-
+                
                 // Push 설정 관련 기본 DB 추가
                 List<AuthServerDTO> inputList = new ArrayList<>();
                 for (AuthServerDTO authServerDTO : familyMemberList){
@@ -393,6 +393,13 @@ public class DeviceServiceImpl implements DeviceService {
                     memberInfo.setUserId(authServerDTO.getUserId());
                     // 리스트에 추가
                     inputList.add(memberInfo);
+                }
+                
+                // TODO: TBR_IOT_DEVICE_GRP_INFO 테이블에 본인 포함 세대원 정보 추가
+                if(deviceMapper.insertDeviceGrpInfoByList(inputList) <= 0){
+                    msg = "사용자, 세대원 기기 정보 등록 실패.";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
                 if(memberMapper.insertUserDevicePushByList(inputList) <= 0){

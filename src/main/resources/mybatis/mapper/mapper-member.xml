@@ -1212,6 +1212,8 @@
         WHERE
             GRP_ID = #{userId}
         AND
+            USER_ID = #{userId}
+        AND
             GRP_NM = #{groupName}
     </select>
 
