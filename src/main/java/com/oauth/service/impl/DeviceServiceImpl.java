@@ -438,11 +438,11 @@ public class DeviceServiceImpl implements DeviceService {
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                if(deviceMapper.insertDeviceGrpInfo(params) <= 0){
-                    msg = "기기 정보 등록 실패.";
-                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                    return new ResponseEntity<>(result, HttpStatus.OK);
-                }
+                // if(deviceMapper.insertDeviceGrpInfo(params) <= 0){
+                //     msg = "기기 정보 등록 실패.";
+                //     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                //     return new ResponseEntity<>(result, HttpStatus.OK);
+                // }
                 stringObject = "Y";
             }
 
