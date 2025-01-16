@@ -72,6 +72,10 @@ public class GoogleController {
         if(functionId.equals("htTp")){
             conMap.put("temperature", value);
         }
+        
+	if(functionId.equals("wtTp")){
+            conMap.put("temperature", value);
+        }
 
         /*
         * Sleep 코드 정의
