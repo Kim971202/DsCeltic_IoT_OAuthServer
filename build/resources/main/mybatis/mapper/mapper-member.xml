@@ -1464,7 +1464,7 @@
         UPDATE
             TBR_OPR_SAFE_ALARM
         SET
-            SAFE_ALARM_REG_TIME = now()
+            SAFE_ALARM_REG_TIME = CONCAT(DATE(NOW()), ' ', TIME(SAFE_ALARM_REG_TIME))
         WHERE
             USER_ID = #{userId}
         AND
@@ -1492,4 +1492,14 @@
         AND 
             DEVC_ID = #{deviceId}
     </select>
+
+    <select id="getSafeAlarmTimeDiff" parameterType="String" resultMap="member">
+        SELECT
+            COUNT(*) AS timeCheckCount
+        FROM
+            TBR_OPR_SAFE_ALARM
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
 </mapper>

@@ -107,7 +107,7 @@ public class ReservationController {
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getWeekList()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getMn()) ||
+//                Validator.isNullOrEmpty(params.getMn()) ||
 //                Validator.isNullOrEmpty(params.getOnOffFlag()) ||
                 Validator.isNullOrEmpty(params.getPushToken())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주간 예약 값 오류");

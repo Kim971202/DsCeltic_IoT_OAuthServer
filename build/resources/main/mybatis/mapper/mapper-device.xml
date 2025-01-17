@@ -588,8 +588,8 @@
                     <if test="otHm != null">#{OTHM},</if>
                     INAQ = #{inAq},
                     MFDT = now()
-        WHERE
-            DEVC_ID = #{deviceId}
+            WHERE
+                DEVC_ID = #{deviceId}
     </update>
 
     <update id="updateActiveStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
