@@ -16,6 +16,7 @@ public class SetWeek {
     private List<HashMap<String, Object>> weekList;
     private String weekListInit;
     private String onOffFlag;
+    private String modelCode;
 
     private String functionId;
     private String uuId;

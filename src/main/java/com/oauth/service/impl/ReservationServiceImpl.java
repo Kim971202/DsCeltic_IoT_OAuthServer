@@ -588,6 +588,7 @@ public class ReservationServiceImpl implements ReservationService{
             setWeek.setFunctionId("7wk");
             setWeek.setUuId(common.getTransactionId());
             setWeek.setOnOffFlag(params.getOnOffFlag());
+            setWeek.setModelCode(modelCode);
 
             log.info("params.getWeekList(): " + (common.convertToJsonString(params.getWeekList())));
             JsonNode jsonNode = objectMapper.readTree(common.convertToJsonString(params.getWeekList()));
