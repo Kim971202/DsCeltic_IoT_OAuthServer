@@ -85,21 +85,20 @@ public class ScheduledSafeAlarm {
 
                     // 해당 사용자에게 PUSH 전송 이후 SAFE_ALARM_REG_TIME을 이전 시간값에서 현재 일자로 수정
                     memberMapper.updateSafePushAlarmTime(user);
+
+                    common.insertHistory(
+                            "PUSH_ONLY",
+                            "commandId",
+                            "controlCode",
+                            "controlName",
+                            "commandFlow",
+                            user.getDeviceId(),
+                            user.getUserId(),
+                            "saFe",
+                            "SAFE ALARM PUSH",
+                            "01"
+                    );
                 }
-
-
-                common.insertHistory(
-                        "PUSH_ONLY",
-                        "commandId",
-                        "controlCode",
-                        "controlName",
-                        "commandFlow",
-                        user.getDeviceId(),
-                        user.getUserId(),
-                        "saFe",
-                        "SAFE ALARM PUSH",
-                        "01"
-                        );
             }
 
         } else {
