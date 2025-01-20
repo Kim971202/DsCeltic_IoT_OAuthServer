@@ -1495,9 +1495,12 @@
 
     <select id="getSafeAlarmTimeDiff" parameterType="String" resultMap="member">
         SELECT
-            COUNT(*) AS timeCheckCount
+            COUNT(CASE
+                    WHEN TIMESTAMPDIFF(MINUTE, MFDT, NOW()) >= 60 THEN 1
+                    ELSE NULL
+                    END) AS count_result
         FROM
-            TBR_OPR_SAFE_ALARM
+            TBR_OPR_DEVICE_STATUS
         WHERE
             DEVC_ID = #{deviceId}
     </select>
