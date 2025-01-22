@@ -643,14 +643,17 @@
             USER_ID,
             DEVC_ID,
             SAFE_ALARM_TIME,
-            SAFE_ALARM_STATUS
+            SAFE_ALARM_STATUS,
+            SAFE_ALARM_END_TIME
         )
             VALUES
         (
             #{userId},
             #{deviceId},
             #{safeAlarmTime},
-            #{safeAlarmStatus}
+            #{safeAlarmStatus},
+            NOW() + INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 1, 2) AS UNSIGNED) DAY
+                  + INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 3, 2) AS UNSIGNED) HOUR
         )
     </insert>
 
@@ -660,7 +663,12 @@
         SET
             SAFE_ALARM_TIME = #{safeAlarmTime},
             SAFE_ALARM_STATUS = #{safeAlarmStatus},
-            SAFE_ALARM_REG_TIME = now()
+            REG_TIME = now(),
+            SAFE_ALARM_REG_TIME = now(),
+            SAFE_ALARM_END_TIME = DATE_ADD(
+                NOW(),
+                INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 1, 2) AS UNSIGNED) DAY
+            ) + INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 3, 2) AS UNSIGNED) HOUR
         WHERE
             USER_ID = #{userId}
         AND
@@ -689,6 +697,7 @@
             TBR_OPR_SAFE_ALARM
         SET
             REC_HWST_RUN_TIME = now(),
+            SAFE_ALARM_REG_TIME = now(),
             HWST_STATUS = #{hwSt}
         WHERE
             DEVC_ID = #{deviceId}
@@ -699,6 +708,7 @@
             TBR_OPR_SAFE_ALARM
         SET
             REC_HWST_RUN_TIME = now(),
+            SAFE_ALARM_REG_TIME = now(),
             HWST_STATUS = #{bCdt}
         WHERE
             DEVC_ID = #{deviceId}
