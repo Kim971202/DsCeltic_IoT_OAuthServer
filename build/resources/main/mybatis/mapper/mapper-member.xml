@@ -696,9 +696,13 @@
         UPDATE
             TBR_OPR_SAFE_ALARM
         SET
+            HWST_STATUS = #{hwSt},
             REC_HWST_RUN_TIME = now(),
             SAFE_ALARM_REG_TIME = now(),
-            HWST_STATUS = #{hwSt}
+            SAFE_ALARM_END_TIME = DATE_ADD(
+            NOW(),
+            INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 1, 2) AS UNSIGNED) DAY
+        ) + INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 3, 2) AS UNSIGNED) HOUR
         WHERE
             DEVC_ID = #{deviceId}
     </update>
@@ -707,9 +711,13 @@
         UPDATE
             TBR_OPR_SAFE_ALARM
         SET
+            HWST_STATUS = #{bCdt},
             REC_HWST_RUN_TIME = now(),
             SAFE_ALARM_REG_TIME = now(),
-            HWST_STATUS = #{bCdt}
+            SAFE_ALARM_END_TIME = DATE_ADD(
+            NOW(),
+            INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 1, 2) AS UNSIGNED) DAY
+        ) + INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 3, 2) AS UNSIGNED) HOUR
         WHERE
             DEVC_ID = #{deviceId}
     </update>
@@ -720,23 +728,16 @@
             DEVC_ID AS deviceId,
             SAFE_ALARM_TIME AS safeAlarmTime,
             SAFE_ALARM_STATUS AS safeAlarmStatus,
-            NOW() + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
-            + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR AS CALCULATED_TIME,
-            REC_HWST_RUN_TIME AS hwStTime
+            SAFE_ALARM_REG_TIME AS safeAlarmRegTime,
+            SAFE_ALARM_END_TIME AS safeAlarmEndTime
         FROM
             TBR_OPR_SAFE_ALARM
         WHERE
             (SAFE_ALARM_STATUS = 'Y' OR SAFE_ALARM_STATUS IS NULL)
-        AND (HWST_STATUS = 'of' OR HWST_STATUS IS NULL)
-        AND (
-            REC_HWST_RUN_TIME IS NULL
-            OR SAFE_ALARM_REG_TIME + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
-            + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR > REC_HWST_RUN_TIME
-        )
-        AND (
-            SAFE_ALARM_REG_TIME + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
-            + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR &lt; NOW()
-        );
+        AND
+            (HWST_STATUS = 'of' OR HWST_STATUS IS NULL)
+        AND
+            SAFE_ALARM_END_TIME &lt;= NOW();
     </select>
 
     <select id="getUserIdsByDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
@@ -1475,6 +1476,10 @@
             TBR_OPR_SAFE_ALARM
         SET
             SAFE_ALARM_REG_TIME = CONCAT(DATE(NOW()), ' ', TIME(SAFE_ALARM_REG_TIME))
+            SAFE_ALARM_END_TIME = DATE_ADD(
+                CONCAT(DATE(NOW()), ' ', TIME(SAFE_ALARM_REG_TIME)),
+                INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 1, 2) AS UNSIGNED) DAY
+            ) + INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 3, 2) AS UNSIGNED) HOUR
         WHERE
             USER_ID = #{userId}
         AND
