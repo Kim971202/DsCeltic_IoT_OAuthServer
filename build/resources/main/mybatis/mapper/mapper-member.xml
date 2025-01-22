@@ -689,6 +689,7 @@
             TBR_OPR_SAFE_ALARM
         SET
             REC_HWST_RUN_TIME = now(),
+            SAFE_ALARM_REG_TIME = now(),
             HWST_STATUS = #{hwSt}
         WHERE
             DEVC_ID = #{deviceId}
@@ -699,6 +700,7 @@
             TBR_OPR_SAFE_ALARM
         SET
             REC_HWST_RUN_TIME = now(),
+            SAFE_ALARM_REG_TIME = now(),
             HWST_STATUS = #{bCdt}
         WHERE
             DEVC_ID = #{deviceId}
