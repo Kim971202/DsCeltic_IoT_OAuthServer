@@ -939,20 +939,6 @@ public class UserServiceImpl implements UserService {
             if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
                 log.info("PUSH 메세지 전송 오류");
 
-            AuthServerDTO pushInfo = new AuthServerDTO();
-            pushInfo.setPushTitle("acIv");
-            pushInfo.setPushContent(inviteAcceptYn);
-            pushInfo.setPushType("01");
-            pushInfo.setDeviceId("deviceId");
-            pushInfo.setDeviceType("invite");
-            pushInfo.setGroupName(groupName);
-            pushInfo.setGroupIdx(groupIdx);
-            pushInfo.setDeviceNickname("");
-            pushInfo.setUserId(requestUserId);
-
-            if (memberMapper.insertPushHistory(pushInfo) <= 0)
-                log.info("PUSH HISTORY INSERT ERROR");
-
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             log.info("data: " + data);
             return new ResponseEntity<>(data, HttpStatus.OK);
