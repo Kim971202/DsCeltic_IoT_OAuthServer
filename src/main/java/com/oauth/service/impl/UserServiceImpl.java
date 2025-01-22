@@ -1850,7 +1850,7 @@ public class UserServiceImpl implements UserService {
         List<AuthServerDTO> notice;
         List<Map<String, String>> noticeList = new ArrayList<>();
         try {
-            notice = memberMapper.getNoticeList();
+            notice = memberMapper.getNoticeList(params);
             if (notice.isEmpty()) {
                 msg = "공지사항 목록이 없습니다.";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
