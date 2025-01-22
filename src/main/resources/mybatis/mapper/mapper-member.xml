@@ -701,8 +701,8 @@
             SAFE_ALARM_REG_TIME = now(),
             SAFE_ALARM_END_TIME = DATE_ADD(
             NOW(),
-            INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 1, 2) AS UNSIGNED) DAY
-        ) + INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 3, 2) AS UNSIGNED) HOUR
+            INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
+        ) + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR
         WHERE
             DEVC_ID = #{deviceId}
     </update>
@@ -716,8 +716,8 @@
             SAFE_ALARM_REG_TIME = now(),
             SAFE_ALARM_END_TIME = DATE_ADD(
             NOW(),
-            INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 1, 2) AS UNSIGNED) DAY
-        ) + INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 3, 2) AS UNSIGNED) HOUR
+            INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 1, 2) AS UNSIGNED) DAY
+        ) + INTERVAL CAST(SUBSTRING(SAFE_ALARM_TIME, 3, 2) AS UNSIGNED) HOUR
         WHERE
             DEVC_ID = #{deviceId}
     </update>
