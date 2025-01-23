@@ -1475,16 +1475,20 @@
         UPDATE
             TBR_OPR_SAFE_ALARM
         SET
-            SAFE_ALARM_REG_TIME = CONCAT(DATE(NOW()), ' ', TIME(SAFE_ALARM_REG_TIME))
+            SAFE_ALARM_REG_TIME = CONCAT(DATE(NOW()), ' ', TIME(SAFE_ALARM_REG_TIME)),
             SAFE_ALARM_END_TIME = DATE_ADD(
-                CONCAT(DATE(NOW()), ' ', TIME(SAFE_ALARM_REG_TIME)),
-                INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 1, 2) AS UNSIGNED) DAY
-            ) + INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 3, 2) AS UNSIGNED) HOUR
+                DATE_ADD(
+                    CONCAT(DATE(NOW()), ' ', TIME(SAFE_ALARM_REG_TIME)),
+                    INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 1, 2) AS UNSIGNED) DAY
+                ),
+                INTERVAL CAST(SUBSTRING(#{safeAlarmTime}, 3, 2) AS UNSIGNED) HOUR
+            )
         WHERE
             USER_ID = #{userId}
         AND
             DEVC_ID = #{deviceId}
     </update>
+
 
     <select id="getSafeAlarmInfo" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
