@@ -110,16 +110,19 @@ public class UserServiceImpl implements UserService {
             params.setUserId(userId);
 
             if (phoneId != null) {
-                // TODO: phoneId의 값이 DEFAULT인 경우 최초 로그인 이므로 PASS
-                phoneIdInfo = memberMapper.getPhoneIdInfo(userId);
-                if (!phoneIdInfo.getPhoneId().equals("DEFAULT")) {
-                    // TODO: phoneId의 값이 입력 받은 쿼리한 phoneId와 다른 경우 PUSH 전송
-                    if (!phoneId.equals(phoneIdInfo.getPhoneId())) {
-                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userId).getPushToken());
-                        conMap.put("title", "Duplicated_Login");
-                        String jsonString = objectMapper.writeValueAsString(conMap);
-                        if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                            log.info("PUSH 메세지 전송 오류");
+                // 로그인 시도 하는 사용자가 LogOut 상태일 경우 아래 로직 적용 X
+                if(memberMapper.getUserLoginoutStatus(userId).getLoginoutStatus().equals("Y")){
+                    // phoneId의 값이 DEFAULT인 경우 최초 로그인 이므로 PASS
+                    phoneIdInfo = memberMapper.getPhoneIdInfo(userId);
+                    if (!phoneIdInfo.getPhoneId().equals("DEFAULT")) {
+                        // phoneId의 값이 입력 받은 쿼리한 phoneId와 다른 경우 PUSH 전송
+                        if (!phoneId.equals(phoneIdInfo.getPhoneId())) {
+                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userId).getPushToken());
+                            conMap.put("title", "Duplicated_Login");
+                            String jsonString = objectMapper.writeValueAsString(conMap);
+                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                                log.info("PUSH 메세지 전송 오류");
+                        }
                     }
                 }
                 params.setPhoneId(phoneId);
