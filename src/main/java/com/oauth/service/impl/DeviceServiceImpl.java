@@ -298,9 +298,10 @@ public class DeviceServiceImpl implements DeviceService {
                 // 해당 기기가 기존에 등록된 기기 인지 확인
                 checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
                 if(!checkDeviceExist.getDeviceCount().equals("0")){
-                    // 해당 기기를 등록하는 사람인 요청자와 동일한 ID인지 확인 (동일할 경우 24시간, 빠른온수 예약 초기화 X)
+                    // 해당 기기를 등록하는 사람이 요청자와 동일한 ID인지 확인 (동일할 경우 24시간, 빠른온수 예약 초기화 X)
+                    // 2025-02-03 DCR-91/WF만 초기화 하게 수정
                     checkDeviceUser = deviceMapper.checkDeviceUserId(params);
-                    if(checkDeviceUser.getDeviceCount().equals("0")){
+                    if(checkDeviceUser.getDeviceCount().equals("0") && modelCode.equals("DCR-91/WF")){
                         log.info("신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다");
                         // 신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다
                         // [{"wk":"","hs":[]}] - 24시간
@@ -2074,7 +2075,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 if(stringObject.equals("Y")) {
-                    conMap.put("body", "Device ON/OFF OK");
+                    conMap.put("body", "ventilationFanSpeedSet OK");
                     msg = "풍량 단수 설정 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 } else {
