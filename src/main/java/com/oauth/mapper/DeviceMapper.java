@@ -20,12 +20,15 @@ public interface DeviceMapper {
     public List<AuthServerDTO> getDeviceNicknameAndDeviceLocNickname(List<AuthServerDTO> device);
     public List<AuthServerDTO> getDeviceErroInfo(String serialNumber);
     public List<AuthServerDTO> getPushinfoByDeviceId(String deviceId);
+    public List<AuthServerDTO> getVentilationAirInfoDaily(AuthServerDTO param);
+    public List<AuthServerDTO> getVentilationAirInfoMonthly(AuthServerDTO param);
     public List<String> getDeviceIdByDeviceModelCode();
     public List<String> getInviteGroupIdxList();
     public List<String> getRegistGroupIdxList();
     public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);
     public List<DeviceStatusInfo.Device> getActiveStauts(List<String> serialNumber);
     public List<AuthServerDTO> getCheckedDeviceExist(String deviceId);
+    public AuthServerDTO getDeviceIdFromVentilationAirInfo(String deviceId);
     public AuthServerDTO getDeviceNicknameByDeviceId(String deviceId);
     public AuthServerDTO checkDeviceExist(String deviceId);
     public AuthServerDTO checkDeviceUserId(AuthServerDTO info);
@@ -40,6 +43,7 @@ public interface DeviceMapper {
     public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public DeviceStatusInfo.Device getActiveStautsByDeviceId(String deviceId);
     public int insertDeviceGrpInfoByList(List<AuthServerDTO> info);
+    public int insertVentAirInfo(AuthServerDTO params);
     public int updateGroupName(AuthServerDTO params);
     public int deleteNoDeviceGroupByList(List<String> groupIdxList);
     public int insertDeviceGrpInfo(AuthServerDTO params);

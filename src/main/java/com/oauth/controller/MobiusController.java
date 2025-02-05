@@ -334,8 +334,24 @@ public class MobiusController {
                 dr910WDevice.setRsPw(common.convertToJsonString(common.readCon(jsonBody, "rsPw")));
                 dr910WDevice.setVfLs(common.readCon(jsonBody, "vfLs"));
                 dr910WDevice.setVtSp(common.readCon(jsonBody, "vtSp"));
-                dr910WDevice.setInAq(common.readCon(jsonBody, "inAq"));
+//                dr910WDevice.setInAq(common.readCon(jsonBody, "inAq"));
                 dr910WDevice.setOtHm(common.readCon(jsonBody, "otHm"));
+
+                String inAq = common.readCon(jsonBody, "inAq");
+                dr910WDevice.setInAq(inAq);
+
+                inAq= inAq.replaceAll("[\\[\\]]", ""); // 대괄호 제거
+                String[] values = inAq.split(",");
+
+                // 환기 INAQ 값 저장 예: [34,2,0,3,1172] TBR_OPR_VENT_AIR_INFO
+                AuthServerDTO authServerDTO = new AuthServerDTO();
+                authServerDTO.setDeviceId(deviceId);
+                authServerDTO.setIndoorTemp(values[0]);
+                authServerDTO.setIndoorHumi(values[1]);
+                authServerDTO.setPm10(values[2]);
+                authServerDTO.setPm25(values[3]);
+                authServerDTO.setCo2(values[4]);
+                deviceMapper.insertVentAirInfo(authServerDTO);
             }
 
             mobiusService.rtstHandler(dr910WDevice);

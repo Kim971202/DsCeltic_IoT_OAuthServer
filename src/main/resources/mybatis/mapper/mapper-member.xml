@@ -1489,7 +1489,6 @@
             DEVC_ID = #{deviceId}
     </update>
 
-
     <select id="getSafeAlarmInfo" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             SAFE_ALARM_TIME AS safeAlarmTime

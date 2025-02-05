@@ -1036,4 +1036,115 @@
             DEVC_ID =  #{deviceId}
     </select>
 
+    <insert id="insertVentAirInfo" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_OPR_VENT_AIR_INFO
+        (
+            REG_DATM,
+            DEVC_ID,
+            PM25,
+            CO2,
+            PM10,
+            OUT_DOOR_TEMP,
+            OUT_DOOR_HUMI
+        )
+        VALUES
+        (
+            now(),
+            #{deviceId},
+            #{pm25},
+            #{co2},
+            #{pm10},
+            #{indoorTemp},
+            #{indoorHumi}
+        )
+    </insert>
+
+    <select id="getVentilationAirInfoDaily" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        WITH RECURSIVE hours AS (
+            SELECT 1 AS timeInfo
+            UNION ALL
+            SELECT
+                timeInfo + 1
+            FROM
+                hours
+            WHERE
+                timeInfo &lt; 24
+        )
+        SELECT
+            CASE
+                WHEN
+                    h.timeInfo = 24
+                THEN
+                    CONCAT(#{startDate}, '24:00:00')
+                ELSE
+                    DATE_FORMAT(STR_TO_DATE(CONCAT(#{startDate}, LPAD(h.timeInfo, 2, '0'), ':00:00'), '%Y-%m-%d %H:%i:%s'), '%Y-%m-%d %H:%i:%s')
+            END AS workDate,
+            COALESCE(CEIL(AVG(P.PM25)), 0) AS pm25,
+            COALESCE(CEIL(AVG(P.CO2)), 0) AS co2,
+            COALESCE(CEIL(AVG(P.PM10)), 0) AS pm10,
+            COALESCE(CEIL(AVG(P.OUT_DOOR_TEMP)), 0) AS indoorTemp,
+            COALESCE(CEIL(AVG(P.OUT_DOOR_HUMI)), 0) AS indoorHumi,
+            h.timeInfo
+            FROM
+                hours h
+            LEFT JOIN
+                TBR_OPR_VENT_AIR_INFO P
+            ON
+                HOUR(P.REG_DATM) = h.timeInfo
+            AND
+                DATE(P.REG_DATM)
+            BETWEEN
+                #{startDate}
+            AND
+                #{endDate}
+            AND
+                P.DEVC_ID = #{deviceId}
+            GROUP BY
+                h.timeInfo, workDate
+            ORDER BY
+                h.timeInfo
+    </select>
+
+    <select id="getVentilationAirInfoMonthly" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        WITH RECURSIVE dates AS (
+            SELECT
+                DATE(#{startDate}) AS workDate
+            UNION ALL
+            SELECT
+                workDate + INTERVAL 1 DAY
+            FROM
+                dates
+            WHERE
+                workDate &lt; #{endDate}
+        )
+        SELECT
+            d.workDate,
+            COALESCE(CEIL(AVG(t.PM25)), 0) AS pm25,
+            COALESCE(CEIL(AVG(t.CO2)), 0) AS co2,
+            COALESCE(CEIL(AVG(t.PM10)), 0) AS pm10,
+            COALESCE(CEIL(AVG(t.OUT_DOOR_TEMP)), 0) AS indoorTemp,
+            COALESCE(CEIL(AVG(t.OUT_DOOR_HUMI)), 0) AS indoorHumi
+        FROM
+            dates d
+        LEFT JOIN
+            TBR_OPR_VENT_AIR_INFO t
+        ON
+            DATE(t.REG_DATM) = d.workDate
+        AND
+            t.DEVC_ID = #{deviceId}
+        GROUP BY
+            d.workDate
+        ORDER BY
+            d.workDate
+    </select>
+
+    <select id="getDeviceIdFromVentilationAirInfo" parameterType="String" resultMap="device">
+        SELECT
+            COUNT(*) AS deviceCount
+        FROM
+            TBR_OPR_VENT_AIR_INFO
+        WHERE
+            DEVC_ID =  #{deviceId}
+    </select>
 </mapper>

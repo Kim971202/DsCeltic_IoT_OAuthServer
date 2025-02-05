@@ -193,6 +193,13 @@ public class AuthServerDTO implements Serializable {
     private String groupNameCount;
     private String loginoutStatus;
 
+    private String pm25;
+    private String co2;
+    private String pm10;
+    private String indoorTemp;
+    private String indoorHumi;
+    private String timeInfo;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
