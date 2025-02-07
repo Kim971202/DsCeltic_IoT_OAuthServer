@@ -204,6 +204,16 @@ public class Common {
         return stringBuilder.toString();
     }
 
+    // 입력한 DeviceId가 각방일 경우 True 아닌 경우 False 리턴
+    public boolean checkDeviceType(String deviceId){
+        String[] modelCode = deviceId.split("\\.");
+        if(hexToString(modelCode[5]).contains("MC2600")){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public String stringToHex(String input){
         StringBuilder stringBuilder = new StringBuilder();
         byte[] bytes = input.getBytes(StandardCharsets.UTF_8);

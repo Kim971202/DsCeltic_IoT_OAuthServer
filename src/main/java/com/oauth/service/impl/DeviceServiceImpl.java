@@ -285,7 +285,7 @@ public class DeviceServiceImpl implements DeviceService {
                  * 1. Push 설정 관련 기본 DB 추가 (기본값: Y)
                  * 2. IOT_DEVICE 테이블 등록 시 최초 기기 등록자 ID도 같이 등록
                  * */
-
+                
                 params.setModelCode(" " + params.getModelCode());
                 params.setSerialNumber("    " + params.getSerialNumber());
 

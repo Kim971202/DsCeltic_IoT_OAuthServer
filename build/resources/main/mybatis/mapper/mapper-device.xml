@@ -462,6 +462,54 @@
             device.DEVC_ID =  #{deviceId}
     </select>
 
+  <insert id="insertEachRoomStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        INSERT INTO TBR_OPR_VALVE_BOX_STATUS
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">SUB_ID,</if>
+            <if test="serialNumber != null">SERIAL_NO,</if>
+            <if test="modelCode != null">DEVC_MODL_CD,</if>
+            <if test="rKey != null">R_KEY,</if>
+            <if test="psYn != null">PS_YN,</if>
+            <if test="prId != null">PR_ID,</if>
+            <if test="dvNm != null">DV_NM,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="serialNumber != null">#{serialNumber},</if>
+            <if test="modelCode != null">#{modelCode},</if>
+            <if test="rKey != null">#{rKey},</if>
+            <if test="psYn != null">#{psYn},</if>
+            <if test="prId != null">#{prId},</if>
+            <if test="dvNm != null">#{dvNm},</if>
+   
+        </trim>
+    </insert>
+
+        <update id="updateEachRoomStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE
+            TBR_OPR_VALVE_BOX_STATUS
+                SET
+                    <if test="deviceId != null">SUB_ID = #{deviceId},</if>
+                    <if test="rKey != null">R_KEY = #{rKey},</if>
+                    <if test="serialNumber != null">SERIAL_NO = #{serialNumber},</if>
+                    <if test="prId != null">PR_ID = #{prId},</if>
+                    <if test="psYn != null">PS_YN = #{psYn},</if>
+                    <if test="dvNm != null">DV_NM = #{dvNm},</if>
+                    <if test="modelCode != null">DEVC_MODL_CD = #{modelCode},</if>
+                    <if test="powr != null">POWR = #{powr},</if>
+                    <if test="opMd != null">OPMD = #{opMd},</if>
+                    <if test="htTp != null">HTTP = #{htTp},</if>
+                    <if test="hwTp != null">HWTP = #{hwTp},</if>
+                    <if test="chTp != null">CHTP = #{chTp},</if>
+                    <if test="cwTp != null">CWTP = #{cwTp},</if>
+                    <if test="bCdt != null">BCDT = #{bCdt},</if>
+                    <if test="hwSt != null">HWST = #{hwSt},</if>
+                    MFDT = now()
+            WHERE
+                SUB_ID = #{deviceId}
+    </update>
+
     <insert id="insertDeviceStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
         INSERT INTO TBR_OPR_DEVICE_STATUS
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -640,6 +688,15 @@
         </set>
         WHERE DEVC_ID = #{deviceId}
     </update>
+
+    <select id="getEachRoomStautsByDeviceId" parameterType="String" resultMap="dr910w">
+        SELECT
+            SUB_ID AS deviceId
+        FROM
+            TBR_OPR_VALVE_BOX_STATUS
+        WHERE
+            SUB_ID = #{deviceId};
+    </select>
 
     <select id="getDeviceStautsByDeviceId" parameterType="String" resultMap="dr910w">
         SELECT

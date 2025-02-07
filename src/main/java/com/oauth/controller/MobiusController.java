@@ -57,6 +57,30 @@ public class MobiusController {
          * 3. common에 함수를 사용하여 userId와 functionId를 추출
          * 4. 추출한 functionId를 기반으로 해당 functionId에 맞는 if문으로 분기
          * */
+
+        // prId 값이 존재할 경우 각방이므로 값을 저장 한다
+        if(common.readCon(jsonBody, "prId") != null){
+            
+            DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
+
+            deviceInfo.setSerialNumber(common.readCon(jsonBody, "srNo"));
+            deviceInfo.setModelCode(common.readCon(jsonBody, "biMd"));
+            deviceInfo.setRKey(common.readCon(jsonBody, "rKey"));
+            deviceInfo.setPsYn(common.readCon(jsonBody, "psYn"));
+            deviceInfo.setPrId(common.readCon(jsonBody, "prId"));
+            deviceInfo.setDvNm(common.readCon(jsonBody, "dvNm"));
+            deviceInfo.setDeviceId(common.readCon(jsonBody, "deviceId"));
+            
+            if(deviceMapper.getEachRoomStautsByDeviceId(deviceInfo.getDeviceId()) == null){
+                // 신규 기기 INSERT
+                deviceMapper.insertEachRoomStatus(deviceInfo);
+            } else {
+                // 기존 기기 UPDATE
+                deviceMapper.updateEachRoomStatus(deviceInfo);
+            }
+            return "DONE";
+        }
+
         String uuId = common.readCon(jsonBody, "uuId");
 
         String errorCode = common.readCon(jsonBody, "erCd");
@@ -176,7 +200,7 @@ public class MobiusController {
 
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
             deviceInfo.setDeviceId(deviceId);
-
+            
             deviceInfo.setFtMd(common.readCon(jsonBody, "ftMd"));
             deviceInfo.setFcLc(common.readCon(jsonBody, "fcLc"));
             deviceInfo.setEcOp(common.readCon(jsonBody, "ecOp"));
@@ -229,7 +253,14 @@ public class MobiusController {
 
             deviceInfo.setFwh(common.readCon(jsonBody, "fwh"));
 
-            int rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+            int rcUpdateResult = 0;
+
+            // 각방의 경우 저장하는 테이블 변경 
+            if(common.checkDeviceType(deviceId)){
+                rcUpdateResult = deviceMapper.updateEachRoomStatus(deviceInfo);
+            } else {
+                rcUpdateResult= deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+            }
             log.info("rcUpdateResult: " + rcUpdateResult);
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
@@ -352,6 +383,14 @@ public class MobiusController {
                 authServerDTO.setPm25(values[3]);
                 authServerDTO.setCo2(values[4]);
                 deviceMapper.insertVentAirInfo(authServerDTO);
+            } else if(modelType.contains("MC2600")){
+                dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp"));
+                dr910WDevice.setHwTp(common.readCon(jsonBody, "hwTp"));
+                dr910WDevice.setH12(common.convertToJsonString(common.readCon(jsonBody, "12h")));
+                dr910WDevice.setChTp(common.readCon(jsonBody, "chTp"));
+                
+                deviceMapper.updateEachRoomStatus(dr910WDevice);
+                return "DONE";
             }
 
             mobiusService.rtstHandler(dr910WDevice);

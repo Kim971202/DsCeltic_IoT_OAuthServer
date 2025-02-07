@@ -106,5 +106,10 @@ public class DeviceStatusInfo {
       private String rsPw;
       private String inAq;
       private String otHm;
+
+      private String modelCode;
+      private String prId;
+      private String psYn;
+      private String dvNm;
    }
 }

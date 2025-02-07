@@ -200,6 +200,10 @@ public class AuthServerDTO implements Serializable {
     private String indoorHumi;
     private String timeInfo;
 
+    private String prId;
+    private String psYn;
+    private String dvNm;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
