@@ -21,3 +21,5 @@ build/tmp/
 
 launch.json
 settings.json
+build/libs/OAuthServer-0.0.1-SNAPSHOT-plain.jar
+build/libs/OAuthServer-0.0.1-SNAPSHOT.jar
