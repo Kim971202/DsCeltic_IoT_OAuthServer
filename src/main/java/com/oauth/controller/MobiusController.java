@@ -51,16 +51,18 @@ public class MobiusController {
         ApiResponse.Data result = new ApiResponse.Data();
         deviceMapper.insertJson(jsonBody);
 
-        /* *
+        /*
+         * *
          * 1. Redis에서 받은 uuId로 Redis에 저장된 Value값을 검색한다.
          * 2. 해당 Value는 userId,functionId 형태로 저장됨
          * 3. common에 함수를 사용하여 userId와 functionId를 추출
          * 4. 추출한 functionId를 기반으로 해당 functionId에 맞는 if문으로 분기
-         * */
+         */
 
         // prId 값이 존재할 경우 각방이므로 값을 저장 한다
-        if(common.readCon(jsonBody, "prId") != null){
-            
+        String hexSerial = common.getHexSerialNumberFromDeviceId(common.readCon(jsonBody, "deviceId"));
+        if (common.readCon(jsonBody, "prId") != null) {
+
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
 
             deviceInfo.setSerialNumber(common.readCon(jsonBody, "srNo"));
@@ -70,12 +72,28 @@ public class MobiusController {
             deviceInfo.setPrId(common.readCon(jsonBody, "prId"));
             deviceInfo.setDvNm(common.readCon(jsonBody, "dvNm"));
             deviceInfo.setDeviceId(common.readCon(jsonBody, "deviceId"));
-            
-            if(deviceMapper.getEachRoomStautsByDeviceId(deviceInfo.getDeviceId()) == null){
+
+            // 이전 값이 남아 있을수 있으므로 삭제
+            if (deviceInfo.getDvNm().equals("room0")) {
+                deviceMapper.deleteExistPrId(common.getHexSerialNumberFromDeviceId(deviceInfo.getPrId()));
+            }
+
+            switch (deviceInfo.getDvNm()) {
+                case "room0":
+                    deviceInfo.setDvNm("거실");
+                    break;
+                default:
+                    String roomId = deviceInfo.getDvNm();
+                    deviceInfo.setDvNm("방" + roomId.substring(roomId.length() - 1));
+                    break;
+            }
+
+            if (deviceMapper.getEachRoomStautsByDeviceId(hexSerial) == null) {
                 // 신규 기기 INSERT
                 deviceMapper.insertEachRoomStatus(deviceInfo);
             } else {
                 // 기존 기기 UPDATE
+                deviceInfo.setTargetDeviceId(hexSerial);
                 deviceMapper.updateEachRoomStatus(deviceInfo);
             }
             return "DONE";
@@ -96,28 +114,31 @@ public class MobiusController {
         String functionId = common.readCon(jsonBody, "functionId");
         String redisValue = "false";
 
-        if(functionId == null || functionId.equals("mfAr")) return "FUNCTION NO CHECK";
+        if (functionId == null || functionId.equals("mfAr"))
+            return "FUNCTION NO CHECK";
 
-        if(!functionId.equals("rtSt") && !functionId.equals("mfSt") && !functionId.equals("opIf")) redisValue = redisCommand.getValues(uuId);
+        if (!functionId.equals("rtSt") && !functionId.equals("mfSt") && !functionId.equals("opIf")) {
+            redisValue = redisCommand.getValues(uuId);
+        }
         log.info("uuId: " + uuId);
-
 
         log.info("functionId: " + functionId);
         log.info("redisValue: " + redisValue);
-        if(redisValue == null) {
+        if (redisValue == null) {
             log.info("NULL RECEIVED");
             return "NULL RECEIVED";
         }
 
         // DeviceId로 ModelCode 확인
         String deviceId = common.readCon(jsonBody, "deviceId");
+        String subDeviceId = common.readCon(jsonBody, "deviceId");
 
         String[] modelCode = deviceId.split("\\.");
 
         List<String> redisValueList;
 
-        if(replyErrorCode != null) {
-            if(replyErrorCode.equals("2")){
+        if (replyErrorCode != null) {
+            if (replyErrorCode.equals("2")) {
                 gwMessagingSystem.sendMessage(functionId + uuId, replyErrorCode);
                 return "";
             }
@@ -140,12 +161,14 @@ public class MobiusController {
             errorInfo.setErrorVersion(errorVersion);
             errorInfo.setErrorDateTime(errorDateTime);
             errorInfo.setSerialNumber(serialNumber[2]);
-            if(!errorCode.equals("00")) pushService.sendPushMessage(jsonBody, errorCode, errorMessage, common.hexToString(modelCode[5]), errorVersion);
-            if(deviceMapper.insertErrorInfo(errorInfo) <= 0) {
+            if (!errorCode.equals("00"))
+                pushService.sendPushMessage(jsonBody, errorCode, errorMessage, common.hexToString(modelCode[5]),
+                        errorVersion);
+            if (deviceMapper.insertErrorInfo(errorInfo) <= 0) {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, "DB_ERROR 잠시 후 다시 시도 해주십시오.");
                 new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
             }
-        } else if (functionId.equals("vfLs")){
+        } else if (functionId.equals("vfLs")) {
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
             deviceInfo.setDeviceId(deviceId);
 
@@ -157,13 +180,15 @@ public class MobiusController {
             AuthServerDTO info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
             for (AuthServerDTO id : userIds) {
                 log.info("쿼리한 UserId: " + id.getUserId());
-                if(memberMapper.getUserLoginoutStatus(id.getUserId()).getLoginoutStatus().equals("Y")){
+                if (memberMapper.getUserLoginoutStatus(id.getUserId()).getLoginoutStatus().equals("Y")) {
                     info.setUserId(id.getUserId());
                     info.setDeviceId(deviceId);
                     info.setDeviceId(deviceId);
                     String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
                     String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
-                    pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"), info.getDeviceNickname());
+                    pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(),
+                            common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"),
+                            info.getDeviceNickname());
                 }
             }
             AuthServerDTO params = new AuthServerDTO();
@@ -194,13 +219,14 @@ public class MobiusController {
             params.setPushContent(params.getControlCodeName());
             params.setDeviceId(deviceId);
             params.setDeviceType(common.getModelCode(common.getModelCodeFromDeviceId(deviceId).replace(" ", "")));
-            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+            if (memberMapper.insertPushHistory(params) <= 0)
+                log.info("PUSH HISTORY INSERT ERROR");
 
         } else if (functionId.equals("mfSt")) {
 
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
             deviceInfo.setDeviceId(deviceId);
-            
+
             deviceInfo.setFtMd(common.readCon(jsonBody, "ftMd"));
             deviceInfo.setFcLc(common.readCon(jsonBody, "fcLc"));
             deviceInfo.setEcOp(common.readCon(jsonBody, "ecOp"));
@@ -210,7 +236,7 @@ public class MobiusController {
             deviceInfo.setInCl(common.readCon(jsonBody, "inCl"));
             deviceInfo.setEcSt(common.readCon(jsonBody, "ecSt"));
 
-            if(common.readCon(jsonBody, "mfCd").equals("acTv")){
+            if (common.readCon(jsonBody, "mfCd").equals("acTv")) {
                 deviceInfo.setFtMdActv(common.readCon(jsonBody, "ftMd"));
                 deviceInfo.setFcLcActv(common.readCon(jsonBody, "fcLc"));
                 deviceInfo.setEcOpActv(common.readCon(jsonBody, "ecOp"));
@@ -235,49 +261,65 @@ public class MobiusController {
             deviceInfo.setBlCf(common.readCon(jsonBody, "blCf"));
             deviceInfo.setVtSp(common.readCon(jsonBody, "vtSp"));
 
-            if(deviceInfo.getHwSt() != null) memberMapper.updateSafeAlarmSet(deviceInfo);
-            if(deviceInfo.getBCdt() != null) memberMapper.updateSafeAlarmSetByBcDt(deviceInfo);
+            if (deviceInfo.getHwSt() != null)
+                memberMapper.updateSafeAlarmSet(deviceInfo);
+            if (deviceInfo.getBCdt() != null)
+                memberMapper.updateSafeAlarmSetByBcDt(deviceInfo);
 
-            if(common.readCon(jsonBody, "rsPw") != null) deviceInfo.setRsPw(common.convertToJsonFormat(common.readCon(jsonBody, "rsPw")));
+            if (common.readCon(jsonBody, "rsPw") != null)
+                deviceInfo.setRsPw(common.convertToJsonFormat(common.readCon(jsonBody, "rsPw")));
 
-            if(common.readCon(jsonBody, "7wk") != null){
-                if(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")).equals("[{wk:,\"hs\":[]}]"))
+            if (common.readCon(jsonBody, "7wk") != null) {
+                if (common.convertToJsonFormat(common.readCon(jsonBody, "7wk")).equals("[{wk:,\"hs\":[]}]"))
                     deviceInfo.setWk7("[{\"wk\":\"\",\"hs\":[]}]");
                 else
                     deviceInfo.setWk7(common.convertToJsonFormat(common.readCon(jsonBody, "7wk")));
             }
 
-            if(common.readCon(jsonBody, "12h") != null) deviceInfo.setH12(common.convertToJsonFormat(common.readCon(jsonBody, "12h")));
+            if (common.readCon(jsonBody, "12h") != null)
+                deviceInfo.setH12(common.convertToJsonFormat(common.readCon(jsonBody, "12h")));
 
-            if(common.readCon(jsonBody, "24h") != null) deviceInfo.setH24(common.convertToJsonFormat(common.readCon(jsonBody, "24h")));
+            if (common.readCon(jsonBody, "24h") != null)
+                deviceInfo.setH24(common.convertToJsonFormat(common.readCon(jsonBody, "24h")));
 
             deviceInfo.setFwh(common.readCon(jsonBody, "fwh"));
 
             int rcUpdateResult = 0;
 
-            // 각방의 경우 저장하는 테이블 변경 
-            if(common.checkDeviceType(deviceId)){
-                rcUpdateResult = deviceMapper.updateEachRoomStatus(deviceInfo);
+            // 각방의 경우 저장하는 테이블 변경
+            String subDeviceNickname = "";
+            if (common.checkDeviceType(deviceId) && !common.readCon(jsonBody, "mfCd").equals("hwTp")) {
+                // SUB_ID를 ParentId로 수정 해야 함.
+                deviceId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
+                rcUpdateResult = deviceMapper.updateEachRoomControlStatus(deviceInfo);
+                deviceInfo.setDeviceId(deviceId);
+                log.info("2 subDeviceId: " + subDeviceId);
+                subDeviceNickname = deviceMapper.getDeviceNickNameBySubId(subDeviceId).getDeviceNickName();
             } else {
-                rcUpdateResult= deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
             }
             log.info("rcUpdateResult: " + rcUpdateResult);
+
+            AuthServerDTO info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
+            if (!subDeviceNickname.isEmpty()) {
+                info.setDeviceNickname(subDeviceNickname);
+            }
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
             List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(deviceId);
 
-            AuthServerDTO info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
-
             for (AuthServerDTO id : userIds) {
                 log.info("쿼리한 UserId: " + id.getUserId());
-                if(memberMapper.getUserLoginoutStatus(id.getUserId()).getLoginoutStatus().equals("Y")){
+                if (memberMapper.getUserLoginoutStatus(id.getUserId()).getLoginoutStatus().equals("Y")) {
                     info.setUserId(id.getUserId());
                     info.setDeviceId(deviceId);
 
                     String fPushYn = memberMapper.getPushYnStatusByDeviceIdAndUserId(info).getFPushYn();
                     String pushToken = memberMapper.getPushTokenByUserId(id.getUserId()).getPushToken();
 
-                    pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(), common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"), info.getDeviceNickname());
+                    pushService.sendPushMessage(common.readCon(jsonBody, "con"), pushToken, fPushYn, id.getUserId(),
+                            common.hexToString(modelCode[5]), common.readCon(jsonBody, "mfCd"),
+                            info.getDeviceNickname());
                 }
             }
 
@@ -286,7 +328,7 @@ public class MobiusController {
             AuthServerDTO params = new AuthServerDTO();
             params.setUserId("RC");
 
-            if(!common.readCon(jsonBody, "mfCd").equals("acTv")){
+            if (!common.readCon(jsonBody, "mfCd").equals("acTv")) {
                 Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
                 log.info("Non-null fields: " + nonNullFields);
 
@@ -313,7 +355,8 @@ public class MobiusController {
             params.setPushContent(params.getControlCodeName());
             params.setDeviceId(deviceId);
             params.setDeviceType(common.getModelCode(common.getModelCodeFromDeviceId(deviceId).replace(" ", "")));
-            if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+            if (memberMapper.insertPushHistory(params) <= 0)
+                log.info("PUSH HISTORY INSERT ERROR");
 
         } else if (functionId.equals("rtSt")) {
 
@@ -365,13 +408,13 @@ public class MobiusController {
                 dr910WDevice.setRsPw(common.convertToJsonString(common.readCon(jsonBody, "rsPw")));
                 dr910WDevice.setVfLs(common.readCon(jsonBody, "vfLs"));
                 dr910WDevice.setVtSp(common.readCon(jsonBody, "vtSp"));
-//                dr910WDevice.setInAq(common.readCon(jsonBody, "inAq"));
-                dr910WDevice.setOtHm(common.readCon(jsonBody, "otHm"));
-
+                // dr910WDevice.setInAq(common.readCon(jsonBody, "inAq"));
+                dr910WDevice.setOdHm(common.readCon(jsonBody, "odHm"));
+                System.out.println("dr910WDevice: " + dr910WDevice.getOdHm());
                 String inAq = common.readCon(jsonBody, "inAq");
                 dr910WDevice.setInAq(inAq);
 
-                inAq= inAq.replaceAll("[\\[\\]]", ""); // 대괄호 제거
+                inAq = inAq.replaceAll("[\\[\\]]", ""); // 대괄호 제거
                 String[] values = inAq.split(",");
 
                 // 환기 INAQ 값 저장 예: [34,2,0,3,1172] TBR_OPR_VENT_AIR_INFO
@@ -383,23 +426,43 @@ public class MobiusController {
                 authServerDTO.setPm25(values[3]);
                 authServerDTO.setCo2(values[4]);
                 deviceMapper.insertVentAirInfo(authServerDTO);
-            } else if(modelType.contains("MC2600")){
+
+            } else if (modelType.contains("MC2600")) {
                 dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp"));
                 dr910WDevice.setHwTp(common.readCon(jsonBody, "hwTp"));
                 dr910WDevice.setH12(common.convertToJsonString(common.readCon(jsonBody, "12h")));
                 dr910WDevice.setChTp(common.readCon(jsonBody, "chTp"));
-                
+                dr910WDevice.setTargetDeviceId(hexSerial);
                 deviceMapper.updateEachRoomStatus(dr910WDevice);
+                /*
+                 * CREATE TABLE `tbr_opr_each_room_mode_info` (
+                 * `REG_DATM` datetime NOT NULL,
+                 * `PR_ID` varchar(200) DEFAULT NULL,
+                 * `SUB_ID` varchar(200) DEFAULT NULL,
+                 * `PR_DEVC_NICK` varchar(100) DEFAULT NULL,
+                 * `SUB_DEVC_NICK` varchar(100) DEFAULT NULL,
+                 * `OPMD` varchar(2) DEFAULT NULL,
+                 * `POWR` varchar(2) DEFAULT NULL,
+                 * `HTTP` varchar(2) DEFAULT NULL,
+                 * `HWTP` varchar(2) DEFAULT NULL,
+                 * `CHTP` varchar(2) DEFAULT NULL,
+                 * PRIMARY KEY (`REG_DATM`)
+                 * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+                 * 
+                 */
+                // deviceMapper.getSubAndParentDeviceInfo();
+                // deviceMapper.insertEachRoomStatInfo(dr910WDevice);
+
                 return "DONE";
             }
 
             mobiusService.rtstHandler(dr910WDevice);
-        } else if(functionId.equals("opIf")){
+        } else if (functionId.equals("opIf")) {
             List<AuthServerDTO> opTmInfo;
             opTmInfo = memberMapper.getUserIdFromDeviceGroup(deviceId);
 
             List<AuthServerDTO> inputList = new ArrayList<>();
-            for(AuthServerDTO authServerDTO : opTmInfo){
+            for (AuthServerDTO authServerDTO : opTmInfo) {
                 AuthServerDTO newWkTmInfo = new AuthServerDTO();
                 newWkTmInfo.setWorkTime(common.readCon(jsonBody, "wkTm"));
                 newWkTmInfo.setMsDt(common.readCon(jsonBody, "msDt"));
@@ -408,7 +471,7 @@ public class MobiusController {
                 inputList.add(newWkTmInfo);
             }
             memberMapper.insertWorkTime(inputList);
-        }else {
+        } else {
             return "0x0106-Devices 상태 보고 요청";
         }
         return null;

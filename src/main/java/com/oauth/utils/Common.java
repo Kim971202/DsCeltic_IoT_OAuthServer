@@ -13,6 +13,7 @@ import com.oauth.service.impl.MobiusService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -38,7 +39,8 @@ public class Common {
 
     public static List<String> extractJson(String inputList, String inputKey) {
 
-        if(inputList.isEmpty()) return null;
+        if (inputList.isEmpty())
+            return null;
 
         List<String> userIds = new ArrayList<>();
         String pInput = inputKey + "=([^,]+)";
@@ -54,6 +56,7 @@ public class Common {
 
     /**
      * 트랜잭션 ID
+     * 
      * @return
      */
     public String getTransactionId() {
@@ -62,6 +65,7 @@ public class Common {
 
     /**
      * UUID 리턴
+     * 
      * @return a432e21a-54df-4e43-8ef9-99cd274dced8
      */
     private String getTransactionIdBaseUUID() {
@@ -130,7 +134,7 @@ public class Common {
 
         // fwh, rsSl, rsPw 인 경우 그대로 반환
         if ("fwh".equals(key) || "rsSl".equals(key) || "rsPw".equals(key)) {
-            return serializedValue;  // 변형 없이 그대로 반환
+            return serializedValue; // 변형 없이 그대로 반환
         }
 
         return serializedValue.replace("\"", "");
@@ -154,13 +158,13 @@ public class Common {
         return jsonString;
     }
 
-    public List<String> getUserIdAndFunctionId (String redisValue){
+    public List<String> getUserIdAndFunctionId(String redisValue) {
         String[] splitStrings = redisValue.split(",");
-        List<String> nameList =  new ArrayList<String>();
+        List<String> nameList = new ArrayList<String>();
 
         // 결과 확인
         if (splitStrings.length >= 2) {
-            nameList.add(splitStrings[0].trim());  // trim() 메서드로 앞뒤 공백 제거
+            nameList.add(splitStrings[0].trim()); // trim() 메서드로 앞뒤 공백 제거
             nameList.add(splitStrings[1].trim());
 
             log.info("첫번째 문자열: " + nameList.add(splitStrings[0].trim()));
@@ -174,13 +178,13 @@ public class Common {
     public String getCurrentDateTime() {
         Date today = new Date();
         Locale currentLocale = new Locale("KOREAN", "KOREA");
-        String pattern = "yyyyMMddHHmmss"; //hhmmss로 시간,분,초만 뽑기도 가능
+        String pattern = "yyyyMMddHHmmss"; // hhmmss로 시간,분,초만 뽑기도 가능
         SimpleDateFormat formatter = new SimpleDateFormat(pattern,
                 currentLocale);
         return formatter.format(today);
     }
 
-    public String createJwtToken(String userId, String contentType, String functionId){
+    public String createJwtToken(String userId, String contentType, String functionId) {
 
         TokenMaterial tokenMaterial = TokenMaterial.builder()
                 .header(TokenMaterial.Header.builder()
@@ -195,7 +199,7 @@ public class Common {
         return apiTokenUtils.createJWT(tokenMaterial);
     }
 
-    public String hexToString(String hex){
+    public String hexToString(String hex) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < hex.length(); i += 2) {
             String str = hex.substring(i, i + 2);
@@ -205,22 +209,22 @@ public class Common {
     }
 
     // 입력한 DeviceId가 각방일 경우 True 아닌 경우 False 리턴
-    public boolean checkDeviceType(String deviceId){
+    public boolean checkDeviceType(String deviceId) {
         String[] modelCode = deviceId.split("\\.");
-        if(hexToString(modelCode[5]).contains("MC2600")){
+        if (hexToString(modelCode[5]).contains("MC2600")) {
             return true;
         } else {
             return false;
         }
     }
 
-    public String stringToHex(String input){
+    public String stringToHex(String input) {
         StringBuilder stringBuilder = new StringBuilder();
         byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
         for (byte b : bytes) {
             stringBuilder.append(String.format("%02x", b));
         }
-        return  stringBuilder.toString();
+        return stringBuilder.toString();
     }
 
     public String convertToJsonFormat(String input) {
@@ -274,29 +278,29 @@ public class Common {
 
         // 필드 이름을 키로, 그에 따른 Command 설정을 값으로 갖는 Map 생성
         Map<String, String[]> commandMap = new HashMap<>();
-        commandMap.put("powr", new String[]{"powerOnOff", "powr", "전원 ON/OFF"});
-        commandMap.put("opMd", new String[]{"ModeChange", "opMd", "모드 변경"});
-        commandMap.put("htTp", new String[]{"TemperatureSet", "htTp", "실내온도설정"});
-        commandMap.put("wtTp", new String[]{"BoiledWaterTempertureSet", "wtTp", "난방수 온도 설정"});
-        commandMap.put("hwTp", new String[]{"WaterTempertureSet", "hwTp", "온수 온도 설정"});
-        commandMap.put("ftMd", new String[]{"FastHotWaterSet", "ftMd", "빠른 온수 설정"});
-        commandMap.put("h24", new String[]{"Set24", "24h", "24시간 예약"});
-        commandMap.put("h12", new String[]{"Set12", "12h", "12시간 예약"});
-        commandMap.put("wk7", new String[]{"SetWeek", "7wk", "주간 예약"});
-        commandMap.put("fwh", new String[]{"AwakeAlarmSet", "fwh", "빠른온수 예약"});
-        commandMap.put("bCdt", new String[]{"BCDT", "bCdt", "보일러 연소 상태"});
-        commandMap.put("chTp", new String[]{"CHTP", "chTp", "현재 실내 온도"});
-        commandMap.put("cwTp", new String[]{"CWTP", "cwTp", "현재 난방수 온도"});
-        commandMap.put("slCd", new String[]{"SLCD", "slCd", "취침 난방 모드 설정"});
-        commandMap.put("ecOp", new String[]{"EcoOperation", "ecOp", "절약난방 상태정보 알림"});
-        commandMap.put("hwSt", new String[]{"HotWaterStatus", "hwSt", "온수 사용 상태"});
-        commandMap.put("fcLc", new String[]{"DeviceLock", "fcLc", "화면 잠금 설정"});
-        commandMap.put("mwk", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
-        commandMap.put("reSt", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
-        commandMap.put("mfAr", new String[]{"waterTemp", "wtTp", "난방수 온도 설정"});
-        commandMap.put("vtSp", new String[]{"VentilationSpeed", "vtSp", "환기 풍량 설정"});
-        commandMap.put("rsPw", new String[]{"VentilationOnOffSet", "rsPw", "환기 켜짐 꺼짐 예약"});
-        commandMap.put("vfLs", new String[]{"VentilationFanLifeStatus", "vfLs", "환기 필터 잔여 수명"});
+        commandMap.put("powr", new String[] { "powerOnOff", "powr", "전원 ON/OFF" });
+        commandMap.put("opMd", new String[] { "ModeChange", "opMd", "모드 변경" });
+        commandMap.put("htTp", new String[] { "TemperatureSet", "htTp", "실내온도설정" });
+        commandMap.put("wtTp", new String[] { "BoiledWaterTempertureSet", "wtTp", "난방수 온도 설정" });
+        commandMap.put("hwTp", new String[] { "WaterTempertureSet", "hwTp", "온수 온도 설정" });
+        commandMap.put("ftMd", new String[] { "FastHotWaterSet", "ftMd", "빠른 온수 설정" });
+        commandMap.put("h24", new String[] { "Set24", "24h", "24시간 예약" });
+        commandMap.put("h12", new String[] { "Set12", "12h", "12시간 예약" });
+        commandMap.put("wk7", new String[] { "SetWeek", "7wk", "주간 예약" });
+        commandMap.put("fwh", new String[] { "AwakeAlarmSet", "fwh", "빠른온수 예약" });
+        commandMap.put("bCdt", new String[] { "BCDT", "bCdt", "보일러 연소 상태" });
+        commandMap.put("chTp", new String[] { "CHTP", "chTp", "현재 실내 온도" });
+        commandMap.put("cwTp", new String[] { "CWTP", "cwTp", "현재 난방수 온도" });
+        commandMap.put("slCd", new String[] { "SLCD", "slCd", "취침 난방 모드 설정" });
+        commandMap.put("ecOp", new String[] { "EcoOperation", "ecOp", "절약난방 상태정보 알림" });
+        commandMap.put("hwSt", new String[] { "HotWaterStatus", "hwSt", "온수 사용 상태" });
+        commandMap.put("fcLc", new String[] { "DeviceLock", "fcLc", "화면 잠금 설정" });
+        commandMap.put("mwk", new String[] { "waterTemp", "wtTp", "난방수 온도 설정" });
+        commandMap.put("reSt", new String[] { "waterTemp", "wtTp", "난방수 온도 설정" });
+        commandMap.put("mfAr", new String[] { "waterTemp", "wtTp", "난방수 온도 설정" });
+        commandMap.put("vtSp", new String[] { "VentilationSpeed", "vtSp", "환기 풍량 설정" });
+        commandMap.put("rsPw", new String[] { "VentilationOnOffSet", "rsPw", "환기 켜짐 꺼짐 예약" });
+        commandMap.put("vfLs", new String[] { "VentilationFanLifeStatus", "vfLs", "환기 필터 잔여 수명" });
 
         log.info("commandMap: " + commandMap);
 
@@ -315,30 +319,43 @@ public class Common {
         }
     }
 
-    public String getModelCode(String modelCode){
+    public String getModelCode(String modelCode) {
         // 01: 보일러
         // 05: 각방
         // 07: 환기
         String code = "";
 
-        if(modelCode.equals("ESCeco13S") || modelCode.equals("DCR-91/WF")) code = "01";
-        else if(modelCode.equals("DCR-47/WF")) code = "07";
+        if (modelCode.equals("ESCeco13S") || modelCode.equals("DCR-91/WF"))
+            code = "01";
+        else if (modelCode.equals("DCR-47/WF"))
+            code = "07";
+        else if (modelCode.contains("MC2600"))
+            code = "05";
 
         return code;
     }
 
-    public String getModelCodeFromDeviceId(String deviceId){
+    public String getModelCodeFromDeviceId(String deviceId) {
         String[] modelCode = deviceId.split("\\.");
         return hexToString(modelCode[5]);
     }
 
-    public String getHexSerialNumberFromDeviceId(String deviceId){
+    public String getHexSerialNumberFromDeviceId(String deviceId) {
         String[] modelCode = deviceId.split("\\.");
         return modelCode[6];
     }
 
     /** 기기별칭 쿼리 함수 */
-    public String returnDeviceNickname(String deviceId){ return stringToHex(memberMapper.getDeviceNicknameByDeviceId(deviceId).getDeviceNickname()); }
+    public String returnDeviceNickname(String deviceId) {
+        return stringToHex(memberMapper.getDeviceNicknameByDeviceId(deviceId).getDeviceNickname());
+    }
+
+    public String returnDeviceNickname(String deviceId, String deviceType) {
+        if (!deviceType.equals("05")) {
+            return returnDeviceNickname(deviceId);
+        }
+        return stringToHex(deviceMapper.getDeviceNickNameBySubId(deviceId).getDeviceNickName());
+    }
 
     /** 공통 로그 출력 함수 */
     public void logParams(Object params) {
@@ -366,12 +383,12 @@ public class Common {
     }
 
     /** 기기없는 그룹 삭제 함수 */
-    public void deleteNoDeviceGroup(){
+    public void deleteNoDeviceGroup() {
         // Branch Test
         List<String> inviteIdxList = deviceMapper.getInviteGroupIdxList();
         log.info("inviteIdxList: " + inviteIdxList);
 
-        List<String> registIdxList= deviceMapper.getRegistGroupIdxList();
+        List<String> registIdxList = deviceMapper.getRegistGroupIdxList();
         log.info("registIdxList: " + registIdxList);
 
         // registIdxList를 Set으로 변환 (검색 시간 최적화)
@@ -383,13 +400,13 @@ public class Common {
                 .collect(Collectors.toList());
 
         log.info("inviteIdxList에서 registIdxList에 없는 값: " + uniqueInviteIdxList);
-        if(!uniqueInviteIdxList.isEmpty()){
+        if (!uniqueInviteIdxList.isEmpty()) {
             int result = deviceMapper.deleteNoDeviceGroupByList(uniqueInviteIdxList);
             log.info("DELETE GROUP RESULT: " + result);
         }
     }
 
-    public String putQuotes(String conValue ) throws JsonProcessingException {
+    public String putQuotes(String conValue) throws JsonProcessingException {
         // 1. Key-Value 파싱을 위한 정규식
         Pattern pattern = Pattern.compile("([a-zA-Z0-9]+):([^,}]+)");
         Matcher matcher = pattern.matcher(conValue);
@@ -413,13 +430,15 @@ public class Common {
         return objectMapper.writeValueAsString(map);
     }
 
-    public String returnConValue(String jsonBody){
+    public String returnConValue(String jsonBody) {
         int startIndex = jsonBody.indexOf("con:{") + 4;
         int endIndex = jsonBody.indexOf("},cr:");
         return jsonBody.substring(startIndex, endIndex + 1);
     }
 
-    public void insertHistory(String codeType, String commandId, String controlCode, String controlName, String commandFlow, String deviceId, String userId, String pushTitle, String pushContent, String deviceType){
+    public void insertHistory(String codeType, String commandId, String controlCode, String controlName,
+            String commandFlow, String deviceId, String userId, String pushTitle, String pushContent,
+            String deviceType) {
 
         /**
          * TBR_OPR_USER_DEVICE_PUSH_INFO
@@ -430,15 +449,25 @@ public class Common {
          * DEVC_ID
          * DEVC_NICK
          * DEVC_TYPE
-         * */
+         */
 
-        //        params.setGroupName();
-        //        params.setDeviceNickname();
-        //        params.setGroupIdx();
+        // params.setGroupName();
+        // params.setDeviceNickname();
+        // params.setGroupIdx();
         // 위 값은 쿼리에서 가져오는 값으므로 선언 X
-        AuthServerDTO params = deviceMapper.getGroupNameAndDeviceNickByDeviceId(deviceId);
+        AuthServerDTO params = new AuthServerDTO();
+        System.out.println("deviceType: " + deviceType);
+        DeviceStatusInfo.Device device = new DeviceStatusInfo.Device();
+        // 각방의 경우 deviceNickname을 메인 벨브가 아닌 서브 기기 별칭으로 수정
+        if(deviceType.equals("05")){
+            device = deviceMapper.getDeviceNickNameBySubId(deviceId);
+            params = deviceMapper.getGroupNameAndDeviceNickByDeviceId(device.getDeviceId());     
+            params.setDeviceNickname(device.getDeviceNickName());
+        } else {
+            params = deviceMapper.getGroupNameAndDeviceNickByDeviceId(deviceId);
+        }
 
-        if(!codeType.equals("PUSH_ONLY")){
+        if (!codeType.equals("PUSH_ONLY")) {
             params.setCodeType(codeType);
             params.setCommandId(commandId);
             params.setControlCode(controlCode);
@@ -446,7 +475,8 @@ public class Common {
             params.setCommandFlow(commandFlow);
             params.setDeviceId(deviceId);
             params.setUserId(userId);
-            if(memberMapper.insertCommandHistory(params) <= 0) log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+            if (memberMapper.insertCommandHistory(params) <= 0)
+                log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
         }
         params.setPushTitle(pushTitle);
         params.setPushContent(pushContent);
@@ -455,21 +485,24 @@ public class Common {
         params.setUserId(userId);
         params.setDeviceType(deviceType);
 
-        System.out.println(params);
-        if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH HISTORY INSERT ERROR");
+        if (memberMapper.insertPushHistory(params) <= 0)
+            log.info("PUSH HISTORY INSERT ERROR");
     }
 
-    public void updateStatusGoogle(DeviceStatusInfo.Device deviceInfo, String deviceId){
+    public void updateStatusGoogle(DeviceStatusInfo.Device deviceInfo, String deviceId) {
 
         HashMap<String, String> conMap = new HashMap<>();
         try {
-            if(deviceInfo.getPowr() != null) conMap.put("value", deviceInfo.getPowr());
-            if(deviceInfo.getHtTp() != null) conMap.put("value", deviceInfo.getHtTp());
+            if (deviceInfo.getPowr() != null)
+                conMap.put("value", deviceInfo.getPowr());
+            if (deviceInfo.getHtTp() != null)
+                conMap.put("value", deviceInfo.getHtTp());
             conMap.put("deviceId", deviceId);
 
             mobiusService.createCin("ToGoogleServer", "ToGoogleServerCnt", JSON.toJson(conMap));
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("", e);
         }
     }
+
 }

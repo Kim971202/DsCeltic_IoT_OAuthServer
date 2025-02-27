@@ -139,6 +139,15 @@
             DEVC_ID = #{deviceId}
     </update>
 
+    <update id="changeEachRoomDeviceNickname" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_VALVE_BOX_STATUS
+        SET
+            DV_NM = #{newDeviceNickname}
+        WHERE
+            SUB_ID = #{deviceId}
+    </update>
+
     <insert id="insertDeviceModelCode" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO TBD_IOT_DEVICE_MODL_CD
             (
@@ -260,7 +269,8 @@
                 DEVC_NICK,
                 REG_DATM,
                 GRP_IDX,
-                GRP_NM
+                GRP_NM,
+                VALVE_STATUS
             )
         VALUES
             (
@@ -277,7 +287,8 @@
                 #{deviceNickname},
                 now(),
                 #{idx},
-                #{groupName}
+                #{groupName},
+                #{valveStatus}
             )
     </insert>
 
@@ -406,15 +417,24 @@
 
     <select id="getControlAuthKeyByUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
         SELECT
-            DEVC_CTRL_KEY AS controlAuthKey,
-            DEVC_ID AS deviceId,
-            USER_ID AS userId
+            a.DEVC_CTRL_KEY AS controlAuthKey,
+            a.DEVC_ID AS deviceId,
+            a.USER_ID AS userId,
+            b.GRP_IDX AS groupIdx,
+            b.GRP_NM AS groupName,
+            b.VALVE_STATUS AS valveStatus
         FROM
-            TBR_OPR_USER_DEVICE
+            TBR_OPR_USER_DEVICE a
+        INNER JOIN
+            TBT_OPR_DEVICE_REGIST b
+        ON
+            a.DEVC_ID = b.DEVC_ID
         WHERE
-            USER_ID = #{groupId}
+            a.USER_ID = #{groupId}
         AND
-            GRP_IDX = #{groupIdx}
+            a.GRP_IDX = #{groupIdx}
+        AND 
+            b.VALVE_STATUS = 'N'
     </select>
 
     <select id="getDeviceNicknameAndDeviceLocNickname" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
@@ -462,7 +482,7 @@
             device.DEVC_ID =  #{deviceId}
     </select>
 
-  <insert id="insertEachRoomStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+   <insert id="insertEachRoomStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
         INSERT INTO TBR_OPR_VALVE_BOX_STATUS
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="deviceId != null">SUB_ID,</if>
@@ -486,7 +506,14 @@
         </trim>
     </insert>
 
-        <update id="updateEachRoomStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+    <delete id="deleteExistPrId" parameterType="String">
+        DELETE FROM 
+            TBR_OPR_VALVE_BOX_STATUS 
+        WHERE 
+            PR_ID LIKE CONCAT('%', #{deviceId} , '%')
+    </delete>
+
+    <update id="updateEachRoomStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
         UPDATE
             TBR_OPR_VALVE_BOX_STATUS
                 SET
@@ -505,6 +532,32 @@
                     <if test="cwTp != null">CWTP = #{cwTp},</if>
                     <if test="bCdt != null">BCDT = #{bCdt},</if>
                     <if test="hwSt != null">HWST = #{hwSt},</if>
+                    <if test="h12 != null">12H = #{h12},</if>
+                    MFDT = now()
+            WHERE
+                SUB_ID LIKE CONCAT('%', #{targetDeviceId}, '%') 
+    </update>
+
+    <update id="updateEachRoomControlStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE
+            TBR_OPR_VALVE_BOX_STATUS
+                SET
+                    <if test="deviceId != null">SUB_ID = #{deviceId},</if>
+                    <if test="rKey != null">R_KEY = #{rKey},</if>
+                    <if test="serialNumber != null">SERIAL_NO = #{serialNumber},</if>
+                    <if test="prId != null">PR_ID = #{prId},</if>
+                    <if test="psYn != null">PS_YN = #{psYn},</if>
+                    <if test="dvNm != null">DV_NM = #{dvNm},</if>
+                    <if test="modelCode != null">DEVC_MODL_CD = #{modelCode},</if>
+                    <if test="powr != null">POWR = #{powr},</if>
+                    <if test="opMd != null">OPMD = #{opMd},</if>
+                    <if test="htTp != null">HTTP = #{htTp},</if>
+                    <if test="hwTp != null">HWTP = #{hwTp},</if>
+                    <if test="chTp != null">CHTP = #{chTp},</if>
+                    <if test="cwTp != null">CWTP = #{cwTp},</if>
+                    <if test="bCdt != null">BCDT = #{bCdt},</if>
+                    <if test="hwSt != null">HWST = #{hwSt},</if>
+                    <if test="h12 != null">12H = #{h12},</if>
                     MFDT = now()
             WHERE
                 SUB_ID = #{deviceId}
@@ -541,7 +594,7 @@
             <if test="ven7Wk != null">7WK,</if>
             <if test="vtSp != null">VTSP,</if>
             <if test="vfLs != null">VFLS,</if>
-            <if test="otHm != null">OTHM,</if>
+            <if test="odHm != null">ODHM,</if>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -573,7 +626,7 @@
             <if test="ven7Wk != null">#{ven7Wk},</if>
             <if test="vtSp != null">#{vtSp},</if>
             <if test="vfLs != null">#{vfLs},</if>
-            <if test="otHm != null">#{OTHM},</if>
+            <if test="odHm != null">#{odHm},</if>
         </trim>
     </insert>
 
@@ -633,7 +686,7 @@
                     VFLS = #{vfLs},
                     <if test="rsSl != null">RSSL = #{rsSl},</if>
                     <if test="rsPw != null">RSPW = #{rsPw},</if>
-                    <if test="otHm != null">#{OTHM},</if>
+                    <if test="odHm != null">ODHM = #{odHm},</if>
                     INAQ = #{inAq},
                     MFDT = now()
             WHERE
@@ -689,13 +742,23 @@
         WHERE DEVC_ID = #{deviceId}
     </update>
 
+    <select id="getDeviceNickNameBySubId" parameterType="String" resultMap="dr910w">
+        SELECT
+            DV_NM AS deviceNickName,
+            PR_ID AS deviceId
+        FROM
+            TBR_OPR_VALVE_BOX_STATUS
+        WHERE
+            SUB_ID = #{deviceId}
+    </select>
+
     <select id="getEachRoomStautsByDeviceId" parameterType="String" resultMap="dr910w">
         SELECT
             SUB_ID AS deviceId
         FROM
             TBR_OPR_VALVE_BOX_STATUS
         WHERE
-            SUB_ID = #{deviceId};
+            SUB_ID LIKE CONCAT('%', #{deviceId}, '%') 
     </select>
 
     <select id="getDeviceStautsByDeviceId" parameterType="String" resultMap="dr910w">
@@ -793,7 +856,8 @@
             IFNULL(RSSL, 0.0) AS rsSl,
             IFNULL(RSPW, 0.0) AS rsPw,
             IFNULL(INAQ, 0.0) AS inAq,
-            IFNULL(BLCF, 0.0) AS blCf
+            IFNULL(BLCF, 0.0) AS blCf,
+            IFNULL(ODHM, 0.0) AS odHm
         FROM
             TBR_OPR_DEVICE_STATUS
         WHERE
@@ -922,6 +986,17 @@
             TBR_OPR_DEVICE_STATUS
         WHERE
             DEVC_ID = #{deviceId}
+        AND
+            R_KEY = #{controlAuthKey}
+    </select>
+
+    <select id="checkValveStatus" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        SELECT
+            COUNT(*) AS deviceCount
+        FROM
+            TBR_OPR_VALVE_BOX_STATUS
+        WHERE
+            PR_ID = #{deviceId}
         AND
             R_KEY = #{controlAuthKey}
     </select>
@@ -1204,4 +1279,232 @@
         WHERE
             DEVC_ID =  #{deviceId}
     </select>
+
+    <select id="getSerialNumberAndModelCodeFromEachRoomInfo" parameterType="String" resultMap="device">
+        SELECT 
+            SERIAL_NO AS serialNumber,
+            DEVC_MODL_CD AS modelCode,
+            PR_ID AS parentDevice
+        FROM 
+	        TBR_OPR_VALVE_BOX_STATUS
+        WHERE 
+	        SERIAL_NO LIKE CONCAT('%', #{serialNumber}, '%')
+    </select>
+
+    <select id="getParentIdByUserId" parameterType="String" resultMap="device">
+        SELECT 
+            a.GRP_IDX AS groupIdx,
+            a.GRP_NM AS groupName,
+            a.DEVC_ID AS parentDevice,
+            a.LAT AS latitude,
+            a.LON AS longitude,
+            a.DEVC_NICK AS deviceNickname,
+            a.TEMP_DEVC_REG_KEY AS tmpRegistKey,
+            b.DEVC_CTRL_KEY AS controlAuthKey
+        FROM 
+            TBT_OPR_DEVICE_REGIST a
+        INNER JOIN
+            TBR_OPR_DEVICE_DETAIL b
+        ON
+            a.DEVC_ID = b.DEVC_ID
+        WHERE 
+            a.DEVC_ID =  #{parentDevice}
+    </select>
+
+    <select id="getValveStatusByParentId" parameterType="String" resultMap="dr910w">
+        SELECT 
+            SUB_ID AS deviceId,
+            POWR AS powr,
+            OPMD AS opMd,
+            HTTP AS htTp,
+            HWTP AS hwTp,
+            CHTP AS chTp,
+            12H AS h12,
+            MFDT AS mfDt,
+            DV_NM AS deviceNickName
+        FROM 
+            TBR_OPR_VALVE_BOX_STATUS
+        WHERE 
+            PR_ID =  #{parentDevice}
+    </select>
+
+    <select id="getDetailedValveStatus" parameterType="String" resultMap="dr910w">
+        SELECT 
+            POWR AS powr,
+            OPMD AS opMd,
+            HTTP AS htTp,
+            HWTP AS hwTp,
+            CHTP AS chTp, 
+            SUB_ID AS deviceId,
+            R_KEY AS controlAuthKey,
+            DV_NM AS deviceNickName
+        FROM 
+            TBR_OPR_VALVE_BOX_STATUS 
+        WHERE 
+            PR_ID = #{deviceId}
+    </select>
+
+    <select id="getParentIdBySubId" parameterType="String" resultMap="device">
+        SELECT 
+            PR_ID AS parentDevice
+        FROM 
+            TBR_OPR_VALVE_BOX_STATUS 
+        WHERE 
+            SUB_ID = #{deviceId}
+    </select>
+
+    <select id="getSingleSerialNumberBySubDeviceId" parameterType="String" resultMap="device">
+        SELECT
+            SERIAL_NO AS serialNumber
+        FROM
+            TBR_OPR_VALVE_BOX_STATUS
+        WHERE
+            SUB_ID = #{deviceId}
+    </select>
+
+    <select id="getSubIdByParentId" parameterType="String" resultMap="device">
+        SELECT 
+            SUB_ID AS deviceId,
+            SERIAL_NO AS serialNumber,
+            R_KEY AS controlAuthKey,
+            DEVC_MODL_CD AS modelCode
+        FROM 
+            TBR_OPR_VALVE_BOX_STATUS
+        WHERE
+            PR_ID = #{deviceId} 
+    </select>
+
+    <select id="getGroupIdByUserId" parameterType="String" resultMap="device">
+        SELECT DISTINCT
+            GRP_ID AS groupId,
+            GRP_NM AS groupName,
+            GRP_IDX AS groupIdx
+        FROM 
+            TBD_USER_INVITE_GROUP
+        WHERE
+            USER_ID = #{userId} 
+    </select>
+
+    <select id="getDeviceStatusInfo" parameterType="String" resultMap="dr910w">
+        SELECT 
+            a.DEVC_NICK AS deviceNickName,
+            a.GRP_IDX AS groupIdx,
+            a.GRP_NM AS groupName,
+            a.TEMP_DEVC_REG_KEY AS tmpRegistKey,
+            a.LAT AS latitude,
+            a.LON AS longitude,
+            IFNULL(b.DEVC_ID, '') AS deviceId,
+            IFNULL(b.SERIAL_NO, '') AS serialNumber,
+            IFNULL(b.R_KEY, 0) AS rKey,
+            IFNULL(b.POWR, '') AS powr,
+            IFNULL(b.OPMD, 0) AS opMd,
+            IFNULL(b.HTTP, 0.0) AS htTp,
+            IFNULL(b.WTTP, 0.0) AS wtTp,
+            IFNULL(b.HWTP, 0.0) AS hwTp,
+            IFNULL(b.FTMD, '') AS ftMd,
+            IFNULL(b.CHTP, 0.0) AS chTp,
+            IFNULL(b.`12H`, '') AS h12,
+            IFNULL(b.`24H`, '') AS h24,
+            IFNULL(b.`7WK`, '') AS wk7,
+            IFNULL(b.FWH, '') AS fwh,
+            IFNULL(b.HWST, '') AS hwSt,
+            IFNULL(b.FCLC, '') AS fcLc,
+            IFNULL(b.SLCD, '') AS slCd,
+            IFNULL(b.BCDT, '') AS bCdt,
+            IFNULL(b.MN, '') AS mn,
+            IFNULL(b.CWTP, 0.0) AS cwTp,
+            IFNULL(b.BLCF, 0.0) AS blCf,
+            IFNULL(b.VTSP, 0) AS vtSp,
+            IFNULL(b.RSSL, 0.0) AS rsSl,
+            IFNULL(b.RSPW, 0.0) AS rsPw,
+            IFNULL(b.INAQ, 0.0) AS inAq,
+            IFNULL(b.BLCF, 0.0) AS blCf,
+            IFNULL(b.ODHM, '[,]') AS odHm,
+            IFNULL(c.FTMD, '') AS ftMd,
+            IFNULL(c.FCLC, '') AS fcLc,
+            IFNULL(c.ECOP, '') AS ecOp,
+            IFNULL(c.PAST, '') AS past,
+            IFNULL(c.INDR, '') AS inDr,
+            IFNULL(c.INCL, '') AS inCl,
+            IFNULL(c.ECST, '') AS ecSt,
+            IFNULL(c.MFDT, '') AS mfDt
+        FROM 
+            TBT_OPR_DEVICE_REGIST a
+        INNER JOIN 
+            TBR_OPR_DEVICE_STATUS b
+        ON 
+            a.DEVC_ID = b.DEVC_ID
+        INNER JOIN 
+            TBR_OPR_ACTIVE_DEVICE_STATUS c
+        ON 
+            a.DEVC_ID = c.DEVC_ID
+        WHERE 
+            a.GRP_IDX = #{groupIdx}
+        AND 
+            a.VALVE_STATUS = 'N'
+    </select>
+
+    <insert id="insertActiveOldDevice" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_OPR_ACTIVE_DEVICE_STATUS
+        (
+            DEVC_ID,
+            SERIAL_NO
+        )
+            VALUES
+        (
+            #{deviceId},
+            #{serialNumber}
+        )
+    </insert>
+
+    <delete id="deleteActiveOldDevice" parameterType="list">
+        DELETE FROM
+            TBR_OPR_ACTIVE_DEVICE_STATUS
+        WHERE
+           DEVC_ID = #{deviceId}
+        AND
+            SERIAL_NO = #{serialNumber}
+    </delete>
+
+    <insert id="insertEachRoomStatInfo" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_OPR_EACH_ROOM_MODE_INFO
+        (
+            REG_DATM,
+            DEVC_ID,
+            POWR,
+            OPMD
+        )
+        VALUES
+        (
+            now(),
+            #{deviceId},
+            #{powr},
+            #{opMd}
+        )
+    </insert>
+
+    <select id="getSubAndParentDeviceInfo" parameterType="String" resultMap="dr910w">
+        SELECT 
+            a.SUB_ID AS subDevice,
+            a.PR_ID AS parentDevice,
+            a.DV_NM AS subDeviceNickname,
+            b.DEVC_NICK AS parentDeviceNickname,
+            a.POWR AS powr,
+            a.OPMD AS opMd,
+            a.HTTP AS htTp,
+            a.HWTP AS hwTp,
+            a.CHTP AS chTp
+        FROM 
+            TBR_OPR_VALVE_BOX_STATUS a
+        INNER JOIN 
+            TBT_OPR_DEVICE_REGIST b
+        ON 
+            a.PR_ID = b.DEVC_ID
+        WHERE 
+            SUB_ID = #{deviceId}
+    </select>
+
+
 </mapper>

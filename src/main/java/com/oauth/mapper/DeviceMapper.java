@@ -4,7 +4,6 @@ import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.DeviceStatusInfo;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Mapper
@@ -19,15 +18,24 @@ public interface DeviceMapper {
     public List<AuthServerDTO> getControlAuthKeyByUserId(AuthServerDTO param);
     public List<AuthServerDTO> getDeviceNicknameAndDeviceLocNickname(List<AuthServerDTO> device);
     public List<AuthServerDTO> getDeviceErroInfo(String serialNumber);
+    public List<AuthServerDTO> getSerialNumberAndModelCodeFromEachRoomInfo(String serialNumber);
     public List<AuthServerDTO> getPushinfoByDeviceId(String deviceId);
     public List<AuthServerDTO> getVentilationAirInfoDaily(AuthServerDTO param);
     public List<AuthServerDTO> getVentilationAirInfoMonthly(AuthServerDTO param);
+    public List<AuthServerDTO> getParentIdByUserId(String deviceId);
+    public List<AuthServerDTO> getSubIdByParentId(String deviceId);
+    public List<AuthServerDTO> getGroupIdByUserId(String userId);
     public List<String> getDeviceIdByDeviceModelCode();
     public List<String> getInviteGroupIdxList();
     public List<String> getRegistGroupIdxList();
+    public List<DeviceStatusInfo.Device> getDeviceStatusInfo(String groupIdx);
+    public List<DeviceStatusInfo.Device> getDetailedValveStatus(String deviceId);
+    public List<DeviceStatusInfo.Device> getValveStatusByParentId(String deviceId);
     public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);
     public List<DeviceStatusInfo.Device> getActiveStauts(List<String> serialNumber);
     public List<AuthServerDTO> getCheckedDeviceExist(String deviceId);
+    public AuthServerDTO getSingleSerialNumberBySubDeviceId(String deviceId);
+    public AuthServerDTO getParentIdBySubId(String deviceId);
     public AuthServerDTO getDeviceIdFromVentilationAirInfo(String deviceId);
     public AuthServerDTO getDeviceNicknameByDeviceId(String deviceId);
     public AuthServerDTO checkDeviceExist(String deviceId);
@@ -38,21 +46,27 @@ public interface DeviceMapper {
     public AuthServerDTO deviceTempAuthCheck(List<AuthServerDTO> device);
     public AuthServerDTO getDeviceInfoSearch(AuthServerDTO params);
     public AuthServerDTO getDeviceRegistStatus(String serialNumber);
+    public AuthServerDTO checkValveStatus(AuthServerDTO params);
     public AuthServerDTO checkDeviceStatus(AuthServerDTO params);
+    public DeviceStatusInfo.Device getSubAndParentDeviceInfo(String deviceId);
     public DeviceStatusInfo.Device getSingleDeviceStauts(String deviceId);
+    public DeviceStatusInfo.Device getDeviceNickNameBySubId(String deviceId);
     public DeviceStatusInfo.Device getEachRoomStautsByDeviceId(String deviceId);
     public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public DeviceStatusInfo.Device getActiveStautsByDeviceId(String deviceId);
+    public int deleteExistPrId(String deviceId);
     public int insertDeviceGrpInfoByList(List<AuthServerDTO> info);
     public int insertVentAirInfo(AuthServerDTO params);
     public int updateGroupName(AuthServerDTO params);
     public int deleteNoDeviceGroupByList(List<String> groupIdxList);
+    public int deleteActiveOldDevice(AuthServerDTO params);
     public int insertDeviceGrpInfo(AuthServerDTO params);
     public int insertDeviceListGrpInfo(List<AuthServerDTO> device);
     public int deleteDeviceListGrpInfo(List<AuthServerDTO> device);
     public int updateDeviceErrorStatus(String deviceId);
     public int changeDeviceNicknameTemp(AuthServerDTO device);
     public int changeDeviceNickname(AuthServerDTO device);
+    public int changeEachRoomDeviceNickname(AuthServerDTO device);
     public int insertDeviceModelCode(AuthServerDTO device);
     public int insertDevice(AuthServerDTO device);
     public int insertDeviceRegist(AuthServerDTO device);
@@ -64,6 +78,7 @@ public interface DeviceMapper {
     public int insertDeviceStatus(DeviceStatusInfo.Device device);
     public int insertActiveStatus(DeviceStatusInfo.Device device);
     public int updateEachRoomStatus(DeviceStatusInfo.Device device);
+    public int updateEachRoomControlStatus(DeviceStatusInfo.Device device);
     public int updateDeviceStatus(DeviceStatusInfo.Device device);
     public int updateActiveStatus(DeviceStatusInfo.Device device);
     public int insertUserDevice(AuthServerDTO device);
@@ -76,5 +91,7 @@ public interface DeviceMapper {
     public int updateDeviceDetail(AuthServerDTO params);
     public int updateDeviceRegist(AuthServerDTO params);
     public int insertFristDeviceUser(AuthServerDTO params);
+    public int insertActiveOldDevice(AuthServerDTO params);
+    public int insertEachRoomStatInfo(AuthServerDTO params);
     // TBR_FIRST_DEVICE_USER
 }

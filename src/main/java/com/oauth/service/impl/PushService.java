@@ -3,17 +3,12 @@ package com.oauth.service.impl;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
-import com.oauth.response.ApiResponse;
 import com.oauth.utils.Common;
 import com.oauth.utils.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +30,7 @@ public class PushService {
         log.info("sendPushMessage jsonBody: " + jsonBody);
 
         HashMap<String, String> pushMap = new HashMap<>();
+        if(title == null) title = "vfLs";
         try {
             pushMap.put("targetToken", pushToken);
             pushMap.put("pushYn", fPushYn);
@@ -87,6 +83,7 @@ public class PushService {
                     pushMap.put("pushYn", authServerDTO.getSPushYn());
                     pushMap.put("modelCode", modelCode.replaceAll(" ", ""));
                     pushMap.put("deviceNick", common.stringToHex(info.getDeviceNickname()));
+                    pushMap.put("groupName", common.stringToHex(params.getGroupName()));
 
                     mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
                 }

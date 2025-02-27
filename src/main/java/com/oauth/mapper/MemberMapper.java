@@ -33,10 +33,12 @@ public interface MemberMapper {
     public List<AuthServerDTO> getGroupMemberByUserId(String requestUserId);
     public List<AuthServerDTO> getSafeAlarmSet();
     public List<AuthServerDTO> getUserIdFromDeviceGroup(String deviceId);
+    public List<AuthServerDTO> getValveStatusList(String userId);
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
     public List<AuthServerDTO> getDeviceIdFromRegist(String userId);
     public AuthServerDTO getSafeAlarmInfo(AuthServerDTO params);
     public AuthServerDTO getSafeAlarmInfoCount(AuthServerDTO params);
+    public AuthServerDTO checkValveStatusByUserId(String userId);
     public AuthServerDTO getSafeAlarmTimeDiff(String deviceId);
     public AuthServerDTO getGroupInfoForPush(String deviceId);
     public AuthServerDTO getSinglePushCodeStatus(AuthServerDTO params);
@@ -47,6 +49,7 @@ public interface MemberMapper {
     public AuthServerDTO getInviteCountFromInviteStatus(AuthServerDTO param);
     public AuthServerDTO getInviteCountByReqeustResponseUserId(AuthServerDTO param);
     public AuthServerDTO getDeviceNicknameByDeviceId(String deviceId);
+    public AuthServerDTO getDeviceNicknameBySubDeviceId(String deviceId);
     public AuthServerDTO checkDuplicateHp(String newHp);
     public AuthServerDTO checkDuplicateHpByUserId(AuthServerDTO member);
     public AuthServerDTO getGroupLeaderId(Long idx);
@@ -71,6 +74,7 @@ public interface MemberMapper {
     public AuthServerDTO getUserLoginoutStatus(String userId);
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
+    public String deleteEachRoomrMapping(AuthServerDTO member);
     public int updatePhoneId(AuthServerDTO info);
     public int updateSafePushAlarmTime(AuthServerDTO info);
     public int updateLoginoutStatus(AuthServerDTO info);

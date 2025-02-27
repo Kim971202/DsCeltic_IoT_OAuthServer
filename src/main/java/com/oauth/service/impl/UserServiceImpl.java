@@ -80,11 +80,11 @@ public class UserServiceImpl implements UserService {
             } else {
                 registUserType = account.getRegistUserType();
                 password = account.getUserPassword();
-                 if (!encoder.matches(userPassword, password)) {
-                     msg = "PW 에러";
-                     result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-                     return new ResponseEntity<>(result, HttpStatus.OK);
-                 }
+                if (!encoder.matches(userPassword, password)) {
+                    msg = "PW 에러";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
             }
 
             householdStatus = memberMapper.getHouseholdByUserId(userId);
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
 
             if (phoneId != null) {
                 // 로그인 시도 하는 사용자가 LogOut 상태일 경우 아래 로직 적용 X
-                if(memberMapper.getUserLoginoutStatus(userId).getLoginoutStatus().equals("Y")){
+                if (memberMapper.getUserLoginoutStatus(userId).getLoginoutStatus().equals("Y")) {
                     // phoneId의 값이 DEFAULT인 경우 최초 로그인 이므로 PASS
                     phoneIdInfo = memberMapper.getPhoneIdInfo(userId);
                     if (!phoneIdInfo.getPhoneId().equals("DEFAULT")) {
@@ -120,7 +120,8 @@ public class UserServiceImpl implements UserService {
                             conMap.put("targetToken", memberMapper.getPushTokenByUserId(userId).getPushToken());
                             conMap.put("title", "Duplicated_Login");
                             String jsonString = objectMapper.writeValueAsString(conMap);
-                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString)
+                                    .getResponseCode().equals("201"))
                                 log.info("PUSH 메세지 전송 오류");
                         }
                     }
@@ -1166,7 +1167,7 @@ public class UserServiceImpl implements UserService {
             // "push" 부분을 표현하는 List 생성
             List<Map<String, String>> pushList = new ArrayList<>();
 
-            if(searchFlag.equals("00")){
+            if (searchFlag.equals("00")) {
                 String deviceId = params.getDeviceId();
                 String controlAuthkey = params.getControlAuthKey();
 
@@ -1208,7 +1209,7 @@ public class UserServiceImpl implements UserService {
 
                 resultMap.put("push", pushList);
 
-            } else if(searchFlag.equals("01")){
+            } else if (searchFlag.equals("01")) {
 
                 // TDOD: 세대주 ID 쿼리
                 householderId = memberMapper.getHouseholdByUserId(userId).getGroupId();
@@ -1324,7 +1325,7 @@ public class UserServiceImpl implements UserService {
             }
             deviceMapper.deleteDeviceListGrpInfo(inputList);
 
-            // TODO: 2.  다음 세대주TBD_USER_INVITE_GROUP ID로 UPDATE
+            // TODO: 2. 다음 세대주TBD_USER_INVITE_GROUP ID로 UPDATE
             memberMapper.updateNewHouseHolder(params);
 
             // TODO: 3. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
@@ -1424,21 +1425,25 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data result = new ApiResponse.Data();
         String msg;
-        String stringObject;
-        try {
 
-            if (deviceMapper.checkDeviceStatus(params).getDeviceId() == null) {
-                msg = "홈 IoT 컨트롤러 인증 실패";
-                stringObject = "N";
-            } else {
+        try {
+            // 먼저 checkValveStatus로 각방 여부 확인 후 원래 로직 수행
+            if (!deviceMapper.checkValveStatus(params).getDeviceCount().equals("0")) {
                 msg = "홈 IoT 컨트롤러 인증 성공";
-                stringObject = "Y";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                log.info("result: " + result);
+                return new ResponseEntity<>(result, HttpStatus.OK); // 즉시 종료
             }
 
-            if (stringObject.equals("N"))
+            // checkDeviceStatus 실행
+            if (deviceMapper.checkDeviceStatus(params) == null) {
+                msg = "홈 IoT 컨트롤러 인증 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-            else
+            } else {
+                msg = "홈 IoT 컨트롤러 인증 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
@@ -1456,32 +1461,49 @@ public class UserServiceImpl implements UserService {
         String stringObject = "N";
         String msg;
         String userId = params.getUserId();
+        String serialNumber = params.getSerialNumber();
+        String deviceType = params.getDeviceType();
 
-        MobiusResponse aeResult;
+        MobiusResponse aeResult = null;
         MobiusResponse cntResult = null;
         MobiusResponse subResult = null;
 
         List<AuthServerDTO> groupMemberList;
+        List<AuthServerDTO> valveInfoList = null;
 
         try {
             /*
              * 위 API 호출 마다 SerialNum, UserId 정보로 Cin 생성
              * 생성이 정상적으로 동작 후 201을 Return 한다면 해당 AE, CNT는 존재하므로 생성X
              * 하지만 201을 Return 하지 못하는 경우 AE, CNT가 없다 판단하여 신규 생성
-             * TODO: GRP_ID 기준 모든 UserId에 대한 CNT, SUB 생성
+             * GRP_ID 기준 모든 UserId에 대한 CNT, SUB 생성
              */
 
-            groupMemberList = memberMapper.getGroupMemberByUserId(userId);
+            // 각방의 경우 메인 벨브 ID로 Sub ID를 등록 해야 함.
+            if (deviceType.equals("05")) {
+                // DB TBR_OPR_VALVE_BOX_STATUS 테이블에서 SERIAL_NO와 DEVC_MODL_CD를 쿼리
+                valveInfoList = deviceMapper.getSerialNumberAndModelCodeFromEachRoomInfo(serialNumber);
+                for (AuthServerDTO authServerDTO : valveInfoList) {
+                    aeResult = mobiusService.createAe(common.stringToHex("    " + authServerDTO.getSerialNumber()));
+                    cntResult = mobiusService.createCnt(common.stringToHex("    " + authServerDTO.getSerialNumber()),
+                            userId);
+                    subResult = mobiusService.createSub(common.stringToHex("    " + authServerDTO.getSerialNumber()),
+                            userId, "gw");
+                }
+            } else {
+                groupMemberList = memberMapper.getGroupMemberByUserId(userId);
 
-            params.setSerialNumber("    " + params.getSerialNumber());
-            params.setModelCode(" " + params.getModelCode());
-            aeResult = mobiusService.createAe(common.stringToHex(params.getSerialNumber()));
+                params.setSerialNumber("    " + params.getSerialNumber());
+                params.setModelCode(" " + params.getModelCode());
+                aeResult = mobiusService.createAe(common.stringToHex(params.getSerialNumber()));
 
-            for (AuthServerDTO authServerDTO : groupMemberList) {
-                cntResult = mobiusService.createCnt(common.stringToHex(params.getSerialNumber()),
-                        authServerDTO.getUserId());
-                subResult = mobiusService.createSub(common.stringToHex(params.getSerialNumber()),
-                        authServerDTO.getUserId(), "gw");
+                // 아래 로직이 필요한지 확인. 기기 제어시 최초 등록자 ID로 제어하기 때문
+                for (AuthServerDTO authServerDTO : groupMemberList) {
+                    cntResult = mobiusService.createCnt(common.stringToHex(params.getSerialNumber()),
+                            authServerDTO.getUserId());
+                    subResult = mobiusService.createSub(common.stringToHex(params.getSerialNumber()),
+                            authServerDTO.getUserId(), "gw");
+                }
             }
 
             if (aeResult == null && cntResult == null && subResult == null) {
@@ -1491,7 +1513,10 @@ public class UserServiceImpl implements UserService {
             } else
                 stringObject = "Y";
 
-            if (stringObject.equals("Y")) {
+            if (stringObject.equals("Y") && deviceType.equals("05")) {
+                result.setDeviceId(valveInfoList.get(0).getParentDevice());
+                msg = "최초 인증 성공";
+            } else if (stringObject.equals("Y")) {
                 result.setDeviceId("0.2.481.1.1." + common.stringToHex(params.getModelCode()) + "."
                         + common.stringToHex(params.getSerialNumber()));
                 msg = "최초 인증 성공";
@@ -1673,22 +1698,32 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String stringObject = "N";
         String msg;
-
+        String deviceType = params.getDeviceType();
+        String modelCode = params.getModelCode();
         try {
             // deviceNickname Input 대신 newDeviceNickname을 받아서 Setter 사용
             params.setDeviceNickname(params.getNewDeviceNickname());
 
-            if (deviceMapper.changeDeviceNickname(params) <= 0) {
-                msg = "기기 별칭 수정 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                new ResponseEntity<>(data, HttpStatus.OK);
+            if(deviceType.equals("05") && !modelCode.equals("DR-300W")){
+                if (deviceMapper.changeEachRoomDeviceNickname(params) <= 0) {
+                    msg = "기기 별칭 수정 실패";
+                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    new ResponseEntity<>(data, HttpStatus.OK);
+                } else
+                    stringObject = "Y";
+            } else {
+                if (deviceMapper.changeDeviceNickname(params) <= 0) {
+                    msg = "기기 별칭 수정 실패";
+                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    new ResponseEntity<>(data, HttpStatus.OK);
+                }
+                if (deviceMapper.changeDeviceNicknameTemp(params) <= 0) {
+                    msg = "기기 별칭 수정 실패";
+                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    new ResponseEntity<>(data, HttpStatus.OK);
+                } else
+                    stringObject = "Y";
             }
-            if (deviceMapper.changeDeviceNicknameTemp(params) <= 0) {
-                msg = "기기 별칭 수정 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                new ResponseEntity<>(data, HttpStatus.OK);
-            } else
-                stringObject = "Y";
 
             if (stringObject.equals("Y"))
                 msg = "기기 별칭 수정 성공";
@@ -2040,7 +2075,7 @@ public class UserServiceImpl implements UserService {
             }
 
             if (memberMapper.updatePushToken(params) <= 0)
-            log.info("구글 FCM TOKEN 갱신 실패.");
+                log.info("구글 FCM TOKEN 갱신 실패.");
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -2053,7 +2088,7 @@ public class UserServiceImpl implements UserService {
     /** 안전 안심 알람 정보 조회 */
     @Override
     public ResponseEntity<?> doGetSafeAlarmSetInfo(AuthServerDTO params) throws Exception {
-        
+
         ApiResponse.Data result = new ApiResponse.Data();
         String msg = "";
 
@@ -2061,9 +2096,9 @@ public class UserServiceImpl implements UserService {
         AuthServerDTO safeAlarmInfo;
 
         try {
-            
+
             safeAlarmCount = memberMapper.getSafeAlarmInfoCount(params);
-            if(safeAlarmCount.getSafeAlarmCount().equals("0")){
+            if (safeAlarmCount.getSafeAlarmCount().equals("0")) {
                 msg = "안전 안심 알람 정보 조회 성공";
                 result.setSafeAlarmTime("0000");
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -2075,7 +2110,7 @@ public class UserServiceImpl implements UserService {
             }
 
             if (memberMapper.updatePushToken(params) <= 0)
-            log.info("구글 FCM TOKEN 갱신 실패.");
+                log.info("구글 FCM TOKEN 갱신 실패.");
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);

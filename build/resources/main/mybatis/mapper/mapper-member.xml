@@ -386,6 +386,16 @@
                 )
     </select>
 
+    <select id="deleteEachRoomrMapping" parameterType="com.oauth.dto.AuthServerDTO" resultType="String">
+        CALL
+            deleteEachRoomMapping
+                (
+                    #{deviceId},
+                    #{userId},
+                    #{controlAuthKey}
+                )
+    </select>
+
     <select id="getPushInfoList" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             PUSH_IDX AS pushIdx,
@@ -1188,6 +1198,15 @@
         LIMIT 1
     </select>
 
+    <select id="getDeviceNicknameBySubDeviceId" parameterType="String" resultMap="member">
+        SELECT
+            DV_NM AS deviceNickname
+        FROM
+            TBR_OPR_VALVE_BOX_STATUS
+        WHERE
+            SUB_ID = #{deviceId}
+    </select>
+
     <insert id="insertInviteGroup" parameterType="com.oauth.dto.AuthServerDTO" useGeneratedKeys="true" keyProperty="idx">
         INSERT INTO
             TBD_USER_INVITE_GROUP
@@ -1523,4 +1542,47 @@
             DEVC_ID = #{deviceId}
     </select>
 
+    <select id="checkValveStatusByUserId" parameterType="String" resultMap="member">
+        SELECT 
+            COUNT(*) AS valveCount
+        FROM 
+            TBT_OPR_DEVICE_REGIST d
+        JOIN 
+            TBD_USER_INVITE_GROUP g 
+        ON 
+            d.GRP_IDX = g.GRP_IDX
+        WHERE 
+            g.USER_ID = #{userId}
+        AND 
+            d.VALVE_STATUS = 'Y';
+    </select>
+
+    <select id="getValveStatusList" parameterType="String" resultMap="member">
+        SELECT 
+            g.GRP_ID            AS groupId,
+            g.USER_ID           AS userId,
+            g.GRP_NM            AS groupName,
+            g.GRP_IDX           AS groupIdx,
+            d.VALVE_STATUS      AS valveStatus,
+            d.DEVC_ID 	        AS deviceId,
+            d.LAT		        AS latitude,
+            d.LON               AS longitude,
+            d.DEVC_NICK         AS deviceNickname,
+            d.TEMP_DEVC_REG_KEY AS tmpRegistKey,
+            t.DEVC_CTRL_KEY     AS controlAuthKey
+        FROM 
+            TBD_USER_INVITE_GROUP g
+        JOIN 
+            TBT_OPR_DEVICE_REGIST d
+        ON 
+            g.GRP_IDX = d.GRP_IDX
+        JOIN 
+            tbr_opr_device_detail t
+        ON 
+            t.DEVC_ID = d.DEVC_ID
+        WHERE
+             g.USER_ID = #{userId} 
+        AND 
+            d.VALVE_STATUS = 'Y';
+    </select>
 </mapper>

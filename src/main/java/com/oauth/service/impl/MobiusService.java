@@ -84,17 +84,15 @@ public class MobiusService {
         String responseString = EntityUtils.toString(responseEntity);
         mobiusResponse.setResponseContent(responseString);
 
-        log.info("FirstHeader Content-Location: " + response.getFirstHeader("Content-Location"));
-        log.info("LastHeader Content-Location: " + response.getLastHeader("Content-Location"));
+        // log.info("FirstHeader Content-Location: " + response.getFirstHeader("Content-Location"));
+        // log.info("LastHeader Content-Location: " + response.getLastHeader("Content-Location"));
 
-        log.info("====HTTP Request URI===============================================================================");
+        log.info("=====START==================================================================================================");
         log.info("HTTP Request URI : " + uri.toString());
-        log.info("====HTTP Request Body=================================================================================");
         log.info("HTTP Request Body : " + reqBody);
-        log.info("====HTTP Response Code=================================================================================");
         log.info("HTTP Response Code, dKey : " + responseCode);
-        log.info("====HTTP Response String=================================================================================");
         log.info("HTTP Response String : " + responseString);
+        log.info("=====END==================================================================================================");
 
         return mobiusResponse;
     }
@@ -200,7 +198,7 @@ public class MobiusService {
         cinObject.setDefaultValue(cin);
 
         String requestBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(cinObject);
-        log.info("requestBody: " + requestBody);
+        // log.info("requestBody: " + requestBody);
         StringEntity entity = new StringEntity(requestBody);
 
         URI uri = new URIBuilder()
@@ -225,7 +223,7 @@ public class MobiusService {
             CloseableHttpClient httpClient = getHttpClient();
             response = httpClient.execute(post);
             mobiusResponse = pickupResponse(uri, requestBody, response);
-            log.info("mobiusResponse: " + mobiusResponse);
+            // log.info("mobiusResponse: " + mobiusResponse);
         } catch (Exception e) {
             log.error("send to oneM2M Error : " + e);
             return mobiusResponse;
@@ -305,6 +303,7 @@ public class MobiusService {
         else deviceMapper.updateActiveStatus(dr910W);
 
     }
+    
     public void rtstHandler(DeviceStatusInfo.Device dr910W){
         if(deviceMapper.getDeviceStautsByDeviceId(dr910W.getDeviceId()) == null){
             // 신규 기기 INSERT

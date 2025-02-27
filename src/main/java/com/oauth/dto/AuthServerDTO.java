@@ -182,6 +182,7 @@ public class AuthServerDTO implements Serializable {
     private String inviteCount;
     private String safeAlarmCount;
     private String timeCheckCount;
+    private String valveCount;
 
     private String deviceInfo;                   // Y/N 기기 존재 여부
 
@@ -203,6 +204,8 @@ public class AuthServerDTO implements Serializable {
     private String prId;
     private String psYn;
     private String dvNm;
+    private String parentDevice;
+    private String valveStatus;
 
     @Override
     public boolean equals(Object o) {
