@@ -11,6 +11,7 @@ public interface DeviceMapper {
 
     public List<AuthServerDTO> getDeviceInfoSearchList (List<AuthServerDTO> param);
     public List<AuthServerDTO> getDeviceInfoSearchIdx (List<String> param);
+    public List<AuthServerDTO> getDeviceInfoSearchIdxTemp (List<String> param);
     public List<AuthServerDTO> getDeviceIdByGroupIdx (String groupIdx);
     public List<AuthServerDTO> getMultiSerialNumberBydeviceId(List<AuthServerDTO> deviceId);
     public List<AuthServerDTO> deviceAuthCheck(List<AuthServerDTO> device);
@@ -79,6 +80,7 @@ public interface DeviceMapper {
     public int insertActiveStatus(DeviceStatusInfo.Device device);
     public int updateEachRoomStatus(DeviceStatusInfo.Device device);
     public int updateEachRoomControlStatus(DeviceStatusInfo.Device device);
+    public int updateEachRoomControlStatusHwTp(DeviceStatusInfo.Device device);
     public int updateDeviceStatus(DeviceStatusInfo.Device device);
     public int updateActiveStatus(DeviceStatusInfo.Device device);
     public int insertUserDevice(AuthServerDTO device);

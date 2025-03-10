@@ -64,4 +64,7 @@ public interface DeviceService {
 
     /** 홈 IoT 컨트롤러 상태 정보 조회 (각방) */
     ResponseEntity<?> doRoomDeviceStatusInfo(AuthServerDTO params) throws CustomException;
+
+    /** FCNT 요청 호출 */
+    ResponseEntity<?> doCallFcNt(AuthServerDTO params) throws CustomException;
 }

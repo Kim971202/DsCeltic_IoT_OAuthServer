@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -206,7 +205,7 @@ public class DeviceServiceImpl implements DeviceService {
                                 log.info("PUSH 메세지 전송 오류");
                         }
                     }
-                    
+
                     common.insertHistory(
                             "1",
                             "PowerOnOff",
@@ -736,7 +735,13 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("chTp", value.getChTp());
                         resultMap.put("cwTp", value.getCwTp());
                         resultMap.put("mfDt", value.getMfDt());
-                        resultMap.put("type24h", common.readCon(value.getH24(), "serviceMd"));
+                        String type24h = common.readCon(value.getH24(), "serviceMd");
+                        if (type24h == null || type24h.isEmpty()) {
+                            resultMap.put("type24h", "");
+                        } else {
+                            resultMap.put("type24h", type24h);
+                        }
+                        // resultMap.put("type24h", common.readCon(value.getH24(), "serviceMd"));
                         resultMap.put("slCd", value.getSlCd());
                         resultMap.put("hwSt", value.getHwSt());
                         resultMap.put("fcLc", value.getFcLc());
@@ -1939,12 +1944,13 @@ public class DeviceServiceImpl implements DeviceService {
                         if (!devicesStatusInfo.isEmpty()) {
                             Map<String, String> data = new HashMap<>();
                             data.put("rKey", devicesStatusInfo.get(i).getRKey());
-                            data.put("modelCategoryCode", common.getModelCode(common.getModelCodeFromDeviceId(devicesStatusInfo.get(i).getDeviceId()).trim()));
+                            data.put("modelCategoryCode", common.getModelCode(
+                                    common.getModelCodeFromDeviceId(devicesStatusInfo.get(i).getDeviceId()).trim()));
                             data.put("deviceNickname", devicesStatusInfo.get(i).getDeviceNickName());
                             data.put("groupIdx", devicesStatusInfo.get(i).getGroupIdx());
                             data.put("groupName", devicesStatusInfo.get(i).getGroupName());
                             data.put("regSort", String.valueOf(i + 1));
-                            data.put("deviceId", devicesStatusInfo.get(i).getDeviceId()); 
+                            data.put("deviceId", devicesStatusInfo.get(i).getDeviceId());
                             data.put("latitude", devicesStatusInfo.get(i).getLatitude());
                             data.put("longitude", devicesStatusInfo.get(i).getLongitude());
                             data.put("controlAuthKey", devicesStatusInfo.get(i).getRKey());
@@ -1962,7 +1968,12 @@ public class DeviceServiceImpl implements DeviceService {
                             data.put("hwSt", devicesStatusInfo.get(i).getHwSt());
                             data.put("fcLc", devicesStatusInfo.get(i).getFcLc());
                             data.put("blCf", devicesStatusInfo.get(i).getBlCf());
-                            data.put("type24h", common.readCon(devicesStatusInfo.get(i).getH24(), "serviceMd"));
+                            String type24h = common.readCon(devicesStatusInfo.get(i).getH24(), "serviceMd");
+                            if (type24h == null || type24h.isEmpty()) {
+                                data.put("type24h", "");
+                            } else {
+                                data.put("type24h", type24h);
+                            }
                             data.put("slCd", devicesStatusInfo.get(i).getSlCd());
                             data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
                             data.put("inAq", devicesStatusInfo.get(i).getInAq());
@@ -2125,10 +2136,22 @@ public class DeviceServiceImpl implements DeviceService {
         List<Map<String, String>> appResponse = new ArrayList<>();
         List<AuthServerDTO> deviceInfoList;
 
+        String valveStatus = params.getValveStatus();
+
         try {
-            // 일시적으로 각방 선택 X
+
             groupIdxList = Arrays.asList(groupIdx.split(","));
-            deviceInfoList = deviceMapper.getDeviceInfoSearchIdx(groupIdxList);
+
+            // 일시적으로 각방 선택 X
+            // Y일 경우 각방 포함 쿼리
+            if (valveStatus == null || valveStatus.equals("N")) {
+                deviceInfoList = deviceMapper.getDeviceInfoSearchIdx(groupIdxList);
+            } else if (valveStatus.equals("Y")) {
+                deviceInfoList = deviceMapper.getDeviceInfoSearchIdxTemp(groupIdxList);
+            } else {
+                deviceInfoList = deviceMapper.getDeviceInfoSearchIdx(groupIdxList);
+            }
+
             int i = 1;
             if (!deviceInfoList.isEmpty()) {
                 for (AuthServerDTO authServerDTO : deviceInfoList) {
@@ -2580,6 +2603,58 @@ public class DeviceServiceImpl implements DeviceService {
             log.error("", e);
         }
 
+        return null;
+    }
+
+    /** FCNT 요청 호출 */
+    @Override
+    public ResponseEntity<?> doCallFcNt(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        FcNtCall fcNtCall = new FcNtCall();
+        String stringObject;
+        String msg;
+        String userId;
+        String deviceId = params.getDeviceId();
+        String parentDevice = params.getParentDevice();
+        String serialNumber;
+        String modelCode;
+
+        AuthServerDTO firstDeviceUser;
+
+        MobiusResponse response;
+
+        try {
+            modelCode = common.getModelCodeFromDeviceId(deviceId);
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(parentDevice);
+            userId = firstDeviceUser.getUserId();
+
+            fcNtCall.setDeviceId(deviceId);
+            fcNtCall.setUuId(common.getTransactionId());
+            fcNtCall.setFunctionId("fcNt");
+            fcNtCall.setModelCode(modelCode);
+
+            serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+
+            stringObject = "Y";
+            response = mobiusService.createCin("20" + serialNumber, userId, JSON.toJson(fcNtCall));
+            if (!response.getResponseCode().equals("201")) {
+                msg = "중계서버 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            if (stringObject.equals("Y")) {
+                msg = "FCNT 요청 호출 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+
+            log.info("result: " + result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("", e);
+        }
         return null;
     }
 }

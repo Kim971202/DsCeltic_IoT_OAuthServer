@@ -117,7 +117,7 @@ public class MobiusController {
         if (functionId == null || functionId.equals("mfAr"))
             return "FUNCTION NO CHECK";
 
-        if (!functionId.equals("rtSt") && !functionId.equals("mfSt") && !functionId.equals("opIf")) {
+        if (!functionId.equals("rtSt") && !functionId.equals("mfSt") && !functionId.equals("opIf") && !functionId.equals("fcNt")) {
             redisValue = redisCommand.getValues(uuId);
         }
         log.info("uuId: " + uuId);
@@ -288,13 +288,16 @@ public class MobiusController {
 
             // 각방의 경우 저장하는 테이블 변경
             String subDeviceNickname = "";
-            if (common.checkDeviceType(deviceId) && !common.readCon(jsonBody, "mfCd").equals("hwTp")) {
-                // SUB_ID를 ParentId로 수정 해야 함.
-                deviceId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
-                rcUpdateResult = deviceMapper.updateEachRoomControlStatus(deviceInfo);
-                deviceInfo.setDeviceId(deviceId);
-                log.info("2 subDeviceId: " + subDeviceId);
-                subDeviceNickname = deviceMapper.getDeviceNickNameBySubId(subDeviceId).getDeviceNickName();
+            if (common.checkDeviceType(deviceId)) {
+                if (common.readCon(jsonBody, "mfCd").equals("hwTp")) {
+                    rcUpdateResult = deviceMapper.updateEachRoomControlStatusHwTp(deviceInfo);
+                } else {
+                    // SUB_ID를 ParentId로 수정 해야 함.
+                    deviceId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
+                    rcUpdateResult = deviceMapper.updateEachRoomControlStatus(deviceInfo);
+                    deviceInfo.setDeviceId(deviceId);
+                    subDeviceNickname = deviceMapper.getDeviceNickNameBySubId(subDeviceId).getDeviceNickName();
+                }
             } else {
                 rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
             }
@@ -465,7 +468,12 @@ public class MobiusController {
             for (AuthServerDTO authServerDTO : opTmInfo) {
                 AuthServerDTO newWkTmInfo = new AuthServerDTO();
                 newWkTmInfo.setWorkTime(common.readCon(jsonBody, "wkTm"));
-                newWkTmInfo.setMsDt(common.readCon(jsonBody, "msDt"));
+                String msDt = common.readCon(jsonBody, "msDt");
+                if(msDt == null || msDt.isEmpty()){
+                    newWkTmInfo.setMsDt(common.getCurrentDateTimeDBForamt());
+                } else {
+                    newWkTmInfo.setMsDt(msDt);
+                }
                 newWkTmInfo.setDeviceId(deviceId);
                 newWkTmInfo.setUserId(authServerDTO.getUserId());
                 inputList.add(newWkTmInfo);

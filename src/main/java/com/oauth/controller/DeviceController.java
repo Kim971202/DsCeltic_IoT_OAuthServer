@@ -423,4 +423,23 @@ public class DeviceController {
         return deviceService.doRoomDeviceStatusInfo(params);
     }
 
+    /** FCNT 요청 호출 */
+    @PostMapping(value = "/callFcNt")
+    @ResponseBody
+    public ResponseEntity<?> doCallFcNt(HttpSession session, HttpServletRequest request,
+            @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws Exception {
+
+        log.info("[FCNT 요청 호출");
+        common.logParams(params);
+
+        if (Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getParentDevice()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getPushToken())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("FCNT 요청 호출 오류");
+        }
+        return deviceService.doCallFcNt(params);
+    }
+
 }

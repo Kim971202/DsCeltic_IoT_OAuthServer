@@ -13,7 +13,6 @@ import com.oauth.service.impl.MobiusService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -179,6 +178,15 @@ public class Common {
         Date today = new Date();
         Locale currentLocale = new Locale("KOREAN", "KOREA");
         String pattern = "yyyyMMddHHmmss"; // hhmmss로 시간,분,초만 뽑기도 가능
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern,
+                currentLocale);
+        return formatter.format(today);
+    }
+
+    public String getCurrentDateTimeDBForamt() {
+        Date today = new Date();
+        Locale currentLocale = new Locale("KOREAN", "KOREA");
+        String pattern = "yyyy-MM-dd HH:mm:ss"; // hhmmss로 시간,분,초만 뽑기도 가능
         SimpleDateFormat formatter = new SimpleDateFormat(pattern,
                 currentLocale);
         return formatter.format(today);

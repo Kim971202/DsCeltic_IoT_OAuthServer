@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
                 memberMapper.updatePhoneId(params);
             }
 
-            // TODO: TBR_OPR_USER 테이블의 USER_STATUS_LOG_INOUT의 값을 Y
+            // TBR_OPR_USER 테이블의 USER_STATUS_LOG_INOUT의 값을 Y
             info.setUserId(userId);
             info.setLoginoutStatus("Y");
             if (memberMapper.updateLoginoutStatus(info) <= 0)
@@ -1016,25 +1016,27 @@ public class UserServiceImpl implements UserService {
             memberMapper.delHouseholdMember(delUserId);
 
             // TBR_IOT_DEVICE_GRP_INFO deleteDeviceGrpInfo
-            // TODO: 세대주 ID로 세대주 등록 기기 목록을 Regist 테이블에서 불러온후 해당 기기를 세대원
+            // 세대주 ID로 세대주 등록 기기 목록을 Regist 테이블에서 불러온후 해당 기기를 세대원
             // TBR_IOT_DEVICE_GRP_INFO 테이블에서 삭제
             deviceIdList = memberMapper.getDeviceIdFromRegist(userId);
 
-            inputList = new ArrayList<>();
-            for (AuthServerDTO authServerDTO : deviceIdList) {
-                AuthServerDTO newDevice = new AuthServerDTO();
-                newDevice.setDeviceId(authServerDTO.getDeviceId());
-                newDevice.setUserId(delUserId);
-                // 리스트에 추가
-                inputList.add(newDevice);
+            if(!deviceIdList.isEmpty()){
+                inputList = new ArrayList<>();
+                for (AuthServerDTO authServerDTO : deviceIdList) {
+                    AuthServerDTO newDevice = new AuthServerDTO();
+                    newDevice.setDeviceId(authServerDTO.getDeviceId());
+                    newDevice.setUserId(delUserId);
+                    // 리스트에 추가
+                    inputList.add(newDevice);
+                }
+    
+                // TBR_OPR_USER_DEVICE_PUSH 테이블 삭제
+                memberMapper.deleteUserDevicePush(inputList);
+                memberMapper.deleteDeviceGrpInfo(inputList);
+    
             }
-
-            // TODO: TBR_OPR_USER_DEVICE_PUSH 테이블 삭제
-            memberMapper.deleteUserDevicePush(inputList);
-
-            memberMapper.deleteDeviceGrpInfo(inputList);
-
-            // TODO: TBD_USER_INVITE_GROUP 테이블 삭제
+            
+            // TBD_USER_INVITE_GROUP 테이블 삭제
             if (memberMapper.deleteUserInviteGroup(params) <= 0) {
                 msg = "사용자(세대원) 강제탈퇴 실패";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
@@ -1300,55 +1302,50 @@ public class UserServiceImpl implements UserService {
 
             /*
              * *
-             * TODO
              * 1. 신규 세대주 ID 쿼리후 기존 세대주 ID, IDX 가 있는 테이블에 ID UPDATE
              * 2. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
              * 3. 다음 세대원을 세대주로 변경
              * 4. TBT_OPR_DEVICE_REGIST, TBR_OPR_USER_DEVICE USER_ID 다음 세대원으로 변경
              */
 
-            // TODO: 1. 다음 세대원 검색
+            // 1. 다음 세대원 검색
             nextHouseholder = memberMapper.getNextUserId(params);
             params.setNextUserId(nextHouseholder.getUserId());
             params.setHp(nextHouseholder.getHp());
 
-            // TODO: 2. TBR_IOT_DEVICE_GRP_INFO에서 세대주 ID 삭제
+            // 2. TBR_IOT_DEVICE_GRP_INFO에서 세대주 ID 삭제
             deviceIdList = memberMapper.getDeviceIdFromRegist(userId);
-
-            inputList = new ArrayList<>();
-            for (AuthServerDTO authServerDTO : deviceIdList) {
-                AuthServerDTO newDevice = new AuthServerDTO();
-                newDevice.setDeviceId(authServerDTO.getDeviceId());
-                newDevice.setUserId(userId);
-                // 리스트에 추가
-                inputList.add(newDevice);
+            
+            if(!deviceIdList.isEmpty()){
+                inputList = new ArrayList<>();
+                for (AuthServerDTO authServerDTO : deviceIdList) {
+                    AuthServerDTO newDevice = new AuthServerDTO();
+                    newDevice.setDeviceId(authServerDTO.getDeviceId());
+                    newDevice.setUserId(userId);
+                    // 리스트에 추가
+                    inputList.add(newDevice);
+                }
+                deviceMapper.deleteDeviceListGrpInfo(inputList);
             }
-            deviceMapper.deleteDeviceListGrpInfo(inputList);
 
-            // TODO: 2. 다음 세대주TBD_USER_INVITE_GROUP ID로 UPDATE
+            // 2. 다음 세대주TBD_USER_INVITE_GROUP ID로 UPDATE
             memberMapper.updateNewHouseHolder(params);
 
-            // TODO: 3. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
+            // 3. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
             params.setDelUserId(userId);
             memberMapper.deleteUserInviteGroup(params);
 
-            // TODO: 4. TBT_OPR_DEVICE_REGIST USER_ID, HP 업데이트
+            // 4. TBT_OPR_DEVICE_REGIST USER_ID, HP 업데이트
             memberMapper.updateDeviceRegist(params);
 
-            // TODO: 5. TBR_OPR_USER_DEVICE USER_ID 업데이트
-            if (memberMapper.updateUserDevice(params) <= 0) {
-                msg = "사용자(세대주) 강제탈퇴 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            // TODO: 7. TBR_OPR_USER_INVITE_STATUS 테이블에서 세대주 관련 초대 그록 삭제
-            if (memberMapper.deleteInviteStatusByHouseholder(params) <= 0) {
-                msg = "사용자(세대주) 강제탈퇴 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
+            // 5. TBR_OPR_USER_DEVICE USER_ID 업데이트
+            if (memberMapper.updateUserDevice(params) <= 0) 
+                log.info("사용자(세대주) 강제탈퇴 실패.");
+            
+            // 7. TBR_OPR_USER_INVITE_STATUS 테이블에서 세대주 관련 초대 그록 삭제
+            if (memberMapper.deleteInviteStatusByHouseholder(params) <= 0)
+                log.info("사용자(세대주) 강제탈퇴 실패.");
+    
             msg = "사용자(세대주) 탈퇴 성공";
 
             if (memberMapper.updatePushToken(params) <= 0)

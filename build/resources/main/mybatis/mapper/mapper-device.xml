@@ -37,7 +37,43 @@
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
+        AND
+            regist.VALVE_STATUS = 'N'
     </select>
+
+    <select id="getDeviceInfoSearchIdxTemp" parameterType="java.util.List" resultMap="device">
+        SELECT DISTINCT
+            device.DEVC_MODL_CD AS modelCode,
+            device.ATTC_ID AS controlAuthKey,
+            device.DEVC_ID AS deviceId,
+            regist.DEVC_NICK AS deviceNickname,
+            regist.ZIP AS zipCode,
+            regist.OLD_ADDR AS oldAddr,
+            regist.NEW_ADDR AS newAddr,
+            regist.DTAIL_ADDR AS addrDetail,
+            regist.LAT AS latitude,
+            regist.LON AS longitude,
+            regist.TEMP_DEVC_REG_KEY AS tmpRegistKey,
+            regist.GRP_IDX AS groupIdx,
+            regist.GRP_NM AS groupName,
+            regist.USER_ID AS userId
+        FROM
+            TBR_IOT_DEVICE AS device
+        INNER JOIN
+            TBT_OPR_DEVICE_REGIST AS regist
+        ON
+            device.DEVC_ID = regist.DEVC_ID
+        INNER JOIN
+            TBD_USER_INVITE_GROUP AS invite
+        ON
+            regist.GRP_IDX = invite.GRP_IDX
+        WHERE
+            invite.GRP_IDX IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
 
     <select id="getDeviceInfoSearchList" parameterType="java.util.List" resultMap="device">
         SELECT
@@ -550,6 +586,7 @@
                     <if test="dvNm != null">DV_NM = #{dvNm},</if>
                     <if test="modelCode != null">DEVC_MODL_CD = #{modelCode},</if>
                     <if test="powr != null">POWR = #{powr},</if>
+                    <if test="powr == null">POWR = 'on',</if>
                     <if test="opMd != null">OPMD = #{opMd},</if>
                     <if test="htTp != null">HTTP = #{htTp},</if>
                     <if test="hwTp != null">HWTP = #{hwTp},</if>
@@ -561,6 +598,16 @@
                     MFDT = now()
             WHERE
                 SUB_ID = #{deviceId}
+    </update>
+
+    <update id="updateEachRoomControlStatusHwTp" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE
+            TBR_OPR_VALVE_BOX_STATUS
+                SET
+                    HWTP = #{hwTp},
+                    MFDT = now()
+            WHERE
+                PR_ID = #{deviceId}
     </update>
 
     <insert id="insertDeviceStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
