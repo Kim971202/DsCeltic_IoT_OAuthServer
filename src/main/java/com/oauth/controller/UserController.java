@@ -8,6 +8,7 @@ import com.oauth.service.impl.MobiusService;
 import com.oauth.service.impl.UserServiceImpl;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
+import com.oauth.utils.JSON;
 import com.oauth.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -782,13 +783,15 @@ public class UserController {
     @PostMapping(value = "/test")
     public String test(String on) throws Exception {
 
-        AuthServerDTO params = new AuthServerDTO();
-        params.setRequestUserId("yohan1202");
-        params.setResponseUserId("yohan971202");
-
-//        memberMapper.getInviteCount(params).getInviteCount();
-
-        System.out.println(Integer.parseInt(memberMapper.getInviteCount(params).getInviteCount()) <= 5);
+        HashMap<String, String> myMap = new HashMap<>();
+        myMap.put("deviceId", "0.2.481.1.1.4d43323630302d325352.20202034343137393332463037314231");
+        myMap.put("uuId", common.getTransactionId());
+        myMap.put("functionId", "fcNt");
+        myMap.put("modelCode", "MC2600-2SR");
+        myMap.put("TempAndSystemNotice", "1");
+        // 20202020303833413844433636444542/lhh1120
+        mobiusService.createCin("20202020303833413844433636444542", "lhh1120", 
+        JSON.toJson(myMap));
 
         return null;
     }

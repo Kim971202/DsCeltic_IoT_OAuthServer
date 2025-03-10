@@ -1,8 +1,6 @@
 package com.oauth.service.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.dto.gw.*;
@@ -16,21 +14,22 @@ import com.oauth.utils.CustomException;
 import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@Transactional(rollbackFor = {Exception.class, CustomException.class})
+@Transactional(rollbackFor = { Exception.class, CustomException.class })
 public class DeviceServiceImpl implements DeviceService {
 
     @Autowired
@@ -56,7 +55,7 @@ public class DeviceServiceImpl implements DeviceService {
 
     /** 전원 On/Off */
     @Override
-    public ResponseEntity<?> doPowerOnOff(AuthServerDTO params) throws CustomException{
+    public ResponseEntity<?> doPowerOnOff(AuthServerDTO params) throws CustomException {
 
         ApiResponse.Data result = new ApiResponse.Data();
         PowerOnOff powerOnOff = new PowerOnOff();
@@ -76,6 +75,7 @@ public class DeviceServiceImpl implements DeviceService {
         AuthServerDTO household;
         AuthServerDTO firstDeviceUser;
         MobiusResponse response;
+        AuthServerDTO device;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -83,9 +83,6 @@ public class DeviceServiceImpl implements DeviceService {
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
 
         try {
-
-            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
-            userId = firstDeviceUser.getUserId();
 
             powerOnOff.setUserId(params.getUserId());
             powerOnOff.setDeviceId(params.getDeviceId());
@@ -99,22 +96,35 @@ public class DeviceServiceImpl implements DeviceService {
             redisValue = params.getUserId() + "," + powerOnOff.getFunctionId();
             redisCommand.setValues(powerOnOff.getUuId(), redisValue);
 
-            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
+            // 각방의 경우 서브 ID를 받아서 메인 ID로 최초등록자 ID 검색
+            if (deviceType.equals("05")) {
+                String parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
+                firstDeviceUser = memberMapper.getFirstDeviceUser(parentId);
+                params.setDeviceId(parentId);
+                device = deviceMapper.getSingleSerialNumberBySubDeviceId(deviceId);
+            } else {
+                firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+                device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
+            }
+
+            userId = firstDeviceUser.getUserId();
 
             if (device == null) {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
-            } else serialNumber = device.getSerialNumber();
+            } else
+                serialNumber = device.getSerialNumber();
 
-            if(serialNumber == null) {
+            if (serialNumber == null) {
                 msg = "기기정보가 없습니다";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 stringObject = "Y";
-                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(powerOnOff));
-                if(!response.getResponseCode().equals("201")){
+                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId,
+                        JSON.toJson(powerOnOff));
+                if (!response.getResponseCode().equals("201")) {
                     msg = "중계서버 오류";
                     result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
@@ -122,11 +132,14 @@ public class DeviceServiceImpl implements DeviceService {
                 try {
                     // 메시징 시스템을 통해 응답 메시지 대기
                     gwMessagingSystem.printMessageQueues();
-                    responseMessage = gwMessagingSystem.waitForResponse("powr" + powerOnOff.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                    responseMessage = gwMessagingSystem.waitForResponse("powr" + powerOnOff.getUuId(), TIME_OUT,
+                            TimeUnit.SECONDS);
                     if (responseMessage != null) {
                         // 응답 처리
-                        if (responseMessage.equals("0")) stringObject = "Y";
-                        else stringObject = "N";
+                        if (responseMessage.equals("0"))
+                            stringObject = "Y";
+                        else
+                            stringObject = "N";
                     } else {
                         // 타임아웃이나 응답 없음 처리
                         stringObject = "T";
@@ -140,19 +153,18 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
             redisCommand.deleteValues(powerOnOff.getUuId());
 
-            if(responseMessage != null && responseMessage.equals("2")){
+            if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
-                if(stringObject.equals("Y")) {
+                if (stringObject.equals("Y")) {
                     conMap.put("body", "Device ON/OFF OK");
                     msg = "전원 On/Off 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                     result.setTestVariable(responseMessage);
-                }
-                else {
+                } else {
                     conMap.put("body", "Service TIME-OUT");
                     msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
@@ -161,7 +173,11 @@ public class DeviceServiceImpl implements DeviceService {
 
                 deviceInfo.setPowr(params.getPowerStatus());
                 deviceInfo.setDeviceId(deviceId);
-                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                if (deviceType.equals("05")) {
+                    deviceMapper.updateEachRoomControlStatus(deviceInfo);
+                } else {
+                    deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                }
 
                 household = memberMapper.getHouseholdByUserId(params.getUserId());
                 params.setGroupId(household.getGroupId());
@@ -170,19 +186,22 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-                if(onOffFlag.equals("on")){
-                    for(int i = 0; i < userIds.size(); ++i){
-                        if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
-                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                if (onOffFlag.equals("on")) {
+                    for (int i = 0; i < userIds.size(); ++i) {
+                        if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
+                                .equals("Y")) {
+                            conMap.put("targetToken",
+                                    memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                             conMap.put("title", "powr");
                             conMap.put("powr", params.getPowerStatus());
                             conMap.put("userNickname", userNickname.getUserNickname());
                             conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                             conMap.put("modelCode", modelCode);
-                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId, deviceType));
                             conMap.put("deviceId", deviceId);
                             String jsonString = objectMapper.writeValueAsString(conMap);
-                            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString)
+                                    .getResponseCode().equals("201"))
                                 log.info("PUSH 메세지 전송 오류");
                         }
                     }
@@ -193,7 +212,7 @@ public class DeviceServiceImpl implements DeviceService {
                             "powr",
                             "전원 ON/OFF",
                             "0",
-                            deviceId,
+                            deviceId, // 각방의 Sub DeviceId로 수정
                             params.getUserId(),
                             "전원 변경",
                             "전원 " + params.getPowerStatus(),
@@ -201,10 +220,177 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             }
 
-            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+            if (memberMapper.updatePushToken(params) <= 0)
+                log.info("구글 FCM TOKEN 갱신 실패.");
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
+            log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /** 각방 전체 전원 On/Off */
+    @Override
+    @Async
+    public ResponseEntity<?> doRoomAllPowerOnOff(AuthServerDTO params) throws CustomException {
+        ApiResponse.Data result = new ApiResponse.Data();
+        PowerOnOff powerOnOff = new PowerOnOff();
+
+        String stringObject;
+        String msg;
+        String userId;
+        String deviceId = params.getDeviceId();
+        String deviceType = params.getDeviceType();
+        String modelCode = params.getModelCode();
+        String onOffFlag = params.getOnOffFlag();
+        String redisValue;
+        String serialNumber;
+        String responseMessage = null;
+
+        AuthServerDTO userNickname;
+        AuthServerDTO household;
+        AuthServerDTO firstDeviceUser;
+        MobiusResponse response;
+        AuthServerDTO device;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
+
+        try {
+
+            powerOnOff.setUserId(params.getUserId());
+            powerOnOff.setDeviceId(params.getDeviceId());
+            powerOnOff.setControlAuthKey(params.getControlAuthKey());
+            powerOnOff.setDeviceType(params.getDeviceType());
+            powerOnOff.setModelCode(common.stringToHex(params.getModelCode()));
+            powerOnOff.setPowerStatus(params.getPowerStatus());
+            powerOnOff.setFunctionId("powr");
+            powerOnOff.setUuId(common.getTransactionId());
+
+            redisValue = params.getUserId() + "," + powerOnOff.getFunctionId();
+            redisCommand.setValues(powerOnOff.getUuId(), redisValue);
+
+            // String parentId =
+            // deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
+            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+            // params.setDeviceId(parentId);
+            userId = firstDeviceUser.getUserId();
+
+            serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+
+            if (serialNumber == null) {
+                msg = "기기정보가 없습니다";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                stringObject = "Y";
+                serialNumber += "31";
+                response = mobiusService.createCin(serialNumber, userId,
+                        JSON.toJson(powerOnOff));
+                if (!response.getResponseCode().equals("201")) {
+                    msg = "중계서버 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+                try {
+                    // 메시징 시스템을 통해 응답 메시지 대기
+                    gwMessagingSystem.printMessageQueues();
+                    responseMessage = gwMessagingSystem.waitForResponse("powr" + powerOnOff.getUuId(), TIME_OUT,
+                            TimeUnit.SECONDS);
+                    if (responseMessage != null) {
+                        // 응답 처리
+                        if (responseMessage.equals("0"))
+                            stringObject = "Y";
+                        else
+                            stringObject = "N";
+                    } else {
+                        // 타임아웃이나 응답 없음 처리
+                        stringObject = "T";
+                    }
+                } catch (InterruptedException e) {
+                    // 대기 중 인터럽트 처리
+                    log.error("", e);
+                }
+            }
+
+            gwMessagingSystem.removeMessageQueue("powr" + powerOnOff.getUuId());
+            redisCommand.deleteValues(powerOnOff.getUuId());
+
+            if (responseMessage != null && responseMessage.equals("2")) {
+                conMap.put("body", "RemoteController WIFI ERROR");
+                msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                if (stringObject.equals("Y")) {
+                    conMap.put("body", "Device ON/OFF OK");
+                    msg = "전원 On/Off 성공";
+                    result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                    result.setTestVariable(responseMessage);
+                } else {
+                    conMap.put("body", "Service TIME-OUT");
+                    msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
+                deviceInfo.setPowr(params.getPowerStatus());
+                deviceInfo.setDeviceId(deviceId);
+                if (deviceType.equals("05")) {
+                    deviceMapper.updateEachRoomControlStatus(deviceInfo);
+                } else {
+                    deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                }
+
+                household = memberMapper.getHouseholdByUserId(params.getUserId());
+                params.setGroupId(household.getGroupId());
+                List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
+                List<AuthServerDTO> pushYnList = memberMapper.getPushYnStatusByUserIds(userIds);
+                userNickname = memberMapper.getUserNickname(params.getUserId());
+                userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
+
+                if (onOffFlag.equals("on")) {
+                    for (int i = 0; i < userIds.size(); ++i) {
+                        if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
+                                .equals("Y")) {
+                            conMap.put("targetToken",
+                                    memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("title", "powr");
+                            conMap.put("powr", params.getPowerStatus());
+                            conMap.put("userNickname", userNickname.getUserNickname());
+                            conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                            conMap.put("modelCode", modelCode);
+                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId, deviceType));
+                            conMap.put("deviceId", deviceId);
+                            String jsonString = objectMapper.writeValueAsString(conMap);
+                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString)
+                                    .getResponseCode().equals("201"))
+                                log.info("PUSH 메세지 전송 오류");
+                        }
+                    }
+
+                    common.insertHistory(
+                            "1",
+                            "PowerOnOff",
+                            "powr",
+                            "전원 ON/OFF",
+                            "0",
+                            params.getDeviceId(),
+                            params.getUserId(),
+                            "전원 변경",
+                            "전원 " + params.getPowerStatus(),
+                            deviceType);
+                }
+            }
+
+            if (memberMapper.updatePushToken(params) <= 0)
+                log.info("구글 FCM TOKEN 갱신 실패.");
+            log.info("result: " + result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
@@ -223,6 +409,7 @@ public class DeviceServiceImpl implements DeviceService {
         String registYn = params.getRegistYn();
         String modelCode = params.getModelCode();
         String controlAuthKey = params.getControlAuthKey();
+        String deviceType = params.getDeviceType();
         String redisValue;
         MobiusResponse response;
 
@@ -235,47 +422,50 @@ public class DeviceServiceImpl implements DeviceService {
 
         try {
             // 수정
-            if(registYn.equals("N")){
+            if (registYn.equals("N")) {
 
-                if(params.getTmpRegistKey() == null || params.getDeviceId() == null) {
+                if (params.getTmpRegistKey() == null || params.getDeviceId() == null) {
                     msg = "TEMP-KEY-MISGSING";
                     result.setResult(ApiResponse.ResponseType.HTTP_400, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                /* *
+                /*
+                 * *
                  * IoT 디바이스 UPDATE 순서
                  * 1. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
                  * 2. TBR_OPR_DEVICE_DETAIL - 단말정보상세
-                 * */
-                if(deviceMapper.updateDeviceDetailLocation(params) <= 0) {
+                 */
+                if (deviceMapper.updateDeviceDetailLocation(params) <= 0) {
                     msg = "기기 정보 수정 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                if(deviceMapper.updateGroupName(params) <= 0) {
+                if (deviceMapper.updateGroupName(params) <= 0) {
                     msg = "기기 정보 수정 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                if(deviceMapper.updateDeviceRegistGroupName(params) <= 0) {
+                if (deviceMapper.updateDeviceRegistGroupName(params) <= 0) {
                     msg = "기기 정보 수정 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                if(deviceMapper.updateDeviceRegistLocation(params) <= 0) {
+                if (deviceMapper.updateDeviceRegistLocation(params) <= 0) {
                     msg = "기기 정보 수정 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
-                } else stringObject = "Y";
+                } else
+                    stringObject = "Y";
 
-            // 등록
-            } else if(registYn.equals("Y")){
+                // 등록
+            } else if (registYn.equals("Y")) {
 
-                /* *
+                /*
+                 * *
                  * IoT 디바이스 등록 INSERT 순서
                  * 1. TBR_IOT_DEVICE - 디바이스
                  * 2. TBT_OPR_DEVICE_REGIST - 임시 단말 등록 정보
@@ -284,7 +474,7 @@ public class DeviceServiceImpl implements DeviceService {
                  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                  * 1. Push 설정 관련 기본 DB 추가 (기본값: Y)
                  * 2. IOT_DEVICE 테이블 등록 시 최초 기기 등록자 ID도 같이 등록
-                 * */
+                 */
 
                 params.setModelCode(" " + params.getModelCode());
                 params.setSerialNumber("    " + params.getSerialNumber());
@@ -296,77 +486,92 @@ public class DeviceServiceImpl implements DeviceService {
                 params.setSerialNumber(params.getSerialNumber().replaceAll(" ", ""));
 
                 // 해당 기기가 기존에 등록된 기기 인지 확인
-                checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
-                if(!checkDeviceExist.getDeviceCount().equals("0")){
-                    // 해당 기기를 등록하는 사람이 요청자와 동일한 ID인지 확인 (동일할 경우 24시간, 빠른온수 예약 초기화 X)
-                    // 2025-02-03 DCR-91/WF만 초기화 하게 수정
-                    checkDeviceUser = deviceMapper.checkDeviceUserId(params);
-                    if(checkDeviceUser.getDeviceCount().equals("0") && modelCode.equals("DCR-91/WF")){
-                        log.info("신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다");
-                        // 신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다
-                        // [{"wk":"","hs":[]}] - 24시간
-                        // [{"tf":"","ws":[""],"hr":"","mn":"","i":""}] - 빠른온수
+                if (!deviceType.equals("05")) {
+                    checkDeviceExist = deviceMapper.checkDeviceExist(deviceId);
+                    if (!checkDeviceExist.getDeviceCount().equals("0")) {
+                        // 해당 기기를 등록하는 사람이 요청자와 동일한 ID인지 확인 (동일할 경우 24시간, 빠른온수 예약 초기화 X)
+                        // 2025-02-03 DCR-91/WF만 초기화 하게 수정
+                        checkDeviceUser = deviceMapper.checkDeviceUserId(params);
+                        if (checkDeviceUser.getDeviceCount().equals("0") && modelCode.equals("DCR-91/WF")) {
+                            log.info("신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다");
+                            // 신규 사용자의 경우 주간 예약과 빠른온수 예약을 초기화 한다
+                            // [{"wk":"","hs":[]}] - 24시간
+                            // [{"tf":"","ws":[""],"hr":"","mn":"","i":""}] - 빠른온수
 
-                        SetWeek setWeek = new SetWeek();
-                        setWeek.setUserId(userId);
-                        setWeek.setDeviceId(deviceId);
-                        setWeek.setControlAuthKey(controlAuthKey);
-                        setWeek.setFunctionId("7wk");
-                        setWeek.setUuId(common.getTransactionId());
-                        setWeek.setWeekListInit("[{\"wk\":\"\",\"hs\":[]}]");
+                            SetWeek setWeek = new SetWeek();
+                            setWeek.setUserId(userId);
+                            setWeek.setDeviceId(deviceId);
+                            setWeek.setControlAuthKey(controlAuthKey);
+                            setWeek.setFunctionId("7wk");
+                            setWeek.setUuId(common.getTransactionId());
+                            setWeek.setWeekListInit("[{\"wk\":\"\",\"hs\":[]}]");
 
-                        redisValue = params.getUserId() + "," + setWeek.getFunctionId();
-                        redisCommand.setValues(setWeek.getUuId(), redisValue);
+                            redisValue = params.getUserId() + "," + setWeek.getFunctionId();
+                            redisCommand.setValues(setWeek.getUuId(), redisValue);
 
-                        response = mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId, JSON.toJson(setWeek));
+                            response = mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId,
+                                    JSON.toJson(setWeek));
 
-                        if(!response.getResponseCode().equals("201")) log.info("setWeek 중계서버 오류");
+                            if (!response.getResponseCode().equals("201"))
+                                log.info("setWeek 중계서버 오류");
 
-                        AwakeAlarmSet awakeAlarmSet = new AwakeAlarmSet();
-                        awakeAlarmSet.setUserId(userId);
-                        awakeAlarmSet.setAccessToken(common.getTransactionId());
-                        awakeAlarmSet.setDeviceId(deviceId);
-                        awakeAlarmSet.setControlAuthKey(controlAuthKey);
-                        awakeAlarmSet.setFunctionId("fwh");
-                        awakeAlarmSet.setUuId(common.getTransactionId());
+                            AwakeAlarmSet awakeAlarmSet = new AwakeAlarmSet();
+                            awakeAlarmSet.setUserId(userId);
+                            awakeAlarmSet.setAccessToken(common.getTransactionId());
+                            awakeAlarmSet.setDeviceId(deviceId);
+                            awakeAlarmSet.setControlAuthKey(controlAuthKey);
+                            awakeAlarmSet.setFunctionId("fwh");
+                            awakeAlarmSet.setUuId(common.getTransactionId());
 
-                        List<HashMap<String, Object>> awakeList = new ArrayList<HashMap<String, Object>>();
-                        HashMap<String, Object> map = new LinkedHashMap<>();
-                        map.put("tf", "");
-                        map.put("ws", Collections.singletonList(""));
-                        map.put("hr", "");
-                        map.put("mn", "");
-                        map.put("i", "");
-                        awakeList.add(map);
-                        awakeAlarmSet.setAwakeList(awakeList);
+                            List<HashMap<String, Object>> awakeList = new ArrayList<HashMap<String, Object>>();
+                            HashMap<String, Object> map = new LinkedHashMap<>();
+                            map.put("tf", "");
+                            map.put("ws", Collections.singletonList(""));
+                            map.put("hr", "");
+                            map.put("mn", "");
+                            map.put("i", "");
+                            awakeList.add(map);
+                            awakeAlarmSet.setAwakeList(awakeList);
 
-                        response = mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId, JSON.toJson(awakeAlarmSet));
+                            response = mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId,
+                                    JSON.toJson(awakeAlarmSet));
 
-                        if(!response.getResponseCode().equals("201")) log.info("awakeAlarmSet 중계서버 오류");
+                            if (!response.getResponseCode().equals("201"))
+                                log.info("awakeAlarmSet 중계서버 오류");
 
-                        DeviceStatusInfo.Device device = new DeviceStatusInfo.Device();
-                        device.setDeviceId(deviceId);
-                        device.setWk7(setWeek.getWeekListInit());
-                        device.setFwh(JSON.toJson(awakeList));
-                        deviceMapper.updateDeviceStatusFromApplication(device);
+                            DeviceStatusInfo.Device device = new DeviceStatusInfo.Device();
+                            device.setDeviceId(deviceId);
+                            device.setWk7(setWeek.getWeekListInit());
+                            device.setFwh(JSON.toJson(awakeList));
+                            deviceMapper.updateDeviceStatusFromApplication(device);
+                        }
+                        // 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
+                        List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(deviceId);
+                        for (AuthServerDTO authServerDTO : authServerDTOList) {
+                            memberMapper.deleteControllerMapping(authServerDTO);
+                        }
                     }
-                    // 같은 기기를 이전에 등록한 사람이 있다면, 해당 기기를 삭제후 등록 진행 한다.
-                    List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(deviceId);
-                    for(AuthServerDTO authServerDTO : authServerDTOList){
-                        memberMapper.deleteControllerMapping(authServerDTO);
-                    }
-                }
 
-                if(!checkDeviceExist.getDeviceCount().equals("0")){
-                    List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(deviceId);
-                    for(AuthServerDTO authServerDTO : authServerDTOList){
-                        memberMapper.deleteControllerMapping(authServerDTO);
+                    if (!checkDeviceExist.getDeviceCount().equals("0")) {
+                        List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(deviceId);
+                        for (AuthServerDTO authServerDTO : authServerDTOList) {
+                            memberMapper.deleteControllerMapping(authServerDTO);
+                        }
                     }
+                    params.setValveStatus("N");
+                } else {
+                    params.setValveStatus("Y");
+                    // 이전에 등록한 동일한 각방 기기가 있을 경우 삭제한다.
+                    AuthServerDTO authServerDTO = new AuthServerDTO();
+                    // 예시값: 20202020303833413844434146353237
+                    authServerDTO.setDeviceId(common.getHexSerialNumberFromDeviceId(deviceId));
+                    authServerDTO.setUserId(userId);
+                    memberMapper.deleteEachRoomrMapping(authServerDTO);
                 }
 
                 params.setGroupId(userId);
                 // getGroupIdx가 null이 아니고 비어있지 않은 경우의 처리
-                if(params.getGroupIdx() != null && !params.getGroupIdx().isEmpty()){
+                if (params.getGroupIdx() != null && !params.getGroupIdx().isEmpty()) {
                     params.setIdx(Long.parseLong(params.getGroupIdx()));
                     groupLeaderIdByGroupIdx = memberMapper.getGroupLeaderIdByGroupIdx(params.getGroupIdx());
                     params.setGroupId(groupLeaderIdByGroupIdx.getGroupId());
@@ -381,10 +586,10 @@ public class DeviceServiceImpl implements DeviceService {
                     params.setGroupIdx(Long.toString(params.getIdx()));
                     familyMemberList = memberMapper.getFailyMemberByUserId(params);
                 }
-                
+
                 // Push 설정 관련 기본 DB 추가
                 List<AuthServerDTO> inputList = new ArrayList<>();
-                for (AuthServerDTO authServerDTO : familyMemberList){
+                for (AuthServerDTO authServerDTO : familyMemberList) {
                     // 새로운 AuthServerDTO 객체 생성
                     AuthServerDTO memberInfo = new AuthServerDTO();
                     // 한개의 기기만 추가
@@ -395,54 +600,58 @@ public class DeviceServiceImpl implements DeviceService {
                     // 리스트에 추가
                     inputList.add(memberInfo);
                 }
-                
-                // TODO: TBR_IOT_DEVICE_GRP_INFO 테이블에 본인 포함 세대원 정보 추가
-                if(deviceMapper.insertDeviceGrpInfoByList(inputList) <= 0){
+
+                // TBR_IOT_DEVICE_GRP_INFO 테이블에 본인 포함 세대원 정보 추가
+                if (deviceMapper.insertDeviceGrpInfoByList(inputList) <= 0) {
                     msg = "사용자, 세대원 기기 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                if(memberMapper.insertUserDevicePushByList(inputList) <= 0){
+                if (memberMapper.insertUserDevicePushByList(inputList) <= 0) {
                     msg = "사용자 PUSH 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                if(deviceMapper.insertDevice(params) <= 0){
+                if (deviceMapper.insertDevice(params) <= 0) {
                     msg = "기기 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                if(deviceMapper.insertFristDeviceUser(params) <= 0){
+                if (deviceMapper.insertFristDeviceUser(params) <= 0) {
                     msg = "기기 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                if(deviceMapper.insertDeviceRegist(params) <= 0){
+                if (deviceMapper.insertDeviceRegist(params) <= 0) {
                     msg = "기기 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                if(deviceMapper.insertDeviceDetail(params) <= 0){
+                if (deviceMapper.insertDeviceDetail(params) <= 0) {
                     msg = "기기 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
 
-                if(deviceMapper.insertUserDevice(params) <= 0){
+                if (deviceMapper.insertUserDevice(params) <= 0) {
                     msg = "기기 정보 등록 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
+
+                // 기기 홈화면 조회 시 필수적으로 필요한 TBR_OPR_ACTIVE_DEVICE_STATUS 테이블 값 추가 (기본값: of)
+                deviceMapper.deleteActiveOldDevice(params);
+                deviceMapper.insertActiveOldDevice(params);
 
                 // if(deviceMapper.insertDeviceGrpInfo(params) <= 0){
-                //     msg = "기기 정보 등록 실패.";
-                //     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                //     return new ResponseEntity<>(result, HttpStatus.OK);
+                // msg = "기기 정보 등록 실패.";
+                // result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                // return new ResponseEntity<>(result, HttpStatus.OK);
                 // }
                 stringObject = "Y";
             }
@@ -457,7 +666,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setLongitude(params.getLongitude());
                 result.setTmpRegistKey(params.getTmpRegistKey());
 
-            } else if(stringObject.equals("Y")){
+            } else if (stringObject.equals("Y")) {
                 msg = "기기 정보 수정 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
                 result.setLatitude(params.getLatitude());
@@ -467,17 +676,18 @@ public class DeviceServiceImpl implements DeviceService {
 
             params.setUserId(userId);
             params.setPushTitle("기기제어");
-            if(deviceId == null) deviceId = "EMPTY";
+            if (deviceId == null)
+                deviceId = "EMPTY";
             params.setDeviceId(deviceId);
 
-            if(registYn.equals("N"))
+            if (registYn.equals("N"))
                 params.setPushContent("기기정보 수정");
-            else if(registYn.equals("Y"))
+            else if (registYn.equals("Y"))
                 params.setPushContent("신규기기 등록");
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (CustomException e){
+        } catch (CustomException e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -485,9 +695,9 @@ public class DeviceServiceImpl implements DeviceService {
         }
     }
 
-    /** 홈 IoT 컨트롤러 상태 정보 조회  */
+    /** 홈 IoT 컨트롤러 상태 정보 조회 */
     @Override
-    public ResponseEntity<?> doDeviceStatusInfo(AuthServerDTO params) throws CustomException{
+    public ResponseEntity<?> doDeviceStatusInfo(AuthServerDTO params) throws CustomException {
 
         ApiResponse.Data result = new ApiResponse.Data();
         String msg;
@@ -500,18 +710,17 @@ public class DeviceServiceImpl implements DeviceService {
         try {
 
             serialNumber = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
-            if(serialNumber == null) {
+            if (serialNumber == null) {
                 msg = "기기 상태 정보 조회 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 device = deviceMapper.getDeviceStauts(Collections.singletonList(serialNumber.getSerialNumber()));
-
-                if(device == null) {
+                if (device == null) {
                     msg = "기기 상태 정보 조회 실패";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
-                } else if(modelCode.equals("ESCeco13S") || modelCode.equals("DCR-91/WF")) {
+                } else if (modelCode.equals("ESCeco13S") || modelCode.equals("DCR-91/WF")) {
                     resultMap.put("deviceStatus", "01");
                     resultMap.put("modelCategoryCode", "01");
                     for (DeviceStatusInfo.Device value : device) {
@@ -526,12 +735,18 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("chTp", value.getChTp());
                         resultMap.put("cwTp", value.getCwTp());
                         resultMap.put("mfDt", value.getMfDt());
-                        resultMap.put("type24h", common.readCon(value.getH24(), "serviceMd"));
+                        String type24h = common.readCon(value.getH24(), "serviceMd");
+                        if (type24h == null || type24h.isEmpty()) {
+                            resultMap.put("type24h", "");
+                        } else {
+                            resultMap.put("type24h", type24h);
+                        }
+                        // resultMap.put("type24h", common.readCon(value.getH24(), "serviceMd"));
                         resultMap.put("slCd", value.getSlCd());
                         resultMap.put("hwSt", value.getHwSt());
                         resultMap.put("fcLc", value.getFcLc());
                         resultMap.put("mn", value.getMn());
-                        
+
                         ConcurrentHashMap<String, ConcurrentHashMap<String, String>> rscfMap = new ConcurrentHashMap<>();
                         ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
 
@@ -540,15 +755,17 @@ public class DeviceServiceImpl implements DeviceService {
                         eleMap.put("7wk", value.getWk7());
 
                         if (value.getFwh() == null) {
-                            eleMap.put("fwt", "null");
+                            eleMap.put("fwh", "null");
                         } else {
                             eleMap.put("fwh", value.getFwh());
                         }
 
                         rscfMap.put("rsCf", eleMap);
-                        resultMap.put("rsCf", JSON.toJson(rscfMap));
+                        resultMap.put("rsCf", JSON.toJson(eleMap));
+                        // rsCf 중복으로 넘어 가는 버그 수정
+                        // resultMap.put("rsCf", JSON.toJson(rscfMap));
                     }
-                } else if(modelCode.equals("DCR-47/WF")){
+                } else if (modelCode.equals("DCR-47/WF")) {
                     resultMap.put("deviceStatus", "01");
                     resultMap.put("modelCategoryCode", "07");
                     for (DeviceStatusInfo.Device value : device) {
@@ -558,18 +775,27 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("vtSp", value.getVtSp());
                         resultMap.put("inAq", value.getInAq());
                         resultMap.put("mfDt", value.getMfDt());
+                        resultMap.put("odHm", value.getOdHm());
 
-                        ConcurrentHashMap<String, ConcurrentHashMap<String, String>> rscfMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, String>>() {{
+                        ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
+                        // eleMap.put("rsSl", value.getRsSl());
+                        eleMap.put("rsPw", value.getRsPw());
+                        resultMap.put("rsCf", JSON.toJson(eleMap));
 
-                            // 내부 맵 생성 및 초기화
-                            ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
-                            eleMap.put("rsSl", value.getRsSl());
-                            eleMap.put("rsPw", value.getRsPw());
+                        ConcurrentHashMap<String, ConcurrentHashMap<String, String>> rscfMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, String>>() {
+                            {
 
-                            // 외부 맵에 내부 맵 추가
-                            put("rsCf", eleMap);
-                        }};
-                        resultMap.put("rsCf", JSON.toJson(rscfMap));
+                                // 내부 맵 생성 및 초기화
+                                // ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
+                                // // eleMap.put("rsSl", value.getRsSl());
+                                // eleMap.put("rsPw", value.getRsPw());
+                                // resultMap.put("rsCf", JSON.toJson(eleMap));
+
+                                // 외부 맵에 내부 맵 추가
+                                // put("rsCf", eleMap);
+                            }
+                        };
+                        // resultMap.put("rsCf", JSON.toJson(rscfMap));
                     }
                 }
             }
@@ -582,13 +808,13 @@ public class DeviceServiceImpl implements DeviceService {
             result.setDeviceStatusInfo(resultMap);
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
 
-    /** 모드변경  */
+    /** 모드변경 */
     @Override
     public ResponseEntity<?> doModeChange(AuthServerDTO params) throws CustomException {
 
@@ -603,12 +829,15 @@ public class DeviceServiceImpl implements DeviceService {
         String deviceId = params.getDeviceId();
         String modelCode = params.getModelCode();
         String sleepCode = null;
+        String deviceType = "01";
 
         AuthServerDTO userNickname;
         AuthServerDTO household;
         AuthServerDTO firstDeviceUser;
+        AuthServerDTO device;
 
-        if(params.getModeCode().equals("06")) sleepCode = params.getSleepCode();
+        if (params.getModeCode().equals("06"))
+            sleepCode = params.getSleepCode();
 
         String responseMessage = null;
         String redisValue;
@@ -616,12 +845,34 @@ public class DeviceServiceImpl implements DeviceService {
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
-        try  {
 
-            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+        try {
+
+            modeChange.setUserId(params.getUserId());
+            modeChange.setDeviceId(params.getDeviceId());
+            modeChange.setControlAuthKey(params.getControlAuthKey());
+            modeChange.setModelCode(params.getModelCode());
+            modeChange.setModeCode(modeCode);
+            if (modeCode.equals("06"))
+                modeChange.setSleepCode(sleepCode);
+            modeChange.setFunctionId("opMd");
+            modeChange.setUuId(common.getTransactionId());
+            redisValue = params.getUserId() + "," + modeChange.getFunctionId();
+            redisCommand.setValues(modeChange.getUuId(), redisValue);
+
+            // 각방의 경우 서브 ID를 받아서 메인 ID로 최초등록자 ID 검색
+            if (modelCode.contains("MC2600") || modelCode.contains("DR-300W")) {
+                String parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
+                firstDeviceUser = memberMapper.getFirstDeviceUser(parentId);
+                params.setDeviceId(parentId);
+                device = deviceMapper.getSingleSerialNumberBySubDeviceId(deviceId);
+            } else {
+                firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+                device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
+            }
+
             userId = firstDeviceUser.getUserId();
 
-            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
             if (device == null) {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
@@ -629,27 +880,16 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             serialNumber = device.getSerialNumber();
-            if(serialNumber == null) {
+            if (serialNumber == null) {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
-            modeChange.setUserId(params.getUserId());
-            modeChange.setDeviceId(params.getDeviceId());
-            modeChange.setControlAuthKey(params.getControlAuthKey());
-            modeChange.setModelCode(params.getModelCode());
-            modeChange.setModeCode(modeCode);
 
-            if(modeCode.equals("06")) modeChange.setSleepCode(sleepCode);
+            response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId,
+                    JSON.toJson(modeChange));
 
-            modeChange.setFunctionId("opMd");
-
-            modeChange.setUuId(common.getTransactionId());
-            redisValue = params.getUserId() + "," + modeChange.getFunctionId();
-            redisCommand.setValues(modeChange.getUuId(), redisValue);
-            response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(modeChange));
-
-            if(!response.getResponseCode().equals("201")){
+            if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -657,11 +897,15 @@ public class DeviceServiceImpl implements DeviceService {
 
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
-                responseMessage = gwMessagingSystem.waitForResponse("opMd" + modeChange.getUuId(), TIME_OUT, TimeUnit.SECONDS);
-                if(responseMessage == null) stringObject = "T";
+                responseMessage = gwMessagingSystem.waitForResponse("opMd" + modeChange.getUuId(), TIME_OUT,
+                        TimeUnit.SECONDS);
+                if (responseMessage == null)
+                    stringObject = "T";
                 else {
-                    if (responseMessage.equals("0")) stringObject = "Y";
-                    else stringObject = "N";
+                    if (responseMessage.equals("0"))
+                        stringObject = "Y";
+                    else
+                        stringObject = "N";
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -671,30 +915,42 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("opMd" + modeChange.getUuId());
             redisCommand.deleteValues(modeChange.getUuId());
 
-            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+            if (memberMapper.updatePushToken(params) <= 0)
+                log.info("구글 FCM TOKEN 갱신 실패.");
 
-            if(responseMessage != null && responseMessage.equals("2")){
+            if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
-                if(stringObject.equals("Y")) {
+                if (stringObject.equals("Y")) {
                     conMap.put("body", "Mode Change OK");
                     msg = "모드변경 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                }
-                else if(stringObject.equals("N")) {
+                } else if (stringObject.equals("N")) {
                     conMap.put("body", "Mode Change FAIL");
                     msg = "모드변경 실패";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
-                }
-                else {
+                } else {
                     conMap.put("body", "Service TIME-OUT");
                     msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+
+                deviceInfo.setOpMd(modeCode);
+                deviceInfo.setDeviceId(deviceId);
+                if (params.getModeCode().equals("06")) {
+                    deviceInfo.setSlCd(sleepCode);
+                }
+
+                if (modelCode.contains("MC2600") || modelCode.contains("DR-300W")) {
+                    deviceType = "05";
+                    deviceMapper.updateEachRoomControlStatus(deviceInfo);
+                } else {
+                    deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
                 }
 
                 household = memberMapper.getHouseholdByUserId(params.getUserId());
@@ -704,33 +960,30 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-                deviceInfo.setOpMd(modeCode);
-                deviceInfo.setDeviceId(deviceId);
-                if(params.getModeCode().equals("06")) deviceInfo.setSlCd(sleepCode);
-
-                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
-
-                if(onOffFlag.equals("on")){
-                    for(int i = 0; i < userIds.size(); ++i){
-                        if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                if (onOffFlag.equals("on")) {
+                    for (int i = 0; i < userIds.size(); ++i) {
+                        if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
+                                .equals("Y")) {
                             log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                             conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                             conMap.put("modelCode", modelCode);
-                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("targetToken",
+                                    memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                             conMap.put("userNickname", userNickname.getUserNickname());
-                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId, deviceType));
                             conMap.put("title", "opMd");
                             conMap.put("deviceId", deviceId);
                             conMap.put("id", "Mode Change ID");
 
                             String jsonString = objectMapper.writeValueAsString(conMap);
 
-                            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString)
+                                    .getResponseCode().equals("201"))
                                 log.info("PUSH 메세지 전송 오류");
                         }
                     }
 
-                    switch (modeCode){
+                    switch (modeCode) {
                         case "01":
                             params.setControlCodeName("실내난방");
                             break;
@@ -765,10 +1018,10 @@ public class DeviceServiceImpl implements DeviceService {
                             params.setControlCodeName("예약난방-반복예약");
                             break;
                         case "12":
-                            if(modelCode.equals("DCR-91/WF"))
+                            if (modelCode.equals("DCR-91/WF"))
                                 params.setControlCodeName("예약난방-24시간주간");
-                            else 
-                                params.setControlCodeName("예약난방-주간"); 
+                            else
+                                params.setControlCodeName("예약난방-주간");
                             break;
                         case "21":
                             params.setControlCodeName("수동-전열환기모드");
@@ -806,7 +1059,7 @@ public class DeviceServiceImpl implements DeviceService {
                             "modeCode",
                             params.getControlCodeName(),
                             "0",
-                            deviceId,
+                            deviceId, // 각방의 Sub DeviceId로 수정
                             params.getUserId(),
                             "모드 변경",
                             params.getControlCodeName(),
@@ -816,15 +1069,22 @@ public class DeviceServiceImpl implements DeviceService {
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
 
-    /** 실내온도 설정  */
+    /** 각방 전체 모드변경 */
     @Override
-    public ResponseEntity<?> doTemperatureSet(AuthServerDTO params) throws CustomException{
+    public ResponseEntity<?> doRoomAllModeChange(AuthServerDTO params) throws CustomException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'doRoomAllModeChange'");
+    }
+
+    /** 실내온도 설정 */
+    @Override
+    public ResponseEntity<?> doTemperatureSet(AuthServerDTO params) throws CustomException {
 
         ApiResponse.Data result = new ApiResponse.Data();
         TemperatureSet temperatureSet = new TemperatureSet();
@@ -840,28 +1100,12 @@ public class DeviceServiceImpl implements DeviceService {
         AuthServerDTO userNickname;
         AuthServerDTO household;
         AuthServerDTO firstDeviceUser;
+        AuthServerDTO device;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
-
-            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
-            userId = firstDeviceUser.getUserId();
-
-            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
-            if (device == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-
-            serialNumber = device.getSerialNumber();
-            if(serialNumber == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
 
             temperatureSet.setUserId(params.getUserId());
             temperatureSet.setDeviceId(params.getDeviceId());
@@ -872,9 +1116,37 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisValue = params.getUserId() + "," + temperatureSet.getFunctionId();
             redisCommand.setValues(temperatureSet.getUuId(), redisValue);
-            response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(temperatureSet));
 
-            if(!response.getResponseCode().equals("201")){
+            // True면 각방 False면 타기기
+            if (common.checkDeviceType(deviceId)) {
+                String parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
+                firstDeviceUser = memberMapper.getFirstDeviceUser(parentId);
+                params.setDeviceId(parentId);
+                device = deviceMapper.getSingleSerialNumberBySubDeviceId(deviceId);
+            } else {
+                firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+                device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
+            }
+
+            userId = firstDeviceUser.getUserId();
+
+            if (device == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            serialNumber = device.getSerialNumber();
+            if (serialNumber == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId,
+                    JSON.toJson(temperatureSet));
+
+            if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -882,11 +1154,15 @@ public class DeviceServiceImpl implements DeviceService {
 
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
-                responseMessage = gwMessagingSystem.waitForResponse("htTp" + temperatureSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
-                if(responseMessage == null) stringObject = "T";
+                responseMessage = gwMessagingSystem.waitForResponse("htTp" + temperatureSet.getUuId(), TIME_OUT,
+                        TimeUnit.SECONDS);
+                if (responseMessage == null)
+                    stringObject = "T";
                 else {
-                    if (responseMessage.equals("0")) stringObject = "Y";
-                    else stringObject = "N";
+                    if (responseMessage.equals("0"))
+                        stringObject = "Y";
+                    else
+                        stringObject = "N";
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -896,26 +1172,25 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("htTp" + temperatureSet.getUuId());
             redisCommand.deleteValues(temperatureSet.getUuId());
 
-            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+            if (memberMapper.updatePushToken(params) <= 0)
+                log.info("구글 FCM TOKEN 갱신 실패.");
 
-            if(responseMessage != null && responseMessage.equals("2")){
+            if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
-                if(stringObject.equals("Y")) {
+                if (stringObject.equals("Y")) {
                     conMap.put("body", "TemperatureSet OK");
                     msg = "실내온도 설정 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                }
-                else if(stringObject.equals("N")) {
+                } else if (stringObject.equals("N")) {
                     conMap.put("body", "TemperatureSet OK");
                     msg = "실내온도 설정 실패";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
-                }
-                else {
+                } else {
                     conMap.put("body", "Service TIME-OUT");
                     msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
@@ -931,22 +1206,29 @@ public class DeviceServiceImpl implements DeviceService {
 
                 deviceInfo.setHtTp(params.getTemperture());
                 deviceInfo.setDeviceId(params.getDeviceId());
-                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                if (common.checkDeviceType(deviceId)) {
+                    deviceMapper.updateEachRoomControlStatus(deviceInfo);
+                } else {
+                    deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                }
 
-                if(onOffFlag.equals("on")){
-                    for(int i = 0; i < userIds.size(); ++i){
-                        if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                if (onOffFlag.equals("on")) {
+                    for (int i = 0; i < userIds.size(); ++i) {
+                        if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
+                                .equals("Y")) {
                             conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                             conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("targetToken",
+                                    memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                             conMap.put("userNickname", userNickname.getUserNickname());
-                            conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                            conMap.put("deviceNick", common.returnDeviceNickname(params.getDeviceId()));
                             conMap.put("title", "htTp");
                             conMap.put("deviceId", deviceId);
                             conMap.put("id", "TemperatureSet ID");
                             String jsonString = objectMapper.writeValueAsString(conMap);
 
-                            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString)
+                                    .getResponseCode().equals("201"))
                                 log.info("PUSH 메세지 전송 오류");
                         }
                     }
@@ -957,7 +1239,7 @@ public class DeviceServiceImpl implements DeviceService {
                             "modeCode",
                             "실내 온도 설정",
                             "0",
-                            deviceId,
+                            params.getDeviceId(),
                             params.getUserId(),
                             "htTp",
                             params.getTemperture(),
@@ -967,15 +1249,15 @@ public class DeviceServiceImpl implements DeviceService {
             }
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
 
-    /** 난방수온도 설정  */
+    /** 난방수온도 설정 */
     @Override
-    public ResponseEntity<?> doBoiledWaterTempertureSet(AuthServerDTO params) throws CustomException{
+    public ResponseEntity<?> doBoiledWaterTempertureSet(AuthServerDTO params) throws CustomException {
 
         ApiResponse.Data result = new ApiResponse.Data();
         BoiledWaterTempertureSet boiledWaterTempertureSet = new BoiledWaterTempertureSet();
@@ -1008,7 +1290,7 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             serialNumber = device.getSerialNumber();
-            if(serialNumber == null) {
+            if (serialNumber == null) {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1023,9 +1305,10 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisValue = params.getUserId() + "," + boiledWaterTempertureSet.getFunctionId();
             redisCommand.setValues(boiledWaterTempertureSet.getUuId(), redisValue);
-            response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(boiledWaterTempertureSet));
+            response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId,
+                    JSON.toJson(boiledWaterTempertureSet));
 
-            if(!response.getResponseCode().equals("201")){
+            if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1033,11 +1316,15 @@ public class DeviceServiceImpl implements DeviceService {
 
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
-                responseMessage = gwMessagingSystem.waitForResponse("wtTp" + boiledWaterTempertureSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
-                if(responseMessage == null) stringObject = "T";
+                responseMessage = gwMessagingSystem.waitForResponse("wtTp" + boiledWaterTempertureSet.getUuId(),
+                        TIME_OUT, TimeUnit.SECONDS);
+                if (responseMessage == null)
+                    stringObject = "T";
                 else {
-                    if (responseMessage.equals("0")) stringObject = "Y";
-                    else stringObject = "N";
+                    if (responseMessage.equals("0"))
+                        stringObject = "Y";
+                    else
+                        stringObject = "N";
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -1047,26 +1334,25 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("wtTp" + boiledWaterTempertureSet.getUuId());
             redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
 
-            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+            if (memberMapper.updatePushToken(params) <= 0)
+                log.info("구글 FCM TOKEN 갱신 실패.");
 
-            if(responseMessage != null && responseMessage.equals("2")){
+            if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
-                if(stringObject.equals("Y")) {
+                if (stringObject.equals("Y")) {
                     conMap.put("body", "BoiledWaterTempertureSet OK");
                     msg = "난방수온도 설정 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                }
-                else if(stringObject.equals("N")) {
+                } else if (stringObject.equals("N")) {
                     conMap.put("body", "BoiledWaterTempertureSet FAIL");
                     msg = "난방수온도 설정 실패";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
-                }
-                else {
+                } else {
                     conMap.put("body", "Service TIME-OUT ");
                     msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
@@ -1084,12 +1370,14 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceInfo.setDeviceId(deviceId);
                 deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
 
-                if(onOffFlag.equals("on")){
-                    for(int i = 0; i < userIds.size(); ++i){
-                        if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                if (onOffFlag.equals("on")) {
+                    for (int i = 0; i < userIds.size(); ++i) {
+                        if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
+                                .equals("Y")) {
                             conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                             conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("targetToken",
+                                    memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                             conMap.put("userNickname", userNickname.getUserNickname());
                             conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                             conMap.put("title", "wtTp");
@@ -1099,7 +1387,8 @@ public class DeviceServiceImpl implements DeviceService {
                             String jsonString = objectMapper.writeValueAsString(conMap);
                             log.info("jsonString: " + jsonString);
 
-                            if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString)
+                                    .getResponseCode().equals("201"))
                                 log.info("PUSH 메세지 전송 오류");
                         }
                     }
@@ -1120,7 +1409,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
@@ -1138,33 +1427,19 @@ public class DeviceServiceImpl implements DeviceService {
         String deviceId = params.getDeviceId();
         String redisValue;
         String responseMessage = null;
-        MobiusResponse response;
         String serialNumber;
+        String deviceType = "01";
+        MobiusResponse response;
         AuthServerDTO household;
         AuthServerDTO userNickname;
         AuthServerDTO firstDeviceUser;
+        AuthServerDTO device;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
         try {
 
-            firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
-            userId = firstDeviceUser.getUserId();
-
-            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
-            if (device == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
-
-            serialNumber = device.getSerialNumber();
-            if(serialNumber == null) {
-                msg = "기기정보가 없습니다.";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            }
             waterTempertureSet.setUserId(params.getUserId());
             waterTempertureSet.setDeviceId(params.getDeviceId());
             waterTempertureSet.setControlAuthKey(params.getControlAuthKey());
@@ -1174,9 +1449,37 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisValue = params.getUserId() + "," + waterTempertureSet.getFunctionId();
             redisCommand.setValues(waterTempertureSet.getUuId(), redisValue);
-            response = mobiusResponse = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(waterTempertureSet));
 
-            if(!response.getResponseCode().equals("201")){
+            // True면 각방 False면 타기기
+            if (common.checkDeviceType(deviceId)) {
+                String parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
+                firstDeviceUser = memberMapper.getFirstDeviceUser(parentId);
+                params.setDeviceId(parentId);
+                device = deviceMapper.getSingleSerialNumberBySubDeviceId(deviceId);
+            } else {
+                firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
+                device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
+            }
+
+            userId = firstDeviceUser.getUserId();
+
+            if (device == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            serialNumber = device.getSerialNumber();
+            if (serialNumber == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            response = mobiusResponse = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId,
+                    JSON.toJson(waterTempertureSet));
+
+            if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1184,11 +1487,15 @@ public class DeviceServiceImpl implements DeviceService {
 
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
-                responseMessage = gwMessagingSystem.waitForResponse("hwTp" + waterTempertureSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
-                if(responseMessage == null) stringObject = "T";
+                responseMessage = gwMessagingSystem.waitForResponse("hwTp" + waterTempertureSet.getUuId(), TIME_OUT,
+                        TimeUnit.SECONDS);
+                if (responseMessage == null)
+                    stringObject = "T";
                 else {
-                    if (responseMessage.equals("0")) stringObject = "Y";
-                    else stringObject = "N";
+                    if (responseMessage.equals("0"))
+                        stringObject = "Y";
+                    else
+                        stringObject = "N";
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -1198,26 +1505,25 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("hwTp" + waterTempertureSet.getUuId());
             redisCommand.deleteValues(waterTempertureSet.getUuId());
 
-            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+            if (memberMapper.updatePushToken(params) <= 0)
+                log.info("구글 FCM TOKEN 갱신 실패.");
 
-            if(responseMessage != null && responseMessage.equals("2")){
+            if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
-                if(stringObject.equals("Y")) {
+                if (stringObject.equals("Y")) {
                     conMap.put("body", "WaterTempertureSet OK");
                     msg = "온수온도 설정 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                }
-                else if(stringObject.equals("N")) {
+                } else if (stringObject.equals("N")) {
                     conMap.put("body", "WaterTempertureSet FAIL");
                     msg = "온수온도 설정 실패";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
-                }
-                else {
+                } else {
                     conMap.put("body", "Service TIME-OUT");
                     msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
@@ -1233,22 +1539,30 @@ public class DeviceServiceImpl implements DeviceService {
 
                 deviceInfo.setHwTp(params.getTemperture());
                 deviceInfo.setDeviceId(deviceId);
-                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                if (common.checkDeviceType(deviceId)) {
+                    deviceType = "05";
+                    deviceMapper.updateEachRoomControlStatus(deviceInfo);
+                } else {
+                    deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                }
 
-                for(int i = 0; i < userIds.size(); ++i){
-                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                for (int i = 0; i < userIds.size(); ++i) {
+                    if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
+                            .equals("Y")) {
                         conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                         conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("targetToken",
+                                memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                         conMap.put("userNickname", userNickname.getUserNickname());
-                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId, deviceType));
                         conMap.put("title", "hwTp");
                         conMap.put("deviceId", deviceId);
                         conMap.put("id", "WaterTempertureSet ID");
 
                         String jsonString = objectMapper.writeValueAsString(conMap);
 
-                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                        if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode()
+                                .equals("201"))
                             log.info("PUSH 메세지 전송 오류");
                     }
                 }
@@ -1259,17 +1573,17 @@ public class DeviceServiceImpl implements DeviceService {
                         "hwTp",
                         "온수 온도 설정",
                         "0",
-                        deviceId,
+                        deviceId, // 각방의 Sub DeviceId로 수정
                         params.getUserId(),
                         "hwTp",
                         params.getTemperture(),
-                        "01");
+                        deviceType);
 
             }
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
@@ -1310,7 +1624,7 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             serialNumber = device.getSerialNumber();
-            if(serialNumber == null) {
+            if (serialNumber == null) {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1325,9 +1639,10 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisValue = params.getUserId() + "," + fastHotWaterSet.getFunctionId();
             redisCommand.setValues(fastHotWaterSet.getUuId(), redisValue);
-            response = mobiusResponse = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(fastHotWaterSet));
+            response = mobiusResponse = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId,
+                    JSON.toJson(fastHotWaterSet));
 
-            if(!response.getResponseCode().equals("201")){
+            if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1335,11 +1650,15 @@ public class DeviceServiceImpl implements DeviceService {
 
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
-                responseMessage = gwMessagingSystem.waitForResponse("ftMd" + fastHotWaterSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
-                if(responseMessage == null) stringObject = "T";
+                responseMessage = gwMessagingSystem.waitForResponse("ftMd" + fastHotWaterSet.getUuId(), TIME_OUT,
+                        TimeUnit.SECONDS);
+                if (responseMessage == null)
+                    stringObject = "T";
                 else {
-                    if (responseMessage.equals("0")) stringObject = "Y";
-                    else stringObject = "N";
+                    if (responseMessage.equals("0"))
+                        stringObject = "Y";
+                    else
+                        stringObject = "N";
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -1349,26 +1668,25 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("ftMd" + fastHotWaterSet.getUuId());
             redisCommand.deleteValues(fastHotWaterSet.getUuId());
 
-            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+            if (memberMapper.updatePushToken(params) <= 0)
+                log.info("구글 FCM TOKEN 갱신 실패.");
 
-            if(responseMessage != null && responseMessage.equals("2")){
+            if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
-                if(stringObject.equals("Y")) {
+                if (stringObject.equals("Y")) {
                     conMap.put("body", "FastHotWaterSet " + modeCode);
                     msg = "빠른온수 설정 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                }
-                else if(stringObject.equals("N")) {
+                } else if (stringObject.equals("N")) {
                     conMap.put("body", "FastHotWaterSet " + modeCode);
                     msg = "빠른온수 설정 실패";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
-                }
-                else {
+                } else {
                     conMap.put("body", "Service TIME-OUT");
                     msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
@@ -1382,11 +1700,13 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-                for(int i = 0; i < userIds.size(); ++i){
-                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                for (int i = 0; i < userIds.size(); ++i) {
+                    if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
+                            .equals("Y")) {
                         conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                         conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("targetToken",
+                                memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                         conMap.put("userNickname", userNickname.getUserNickname());
                         conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                         conMap.put("title", "ftMd");
@@ -1395,7 +1715,8 @@ public class DeviceServiceImpl implements DeviceService {
 
                         String jsonString = objectMapper.writeValueAsString(conMap);
 
-                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                        if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode()
+                                .equals("201"))
                             log.info("PUSH 메세지 전송 오류");
                     }
                 }
@@ -1419,13 +1740,13 @@ public class DeviceServiceImpl implements DeviceService {
             }
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
 
-    /** 잠금 모드 설정  */
+    /** 잠금 모드 설정 */
     @Override
     public ResponseEntity<?> doLockSet(AuthServerDTO params) throws CustomException {
 
@@ -1460,7 +1781,7 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             serialNumber = device.getSerialNumber();
-            if(serialNumber == null) {
+            if (serialNumber == null) {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1473,12 +1794,11 @@ public class DeviceServiceImpl implements DeviceService {
             lockSet.setFunctionId("fcLc");
             lockSet.setUuId(common.getTransactionId());
 
-
             redisValue = params.getUserId() + "," + lockSet.getFunctionId();
             redisCommand.setValues(lockSet.getUuId(), redisValue);
             response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(lockSet));
 
-            if(!response.getResponseCode().equals("201")){
+            if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1486,12 +1806,16 @@ public class DeviceServiceImpl implements DeviceService {
 
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
-                responseMessage = gwMessagingSystem.waitForResponse("fcLc" + lockSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                responseMessage = gwMessagingSystem.waitForResponse("fcLc" + lockSet.getUuId(), TIME_OUT,
+                        TimeUnit.SECONDS);
                 gwMessagingSystem.removeMessageQueue("fcLc" + lockSet.getUuId());
-                if(responseMessage == null) stringObject = "T";
+                if (responseMessage == null)
+                    stringObject = "T";
                 else {
-                    if(responseMessage.equals("0")) stringObject = "Y";
-                    else stringObject = "N";
+                    if (responseMessage.equals("0"))
+                        stringObject = "Y";
+                    else
+                        stringObject = "N";
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -1501,32 +1825,31 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("fcLc" + lockSet.getUuId());
             redisCommand.deleteValues(lockSet.getUuId());
 
-            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+            if (memberMapper.updatePushToken(params) <= 0)
+                log.info("구글 FCM TOKEN 갱신 실패.");
 
-            if(responseMessage != null && responseMessage.equals("2")){
+            if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
-                if(stringObject.equals("Y")) {
+                if (stringObject.equals("Y")) {
                     conMap.put("body", "LockSet OK");
                     msg = "잠금 모드 설정 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                }
-                else if(stringObject.equals("N")) {
+                } else if (stringObject.equals("N")) {
                     conMap.put("body", "LockSet FAIL");
                     msg = "잠금 모드 설정 실패";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
-                }
-                else {
+                } else {
                     conMap.put("body", "Service TIME-OUT");
                     msg = "기기 응답이 없습니다. 잠시후 다시 시도하십시오";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1015, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
-                
+
                 household = memberMapper.getHouseholdByUserId(params.getUserId());
                 params.setGroupId(household.getGroupId());
                 List<AuthServerDTO> userIds = memberMapper.getUserIdsByDeviceId(params);
@@ -1534,18 +1857,22 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-                for(int i = 0; i < userIds.size(); ++i){
-                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
+                for (int i = 0; i < userIds.size(); ++i) {
+                    if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
+                            .equals("Y")) {
                         conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                         conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("targetToken",
+                                memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                         conMap.put("userNickname", userNickname.getUserNickname());
                         conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                         conMap.put("title", "fcLc");
                         conMap.put("deviceId", deviceId);
                         conMap.put("id", "LockSet ID");
                         String jsonString = objectMapper.writeValueAsString(conMap);
-                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                        if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode()
+                                .equals("201"))
+                            log.info("PUSH 메세지 전송 오류");
                     }
                 }
 
@@ -1568,21 +1895,21 @@ public class DeviceServiceImpl implements DeviceService {
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
 
-    /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면  */
+    /** 홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면 */
     @Override
     public ResponseEntity<?> doBasicDeviceStatusInfo(AuthServerDTO params) throws CustomException {
 
         /*
-        * 구현전 생각해야 할 것
-        * 1. 몇개의 응답을 올지 모름 (사용자가 몇개의 기기를 등록했는지 알아야함)
-        * 2. 받은 응답을 어떻게 Passing 할 것인가
-        * */
+         * 구현전 생각해야 할 것
+         * 1. 몇개의 응답을 올지 모름 (사용자가 몇개의 기기를 등록했는지 알아야함)
+         * 2. 받은 응답을 어떻게 Passing 할 것인가
+         */
 
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = "N";
@@ -1592,26 +1919,9 @@ public class DeviceServiceImpl implements DeviceService {
         String uuId = common.getTransactionId();
         List<AuthServerDTO> groupInfo;
 
-        List<String> serialNumberList;
-        List<String> rKeyList;
-        List<String> deviceIdList;
-        List<String> deviceNicknameList;
-        List<String> groupIdxList;
-        List<String> groupNameList;
-        List<String> latitudeList;
-        List<String> longitudeList;
-        List<String> regSortList;
-        List<String> modelCodeList;
-        List<String> tmpKeyListList;
-
         List<Map<String, String>> appResponse = new ArrayList<>();
-
-        List<AuthServerDTO> controlAuthKeyByUserIdResult;
-        List<AuthServerDTO> deviceNicknameAndDeviceLocNicknameResult;
-        List<AuthServerDTO> multiSerialNumberBydeviceIdResult;
-        List<AuthServerDTO> groupIdxListByUserIdResult;
+        List<AuthServerDTO> groupIdList;
         List<DeviceStatusInfo.Device> devicesStatusInfo;
-        List<DeviceStatusInfo.Device> activeStatusInfo;
         try {
 
             // 1. 사용자 그룹 정보 가져오기
@@ -1622,191 +1932,87 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            // groupInfo 리스트에서 각 AuthServerDTO 객체의 groupId와 groupIdx를 추출하여 각각 리스트에 저장
-            List<String> groupIdList = groupInfo.stream()
-                    .map(AuthServerDTO::getGroupId) // groupInfo 리스트의 각 요소에서 groupId 필드를 추출
-                    .collect(Collectors.toList());  // 추출된 groupId 값을 List<String> 형태로 수집
-
-            List<String> idxList = groupInfo.stream()
-                    .map(AuthServerDTO::getGroupIdx) // groupInfo 리스트의 각 요소에서 groupIdx 필드를 추출
-                    .collect(Collectors.toList());  // 추출된 groupIdx 값을 List<String> 형태로 수집
-
-            // groupIdList와 groupIdxList의 내용을 출력 (예상 결과: [yohan1202, daesung1234], [1, 2])
-            System.out.println(groupIdList);
-            System.out.println(idxList);
-
-            // groupIdList와 groupIdxList의 내용을 복사하여 각각 idListCopy, idxListCopy 생성
-            // (이후 원본을 수정해도 루프에 영향을 주지 않기 위해 복사본을 사용)
-            List<String> idListCopy = new ArrayList<>(groupIdList);
-            List<String> idxListCopy = new ArrayList<>(idxList);
-
-            // idListCopy의 각 id 값과 idx 값을 반복 처리
-            for (int i = 0; i < idListCopy.size(); i++) {
-                String id = idListCopy.get(i);
-                String idx = idxListCopy.get(i);
-
-                // 현재 id와 idx 값을 출력 (예: yohan1202, 1)
-                System.out.println("Group ID: " + id);
-                System.out.println("Group IDX: " + idx);
-
-                // AuthServerDTO 객체 생성하여 groupId와 groupIdx 설정
-                AuthServerDTO info = new AuthServerDTO();
-                info.setUserId(id);
-                info.setGroupIdx(idx);
-
-                // groupInfo 리스트에서 조건에 맞는 요소를 제거하는 작업
-                // 조건: group 객체의 groupId와 groupIdx가 현재 반복 중인 값과 같고, 해당 id에 대한 deviceCount가 "0"인 경우
-                groupInfo.removeIf(group ->
-                        group.getGroupId().equals(id) && // group의 groupId가 현재 반복 중인 id와 같은지 확인
-                                group.getGroupIdx().equals(idx) && // group의 groupIdx가 현재 반복 중인 idx와 같은지 확인
-                                memberMapper.getDeviceCountFromRegist(info).getDeviceCount().equals("0") // 해당 params의 deviceCount가 "0"인지 확인
-                );
-            }
-
-
-            // 최종적으로 groupInfo 리스트의 내용을 출력
-            // (삭제 조건을 만족하지 않는 요소들만 남은 상태로 출력될 것)
-            System.out.println(groupInfo);
-
-            // 2. 여러 그룹 ID에 대해 각 기기 정보를 조회
-            for (AuthServerDTO group : groupInfo) {
-                controlAuthKeyByUserIdResult = deviceMapper.getControlAuthKeyByUserId(group);
-                if (controlAuthKeyByUserIdResult == null) {
-                    msg = "기기정보가 없습니다.";
-                    result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
-                    return new ResponseEntity<>(result, HttpStatus.OK);
-                }
-
-                groupIdxListByUserIdResult = memberMapper.getGroupIdxByUserIdAndIdx(group);
-                deviceNicknameAndDeviceLocNicknameResult = deviceMapper.getDeviceNicknameAndDeviceLocNickname(controlAuthKeyByUserIdResult);
-                multiSerialNumberBydeviceIdResult = deviceMapper.getMultiSerialNumberBydeviceId(controlAuthKeyByUserIdResult);
-
-                if (deviceNicknameAndDeviceLocNicknameResult.isEmpty() || multiSerialNumberBydeviceIdResult.isEmpty() || groupIdxListByUserIdResult.isEmpty()) {
-                    msg = "기기정보가 없습니다.";
-                    result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
-                    return new ResponseEntity<>(result, HttpStatus.OK);
-                }
-
-                log.info("deviceNicknameAndDeviceLocNicknameResult: " + deviceNicknameAndDeviceLocNicknameResult);
-                log.info("multiSerialNumberBydeviceIdResult: " + multiSerialNumberBydeviceIdResult);
-
-                // 3. 각 데이터 리스트로 변환
-                rKeyList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "controlAuthKey");
-                deviceIdList = Common.extractJson(controlAuthKeyByUserIdResult.toString(), "deviceId");
-                deviceNicknameList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "deviceNickname");
-                groupIdxList = Common.extractJson(groupIdxListByUserIdResult.toString(), "groupIdx");
-                groupNameList = Common.extractJson(groupIdxListByUserIdResult.toString(), "groupName");
-                serialNumberList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "serialNumber");
-                regSortList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "regSort");
-                latitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "latitude");
-                longitudeList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "longitude");
-                modelCodeList = Common.extractJson(multiSerialNumberBydeviceIdResult.toString(), "modelCode");
-                tmpKeyListList = Common.extractJson(deviceNicknameAndDeviceLocNicknameResult.toString(), "tmpRegistKey");
-
-                log.info("rKeyList: " + rKeyList);
-                log.info("deviceIdList: " + deviceIdList);
-                log.info("deviceNicknameList: " + deviceNicknameList);
-                log.info("groupIdxList: " + groupIdxList);
-                log.info("groupNameList: " + groupNameList);
-                log.info("serialNumberList: " + serialNumberList);
-                log.info("regSortList: " + regSortList);
-                log.info("latitudeList: " + latitudeList);
-                log.info("longitudeList: " + longitudeList);
-                log.info("modelCodeList: " + modelCodeList);
-                log.info("tmpKeyListList: " + tmpKeyListList);
-
-                // 4. 기기 상태 정보 및 활성화 상태 조회
-                devicesStatusInfo = deviceMapper.getDeviceStauts(serialNumberList);
-                activeStatusInfo = deviceMapper.getActiveStauts(serialNumberList);
-
-                if (devicesStatusInfo == null || devicesStatusInfo.isEmpty()) {
-                    msg = "등록된 R/C가 없습니다";
-                    result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
-                    return new ResponseEntity<>(result, HttpStatus.OK);
-                }
-
-                log.info("devicesStatusInfo: " + devicesStatusInfo);
-                log.info("activeStatusInfo: " + activeStatusInfo);
-
-                if(deviceNicknameList != null &&
-                        groupIdxList != null &&
-                        groupNameList != null &&
-                        regSortList != null &&
-                        serialNumberList != null &&
-                        latitudeList != null &&
-                        longitudeList != null &&
-                        modelCodeList != null &&
-                        tmpKeyListList != null &&
-                        rKeyList != null &&
-                        deviceIdList != null){
-
-                    // 5. 데이터 매핑
-                    for (int i = 0; i < rKeyList.size(); ++i) {
-                        Map<String, String> data = new HashMap<>();
-                        data.put("rKey", rKeyList.get(i));
-                        data.put("deviceNickname", deviceNicknameList.get(i));
-                        data.put("groupIdx", groupIdxList.get(i));
-                        data.put("groupName", groupNameList.get(i));
-                        data.put("regSort", regSortList.get(i));
-                        data.put("deviceId", deviceIdList.get(i));
-                        data.put("latitude", latitudeList.get(i));
-                        data.put("longitude", longitudeList.get(i));
-                        data.put("controlAuthKey", rKeyList.get(i));
-                        data.put("tmpRegistKey", tmpKeyListList.get(i));
-                        data.put("deviceStatus", "1");
-
-                        // 기기 상태 정보 추가
-                        DeviceStatusInfo.Device statusInfo = devicesStatusInfo.get(i);
-                        data.put("powr", statusInfo.getPowr());
-                        data.put("opMd", statusInfo.getOpMd());
-                        data.put("htTp", statusInfo.getHtTp());
-                        data.put("wtTp", statusInfo.getWtTp());
-                        data.put("hwTp", statusInfo.getHwTp());
-                        data.put("ftMd", statusInfo.getFtMd());
-                        data.put("chTp", statusInfo.getChTp());
-                        data.put("bCdt", statusInfo.getBCdt());
-                        data.put("mfDt", statusInfo.getMfDt());
-                        data.put("hwSt", statusInfo.getHwSt());
-                        data.put("fcLc", statusInfo.getFcLc());
-                        data.put("blCf", statusInfo.getBlCf());
-                        data.put("type24h", common.readCon(statusInfo.getH24(), "serviceMd"));
-                        data.put("slCd", statusInfo.getSlCd());
-                        data.put("vtSp", statusInfo.getVtSp());
-                        data.put("inAq", statusInfo.getInAq());
-
-                        // 활성화 상태 정보 추가 (모델에 따라 분기 처리)
-                        if (!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-91/WF")) {
-                            DeviceStatusInfo.Device activeInfo = activeStatusInfo.get(i);
-                            data.put("ftMdAcTv", activeInfo.getFtMd());
-                            data.put("fcLcAcTv", activeInfo.getFcLc());
-                            data.put("ecOpAcTv", activeInfo.getEcOp());
-                        } else if (!activeStatusInfo.isEmpty() && modelCodeList.get(i).equals("DCR-47/WF")) {
-                            DeviceStatusInfo.Device activeInfo = activeStatusInfo.get(i);
-                            data.put("pastAcTv", activeInfo.getPast());
-                            data.put("inDrAcTv", activeInfo.getInDr());
-                            data.put("inClAcTv", activeInfo.getInCl());
-                            data.put("ecStAcTv", activeInfo.getEcSt());
+            // 1. UserId로 그룹 정보 쿼리
+            // 2. groupId로 Regist 테이블과 기기 테이블에서 필요한 정보 모두 쿼리
+            groupIdList = deviceMapper.getGroupIdByUserId(userId);
+            // devicesStatusInfo = deviceMapper.getDeviceStatusInfo(groupIdList);
+            // 5. 데이터 매핑
+            for (AuthServerDTO authServerDTO : groupIdList) {
+                devicesStatusInfo = deviceMapper.getDeviceStatusInfo(authServerDTO.getGroupIdx()); // Return List
+                for (int i = 0; i < devicesStatusInfo.size(); i++) {
+                    if (devicesStatusInfo != null) {
+                        if (!devicesStatusInfo.isEmpty()) {
+                            Map<String, String> data = new HashMap<>();
+                            data.put("rKey", devicesStatusInfo.get(i).getRKey());
+                            data.put("modelCategoryCode", common.getModelCode(
+                                    common.getModelCodeFromDeviceId(devicesStatusInfo.get(i).getDeviceId()).trim()));
+                            data.put("deviceNickname", devicesStatusInfo.get(i).getDeviceNickName());
+                            data.put("groupIdx", devicesStatusInfo.get(i).getGroupIdx());
+                            data.put("groupName", devicesStatusInfo.get(i).getGroupName());
+                            data.put("regSort", String.valueOf(i + 1));
+                            data.put("deviceId", devicesStatusInfo.get(i).getDeviceId());
+                            data.put("latitude", devicesStatusInfo.get(i).getLatitude());
+                            data.put("longitude", devicesStatusInfo.get(i).getLongitude());
+                            data.put("controlAuthKey", devicesStatusInfo.get(i).getRKey());
+                            data.put("tmpRegistKey", devicesStatusInfo.get(i).getTmpRegistKey());
+                            data.put("deviceStatus", "1");
+                            data.put("powr", devicesStatusInfo.get(i).getPowr());
+                            data.put("opMd", devicesStatusInfo.get(i).getOpMd());
+                            data.put("htTp", devicesStatusInfo.get(i).getHtTp());
+                            data.put("wtTp", devicesStatusInfo.get(i).getWtTp());
+                            data.put("hwTp", devicesStatusInfo.get(i).getHwTp());
+                            data.put("ftMd", devicesStatusInfo.get(i).getFtMd());
+                            data.put("chTp", devicesStatusInfo.get(i).getChTp());
+                            data.put("bCdt", devicesStatusInfo.get(i).getBCdt());
+                            data.put("mfDt", devicesStatusInfo.get(i).getMfDt());
+                            data.put("hwSt", devicesStatusInfo.get(i).getHwSt());
+                            data.put("fcLc", devicesStatusInfo.get(i).getFcLc());
+                            data.put("blCf", devicesStatusInfo.get(i).getBlCf());
+                            String type24h = common.readCon(devicesStatusInfo.get(i).getH24(), "serviceMd");
+                            if (type24h == null || type24h.isEmpty()) {
+                                data.put("type24h", "");
+                            } else {
+                                data.put("type24h", type24h);
+                            }
+                            data.put("slCd", devicesStatusInfo.get(i).getSlCd());
+                            data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
+                            data.put("inAq", devicesStatusInfo.get(i).getInAq());
+                            data.put("odHm", devicesStatusInfo.get(i).getOdHm());
+                            data.put("ftMdAcTv", devicesStatusInfo.get(i).getFtMd());
+                            data.put("fcLcAcTv", devicesStatusInfo.get(i).getFcLc());
+                            data.put("ecOpAcTv", devicesStatusInfo.get(i).getEcOp());
+                            data.put("pastAcTv", devicesStatusInfo.get(i).getPast());
+                            data.put("inDrAcTv", devicesStatusInfo.get(i).getInDr());
+                            data.put("inClAcTv", devicesStatusInfo.get(i).getInCl());
+                            data.put("ecStAcTv", devicesStatusInfo.get(i).getEcSt());
+                            appResponse.add(data);
                         }
-                        appResponse.add(data);
                     }
-                    stringObject = "Y";
                 }
             }
 
-            if(stringObject.equals("Y")) {
-                msg = "기기 상태 정보 조회 – 홈 화면 성공";
+            if (appResponse.isEmpty() || appResponse == null) {
+                msg = "기기정보가 없습니다.";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            stringObject = "Y";
+
+            if (stringObject.equals("Y")) {
+                msg = "기기 상태 정보 조회 - 홈 화면 성공";
                 result.setHomeViewValue(appResponse);
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
 
-            if(stringObject.equals("N")) {
-                msg = "기기 상태 정보 조회 – 홈 화면 실패";
+            if (stringObject.equals("N")) {
+                msg = "기기 상태 정보 조회 - 홈 화면 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
             }
             redisCommand.deleteValues(uuId);
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
@@ -1823,26 +2029,26 @@ public class DeviceServiceImpl implements DeviceService {
 
         try {
 
-        resultDto = deviceMapper.getDeviceInfoSearch(params);
+            resultDto = deviceMapper.getDeviceInfoSearch(params);
 
-        if(resultDto == null){
-            rtCode = "1018";
-            msg = "기기 정보 조회 실패";
-        } else {
-            rtCode = "200";
-            msg = "기기 정보 조회 성공";
+            if (resultDto == null) {
+                rtCode = "1018";
+                msg = "기기 정보 조회 실패";
+            } else {
+                rtCode = "200";
+                msg = "기기 정보 조회 성공";
 
-            result.put("modelCategoryCode", resultDto.getModelCode());
-            result.put("deviceNickname", resultDto.getDeviceNickname());
-            result.put("zipCode", resultDto.getZipCode());
-            result.put("oldAddr", resultDto.getOldAddr());
-            result.put("newAddr", resultDto.getNewAddr());
-            result.put("addrDetail", resultDto.getAddrDetail());
-            result.put("latitude", resultDto.getLatitude());
-            result.put("longitude", resultDto.getLongitude());
-            result.put("groupName", resultDto.getGroupName());
-            result.put("groupIdx", resultDto.getGroupIdx());
-        }
+                result.put("modelCategoryCode", resultDto.getModelCode());
+                result.put("deviceNickname", resultDto.getDeviceNickname());
+                result.put("zipCode", resultDto.getZipCode());
+                result.put("oldAddr", resultDto.getOldAddr());
+                result.put("newAddr", resultDto.getNewAddr());
+                result.put("addrDetail", resultDto.getAddrDetail());
+                result.put("latitude", resultDto.getLatitude());
+                result.put("longitude", resultDto.getLongitude());
+                result.put("groupName", resultDto.getGroupName());
+                result.put("groupIdx", resultDto.getGroupIdx());
+            }
             result.put("resultCode", rtCode);
             result.put("resultMsg", msg);
 
@@ -1854,7 +2060,7 @@ public class DeviceServiceImpl implements DeviceService {
         }
     }
 
-    /**	홈 IoT 컨트롤러 에러 정보 조회  */
+    /** 홈 IoT 컨트롤러 에러 정보 조회 */
     @Override
     public ResponseEntity<?> doDeviceErrorInfo(AuthServerDTO params) throws CustomException {
 
@@ -1876,11 +2082,11 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            if(rKeyIdentification.getDeviceId() != null &&
+            if (rKeyIdentification.getDeviceId() != null &&
                     rKeyIdentification.getSerialNumber() != null &&
                     rKeyIdentification.getControlAuthKey() != null) {
                 errorInfoList = deviceMapper.getDeviceErroInfo(rKeyIdentification.getSerialNumber());
-                if(errorInfoList != null){
+                if (errorInfoList != null) {
                     for (AuthServerDTO authServerDTO : errorInfoList) {
                         Map<String, String> data = new HashMap<>();
                         data.put("errorMessage", authServerDTO.getErrorMessage());
@@ -1890,35 +2096,37 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.add(data);
                     }
                     stringObject = "Y";
-                } else stringObject = "N";
-            } else stringObject = "N";
+                } else
+                    stringObject = "N";
+            } else
+                stringObject = "N";
 
-            if(stringObject.equals("Y")) {
+            if (stringObject.equals("Y")) {
                 msg = "기기 에러 정보 조회 성공";
                 result.setErrorInfo(resultMap);
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
-            if(stringObject.equals("N")) {
+            if (stringObject.equals("N")) {
                 msg = "기기 에러 정보 조회 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
             }
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
 
-    /**	홈 IoT 정보 조회 - 리스트  */
+    /** 홈 IoT 정보 조회 - 리스트 */
     @Override
     public ResponseEntity<?> doDeviceInfoSearchList(AuthServerDTO params) throws CustomException {
 
         /*
-        * 1. UserId 로 DeviceId 취득 getUserByDeviceId (등록된 모든 Device ID)
-        * 2. DeviceId로 필요한 Data를 쿼리 (TBT_OPR_DEVICE_REGIST, TBR_IOT_DEVICE)
-        * */
+         * 1. UserId 로 DeviceId 취득 getUserByDeviceId (등록된 모든 Device ID)
+         * 2. DeviceId로 필요한 Data를 쿼리 (TBT_OPR_DEVICE_REGIST, TBR_IOT_DEVICE)
+         */
 
         String groupIdx = params.getGroupIdxList();
         ApiResponse.Data result = new ApiResponse.Data();
@@ -1928,13 +2136,24 @@ public class DeviceServiceImpl implements DeviceService {
         List<Map<String, String>> appResponse = new ArrayList<>();
         List<AuthServerDTO> deviceInfoList;
 
+        String valveStatus = params.getValveStatus();
+
         try {
 
             groupIdxList = Arrays.asList(groupIdx.split(","));
-            System.out.println(groupIdxList);
-            deviceInfoList = deviceMapper.getDeviceInfoSearchIdx(groupIdxList);
 
-            if(!deviceInfoList.isEmpty()){
+            // 일시적으로 각방 선택 X
+            // Y일 경우 각방 포함 쿼리
+            if (valveStatus == null || valveStatus.equals("N")) {
+                deviceInfoList = deviceMapper.getDeviceInfoSearchIdx(groupIdxList);
+            } else if (valveStatus.equals("Y")) {
+                deviceInfoList = deviceMapper.getDeviceInfoSearchIdxTemp(groupIdxList);
+            } else {
+                deviceInfoList = deviceMapper.getDeviceInfoSearchIdx(groupIdxList);
+            }
+
+            int i = 1;
+            if (!deviceInfoList.isEmpty()) {
                 for (AuthServerDTO authServerDTO : deviceInfoList) {
                     Map<String, String> data = new HashMap<>();
                     data.put("modelCode", authServerDTO.getModelCode());
@@ -1945,7 +2164,7 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("addrDetail", authServerDTO.getAddrDetail());
                     data.put("latitude", authServerDTO.getLatitude());
                     data.put("longitude", authServerDTO.getLongitude());
-                    data.put("regSort", authServerDTO.getRegSort());
+                    data.put("regSort", String.valueOf(i));
                     data.put("deviceId", authServerDTO.getDeviceId());
                     data.put("controlAuthKey", authServerDTO.getControlAuthKey());
                     data.put("tempKey", authServerDTO.getTmpRegistKey());
@@ -1953,30 +2172,31 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("groupName", authServerDTO.getGroupName());
                     data.put("userId", authServerDTO.getUserId());
                     appResponse.add(data);
+                    i++;
                 }
                 stringObject = "Y";
             }
 
-            if(stringObject.equals("Y")) {
+            if (stringObject.equals("Y")) {
                 msg = "기기 조회 리스트 - 조회 성공";
                 result.setHomeViewValue(appResponse);
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
 
-            if(stringObject.equals("N")) {
+            if (stringObject.equals("N")) {
                 msg = "기기 정보 조회 리스트 - 조회 결과 없음";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
             }
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
 
-    /**	홈 IoT 컨트롤러 풍량 단수 설정  */
+    /** 홈 IoT 컨트롤러 풍량 단수 설정 */
     @Override
     public ResponseEntity<?> doVentilationFanSpeedSet(AuthServerDTO params) throws CustomException {
 
@@ -2006,7 +2226,7 @@ public class DeviceServiceImpl implements DeviceService {
         String redisValue;
         String serialNumber;
 
-        try{
+        try {
 
             firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
             userId = firstDeviceUser.getUserId();
@@ -2028,16 +2248,18 @@ public class DeviceServiceImpl implements DeviceService {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
-            } else serialNumber = device.getSerialNumber();
+            } else
+                serialNumber = device.getSerialNumber();
 
-            if(serialNumber == null) {
+            if (serialNumber == null) {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 stringObject = "Y";
-                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(fanSpeedSet));
-                if(!response.getResponseCode().equals("201")){
+                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId,
+                        JSON.toJson(fanSpeedSet));
+                if (!response.getResponseCode().equals("201")) {
                     msg = "중계서버 오류";
                     result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
@@ -2047,11 +2269,14 @@ public class DeviceServiceImpl implements DeviceService {
                     // 메시징 시스템을 통해 응답 메시지 대기
                     gwMessagingSystem.printMessageQueues();
                     log.info("responseMessage: VentilationFanSpeedSet" + fanSpeedSet.getUuId());
-                    responseMessage = gwMessagingSystem.waitForResponse("VentilationFanSpeedSet" + fanSpeedSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                    responseMessage = gwMessagingSystem.waitForResponse(
+                            "VentilationFanSpeedSet" + fanSpeedSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                     if (responseMessage != null) {
                         // 응답 처리
-                        if (responseMessage.equals("0")) stringObject = "Y";
-                        else stringObject = "N";
+                        if (responseMessage.equals("0"))
+                            stringObject = "Y";
+                        else
+                            stringObject = "N";
                     } else {
                         // 타임아웃이나 응답 없음 처리
                         stringObject = "T";
@@ -2066,15 +2291,16 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue("VentilationFanSpeedSet" + fanSpeedSet.getUuId());
             redisCommand.deleteValues(fanSpeedSet.getUuId());
 
-            if(memberMapper.updatePushToken(params) <= 0) log.info("구글 FCM TOKEN 갱신 실패.");
+            if (memberMapper.updatePushToken(params) <= 0)
+                log.info("구글 FCM TOKEN 갱신 실패.");
 
-            if(responseMessage != null && responseMessage.equals("2")){
+            if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
-                if(stringObject.equals("Y")) {
+                if (stringObject.equals("Y")) {
                     conMap.put("body", "ventilationFanSpeedSet OK");
                     msg = "풍량 단수 설정 성공";
                     result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -2098,11 +2324,13 @@ public class DeviceServiceImpl implements DeviceService {
                 userNickname = memberMapper.getUserNickname(params.getUserId());
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
-                for(int i = 0; i < userIds.size(); ++i){
+                for (int i = 0; i < userIds.size(); ++i) {
                     log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-                    if(memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")){
-                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                        conMap.put("title", "VentilationFanSpeedSet");
+                    if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
+                            .equals("Y")) {
+                        conMap.put("targetToken",
+                                memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("title", "vtSp");
                         conMap.put("vtSp", params.getFanSpeed());
                         conMap.put("userNickname", userNickname.getUserNickname());
                         conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
@@ -2112,7 +2340,9 @@ public class DeviceServiceImpl implements DeviceService {
                         String jsonString = objectMapper.writeValueAsString(conMap);
                         log.info("doPowerOnOff jsonString: " + jsonString);
 
-                        if(!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201")) log.info("PUSH 메세지 전송 오류");
+                        if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode()
+                                .equals("201"))
+                            log.info("PUSH 메세지 전송 오류");
                     }
                 }
 
@@ -2131,13 +2361,13 @@ public class DeviceServiceImpl implements DeviceService {
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("", e);
         }
         return null;
     }
 
-    /**	홈 IoT 컨트롤러 활성/비활성 정보 요청  */
+    /** 홈 IoT 컨트롤러 활성/비활성 정보 요청 */
     @Override
     public ResponseEntity<?> doActiveStatus(AuthServerDTO params) throws CustomException {
 
@@ -2171,8 +2401,10 @@ public class DeviceServiceImpl implements DeviceService {
             activeStatus.setControlAuthKey(controlAuthKey);
             activeStatus.setUuId(activeStatus.getAccessToken());
 
-            if(modelCode.equals(modelCodeMap.get("newModel")) || modelCode.equals(modelCodeMap.get("oldModel"))) functionId = "acTv";
-            else if(modelCode.equals(modelCodeMap.get("ventilation"))) functionId = "acTv";
+            if (modelCode.equals(modelCodeMap.get("newModel")) || modelCode.equals(modelCodeMap.get("oldModel")))
+                functionId = "acTv";
+            else if (modelCode.equals(modelCodeMap.get("ventilation")))
+                functionId = "acTv";
 
             activeStatus.setFunctionId(functionId);
             redisValue = params.getUserId() + "," + activeStatus.getFunctionId();
@@ -2187,7 +2419,8 @@ public class DeviceServiceImpl implements DeviceService {
             } else {
                 serialNumber = device.getSerialNumber();
                 stringObject = "Y";
-                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(activeStatus));
+                response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId,
+                        JSON.toJson(activeStatus));
                 if (!response.getResponseCode().equals("201")) {
                     msg = "중계서버 오류";
                     result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
@@ -2198,11 +2431,14 @@ public class DeviceServiceImpl implements DeviceService {
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
                 gwMessagingSystem.printMessageQueues();
-                responseMessage = gwMessagingSystem.waitForResponse(activeStatus.getFunctionId() + activeStatus.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                responseMessage = gwMessagingSystem.waitForResponse(
+                        activeStatus.getFunctionId() + activeStatus.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if (responseMessage != null) {
                     // 응답 처리
-                    if (responseMessage.equals("0")) stringObject = "Y";
-                    else stringObject = "N";
+                    if (responseMessage.equals("0"))
+                        stringObject = "Y";
+                    else
+                        stringObject = "N";
                 } else {
                     // 타임아웃이나 응답 없음 처리
                     stringObject = "T";
@@ -2216,7 +2452,7 @@ public class DeviceServiceImpl implements DeviceService {
             gwMessagingSystem.removeMessageQueue(activeStatus.getFunctionId() + activeStatus.getUuId());
             redisCommand.deleteValues(activeStatus.getUuId());
 
-            if(responseMessage != null && responseMessage.equals("2")){
+            if (responseMessage != null && responseMessage.equals("2")) {
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1014, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
@@ -2233,7 +2469,190 @@ public class DeviceServiceImpl implements DeviceService {
             }
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
+            log.error("", e);
+        }
+        return null;
+    }
+
+    /** 홈 IoT 컨트롤러 상태 정보 조회 (각방) – 홈 화면 */
+    @Override
+    public ResponseEntity<?> doBasicRoomDeviceStatusInfo(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        String userId = params.getUserId();
+
+        AuthServerDTO valveStatus;
+        List<AuthServerDTO> valveStatusList;
+        List<DeviceStatusInfo.Device> valveDetailedStatusList;
+        List<Map<String, String>> roomList;
+        List<Map<String, Object>> appResponse = new ArrayList<>();
+
+        try {
+            // 사용자 그룹 정보 가져온후 VALVE_STATUS중 Y가 없는 경우 해당 사용자는 각방 기기가 없다 판단.
+            valveStatus = memberMapper.checkValveStatusByUserId(userId);
+            // valveStatus가 null이거나 각방 기기 수가 0이면, 각방이 없다고 판단
+            if (valveStatus == null || "0".equals(valveStatus.getValveCount())) {
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1016, "등록한 각방 없음");
+                return ResponseEntity.ok(result);
+            }
+
+            // 2) 등록된 각방(밸브) 리스트 조회
+            valveStatusList = memberMapper.getValveStatusList(userId);
+            appResponse = new ArrayList<>();
+
+            int regSort = 1;
+
+            for (AuthServerDTO authServerDTO : valveStatusList) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("tmpRegistKey", authServerDTO.getTmpRegistKey());
+                data.put("controlAuthKey", authServerDTO.getControlAuthKey());
+                data.put("deviceNickname", authServerDTO.getDeviceNickname());
+                data.put("modelCategoryCode", "05");
+                data.put("groupIdx", authServerDTO.getGroupIdx());
+                data.put("groupName", authServerDTO.getGroupName());
+                data.put("deviceId", authServerDTO.getDeviceId());
+                data.put("latitude", authServerDTO.getLatitude());
+                data.put("longitude", authServerDTO.getLongitude());
+
+                // 3) 각 디바이스(각방)의 상세 상태 조회
+                valveDetailedStatusList = deviceMapper.getDetailedValveStatus(authServerDTO.getDeviceId());
+                roomList = new ArrayList<>();
+
+                for (DeviceStatusInfo.Device deviceInfo : valveDetailedStatusList) {
+                    Map<String, String> deviceMap = new HashMap<>();
+                    deviceMap.put("deviceNickname", deviceInfo.getDeviceNickName());
+                    deviceMap.put("regSort", String.valueOf(regSort));
+                    deviceMap.put("deviceId", deviceInfo.getDeviceId());
+                    deviceMap.put("deviceStatus", "01");
+                    deviceMap.put("powr", deviceInfo.getPowr());
+                    deviceMap.put("opMd", deviceInfo.getOpMd());
+                    deviceMap.put("htTp", deviceInfo.getHtTp());
+                    deviceMap.put("hwTp", deviceInfo.getHwTp());
+                    deviceMap.put("chTp", deviceInfo.getChTp());
+                    roomList.add(deviceMap);
+
+                    regSort++;
+                }
+                data.put("roomList", roomList);
+                appResponse.add(data);
+            }
+
+            // 4) 결과 데이터 설정
+            result.setHomeViewValue(appResponse);
+            result.setResult(ApiResponse.ResponseType.HTTP_200, "홈 IoT 컨트롤러 상태 정보 조회 성공");
+            log.info("result: {}", result);
+
+            return ResponseEntity.ok(result);
+        } catch (CustomException ce) {
+            // CustomException 처리가 필요하다면 따로 분기 가능
+            log.error("Custom exception occurred: ", ce);
+            // 예시) 커스텀 예외에 따른 결과 설정
+            result.setResult(ApiResponse.ResponseType.CUSTOM_9999, ce.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+
+        } catch (Exception e) {
+            // 그 외 일반 예외 처리
+            log.error("Exception while retrieving room device status info", e);
+            result.setResult(ApiResponse.ResponseType.CUSTOM_9999, "기기 상태 조회 중 오류가 발생하였습니다.");
+            // 필요하다면 에러 HTTP 상태코드를 다른 것으로 조정 가능 (예: 500)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        }
+    }
+
+    /** 홈 IoT 컨트롤러 상태 정보 조회 (각방) */
+    @Override
+    public ResponseEntity<?> doRoomDeviceStatusInfo(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        String parentId = params.getParentDevice();
+
+        List<Map<String, Object>> appResponse = new ArrayList<>();
+
+        List<AuthServerDTO> parentIdList = null;
+        List<DeviceStatusInfo.Device> valveBoxStatusList = null;
+
+        try {
+
+            parentIdList = deviceMapper.getParentIdByUserId(parentId);
+            valveBoxStatusList = deviceMapper.getValveStatusByParentId(parentId);
+
+            for (int i = 0; i < valveBoxStatusList.size(); i++) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("controlAuthKey", parentIdList.get(0).getControlAuthKey());
+                data.put("deviceId", valveBoxStatusList.get(i).getDeviceId());
+                data.put("deviceNickname", valveBoxStatusList.get(i).getDeviceNickName());
+                data.put("modelCategoryCode", "05");
+                data.put("deviceStatus", "01");
+                data.put("powr", valveBoxStatusList.get(i).getPowr());
+                data.put("opMd", valveBoxStatusList.get(i).getOpMd());
+                data.put("htTp", valveBoxStatusList.get(i).getHtTp());
+                data.put("hwTp", valveBoxStatusList.get(i).getHwTp());
+                data.put("chTp", valveBoxStatusList.get(i).getChTp());
+                data.put("mfDt", valveBoxStatusList.get(i).getMfDt());
+                ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
+                eleMap.put("12h", valveBoxStatusList.get(i).getH12());
+                data.put("rsCf", JSON.toJson(eleMap));
+                appResponse.add(data);
+            }
+            result.setRoomList(appResponse);
+            result.setResult(ApiResponse.ResponseType.HTTP_200, "홈 IoT 컨트롤러 상태 정보 조회 성공");
+            log.info("result: " + result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("", e);
+        }
+
+        return null;
+    }
+
+    /** FCNT 요청 호출 */
+    @Override
+    public ResponseEntity<?> doCallFcNt(AuthServerDTO params) throws CustomException {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        FcNtCall fcNtCall = new FcNtCall();
+        String stringObject;
+        String msg;
+        String userId;
+        String deviceId = params.getDeviceId();
+        String parentDevice = params.getParentDevice();
+        String serialNumber;
+        String modelCode;
+
+        AuthServerDTO firstDeviceUser;
+
+        MobiusResponse response;
+
+        try {
+            modelCode = common.getModelCodeFromDeviceId(deviceId);
+
+            firstDeviceUser = memberMapper.getFirstDeviceUser(parentDevice);
+            userId = firstDeviceUser.getUserId();
+
+            fcNtCall.setDeviceId(deviceId);
+            fcNtCall.setUuId(common.getTransactionId());
+            fcNtCall.setFunctionId("fcNt");
+            fcNtCall.setModelCode(modelCode);
+
+            serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+
+            stringObject = "Y";
+            response = mobiusService.createCin("20" + serialNumber, userId, JSON.toJson(fcNtCall));
+            if (!response.getResponseCode().equals("201")) {
+                msg = "중계서버 오류";
+                result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            if (stringObject.equals("Y")) {
+                msg = "FCNT 요청 호출 성공";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+
+            log.info("result: " + result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
             log.error("", e);
         }
         return null;

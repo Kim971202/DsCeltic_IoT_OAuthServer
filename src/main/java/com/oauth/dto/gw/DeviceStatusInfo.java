@@ -87,6 +87,7 @@ public class DeviceStatusInfo {
       private String deviceNickName;
       private String regSort;
       private String deviceId;
+      private String targetDeviceId; // 각방 전용 hex serial number 
       private String controlAuthKey;
       private String deviceStatus;
       private String addrNickname;
@@ -105,6 +106,17 @@ public class DeviceStatusInfo {
       private String rsSl;
       private String rsPw;
       private String inAq;
-      private String otHm;
+      private String odHm;
+
+      private String modelCode;
+      private String prId;
+      private String psYn;
+      private String dvNm;
+
+      private String groupIdx;
+      private String groupName;
+      private String latitude;
+      private String longitude;
+      private String tmpRegistKey;
    }
 }

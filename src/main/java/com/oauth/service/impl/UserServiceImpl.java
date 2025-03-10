@@ -80,11 +80,11 @@ public class UserServiceImpl implements UserService {
             } else {
                 registUserType = account.getRegistUserType();
                 password = account.getUserPassword();
-                 if (!encoder.matches(userPassword, password)) {
-                     msg = "PW 에러";
-                     result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
-                     return new ResponseEntity<>(result, HttpStatus.OK);
-                 }
+                if (!encoder.matches(userPassword, password)) {
+                    msg = "PW 에러";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
             }
 
             householdStatus = memberMapper.getHouseholdByUserId(userId);
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
 
             if (phoneId != null) {
                 // 로그인 시도 하는 사용자가 LogOut 상태일 경우 아래 로직 적용 X
-                if(memberMapper.getUserLoginoutStatus(userId).getLoginoutStatus().equals("Y")){
+                if (memberMapper.getUserLoginoutStatus(userId).getLoginoutStatus().equals("Y")) {
                     // phoneId의 값이 DEFAULT인 경우 최초 로그인 이므로 PASS
                     phoneIdInfo = memberMapper.getPhoneIdInfo(userId);
                     if (!phoneIdInfo.getPhoneId().equals("DEFAULT")) {
@@ -120,7 +120,8 @@ public class UserServiceImpl implements UserService {
                             conMap.put("targetToken", memberMapper.getPushTokenByUserId(userId).getPushToken());
                             conMap.put("title", "Duplicated_Login");
                             String jsonString = objectMapper.writeValueAsString(conMap);
-                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
+                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString)
+                                    .getResponseCode().equals("201"))
                                 log.info("PUSH 메세지 전송 오류");
                         }
                     }
@@ -129,7 +130,7 @@ public class UserServiceImpl implements UserService {
                 memberMapper.updatePhoneId(params);
             }
 
-            // TODO: TBR_OPR_USER 테이블의 USER_STATUS_LOG_INOUT의 값을 Y
+            // TBR_OPR_USER 테이블의 USER_STATUS_LOG_INOUT의 값을 Y
             info.setUserId(userId);
             info.setLoginoutStatus("Y");
             if (memberMapper.updateLoginoutStatus(info) <= 0)
@@ -1015,25 +1016,27 @@ public class UserServiceImpl implements UserService {
             memberMapper.delHouseholdMember(delUserId);
 
             // TBR_IOT_DEVICE_GRP_INFO deleteDeviceGrpInfo
-            // TODO: 세대주 ID로 세대주 등록 기기 목록을 Regist 테이블에서 불러온후 해당 기기를 세대원
+            // 세대주 ID로 세대주 등록 기기 목록을 Regist 테이블에서 불러온후 해당 기기를 세대원
             // TBR_IOT_DEVICE_GRP_INFO 테이블에서 삭제
             deviceIdList = memberMapper.getDeviceIdFromRegist(userId);
 
-            inputList = new ArrayList<>();
-            for (AuthServerDTO authServerDTO : deviceIdList) {
-                AuthServerDTO newDevice = new AuthServerDTO();
-                newDevice.setDeviceId(authServerDTO.getDeviceId());
-                newDevice.setUserId(delUserId);
-                // 리스트에 추가
-                inputList.add(newDevice);
+            if(!deviceIdList.isEmpty()){
+                inputList = new ArrayList<>();
+                for (AuthServerDTO authServerDTO : deviceIdList) {
+                    AuthServerDTO newDevice = new AuthServerDTO();
+                    newDevice.setDeviceId(authServerDTO.getDeviceId());
+                    newDevice.setUserId(delUserId);
+                    // 리스트에 추가
+                    inputList.add(newDevice);
+                }
+    
+                // TBR_OPR_USER_DEVICE_PUSH 테이블 삭제
+                memberMapper.deleteUserDevicePush(inputList);
+                memberMapper.deleteDeviceGrpInfo(inputList);
+    
             }
-
-            // TODO: TBR_OPR_USER_DEVICE_PUSH 테이블 삭제
-            memberMapper.deleteUserDevicePush(inputList);
-
-            memberMapper.deleteDeviceGrpInfo(inputList);
-
-            // TODO: TBD_USER_INVITE_GROUP 테이블 삭제
+            
+            // TBD_USER_INVITE_GROUP 테이블 삭제
             if (memberMapper.deleteUserInviteGroup(params) <= 0) {
                 msg = "사용자(세대원) 강제탈퇴 실패";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
@@ -1166,7 +1169,7 @@ public class UserServiceImpl implements UserService {
             // "push" 부분을 표현하는 List 생성
             List<Map<String, String>> pushList = new ArrayList<>();
 
-            if(searchFlag.equals("00")){
+            if (searchFlag.equals("00")) {
                 String deviceId = params.getDeviceId();
                 String controlAuthkey = params.getControlAuthKey();
 
@@ -1208,7 +1211,7 @@ public class UserServiceImpl implements UserService {
 
                 resultMap.put("push", pushList);
 
-            } else if(searchFlag.equals("01")){
+            } else if (searchFlag.equals("01")) {
 
                 // TDOD: 세대주 ID 쿼리
                 householderId = memberMapper.getHouseholdByUserId(userId).getGroupId();
@@ -1299,55 +1302,50 @@ public class UserServiceImpl implements UserService {
 
             /*
              * *
-             * TODO
              * 1. 신규 세대주 ID 쿼리후 기존 세대주 ID, IDX 가 있는 테이블에 ID UPDATE
              * 2. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
              * 3. 다음 세대원을 세대주로 변경
              * 4. TBT_OPR_DEVICE_REGIST, TBR_OPR_USER_DEVICE USER_ID 다음 세대원으로 변경
              */
 
-            // TODO: 1. 다음 세대원 검색
+            // 1. 다음 세대원 검색
             nextHouseholder = memberMapper.getNextUserId(params);
             params.setNextUserId(nextHouseholder.getUserId());
             params.setHp(nextHouseholder.getHp());
 
-            // TODO: 2. TBR_IOT_DEVICE_GRP_INFO에서 세대주 ID 삭제
+            // 2. TBR_IOT_DEVICE_GRP_INFO에서 세대주 ID 삭제
             deviceIdList = memberMapper.getDeviceIdFromRegist(userId);
-
-            inputList = new ArrayList<>();
-            for (AuthServerDTO authServerDTO : deviceIdList) {
-                AuthServerDTO newDevice = new AuthServerDTO();
-                newDevice.setDeviceId(authServerDTO.getDeviceId());
-                newDevice.setUserId(userId);
-                // 리스트에 추가
-                inputList.add(newDevice);
+            
+            if(!deviceIdList.isEmpty()){
+                inputList = new ArrayList<>();
+                for (AuthServerDTO authServerDTO : deviceIdList) {
+                    AuthServerDTO newDevice = new AuthServerDTO();
+                    newDevice.setDeviceId(authServerDTO.getDeviceId());
+                    newDevice.setUserId(userId);
+                    // 리스트에 추가
+                    inputList.add(newDevice);
+                }
+                deviceMapper.deleteDeviceListGrpInfo(inputList);
             }
-            deviceMapper.deleteDeviceListGrpInfo(inputList);
 
-            // TODO: 2.  다음 세대주TBD_USER_INVITE_GROUP ID로 UPDATE
+            // 2. 다음 세대주TBD_USER_INVITE_GROUP ID로 UPDATE
             memberMapper.updateNewHouseHolder(params);
 
-            // TODO: 3. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
+            // 3. TBD_USER_INVITE_GROUP 에서 기존 세대주 삭제
             params.setDelUserId(userId);
             memberMapper.deleteUserInviteGroup(params);
 
-            // TODO: 4. TBT_OPR_DEVICE_REGIST USER_ID, HP 업데이트
+            // 4. TBT_OPR_DEVICE_REGIST USER_ID, HP 업데이트
             memberMapper.updateDeviceRegist(params);
 
-            // TODO: 5. TBR_OPR_USER_DEVICE USER_ID 업데이트
-            if (memberMapper.updateUserDevice(params) <= 0) {
-                msg = "사용자(세대주) 강제탈퇴 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
-            // TODO: 7. TBR_OPR_USER_INVITE_STATUS 테이블에서 세대주 관련 초대 그록 삭제
-            if (memberMapper.deleteInviteStatusByHouseholder(params) <= 0) {
-                msg = "사용자(세대주) 강제탈퇴 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(data, HttpStatus.OK);
-            }
-
+            // 5. TBR_OPR_USER_DEVICE USER_ID 업데이트
+            if (memberMapper.updateUserDevice(params) <= 0) 
+                log.info("사용자(세대주) 강제탈퇴 실패.");
+            
+            // 7. TBR_OPR_USER_INVITE_STATUS 테이블에서 세대주 관련 초대 그록 삭제
+            if (memberMapper.deleteInviteStatusByHouseholder(params) <= 0)
+                log.info("사용자(세대주) 강제탈퇴 실패.");
+    
             msg = "사용자(세대주) 탈퇴 성공";
 
             if (memberMapper.updatePushToken(params) <= 0)
@@ -1424,21 +1422,25 @@ public class UserServiceImpl implements UserService {
 
         ApiResponse.Data result = new ApiResponse.Data();
         String msg;
-        String stringObject;
-        try {
 
-            if (deviceMapper.checkDeviceStatus(params).getDeviceId() == null) {
-                msg = "홈 IoT 컨트롤러 인증 실패";
-                stringObject = "N";
-            } else {
+        try {
+            // 먼저 checkValveStatus로 각방 여부 확인 후 원래 로직 수행
+            if (!deviceMapper.checkValveStatus(params).getDeviceCount().equals("0")) {
                 msg = "홈 IoT 컨트롤러 인증 성공";
-                stringObject = "Y";
+                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+                log.info("result: " + result);
+                return new ResponseEntity<>(result, HttpStatus.OK); // 즉시 종료
             }
 
-            if (stringObject.equals("N"))
+            // checkDeviceStatus 실행
+            if (deviceMapper.checkDeviceStatus(params) == null) {
+                msg = "홈 IoT 컨트롤러 인증 실패";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-            else
+            } else {
+                msg = "홈 IoT 컨트롤러 인증 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            }
+
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
@@ -1456,32 +1458,49 @@ public class UserServiceImpl implements UserService {
         String stringObject = "N";
         String msg;
         String userId = params.getUserId();
+        String serialNumber = params.getSerialNumber();
+        String deviceType = params.getDeviceType();
 
-        MobiusResponse aeResult;
+        MobiusResponse aeResult = null;
         MobiusResponse cntResult = null;
         MobiusResponse subResult = null;
 
         List<AuthServerDTO> groupMemberList;
+        List<AuthServerDTO> valveInfoList = null;
 
         try {
             /*
              * 위 API 호출 마다 SerialNum, UserId 정보로 Cin 생성
              * 생성이 정상적으로 동작 후 201을 Return 한다면 해당 AE, CNT는 존재하므로 생성X
              * 하지만 201을 Return 하지 못하는 경우 AE, CNT가 없다 판단하여 신규 생성
-             * TODO: GRP_ID 기준 모든 UserId에 대한 CNT, SUB 생성
+             * GRP_ID 기준 모든 UserId에 대한 CNT, SUB 생성
              */
 
-            groupMemberList = memberMapper.getGroupMemberByUserId(userId);
+            // 각방의 경우 메인 벨브 ID로 Sub ID를 등록 해야 함.
+            if (deviceType.equals("05")) {
+                // DB TBR_OPR_VALVE_BOX_STATUS 테이블에서 SERIAL_NO와 DEVC_MODL_CD를 쿼리
+                valveInfoList = deviceMapper.getSerialNumberAndModelCodeFromEachRoomInfo(serialNumber);
+                for (AuthServerDTO authServerDTO : valveInfoList) {
+                    aeResult = mobiusService.createAe(common.stringToHex("    " + authServerDTO.getSerialNumber()));
+                    cntResult = mobiusService.createCnt(common.stringToHex("    " + authServerDTO.getSerialNumber()),
+                            userId);
+                    subResult = mobiusService.createSub(common.stringToHex("    " + authServerDTO.getSerialNumber()),
+                            userId, "gw");
+                }
+            } else {
+                groupMemberList = memberMapper.getGroupMemberByUserId(userId);
 
-            params.setSerialNumber("    " + params.getSerialNumber());
-            params.setModelCode(" " + params.getModelCode());
-            aeResult = mobiusService.createAe(common.stringToHex(params.getSerialNumber()));
+                params.setSerialNumber("    " + params.getSerialNumber());
+                params.setModelCode(" " + params.getModelCode());
+                aeResult = mobiusService.createAe(common.stringToHex(params.getSerialNumber()));
 
-            for (AuthServerDTO authServerDTO : groupMemberList) {
-                cntResult = mobiusService.createCnt(common.stringToHex(params.getSerialNumber()),
-                        authServerDTO.getUserId());
-                subResult = mobiusService.createSub(common.stringToHex(params.getSerialNumber()),
-                        authServerDTO.getUserId(), "gw");
+                // 아래 로직이 필요한지 확인. 기기 제어시 최초 등록자 ID로 제어하기 때문
+                for (AuthServerDTO authServerDTO : groupMemberList) {
+                    cntResult = mobiusService.createCnt(common.stringToHex(params.getSerialNumber()),
+                            authServerDTO.getUserId());
+                    subResult = mobiusService.createSub(common.stringToHex(params.getSerialNumber()),
+                            authServerDTO.getUserId(), "gw");
+                }
             }
 
             if (aeResult == null && cntResult == null && subResult == null) {
@@ -1491,7 +1510,10 @@ public class UserServiceImpl implements UserService {
             } else
                 stringObject = "Y";
 
-            if (stringObject.equals("Y")) {
+            if (stringObject.equals("Y") && deviceType.equals("05")) {
+                result.setDeviceId(valveInfoList.get(0).getParentDevice());
+                msg = "최초 인증 성공";
+            } else if (stringObject.equals("Y")) {
                 result.setDeviceId("0.2.481.1.1." + common.stringToHex(params.getModelCode()) + "."
                         + common.stringToHex(params.getSerialNumber()));
                 msg = "최초 인증 성공";
@@ -1673,22 +1695,32 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String stringObject = "N";
         String msg;
-
+        String deviceType = params.getDeviceType();
+        String modelCode = params.getModelCode();
         try {
             // deviceNickname Input 대신 newDeviceNickname을 받아서 Setter 사용
             params.setDeviceNickname(params.getNewDeviceNickname());
 
-            if (deviceMapper.changeDeviceNickname(params) <= 0) {
-                msg = "기기 별칭 수정 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                new ResponseEntity<>(data, HttpStatus.OK);
+            if(deviceType.equals("05") && !modelCode.equals("DR-300W")){
+                if (deviceMapper.changeEachRoomDeviceNickname(params) <= 0) {
+                    msg = "기기 별칭 수정 실패";
+                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    new ResponseEntity<>(data, HttpStatus.OK);
+                } else
+                    stringObject = "Y";
+            } else {
+                if (deviceMapper.changeDeviceNickname(params) <= 0) {
+                    msg = "기기 별칭 수정 실패";
+                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    new ResponseEntity<>(data, HttpStatus.OK);
+                }
+                if (deviceMapper.changeDeviceNicknameTemp(params) <= 0) {
+                    msg = "기기 별칭 수정 실패";
+                    data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    new ResponseEntity<>(data, HttpStatus.OK);
+                } else
+                    stringObject = "Y";
             }
-            if (deviceMapper.changeDeviceNicknameTemp(params) <= 0) {
-                msg = "기기 별칭 수정 실패";
-                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                new ResponseEntity<>(data, HttpStatus.OK);
-            } else
-                stringObject = "Y";
 
             if (stringObject.equals("Y"))
                 msg = "기기 별칭 수정 성공";
@@ -2040,7 +2072,7 @@ public class UserServiceImpl implements UserService {
             }
 
             if (memberMapper.updatePushToken(params) <= 0)
-            log.info("구글 FCM TOKEN 갱신 실패.");
+                log.info("구글 FCM TOKEN 갱신 실패.");
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -2053,7 +2085,7 @@ public class UserServiceImpl implements UserService {
     /** 안전 안심 알람 정보 조회 */
     @Override
     public ResponseEntity<?> doGetSafeAlarmSetInfo(AuthServerDTO params) throws Exception {
-        
+
         ApiResponse.Data result = new ApiResponse.Data();
         String msg = "";
 
@@ -2061,9 +2093,9 @@ public class UserServiceImpl implements UserService {
         AuthServerDTO safeAlarmInfo;
 
         try {
-            
+
             safeAlarmCount = memberMapper.getSafeAlarmInfoCount(params);
-            if(safeAlarmCount.getSafeAlarmCount().equals("0")){
+            if (safeAlarmCount.getSafeAlarmCount().equals("0")) {
                 msg = "안전 안심 알람 정보 조회 성공";
                 result.setSafeAlarmTime("0000");
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -2075,7 +2107,7 @@ public class UserServiceImpl implements UserService {
             }
 
             if (memberMapper.updatePushToken(params) <= 0)
-            log.info("구글 FCM TOKEN 갱신 실패.");
+                log.info("구글 FCM TOKEN 갱신 실패.");
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);

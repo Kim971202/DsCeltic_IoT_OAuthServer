@@ -3,13 +3,10 @@ package com.oauth.service.impl;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
-import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.StatisticService;
 import com.oauth.utils.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -117,6 +114,20 @@ public class StatisticServiceImpl implements StatisticService {
             log.info("resultMap: " + resultMap);
             return resultMap;
         } catch (Exception e){
+            log.error("", e);
+        }
+        return null;
+    }
+
+    /** 각방 보일러 사용 통계조회 */
+    @Override
+    public HashMap<String, Object> doEachRoomStatInfo(AuthServerDTO params) throws CustomException {
+        
+        
+
+        try {
+            
+        } catch (Exception e) {
             log.error("", e);
         }
         return null;
