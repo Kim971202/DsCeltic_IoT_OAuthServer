@@ -1978,8 +1978,8 @@ public class DeviceServiceImpl implements DeviceService {
                             data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
                             data.put("inAq", devicesStatusInfo.get(i).getInAq());
                             data.put("odHm", devicesStatusInfo.get(i).getOdHm());
-                            data.put("ftMdAcTv", devicesStatusInfo.get(i).getFtMd());
-                            data.put("fcLcAcTv", devicesStatusInfo.get(i).getFcLc());
+                            data.put("ftMdAcTv", devicesStatusInfo.get(i).getFtMdActv());
+                            data.put("fcLcAcTv", devicesStatusInfo.get(i).getFcLcActv());
                             data.put("ecOpAcTv", devicesStatusInfo.get(i).getEcOp());
                             data.put("pastAcTv", devicesStatusInfo.get(i).getPast());
                             data.put("inDrAcTv", devicesStatusInfo.get(i).getInDr());
