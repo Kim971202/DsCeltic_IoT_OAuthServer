@@ -1577,7 +1577,7 @@
         ON 
             g.GRP_IDX = d.GRP_IDX
         JOIN 
-            tbr_opr_device_detail t
+            TBR_OPR_DEVICE_DETAIL t
         ON 
             t.DEVC_ID = d.DEVC_ID
         WHERE
