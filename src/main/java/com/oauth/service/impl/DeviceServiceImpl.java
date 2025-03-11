@@ -645,8 +645,10 @@ public class DeviceServiceImpl implements DeviceService {
                 }
 
                 // 기기 홈화면 조회 시 필수적으로 필요한 TBR_OPR_ACTIVE_DEVICE_STATUS 테이블 값 추가 (기본값: of)
-                deviceMapper.deleteActiveOldDevice(params);
-                deviceMapper.insertActiveOldDevice(params);
+                if(modelCode.equals("ESCeco13S")){
+                    deviceMapper.deleteActiveOldDevice(params);
+                    deviceMapper.insertActiveOldDevice(params);
+                }
 
                 // if(deviceMapper.insertDeviceGrpInfo(params) <= 0){
                 // msg = "기기 정보 등록 실패.";
