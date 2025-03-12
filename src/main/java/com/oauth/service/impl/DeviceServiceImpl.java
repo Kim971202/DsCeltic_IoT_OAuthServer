@@ -646,6 +646,7 @@ public class DeviceServiceImpl implements DeviceService {
 
                 // 기기 홈화면 조회 시 필수적으로 필요한 TBR_OPR_ACTIVE_DEVICE_STATUS 테이블 값 추가 (기본값: of)
                 if(modelCode.equals("ESCeco13S")){
+                                           // ESCeco13S
                     deviceMapper.deleteActiveOldDevice(params);
                     deviceMapper.insertActiveOldDevice(params);
                 }
@@ -1957,7 +1958,7 @@ public class DeviceServiceImpl implements DeviceService {
                             data.put("longitude", devicesStatusInfo.get(i).getLongitude());
                             data.put("controlAuthKey", devicesStatusInfo.get(i).getRKey());
                             data.put("tmpRegistKey", devicesStatusInfo.get(i).getTmpRegistKey());
-                            data.put("deviceStatus", "1");
+                            data.put("deviceStatus", devicesStatusInfo.get(i).getDvSt());
                             data.put("powr", devicesStatusInfo.get(i).getPowr());
                             data.put("opMd", devicesStatusInfo.get(i).getOpMd());
                             data.put("htTp", devicesStatusInfo.get(i).getHtTp());
@@ -2526,7 +2527,7 @@ public class DeviceServiceImpl implements DeviceService {
                     deviceMap.put("deviceNickname", deviceInfo.getDeviceNickName());
                     deviceMap.put("regSort", String.valueOf(regSort));
                     deviceMap.put("deviceId", deviceInfo.getDeviceId());
-                    deviceMap.put("deviceStatus", "01");
+                    deviceMap.put("deviceStatus", deviceInfo.getDvSt());
                     deviceMap.put("powr", deviceInfo.getPowr());
                     deviceMap.put("opMd", deviceInfo.getOpMd());
                     deviceMap.put("htTp", deviceInfo.getHtTp());

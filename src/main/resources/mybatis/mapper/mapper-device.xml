@@ -1382,6 +1382,7 @@
             HTTP AS htTp,
             HWTP AS hwTp,
             CHTP AS chTp, 
+            DVST AS dvSt,
             SUB_ID AS deviceId,
             R_KEY AS controlAuthKey,
             DV_NM AS deviceNickName
@@ -1440,6 +1441,7 @@
             a.TEMP_DEVC_REG_KEY AS tmpRegistKey,
             a.LAT AS latitude,
             a.LON AS longitude,
+            b.DVST AS dvSt,
             IFNULL(b.DEVC_ID, '') AS deviceId,
             IFNULL(b.SERIAL_NO, '') AS serialNumber,
             IFNULL(b.R_KEY, 0) AS rKey,

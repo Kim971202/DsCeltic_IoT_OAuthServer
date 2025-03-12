@@ -65,6 +65,7 @@ public class DeviceStatusInfo {
       private String h24;
       private String wk7;
       private String fwh;
+      private String dvSt;
 
       private String fcLcActv;
       private String ftMdActv;
