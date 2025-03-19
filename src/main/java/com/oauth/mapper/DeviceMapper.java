@@ -35,6 +35,7 @@ public interface DeviceMapper {
     public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);
     public List<DeviceStatusInfo.Device> getActiveStauts(List<String> serialNumber);
     public List<AuthServerDTO> getCheckedDeviceExist(String deviceId);
+    public AuthServerDTO checkDeviceCount(String groupIdx);
     public AuthServerDTO getSingleSerialNumberBySubDeviceId(String deviceId);
     public AuthServerDTO getParentIdBySubId(String deviceId);
     public AuthServerDTO getDeviceIdFromVentilationAirInfo(String deviceId);
@@ -47,6 +48,7 @@ public interface DeviceMapper {
     public AuthServerDTO deviceTempAuthCheck(List<AuthServerDTO> device);
     public AuthServerDTO getDeviceInfoSearch(AuthServerDTO params);
     public AuthServerDTO getDeviceRegistStatus(String serialNumber);
+    public AuthServerDTO getErrorInfoByDeviceId(String deviceId);
     public AuthServerDTO checkValveStatus(AuthServerDTO params);
     public AuthServerDTO checkDeviceStatus(AuthServerDTO params);
     public DeviceStatusInfo.Device getSubAndParentDeviceInfo(String deviceId);

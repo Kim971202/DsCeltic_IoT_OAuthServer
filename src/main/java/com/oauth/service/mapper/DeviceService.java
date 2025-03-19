@@ -29,6 +29,12 @@ public interface DeviceService {
     /** 실내온도 설정 */
     public ResponseEntity<?> doTemperatureSet(AuthServerDTO params) throws CustomException;
 
+    /** 냉방-실내온도 설정 */
+    public ResponseEntity<?> doColdTempertureSet(AuthServerDTO params) throws CustomException;
+
+    /** 강제 제상 모드 설정 */
+    public ResponseEntity<?> doForcedDefrost(AuthServerDTO params) throws CustomException;
+
     /** 난방수온도 설정 */
     public ResponseEntity<?> doBoiledWaterTempertureSet(AuthServerDTO params) throws CustomException;
 

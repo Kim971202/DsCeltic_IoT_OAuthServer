@@ -41,9 +41,7 @@ public class ReservationController {
             Validator.isNullOrEmpty(params.getDeviceId()) ||
             Validator.isNullOrEmpty(params.getControlAuthKey()) ||
             Validator.isNullOrEmpty(params.getType24h()) ||
-            Validator.isNullOrEmpty(params.getHours()) ||
-//            Validator.isNullOrEmpty(params.getOnOffFlag()) ||
-            Validator.isNullOrEmpty(params.getPushToken())) {
+            Validator.isNullOrEmpty(params.getHours())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("24시간 예약 값 오류");
         }
 
@@ -63,9 +61,7 @@ public class ReservationController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getWorkPeriod()) ||
-                Validator.isNullOrEmpty(params.getWorkTime()) ||
-//                Validator.isNullOrEmpty(params.getOnOffFlag()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getWorkTime())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("반복(12시간) 예약 값 오류");
         }
 
@@ -84,8 +80,7 @@ public class ReservationController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getAwakeList()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getAwakeList())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("빠른 온수 예약 값 오류");
 
         }
@@ -106,10 +101,7 @@ public class ReservationController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getWeekList()) ||
-                Validator.isNullOrEmpty(params.getModelCode()) ||
-//                Validator.isNullOrEmpty(params.getMn()) ||
-//                Validator.isNullOrEmpty(params.getOnOffFlag()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getModelCode())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주간 예약 값 오류");
         }
 

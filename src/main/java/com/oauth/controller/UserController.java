@@ -1,7 +1,7 @@
 package com.oauth.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.dto.AuthServerDTO;
-import com.oauth.dto.gw.DeviceStatusInfo;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.service.impl.MobiusService;
@@ -12,7 +12,6 @@ import com.oauth.utils.JSON;
 import com.oauth.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.sql.SQLException;
 import java.util.*;
 
 @Slf4j
@@ -82,11 +80,11 @@ public class UserController {
         log.info("[회원 로그아웃]");
         common.logParams(params);
 
-        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getPushToken())) {
+        if(Validator.isNullOrEmpty(params.getUserId())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body( "회원 로그아웃 입력 값 오류");
         }
 
-        return userService.doLogout(params.getUserId(), params.getPushToken());
+        return userService.doLogout(params.getUserId());
     }
 
     /** 회원가입 */
@@ -102,8 +100,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getUserNickname()) ||
                 Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getUserPassword()) ||
-                Validator.isNullOrEmpty(params.getRegistUserType()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getRegistUserType())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 가입 입력 값 오류");
         }
         return userService.doRegist(params);
@@ -157,8 +154,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
-                Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getModelCode())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("비밀번호 찾기 - 초기화 입력 값 오류");
 
         }
@@ -176,8 +172,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) || 
-            Validator.isNullOrEmpty(params.getUserPassword()) ||
-            Validator.isNullOrEmpty(params.getPushToken())){
+            Validator.isNullOrEmpty(params.getUserPassword())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("비밀번호 변경 - 생성 입력 값 오류");
 
         }
@@ -193,7 +188,7 @@ public class UserController {
         log.info("[사용자정보 조회]");
         common.logParams(params);
 
-        if(Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getPushToken())){
+        if(Validator.isNullOrEmpty(params.getUserId())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자정보 조회 입력 값 오류");
         }
 
@@ -206,12 +201,11 @@ public class UserController {
     public ResponseEntity<?> doSearchGroupInfo(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException{
 
-        log.info("[사용자정보 조회]");
+        log.info("[사용자 그룹 정보 조회]");
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) || 
-            Validator.isNullOrEmpty(params.getHouseLeaderFlag()) ||
-            Validator.isNullOrEmpty(params.getPushToken())){
+            Validator.isNullOrEmpty(params.getHouseLeaderFlag())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자정보 조회 입력 값 오류");
         }
 
@@ -224,10 +218,10 @@ public class UserController {
     public ResponseEntity<?> doDeleteGroup(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException{
 
-        log.info("[사용자정보 조회]");
+        log.info("[사용자 그룹 삭제]");
         common.logParams(params);
 
-        if(Validator.isNullOrEmpty(params.getGroupIdx()) || Validator.isNullOrEmpty(params.getPushToken())){
+        if(Validator.isNullOrEmpty(params.getGroupIdx())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자정보 조회 입력 값 오류");
         }
 
@@ -240,13 +234,12 @@ public class UserController {
     public ResponseEntity<?> doChangeGroupName(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
             throws CustomException{
 
-        log.info("[사용자정보 조회]");
+        log.info("[사용자 그룹 명칭 변경]");
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getGroupIdx()) ||
                 Validator.isNullOrEmpty(params.getGroupName()) ||
-                Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getUserId())){
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자정보 조회 입력 값 오류");
         }
 
@@ -263,8 +256,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) || 
-            Validator.isNullOrEmpty(params.getGroupName()) ||
-            Validator.isNullOrEmpty(params.getPushToken())){
+            Validator.isNullOrEmpty(params.getGroupName())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 그룹 생성 입력 값 오류");
         }
 
@@ -282,8 +274,7 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getUserNickname()) ||
-                Validator.isNullOrEmpty(params.getNewHp()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getNewHp())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 별칭(이름) 및 전화번호 변경 값 오류");
         }
 
@@ -301,8 +292,7 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getOldPassword()) ||
-                Validator.isNullOrEmpty(params.getNewPassword()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getNewPassword())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 별칭(이름) 및 전화번호 변경 값 오류");
         }
 
@@ -338,11 +328,9 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getRequestUserId()) ||
                 Validator.isNullOrEmpty(params.getRequestUserNick()) ||
                 Validator.isNullOrEmpty(params.getResponseHp()) ||
-                Validator.isNullOrEmpty(params.getResponseUserId()) ||
                 Validator.isNullOrEmpty(params.getInviteStartDate()) ||
                 Validator.isNullOrEmpty(params.getGroupIdx()) ||
-                Validator.isNullOrEmpty(params.getGroupName()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getGroupName())){
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 추가 - 초대 값 오류");
         }
 
@@ -365,8 +353,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getInviteAcceptYn()) ||
                 Validator.isNullOrEmpty(params.getGroupIdx()) ||
                 Validator.isNullOrEmpty(params.getInvitationIdx()) ||
-                Validator.isNullOrEmpty(params.getGroupName()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getGroupName())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자 초대 - 수락여부 값 오류");
         }
 
@@ -401,8 +388,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getHp()) ||
                 Validator.isNullOrEmpty(params.getDelUserId()) ||
                 Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getGroupIdx()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getGroupIdx())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자(세대원) - 그룹 탈퇴 값 오류");
         }
         return userService.doDelHouseholdMembers(params);
@@ -467,8 +453,7 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getDeviceId()) ||
             Validator.isNullOrEmpty(params.getUserId())|| 
-            Validator.isNullOrEmpty(params.getGroupIdx()) ||
-            Validator.isNullOrEmpty(params.getPushToken())){
+            Validator.isNullOrEmpty(params.getGroupIdx())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자(세대주) 탈퇴 값 오류");
         }
         return userService.doDelHouseholder(params);
@@ -522,8 +507,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) || 
-            Validator.isNullOrEmpty(params.getAccessToken()) ||
-            Validator.isNullOrEmpty(params.getPushToken())){
+            Validator.isNullOrEmpty(params.getAccessToken())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("API인증키 갱신 값 오류");
         }
         return userService.doAccessTokenVerification(params);
@@ -545,8 +529,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getTmpRegistKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
-                Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getModelCode())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 최초 등록 인증 값 오류");
         }
         return userService.doFirstDeviceAuthCheck(params);
@@ -568,8 +551,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getGroupIdx()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getGroupIdx())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 컨트롤러 삭제(회원 매핑 삭제) 값 오류");
         }
         return userService.doUserDeviceDelete(params);
@@ -589,8 +571,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getPageNo()) ||
-                Validator.isNullOrEmpty(params.getNumOfRows()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getNumOfRows())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("스마트알림 - PUSH 이력 조회 값 오류");
         }
         return userService.doViewPushHistory(params);
@@ -612,8 +593,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getNewDeviceNickname()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getNewDeviceNickname())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("기기 별칭 수정 값 오류");
         }
         return userService.doDeviceNicknameChange(params);
@@ -635,9 +615,7 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getBrightnessLevel()) ||
-                Validator.isNullOrEmpty(params.getPushToken())
-                ){
+                Validator.isNullOrEmpty(params.getBrightnessLevel())){
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("기기 밝기 조절 값 오류");
         }
         return userService.doBrightnessControl(params);
@@ -656,9 +634,7 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
             Validator.isNullOrEmpty(params.getStartDatetime()) ||
-            Validator.isNullOrEmpty(params.getEndDatetime()) ||
-            Validator.isNullOrEmpty(params.getPushToken())
-            ){
+            Validator.isNullOrEmpty(params.getEndDatetime())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("공지사항 조회 값 오류");
         }
         return userService.doNotice(params);
@@ -678,8 +654,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getNewDeviceLocNickname()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getNewDeviceLocNickname())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("기기 설치 위치 별칭 수정 값 오류");
         }
         return userService.doUpdateDeviceLocationNickname(params);
@@ -716,8 +691,7 @@ public class UserController {
         if(Validator.isNullOrEmpty(params.getUserId()) ||
             Validator.isNullOrEmpty(params.getSafeAlarmTime()) ||
             Validator.isNullOrEmpty(params.getSafeAlarmStatus()) ||
-            Validator.isNullOrEmpty(params.getDeviceId()) ||
-            Validator.isNullOrEmpty(params.getPushToken())){
+            Validator.isNullOrEmpty(params.getDeviceId())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("안전안심 알람 설정 값 오류");
         }
         return userService.doSafeAlarmSet(params);
@@ -735,8 +709,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getDeviceId())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("빠른온수 예약 정보 조회 오류");
         }
         return userService.doGetFastHotWaterInfo(params);
@@ -754,8 +727,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getDeviceId())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("환기 필터 잔여 수명 정보 조회 오류");
         }
         return userService.doGetFanLifeStatus(params);
@@ -773,8 +745,7 @@ public class UserController {
         common.logParams(params);
 
         if(Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getPushToken())){
+                Validator.isNullOrEmpty(params.getDeviceId())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("안전 안심 알람 정보 조회 오류");
         }
         return userService.doGetSafeAlarmSetInfo(params);
@@ -782,17 +753,14 @@ public class UserController {
 
     @PostMapping(value = "/test")
     public String test(String on) throws Exception {
+        String pushToken = "e9tA2TEcK0jVo4NxZrRMc6:APA91bFRiBFyzWMhDC1yt4Mi1-CN_Mm24eIW1X4MEZ3Q9XiHWs9pbErf9G5rG5rvam-qJknk4CjzeU5__5gITN_7BegsvLX-o2Gz5U4mVMiwNdq4iud0Z1w";
+        HashMap<String, String> pushMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        HashMap<String, String> myMap = new HashMap<>();
-        myMap.put("deviceId", "0.2.481.1.1.4d43323630302d325352.20202034343137393332463037314231");
-        myMap.put("uuId", common.getTransactionId());
-        myMap.put("functionId", "fcNt");
-        myMap.put("modelCode", "MC2600-2SR");
-        myMap.put("TempAndSystemNotice", "1");
-        // 20202020303833413844433636444542/lhh1120
-        mobiusService.createCin("20202020303833413844433636444542", "lhh1120", 
-        JSON.toJson(myMap));
-
+        pushMap.put("targetToken", pushToken);
+        pushMap.put("title", "Duplicated_Login");
+        String jsonString = objectMapper.writeValueAsString(pushMap);
+        mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
         return null;
     }
 

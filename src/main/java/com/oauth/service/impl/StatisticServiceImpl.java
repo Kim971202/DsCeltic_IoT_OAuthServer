@@ -122,8 +122,6 @@ public class StatisticServiceImpl implements StatisticService {
     /** 각방 보일러 사용 통계조회 */
     @Override
     public HashMap<String, Object> doEachRoomStatInfo(AuthServerDTO params) throws CustomException {
-        
-        
 
         try {
             

@@ -32,15 +32,17 @@ public class PushService {
         HashMap<String, String> pushMap = new HashMap<>();
         if(title == null) title = "vfLs";
         try {
-            pushMap.put("targetToken", pushToken);
-            pushMap.put("pushYn", fPushYn);
-            pushMap.put("modelCode", modelCode.replaceAll(" ", ""));
-            pushMap.put("title", title);
-            pushMap.put("deviceNick", common.stringToHex(deviceNickname));
-            pushMap.put("body", common.putQuotes(common.returnConValue(jsonBody)));
-            pushMap.put("id", userId);
+            if (memberMapper.getUserLoginoutStatus(userId).getLoginoutStatus().equals("Y")){
+                pushMap.put("targetToken", pushToken);
+                pushMap.put("pushYn", fPushYn);
+                pushMap.put("modelCode", modelCode.replaceAll(" ", ""));
+                pushMap.put("title", title);
+                pushMap.put("deviceNick", common.stringToHex(deviceNickname));
+                pushMap.put("body", common.putQuotes(common.returnConValue(jsonBody)));
+                pushMap.put("id", userId);
 
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
+                mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
+            }
         } catch (Exception e){
             log.error("", e);
         }
@@ -59,11 +61,12 @@ public class PushService {
         deviceMapper.updateDeviceErrorStatus(deviceId);
 
         try {
+
             for (AuthServerDTO authServerDTO : pushInfo) {
 
                 AuthServerDTO params = new AuthServerDTO();
-                params.setUserId(authServerDTO.getUserId());
 
+                params.setUserId(authServerDTO.getUserId());
                 params.setPushTitle(errroCode);
                 params.setPushType("02");
                 params.setPushContent(Objects.requireNonNullElse(errorVersion, ""));
@@ -75,19 +78,20 @@ public class PushService {
                 System.out.println(params);
                 if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH ERROR HISTORY INSERT ERROR");
 
-                if(memberMapper.getUserLoginoutStatus(authServerDTO.getUserId()).getLoginoutStatus().equals("Y")){
-                    pushMap.put("targetToken", authServerDTO.getPushToken());
-                    pushMap.put("title","ERROR");
-                    pushMap.put("body", common.putQuotes(common.returnConValue(common.readCon(jsonBody, "con"))));
-                    pushMap.put("id", authServerDTO.getUserId());
-                    pushMap.put("pushYn", authServerDTO.getSPushYn());
-                    pushMap.put("modelCode", modelCode.replaceAll(" ", ""));
-                    pushMap.put("deviceNick", common.stringToHex(info.getDeviceNickname()));
-                    pushMap.put("groupName", common.stringToHex(params.getGroupName()));
+                if (memberMapper.getUserLoginoutStatus(authServerDTO.getUserId()).getLoginoutStatus().equals("Y")){
+                    if(memberMapper.getUserLoginoutStatus(authServerDTO.getUserId()).getLoginoutStatus().equals("Y")){
+                        pushMap.put("targetToken", authServerDTO.getPushToken());
+                        pushMap.put("title","ERROR");
+                        pushMap.put("body", common.putQuotes(common.returnConValue(common.readCon(jsonBody, "con"))));
+                        pushMap.put("id", authServerDTO.getUserId());
+                        pushMap.put("pushYn", authServerDTO.getSPushYn());
+                        pushMap.put("modelCode", modelCode.replaceAll(" ", ""));
+                        pushMap.put("deviceNick", common.stringToHex(info.getDeviceNickname()));
+                        pushMap.put("groupName", common.stringToHex(params.getGroupName()));
 
-                    mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
+                        mobiusService.createCin("ToPushServer", "ToPushServerCnt", JSON.toJson(pushMap));
+                    }
                 }
-
             }
 
         } catch (Exception e){

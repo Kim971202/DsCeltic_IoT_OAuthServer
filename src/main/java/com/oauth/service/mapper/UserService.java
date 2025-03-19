@@ -13,7 +13,7 @@ public interface UserService {
     ResponseEntity<?> doLogin(String userId, String userPassword, String phoneId, String pushToken) throws CustomException;
 
     /** 회원 로그아웃 */
-    ResponseEntity<?> doLogout(String userId, String pushToken) throws CustomException;
+    ResponseEntity<?> doLogout(String userId) throws CustomException;
 
     /** 회원가입 */
     ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException, SQLException;

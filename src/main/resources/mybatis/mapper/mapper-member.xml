@@ -70,7 +70,6 @@
             USER_ID,
             PW,
             REG_DATM,
-            PUSH_TOKEN,
             REGIST_USER_TYPE,
             GOOGLE_HOME_STATUS
         )
@@ -79,7 +78,6 @@
             #{userId},
             #{userPassword},
             now(),
-            #{pushToken},
             #{registUserType},
             '01'
         )
@@ -348,6 +346,7 @@
             push.USER_ID = #{userId}
         AND
             push.DEVC_ID = #{deviceId}
+        LIMIT 1
     </select>
 
     <select id="getGroupInfoForPush" parameterType="String" resultMap="member">
@@ -975,6 +974,7 @@
             TBD_USER_INVITE_GROUP
         WHERE
             GRP_IDX = #{groupIdx}
+        LIMIT 1
     </select>
 
     <select id="getGroupMemberByUserId" parameterType="String" resultMap="member">
@@ -1032,6 +1032,7 @@
             DEVC_ID = #{deviceId}
         AND
             USER_ID = #{userId}
+        LIMIT 1
     </select>
 
     <select id="getFirstDeviceUser" parameterType="String" resultMap="member">
@@ -1123,13 +1124,15 @@
             </foreach>
     </delete>
 
-    <select id="getDeviceIdFromRegist" parameterType="String" resultMap="member">
+    <select id="getDeviceIdFromRegist" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             DEVC_ID AS deviceId
         FROM
             TBT_OPR_DEVICE_REGIST
         WHERE
             USER_ID = #{userId}
+        AND
+            GRP_IDX = #{groupIdx}
     </select>
 
     <delete id="deleteUserInviteGroup" parameterType="com.oauth.dto.AuthServerDTO" >
@@ -1585,4 +1588,37 @@
         AND 
             d.VALVE_STATUS = 'Y';
     </select>
+
+    <select id="getUserIdByHp" parameterType="String" resultMap="member">
+        SELECT 
+            USER_ID AS userId
+        FROM 
+            TBR_OPR_USER
+        WHERE
+            HP = #{hp}
+    </select>
+
+    <select id="getUserIdListByPushToken" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            USER_ID AS userId
+        FROM
+            TBR_OPR_ACCOUNT
+        WHERE
+            PUSH_TOKEN = #{pushToken}
+        AND
+            USER_ID != #{userId}
+    </select>
+
+    <update id="updateLoginStatusByUserIdList" parameterType="java.util.List">
+        UPDATE
+            TBR_OPR_USER
+        SET
+            USER_STATUS_LOG_INOUT = 'N'
+        WHERE
+            USER_ID IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            (#{item.userId})
+        </foreach>
+    </update>
+
 </mapper>

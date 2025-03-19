@@ -1,6 +1,9 @@
 package com.oauth.dto.gw;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,9 +65,13 @@ public class DeviceStatusInfo {
       private String fcLc;
       private String blCf;
       private String h12;
+      private JsonObject h12Json;
       private String h24;
+      private JsonObject h24Json;
       private String wk7;
+      private JsonArray wk7Json;
       private String fwh;
+      private JsonArray fwhJson;
       private String dvSt;
 
       private String fcLcActv;

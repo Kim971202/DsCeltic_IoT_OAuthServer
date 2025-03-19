@@ -207,6 +207,8 @@ public class AuthServerDTO implements Serializable {
     private String parentDevice;
     private String valveStatus;
 
+    private String forcedDefrost;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

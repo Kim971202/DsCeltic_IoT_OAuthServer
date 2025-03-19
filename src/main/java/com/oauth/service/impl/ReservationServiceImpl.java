@@ -136,9 +136,6 @@ public class ReservationServiceImpl implements ReservationService {
             gwMessagingSystem.removeMessageQueue(set24.getFunctionId() + set24.getUuId());
             redisCommand.deleteValues(set24.getUuId());
 
-            if (memberMapper.updatePushToken(params) <= 0)
-                log.info("구글 FCM TOKEN 갱신 실패.");
-
             if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
@@ -173,13 +170,10 @@ public class ReservationServiceImpl implements ReservationService {
 
                 if (onOffFlag == null || onOffFlag.equals("on")) {
                     for (int i = 0; i < userIds.size(); ++i) {
-                        log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-                        if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
-                                .equals("Y")) {
+                        if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")) {
                             conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                             conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                            conMap.put("targetToken",
-                                    memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                             conMap.put("userNickname", userNickname.getUserNickname());
                             conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                             conMap.put("title", "24h");
@@ -187,11 +181,7 @@ public class ReservationServiceImpl implements ReservationService {
                             conMap.put("id", "Set24 ID");
 
                             String jsonString = objectMapper.writeValueAsString(conMap);
-                            log.info("jsonString: " + jsonString);
-
-                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString)
-                                    .getResponseCode().equals("201"))
-                                log.info("PUSH 메세지 전송 오류");
+                            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
                     }
                     common.insertHistory(
@@ -299,9 +289,6 @@ public class ReservationServiceImpl implements ReservationService {
             gwMessagingSystem.removeMessageQueue(set12.getFunctionId() + set12.getUuId());
             redisCommand.deleteValues(set12.getUuId());
 
-            if (memberMapper.updatePushToken(params) <= 0)
-                log.info("구글 FCM TOKEN 갱신 실패.");
-
             if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
@@ -345,13 +332,10 @@ public class ReservationServiceImpl implements ReservationService {
 
                 if (onOffFlag == null || onOffFlag.equals("on")) {
                     for (int i = 0; i < userIds.size(); ++i) {
-                        log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
-                        if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
-                                .equals("Y")) {
+                        if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")) {
                             conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                             conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                            conMap.put("targetToken",
-                                    memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                             conMap.put("userNickname", userNickname.getUserNickname());
                             conMap.put("deviceNick", common.returnDeviceNickname(deviceId, deviceType));
                             conMap.put("title", "12h");
@@ -359,11 +343,7 @@ public class ReservationServiceImpl implements ReservationService {
                             conMap.put("id", "Set12 ID");
 
                             String jsonString = objectMapper.writeValueAsString(conMap);
-                            log.info("jsonString: " + jsonString);
-
-                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString)
-                                    .getResponseCode().equals("201"))
-                                log.info("PUSH 메세지 전송 오류");
+                            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
                     }
 
@@ -509,9 +489,6 @@ public class ReservationServiceImpl implements ReservationService {
             gwMessagingSystem.removeMessageQueue(awakeAlarmSet.getFunctionId() + awakeAlarmSet.getUuId());
             redisCommand.deleteValues(awakeAlarmSet.getUuId());
 
-            if (memberMapper.updatePushToken(params) <= 0)
-                log.info("구글 FCM TOKEN 갱신 실패.");
-
             if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
@@ -544,24 +521,17 @@ public class ReservationServiceImpl implements ReservationService {
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
                 for (int i = 0; i < userIds.size(); ++i) {
-                    if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
-                            .equals("Y")) {
+                    if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")) {
                         conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                         conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                        conMap.put("targetToken",
-                                memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                         conMap.put("userNickname", userNickname.getUserNickname());
                         conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                         conMap.put("title", "fwh");
                         conMap.put("deviceId", deviceId);
                         conMap.put("id", "AwakeAlarmSet ID");
-
                         String jsonString = objectMapper.writeValueAsString(conMap);
-                        log.info("jsonString: " + jsonString);
-
-                        if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode()
-                                .equals("201"))
-                            log.info("PUSH 메세지 전송 오류");
+                        mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                     }
                 }
 
@@ -684,9 +654,6 @@ public class ReservationServiceImpl implements ReservationService {
             gwMessagingSystem.removeMessageQueue(setWeek.getFunctionId() + setWeek.getUuId());
             redisCommand.deleteValues(setWeek.getUuId());
 
-            if (memberMapper.updatePushToken(params) <= 0)
-                log.info("구글 FCM TOKEN 갱신 실패.");
-
             if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
@@ -721,23 +688,17 @@ public class ReservationServiceImpl implements ReservationService {
 
                 if (onOffFlag == null || onOffFlag.equals("on")) {
                     for (int i = 0; i < userIds.size(); ++i) {
-                        if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
-                                .equals("Y")) {
+                        if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")) {
                             conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                             conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                            conMap.put("targetToken",
-                                    memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                            conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                             conMap.put("userNickname", userNickname.getUserNickname());
                             conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                             conMap.put("title", "7wk");
                             conMap.put("deviceId", deviceId);
                             conMap.put("id", "Mode Change ID");
-
                             String jsonString = objectMapper.writeValueAsString(conMap);
-
-                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString)
-                                    .getResponseCode().equals("201"))
-                                log.info("PUSH 메세지 전송 오류");
+                            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
                     }
 
@@ -879,9 +840,6 @@ public class ReservationServiceImpl implements ReservationService {
                 }
                 gwMessagingSystem.removeMessageQueue("setSleepMode" + setSleepMode.getUuId());
 
-                if (memberMapper.updatePushToken(params) <= 0)
-                    log.info("구글 FCM TOKEN 갱신 실패.");
-
                 if (responseMessage != null && responseMessage.equals("2")) {
                     conMap.put("body", "RemoteController WIFI ERROR");
                     msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
@@ -931,20 +889,19 @@ public class ReservationServiceImpl implements ReservationService {
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
                 for (int i = 0; i < userIds.size(); ++i) {
-                    conMap.put("targetToken",
-                            memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
-                    conMap.put("title", "setSleepMode");
-                    conMap.put("powr", params.getPowerStatus());
-                    conMap.put("userNickname", userNickname.getUserNickname());
-                    conMap.put("pushYn", pushYnList.get(i).getFPushYn());
-                    conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
-                    conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap.put("deviceId", deviceId);
-                    String jsonString = objectMapper.writeValueAsString(conMap);
+                    if (memberMapper.getUserLoginoutStatus(userId).getLoginoutStatus().equals("Y")){
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                        conMap.put("title", "setSleepMode");
+                        conMap.put("powr", params.getPowerStatus());
+                        conMap.put("userNickname", userNickname.getUserNickname());
+                        conMap.put("pushYn", pushYnList.get(i).getFPushYn());
+                        conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
+                        conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
+                        conMap.put("deviceId", deviceId);
+                        String jsonString = objectMapper.writeValueAsString(conMap);
 
-                    if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode()
-                            .equals("201"))
-                        log.info("PUSH 메세지 전송 오류");
+                        mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+                    }
                 }
             }
             log.info("result: " + result);
@@ -1041,9 +998,6 @@ public class ReservationServiceImpl implements ReservationService {
 
             gwMessagingSystem.removeMessageQueue("rsPw" + setOnOffPower.getUuId());
 
-            if (memberMapper.updatePushToken(params) <= 0)
-                log.info("구글 FCM TOKEN 갱신 실패.");
-
             if (responseMessage != null && responseMessage.equals("2")) {
                 conMap.put("body", "RemoteController WIFI ERROR");
                 msg = "기기 네트워크 연결 오류. 잠시후 다시 시도하십시오";
@@ -1076,10 +1030,8 @@ public class ReservationServiceImpl implements ReservationService {
                 userNickname.setUserNickname(common.stringToHex(userNickname.getUserNickname()));
 
                 for (int i = 0; i < userIds.size(); ++i) {
-                    if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus()
-                            .equals("Y")) {
-                        conMap.put("targetToken",
-                                memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                    if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")) {
+                        conMap.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                         conMap.put("title", "rsPw");
                         conMap.put("rsPw", params.getPowerStatus());
                         conMap.put("userNickname", userNickname.getUserNickname());
@@ -1088,10 +1040,7 @@ public class ReservationServiceImpl implements ReservationService {
                         conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
                         conMap.put("deviceId", deviceId);
                         String jsonString = objectMapper.writeValueAsString(conMap);
-
-                        if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode()
-                                .equals("201"))
-                            log.info("PUSH 메세지 전송 오류");
+                        mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                     }
                 }
 

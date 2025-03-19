@@ -93,6 +93,10 @@ public class ApiResponse {
         private String ventFanLifeStatus;
         private String deviceId;
         private String errorCode;
+        private String errorVersion;
+        private String errorDatetime;
+        private String groupName;
+        private String deviceNickname;
         private String errorName;
         private String errorMessage;
         private String deviceInfo;

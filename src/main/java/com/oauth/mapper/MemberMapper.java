@@ -35,7 +35,10 @@ public interface MemberMapper {
     public List<AuthServerDTO> getUserIdFromDeviceGroup(String deviceId);
     public List<AuthServerDTO> getValveStatusList(String userId);
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
-    public List<AuthServerDTO> getDeviceIdFromRegist(String userId);
+    public List<AuthServerDTO> getDeviceIdFromRegist(AuthServerDTO param);
+    public List<AuthServerDTO> getUserIdListByPushToken(AuthServerDTO param);
+    public AuthServerDTO getGroupNameByGroupIdx(String groupIdx);
+    public AuthServerDTO getUserIdByHp(String hp);
     public AuthServerDTO getSafeAlarmInfo(AuthServerDTO params);
     public AuthServerDTO getSafeAlarmInfoCount(AuthServerDTO params);
     public AuthServerDTO checkValveStatusByUserId(String userId);
@@ -113,6 +116,7 @@ public interface MemberMapper {
     public int updateGrpNick(AuthServerDTO member);
     public int inviteHouseMember(AuthServerDTO member);
     public int acceptInvite(AuthServerDTO member);
+    public int updateLoginStatusByUserIdList(List<AuthServerDTO> userIdList);
     public int updatePushCodeStatus(List<AuthServerDTO> authServerDTOList);
     public int updatePushCodeStatusSingle(AuthServerDTO param);
     public int updateDeviceLocationNicknameDeviceDetail(AuthServerDTO member);

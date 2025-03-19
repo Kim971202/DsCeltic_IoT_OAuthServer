@@ -100,7 +100,6 @@ public class MobiusController {
         }
 
         String uuId = common.readCon(jsonBody, "uuId");
-
         String errorCode = common.readCon(jsonBody, "erCd");
         String replyErrorCode = common.readCon(jsonBody, "errorCode");
         String errorMessage = common.readCon(jsonBody, "erMg");
@@ -457,6 +456,19 @@ public class MobiusController {
                 // deviceMapper.insertEachRoomStatInfo(dr910WDevice);
 
                 return "DONE";
+            } else if(modelType.equals(modelCodeMap.get("heatpump160"))){
+                dr910WDevice.setH12(common.convertToJsonString(common.readCon(jsonBody, "12h")));
+                dr910WDevice.setWk7(common.convertToJsonString(common.readCon(jsonBody, "7wk")));
+                dr910WDevice.setHtTp(common.readCon(jsonBody, "htTp"));
+                dr910WDevice.setWtTp(common.readCon(jsonBody, "wtTp"));
+                dr910WDevice.setHwTp(common.readCon(jsonBody, "hwTp"));
+                dr910WDevice.setFtMd(common.readCon(jsonBody, "ftMd"));
+                dr910WDevice.setBCdt(common.readCon(jsonBody, "bCdt"));
+                dr910WDevice.setChTp(common.readCon(jsonBody, "chTp"));
+                dr910WDevice.setCwTp(common.readCon(jsonBody, "cwTp"));
+                dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt"));
+                dr910WDevice.setFcLc(common.readCon(jsonBody, "fcLc"));
+                dr910WDevice.setBlCf(common.readCon(jsonBody, "blCf"));
             }
 
             mobiusService.rtstHandler(dr910WDevice);

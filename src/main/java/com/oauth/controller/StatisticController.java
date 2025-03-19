@@ -46,8 +46,7 @@ public class StatisticController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getStartDate()) ||
-                Validator.isNullOrEmpty(params.getEndDate()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getEndDate())) {
 
             response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404 상태 코드 설정
             result.put("message", "홈 IoT가동시간 통계조회 값 오류");
@@ -70,8 +69,7 @@ public class StatisticController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getStartDate()) ||
-                Validator.isNullOrEmpty(params.getEndDate()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getEndDate())) {
 
             response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404 상태 코드 설정
             result.put("message", "홈 IoT가동시간 통계조회 값 오류");
@@ -94,8 +92,7 @@ public class StatisticController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getStartDate()) ||
-                Validator.isNullOrEmpty(params.getEndDate()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getEndDate())) {
 
             response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404 상태 코드 설정
             result.put("message", "각방 보일러 사용 통계조회 값 오류");

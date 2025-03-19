@@ -42,8 +42,7 @@ public class DeviceController {
         if (Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getModelCode())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 컨트롤러 상태 정보 조회 값 오류");
 
         }
@@ -67,8 +66,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getPowerStatus()) ||
                 Validator.isNullOrEmpty(params.getOnOffFlag()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getControlAuthKey())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("전원 On/Off 값 오류");
         }
         return deviceService.doPowerOnOff(params);
@@ -88,8 +86,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getPowerStatus()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getPowerStatus())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("각방 전체 전원 On/Off 값 오류");
         }
         return deviceService.doRoomAllPowerOnOff(params);
@@ -137,8 +134,7 @@ public class DeviceController {
 
         if (Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getControlAuthKey())) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404 상태 코드 설정
             result.put("message", "홈 IoT 컨트롤러 정보 조회-단건 값 오류");
             return result; // 404 Bad Request
@@ -161,8 +157,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
                 Validator.isNullOrEmpty(params.getOnOffFlag()) ||
-                Validator.isNullOrEmpty(params.getModeCode()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getModeCode())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("모드변경 값 오류");
         }
         return deviceService.doModeChange(params);
@@ -182,8 +177,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getModeCode()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getModeCode())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("각방 전체 모드변경 값 오류");
         }
         return deviceService.doRoomAllModeChange(params);
@@ -203,9 +197,45 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getOnOffFlag()) ||
-                Validator.isNullOrEmpty(params.getTemperture()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getTemperture())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("실내온도 설정 값 오류");
+        }
+        return deviceService.doTemperatureSet(params);
+    }
+
+    /** 냉방-실내온도 설정 */
+    @PostMapping(value = "/coldTempertureSet")
+    @ResponseBody
+    public ResponseEntity<?> doColdTempertureSet(HttpSession session, HttpServletRequest request,
+            @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        log.info("[냉방-실내온도 설정]");
+        common.logParams(params);
+
+        if (Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getTemperture())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("냉방-실내온도 설정 값 오류");
+        }
+        return deviceService.doColdTempertureSet(params);
+    }
+
+    /** 강제 제상 모드 설정 */
+    @PostMapping(value = "/forcedDefrost")
+    @ResponseBody
+    public ResponseEntity<?> doForcedDefrost(HttpSession session, HttpServletRequest request, @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws CustomException {
+
+        log.info("[강제 제상 모드 설정]");
+        common.logParams(params);
+
+        if (Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
+                Validator.isNullOrEmpty(params.getForcedDefrost())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("강제 제상 모드 설정 값 오류");
         }
         return deviceService.doTemperatureSet(params);
     }
@@ -224,8 +254,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getOnOffFlag()) ||
-                Validator.isNullOrEmpty(params.getTemperture()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getTemperture())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("난방수온도 설정 값 오류");
         }
         return deviceService.doBoiledWaterTempertureSet(params);
@@ -244,8 +273,7 @@ public class DeviceController {
         if (Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getTemperture()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getTemperture())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("온수온도 설정 값 오류");
 
         }
@@ -265,8 +293,7 @@ public class DeviceController {
         if (Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getModeCode()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getModeCode())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("빠른온수 설정 값 오류");
         }
         return deviceService.doFastHotWaterSet(params);
@@ -285,8 +312,7 @@ public class DeviceController {
         if (Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getLockSet()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getLockSet())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("잠금 모드 설정 값 오류");
         }
         return deviceService.doLockSet(params);
@@ -302,7 +328,7 @@ public class DeviceController {
         log.info("[홈 IoT 컨트롤러 상태 정보 조회 – 홈 화면]");
         common.logParams(params);
 
-        if (Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getPushToken())) {
+        if (Validator.isNullOrEmpty(params.getUserId())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 컨트롤러 상태 정보 조회 - 홈 화면 값 오류");
         }
         return deviceService.doBasicDeviceStatusInfo(params);
@@ -322,8 +348,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getDeviceType()) ||
-                Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getModelCode())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 컨트롤러 에러 정보 조회 값 오류");
         }
         return deviceService.doDeviceErrorInfo(params);
@@ -340,8 +365,7 @@ public class DeviceController {
         common.logParams(params);
 
         if (Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getGroupIdxList()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getGroupIdxList())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 정보 조회 - 리스트 값 오류");
 
         }
@@ -362,8 +386,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
                 Validator.isNullOrEmpty(params.getFanSpeed()) ||
-                Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getModelCode())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 컨트롤러 풍량 단수 설정 - 리스트 값 오류");
         }
         return deviceService.doVentilationFanSpeedSet(params);
@@ -381,8 +404,7 @@ public class DeviceController {
 
         if (Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getControlAuthKey())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 컨트롤러 활성/비활성 정보 요청 오류");
         }
         return deviceService.doActiveStatus(params);
@@ -398,7 +420,7 @@ public class DeviceController {
         log.info("[홈 IoT 컨트롤러 상태 정보 조회 (각방) - 홈 화면 ");
         common.logParams(params);
 
-        if (Validator.isNullOrEmpty(params.getUserId()) || Validator.isNullOrEmpty(params.getPushToken())) {
+        if (Validator.isNullOrEmpty(params.getUserId())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 컨트롤러 상태 정보 조회 (각방) - 홈 화면  오류");
         }
         return deviceService.doBasicRoomDeviceStatusInfo(params);
@@ -416,8 +438,7 @@ public class DeviceController {
 
         if (Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getParentDevice()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getParentDevice())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 컨트롤러 상태 정보 조회 (각방) 오류");
         }
         return deviceService.doRoomDeviceStatusInfo(params);
@@ -435,8 +456,7 @@ public class DeviceController {
 
         if (Validator.isNullOrEmpty(params.getUserId()) ||
                 Validator.isNullOrEmpty(params.getParentDevice()) ||
-                Validator.isNullOrEmpty(params.getDeviceId()) ||
-                Validator.isNullOrEmpty(params.getPushToken())) {
+                Validator.isNullOrEmpty(params.getDeviceId())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("FCNT 요청 호출 오류");
         }
         return deviceService.doCallFcNt(params);

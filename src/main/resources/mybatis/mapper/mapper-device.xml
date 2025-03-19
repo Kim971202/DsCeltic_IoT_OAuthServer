@@ -74,7 +74,6 @@
         </foreach>
     </select>
 
-
     <select id="getDeviceInfoSearchList" parameterType="java.util.List" resultMap="device">
         SELECT
         device.DEVC_MODL_CD AS modelCode,
@@ -1555,5 +1554,31 @@
             SUB_ID = #{deviceId}
     </select>
 
+    <select id="getErrorInfoByDeviceId" parameterType="String" resultMap="device">
+        SELECT 
+            DEVC_NICK AS deviceNickname,
+            GRP_NM AS groupName,
+            PUSH_CONTENT AS errorVersion,
+            PUSH_TITLE AS errorCode,
+            PUSH_DATETIME AS errorDatetime,
+			GRP_NM AS groupName
+        FROM 
+            TBR_OPR_USER_DEVICE_PUSH_INFO a
+        WHERE 
+            DEVC_ID = #{deviceId}
+        AND 
+            PUSH_TYPE = '02'
+        ORDER BY 
+            PUSH_DATETIME DESC
+        LIMIT 1
+    </select>
 
+    <select id="checkDeviceCount" parameterType="String" resultMap="device">
+        SELECT
+            COUNT(*) AS deviceCount
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            GRP_IDX = #{groupIdx}
+    </select>
 </mapper>
