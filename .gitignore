@@ -2,8 +2,6 @@ HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
 src/main/resources/application.properties
 *.class
 ### IntelliJ IDEA ###
@@ -18,7 +16,6 @@ out/
 build/tmp/
 
 # Add this to make sure the build directory is included
-
 launch.json
 settings.json
 build/libs/OAuthServer-0.0.1-SNAPSHOT-plain.jar
