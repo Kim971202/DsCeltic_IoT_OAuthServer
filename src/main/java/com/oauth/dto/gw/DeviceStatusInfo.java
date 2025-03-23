@@ -47,7 +47,10 @@ public class DeviceStatusInfo {
    @JsonInclude(JsonInclude.Include.NON_EMPTY)
    public static class Device {
 
+      private String fcDf;
+      private String otTp;
       private String mfcd;
+      private String rsMd;
       private String rKey;
       private String powr;
       private String opMd;

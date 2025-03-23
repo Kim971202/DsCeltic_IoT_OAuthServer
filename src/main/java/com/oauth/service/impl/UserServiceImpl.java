@@ -111,6 +111,17 @@ public class UserServiceImpl implements UserService {
 
             params.setUserId(userId);
 
+            /*
+             * 요청받은 PUSH_TOKEN 기준 같은 TOKEN 가진 사용자의 로그인 상태를 N으로 수정 한다.
+             * 1. 동일한 PUSH_TOKEN을 가진 USER_ID(요청자 제외) 쿼리 TBR_OPR_ACCOUNT
+             * 2. 이후 TBR_OPR_USER에 로그인 상태 값을 N으로 수정
+             * */
+            List<AuthServerDTO> authServerDTOList = memberMapper.getUserIdListByPushToken(params);
+            log.info(String.valueOf(authServerDTOList.size()));
+            if(!authServerDTOList.isEmpty()){
+                memberMapper.updateLoginStatusByUserIdList(authServerDTOList);
+            }
+
             if (phoneId != null) {
                 // 로그인 시도 하는 사용자가 LogOut 상태일 경우 아래 로직 적용 X
                 if (memberMapper.getUserLoginoutStatus(userId).getLoginoutStatus().equals("Y")) {
@@ -150,17 +161,6 @@ public class UserServiceImpl implements UserService {
 
             params.setAccessToken(token);
             params.setPushToken(pushToken);
-
-            /*
-             * 요청받은 PUSH_TOKEN 기준 같은 TOKEN 가진 사용자의 로그인 상태를 N으로 수정 한다.
-             * 1. 동일한 PUSH_TOKEN을 가진 USER_ID(요청자 제외) 쿼리 TBR_OPR_ACCOUNT
-             * 2. 이후 TBR_OPR_USER에 로그인 상태 값을 N으로 수정
-             * */
-            List<AuthServerDTO> authServerDTOList = memberMapper.getUserIdListByPushToken(params);
-            log.info(String.valueOf(authServerDTOList.size()));
-            if(!authServerDTOList.isEmpty()){
-                memberMapper.updateLoginStatusByUserIdList(authServerDTOList);
-            }
 
             if (memberMapper.updatePushToken(params) <= 0)
                 log.info("구글 FCM TOKEN 갱신 실패.");
@@ -777,16 +777,22 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String responseHp = params.getResponseHp();
-
+        AuthServerDTO userId;
         AuthServerDTO userNickname;
         AuthServerDTO pushToken;
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
+            userId = memberMapper.getUserIdByHp(responseHp);
+            if(userId == null){
+                msg = "사용자 추가 - 초대 실패";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
 
             // 전화번호로 responseUserId를 쿼리하는 쿼리문 추가
-            params.setResponseUserId(memberMapper.getUserIdByHp(responseHp).getUserId());
+            params.setResponseUserId(userId.getUserId());
 
             // 동일한 사용자가 동일한 그룹에 동일한 사용자의 수락 여부가 D인 경우에 초대할 경우 차단한다.
             if (Integer.parseInt(memberMapper.getInviteCountFromInviteStatus(params).getInviteCount()) > 0) {

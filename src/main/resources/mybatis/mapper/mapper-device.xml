@@ -1468,6 +1468,8 @@
             IFNULL(b.INAQ, 0.0) AS inAq,
             IFNULL(b.BLCF, 0.0) AS blCf,
             IFNULL(b.ODHM, '[,]') AS odHm,
+            IFNULL(b.FCDF, '') AS fcDf,
+            IFNULL(b.OTTP, 0.0) AS otTp,
             IFNULL(c.FTMD, '') AS ftMdActv,
             IFNULL(c.FCLC, '') AS fcLcActv,
             IFNULL(c.ECOP, '') AS ecOp,
@@ -1476,7 +1478,7 @@
             IFNULL(c.INCL, '') AS inCl,
             IFNULL(c.ECST, '') AS ecSt,
             IFNULL(c.MFDT, '') AS mfDt
-        FROM 
+        FROM
             TBT_OPR_DEVICE_REGIST a
         INNER JOIN 
             TBR_OPR_DEVICE_STATUS b

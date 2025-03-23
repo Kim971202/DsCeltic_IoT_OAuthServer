@@ -776,21 +776,29 @@ public class DeviceServiceImpl implements DeviceService {
                         eleMap.put("rsPw", value.getRsPw());
                         resultMap.put("rsCf", JSON.toJson(eleMap));
                     }
-                } else if (modelCode.equals("DHR-160")) {
+                } else if (modelCode.equals("DHR-160") || modelCode.equals("DHR-166") || modelCode.equals("DHR-260") || modelCode.equals("DHR-260A")) {
                     resultMap.put("deviceStatus", "01");
                     resultMap.put("modelCategoryCode", "02");
                     for (DeviceStatusInfo.Device value : device) {
                         resultMap.put("rKey", value.getRKey());
                         resultMap.put("powr", value.getPowr());
                         resultMap.put("opMd", value.getOpMd());
-                        resultMap.put("vtSp", value.getVtSp());
-                        resultMap.put("inAq", value.getInAq());
+                        resultMap.put("htTp", value.getHtTp());
+                        resultMap.put("wtTp", value.getWtTp());
+                        resultMap.put("hwTp", value.getHwTp());
+                        resultMap.put("rsMd", "01");
+                        resultMap.put("otTp", "10.0");
+                        resultMap.put("bCdt", value.getBCdt());
+                        resultMap.put("chTp", value.getChTp());
+                        resultMap.put("hwSt", value.getHwSt());
+                        resultMap.put("fcDf", "on");
                         resultMap.put("mfDt", value.getMfDt());
-                        resultMap.put("odHm", value.getOdHm());
 
                         ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
-                        eleMap.put("rsPw", value.getRsPw());
-                        resultMap.put("rsCf", JSON.toJson(eleMap));
+                        eleMap.put("12h", "{ “om\" : \"03\", “sm\" : \"30\"}");
+                        eleMap.put("7wk", "[" + "{ \"wk\":\"0\", \"hs\" : [\"01\", \"18\"] }" + "]");
+                        resultMap.put("rsCf", String.valueOf(eleMap));
+
                     }
                 }
             }
@@ -1016,30 +1024,29 @@ public class DeviceServiceImpl implements DeviceService {
                             params.setControlCodeName("냉밥모드");
                             break;
                         case "21":
-                            params.setControlCodeName("수동-전열환기모드");
+                            params.setControlCodeName("수동-전열환기");
                             break;
                         case "22":
-                            params.setControlCodeName("수동-청정환기모드");
+                            params.setControlCodeName("수동-청정환기");
                             break;
                         case "23":
-                            params.setControlCodeName("수동-실내청정모드");
+                            params.setControlCodeName("수동-실내청정");
                             break;
                         case "24":
-                            params.setControlCodeName("수동-취침운전모드");
+                            params.setControlCodeName("수동-취침운전");
                             break;
                         case "25":
-                            params.setControlCodeName("자동-예약설정모드");
+                            params.setControlCodeName("자동-예약설정");
                             break;
                         case "26":
-                            params.setControlCodeName("자동-외출설정모드");
+                            params.setControlCodeName("자동-외출설정");
                             break;
                         case "27":
-                            params.setControlCodeName("자동-전열환기모드");
+                            params.setControlCodeName("자동-전열환기");
                             break;
                         case "29":
-                            params.setControlCodeName("자동-실내청정모드");
+                            params.setControlCodeName("자동-실내청정");
                             break;
-                        // TODO: 각방, 히트펌프 추가
                         default:
                             params.setControlCodeName("NONE_MODE");
                             break;
@@ -2173,7 +2180,6 @@ public class DeviceServiceImpl implements DeviceService {
          */
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = "N";
         String msg;
 
         String userId = params.getUserId();
@@ -2201,75 +2207,62 @@ public class DeviceServiceImpl implements DeviceService {
             for (AuthServerDTO authServerDTO : groupIdList) {
                 devicesStatusInfo = deviceMapper.getDeviceStatusInfo(authServerDTO.getGroupIdx()); // Return List
                 for (int i = 0; i < devicesStatusInfo.size(); i++) {
-                    if (devicesStatusInfo != null) {
-                        if (!devicesStatusInfo.isEmpty()) {
-                            Map<String, String> data = new HashMap<>();
-                            data.put("rKey", devicesStatusInfo.get(i).getRKey());
-                            data.put("modelCategoryCode", common.getModelCode(
-                                    common.getModelCodeFromDeviceId(devicesStatusInfo.get(i).getDeviceId()).trim()));
-                            data.put("deviceNickname", devicesStatusInfo.get(i).getDeviceNickName());
-                            data.put("groupIdx", devicesStatusInfo.get(i).getGroupIdx());
-                            data.put("groupName", devicesStatusInfo.get(i).getGroupName());
-                            data.put("regSort", String.valueOf(i + 1));
-                            data.put("deviceId", devicesStatusInfo.get(i).getDeviceId());
-                            data.put("latitude", devicesStatusInfo.get(i).getLatitude());
-                            data.put("longitude", devicesStatusInfo.get(i).getLongitude());
-                            data.put("controlAuthKey", devicesStatusInfo.get(i).getRKey());
-                            data.put("tmpRegistKey", devicesStatusInfo.get(i).getTmpRegistKey());
-                            data.put("deviceStatus", devicesStatusInfo.get(i).getDvSt());
-                            data.put("powr", devicesStatusInfo.get(i).getPowr());
-                            data.put("opMd", devicesStatusInfo.get(i).getOpMd());
-                            data.put("htTp", devicesStatusInfo.get(i).getHtTp());
-                            data.put("wtTp", devicesStatusInfo.get(i).getWtTp());
-                            data.put("hwTp", devicesStatusInfo.get(i).getHwTp());
-                            data.put("ftMd", devicesStatusInfo.get(i).getFtMd());
-                            data.put("chTp", devicesStatusInfo.get(i).getChTp());
-                            data.put("bCdt", devicesStatusInfo.get(i).getBCdt());
-                            data.put("mfDt", devicesStatusInfo.get(i).getMfDt());
-                            data.put("hwSt", devicesStatusInfo.get(i).getHwSt());
-                            data.put("fcLc", devicesStatusInfo.get(i).getFcLc());
-                            data.put("blCf", devicesStatusInfo.get(i).getBlCf());
-                            String type24h = common.readCon(devicesStatusInfo.get(i).getH24(), "serviceMd");
-                            if (type24h == null || type24h.isEmpty()) {
-                                data.put("type24h", "");
-                            } else {
-                                data.put("type24h", type24h);
-                            }
-                            data.put("slCd", devicesStatusInfo.get(i).getSlCd());
-                            data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
-                            data.put("inAq", devicesStatusInfo.get(i).getInAq());
-                            data.put("odHm", devicesStatusInfo.get(i).getOdHm());
-                            data.put("ftMdAcTv", devicesStatusInfo.get(i).getFtMdActv());
-                            data.put("fcLcAcTv", devicesStatusInfo.get(i).getFcLcActv());
-                            data.put("ecOpAcTv", devicesStatusInfo.get(i).getEcOp());
-                            data.put("pastAcTv", devicesStatusInfo.get(i).getPast());
-                            data.put("inDrAcTv", devicesStatusInfo.get(i).getInDr());
-                            data.put("inClAcTv", devicesStatusInfo.get(i).getInCl());
-                            data.put("ecStAcTv", devicesStatusInfo.get(i).getEcSt());
-                            appResponse.add(data);
-                        }
+                    Map<String, String> data = new HashMap<>();
+                    data.put("rKey", devicesStatusInfo.get(i).getRKey());
+                    data.put("modelCategoryCode", common.getModelCode(common.getModelCodeFromDeviceId(devicesStatusInfo.get(i).getDeviceId()).trim()));
+                    data.put("deviceNickname", devicesStatusInfo.get(i).getDeviceNickName());
+                    data.put("groupIdx", devicesStatusInfo.get(i).getGroupIdx());
+                    data.put("groupName", devicesStatusInfo.get(i).getGroupName());
+                    data.put("regSort", String.valueOf(i + 1));
+                    data.put("deviceId", devicesStatusInfo.get(i).getDeviceId());
+                    data.put("latitude", devicesStatusInfo.get(i).getLatitude());
+                    data.put("longitude", devicesStatusInfo.get(i).getLongitude());
+                    data.put("controlAuthKey", devicesStatusInfo.get(i).getRKey());
+                    data.put("tmpRegistKey", devicesStatusInfo.get(i).getTmpRegistKey());
+                    data.put("deviceStatus", devicesStatusInfo.get(i).getDvSt());
+                    data.put("powr", devicesStatusInfo.get(i).getPowr());
+                    data.put("opMd", devicesStatusInfo.get(i).getOpMd());
+                    data.put("htTp", devicesStatusInfo.get(i).getHtTp());
+                    data.put("wtTp", devicesStatusInfo.get(i).getWtTp());
+                    data.put("hwTp", devicesStatusInfo.get(i).getHwTp());
+                    data.put("ftMd", devicesStatusInfo.get(i).getFtMd());
+                    data.put("chTp", devicesStatusInfo.get(i).getChTp());
+                    data.put("bCdt", devicesStatusInfo.get(i).getBCdt());
+                    data.put("mfDt", devicesStatusInfo.get(i).getMfDt());
+                    data.put("hwSt", devicesStatusInfo.get(i).getHwSt());
+                    data.put("fcLc", devicesStatusInfo.get(i).getFcLc());
+                    data.put("blCf", devicesStatusInfo.get(i).getBlCf());
+                    String type24h = common.readCon(devicesStatusInfo.get(i).getH24(), "serviceMd");
+                    if (type24h == null || type24h.isEmpty()) {
+                        data.put("type24h", "");
+                    } else {
+                        data.put("type24h", type24h);
                     }
+                    data.put("slCd", devicesStatusInfo.get(i).getSlCd());
+                    data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
+                    data.put("inAq", devicesStatusInfo.get(i).getInAq());
+                    data.put("odHm", devicesStatusInfo.get(i).getOdHm());
+                    data.put("ftMdAcTv", devicesStatusInfo.get(i).getFtMdActv());
+                    data.put("fcLcAcTv", devicesStatusInfo.get(i).getFcLcActv());
+                    data.put("ecOpAcTv", devicesStatusInfo.get(i).getEcOp());
+                    data.put("pastAcTv", devicesStatusInfo.get(i).getPast());
+                    data.put("inDrAcTv", devicesStatusInfo.get(i).getInDr());
+                    data.put("inClAcTv", devicesStatusInfo.get(i).getInCl());
+                    data.put("ecStAcTv", devicesStatusInfo.get(i).getEcSt());
+                    appResponse.add(data);
                 }
             }
 
-            if (appResponse.isEmpty() || appResponse == null) {
+            if (appResponse.isEmpty()) {
                 msg = "기기정보가 없습니다.";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            stringObject = "Y";
+            msg = "기기 상태 정보 조회 - 홈 화면 성공";
+            result.setHomeViewValue(appResponse);
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            if (stringObject.equals("Y")) {
-                msg = "기기 상태 정보 조회 - 홈 화면 성공";
-                result.setHomeViewValue(appResponse);
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            }
-
-            if (stringObject.equals("N")) {
-                msg = "기기 상태 정보 조회 - 홈 화면 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-            }
             redisCommand.deleteValues(uuId);
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);

@@ -7,6 +7,7 @@ spring:
 
   datasource:
      url: jdbc:mysql://3.37.23.88:3306/ds_iot?characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
+#     url: jdbc:mysql://3.37.23.88:3306/ds_iot_test?characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
     #  url: jdbc:mysql://127.0.0.1:3306/dsiot?characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false&verifyServerCertificate=false&useSSL=false
      username: dsiotAppServer
     #  username: root
@@ -47,7 +48,14 @@ server:
 # \uAE30\uAE30 Model Code (\uAD6C\uD615, \uC2E0\uD615)
 device:
   model:
-    code: "{oldModel: ' ESCeco13S', newModel: ' DCR-91/WF', ventilation: ' DCR-47/WF' }"
+    code: "{oldModel: ' ESCeco13S', 
+    newModel: ' DCR-91/WF', 
+    ventilation: ' DCR-47/WF', 
+    heatpump160: ' DHR-160',
+    heatpump166: ' DHR-166',
+    heatpump260: ' DHR-260',
+    heatpump260A: ' DHR-260A'
+    }"
 
 # Server Token
 app:
@@ -57,12 +65,15 @@ app:
   server: # Server Address
     address:
       short:
-        # gw: 127.0.0.1:7579
-         gw: 172.31.50.223:7579
+#        gw: 127.0.0.1:7579
+          gw: 172.31.50.223:7579
+        #  gw: 172.31.57.74:7579
       long:
-        # gw: http://127.0.0.1:10010/AppToGwServer
-        gw: http://172.31.50.223:10010/AppToGwServer
-      # push: http://127.0.0.1:8082/AppServerToPushServer
+#        gw: http://127.0.0.1:10010/AppToGwServer
+#         gw: http://172.31.57.74:10010/AppToGwServer
+         gw: http://172.31.50.223:10010/AppToGwServer
+#      push: http://127.0.0.1:8082/AppServerToPushServer
+#      push: http://172.31.57.74:8082/AppServerToPushServer
       push: http://172.31.50.223:8082/AppServerToPushServer
 
 # Logging
@@ -73,10 +84,9 @@ logging:
       org.hibernate: ERROR  # Hibernate 관련 로그를 ERROR로 설정
       com.zaxxer.hikari: ERROR  # Hikari 관련 로그를 ERROR로 설정
       org.apache.ibatis: ERROR  # MyBatis 관련 로그를 ERROR로 설정
+      org.mybatis: DEBUG
 #    com.zaxxer.hikari.HikariConfig: INFO
 #    com.zaxxer.hikari: TRACE
-#    org.mybatis: DEBUG
-#    org.apache.ibatis: TRACE
   file:
-    path: /home/ubuntu/DsCeltic_IoT_OAuthServer/logs
-    name: oauthserver.log
+     path: /home/ubuntu/DsCeltic_IoT_OAuthServer/logs
+     name: oauthserver.log
