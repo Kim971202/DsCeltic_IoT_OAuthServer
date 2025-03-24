@@ -237,7 +237,7 @@ public class DeviceController {
                 Validator.isNullOrEmpty(params.getForcedDefrost())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("강제 제상 모드 설정 값 오류");
         }
-        return deviceService.doTemperatureSet(params);
+        return deviceService.doForcedDefrost(params);
     }
 
     /** 난방수온도 설정 */
