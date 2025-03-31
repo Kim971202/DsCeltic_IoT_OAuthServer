@@ -1621,4 +1621,55 @@
         </foreach>
     </update>
 
+    <insert id="insertAwayHomeMode" parameterType="com.oauth.dto.AuthServerDTO" >
+        INSERT INTO
+            TBR_OPR_AWAY_HOME_MODE
+        (
+            DEVC_ID,
+            GRP_IDX,
+            LOCATION_RADIUS,
+            LAT,
+            LON,
+            MODI_DATM
+        )
+            VALUES
+        (
+            #{deviceId},
+            #{groupIdx},
+            #{locationRadius},
+            #{latitude},
+            #{longitude},
+            now()
+        )
+    </insert>
+
+    <update id="updateAwayHomeMode" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_AWAY_HOME_MODE
+        SET
+            LOCATION_RADIUS = #{locationRadius},
+            LAT = #{latitude},
+            LON = #{longitude}
+        WHERE
+            DEVC_ID = #{deviceId}
+        AND
+            GRP_IDX = #{groupIdx}
+    </update>
+
+    <select id="getAwayHomeModeInfo" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            DEVC_ID AS deviceId,
+            GRP_IDX AS groupIdx,
+            LOCATION_RADIUS AS locationRadius,
+            LAT AS latitude,
+            LON AS longitude
+        FROM
+            TBR_OPR_AWAY_HOME_MODE
+        WHERE
+            DEVC_ID = #{deviceId}
+        AND
+            GRP_IDX = #{groupIdx}
+        LIMIT 1
+    </select>
+
 </mapper>

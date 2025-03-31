@@ -96,6 +96,8 @@ public class ApiResponse {
         private String errorVersion;
         private String errorDatetime;
         private String groupName;
+        private String groupIdx;
+        private String locationRadius;
         private String deviceNickname;
         private String errorName;
         private String errorMessage;

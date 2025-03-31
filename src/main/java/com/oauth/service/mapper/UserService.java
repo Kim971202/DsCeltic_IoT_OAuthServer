@@ -120,4 +120,9 @@ public interface UserService {
     /** 안전 안심 알람 정보 조회 */
     ResponseEntity<?> doGetSafeAlarmSetInfo(AuthServerDTO params) throws Exception;
 
+    /** 외출/귀가 모드 정보 추가 */
+    ResponseEntity<?> doUpsertAwayHomeMode(AuthServerDTO params) throws Exception;
+
+    /** 외출/귀가 모드 정보 조회 */
+    ResponseEntity<?> doViewAwayHomeMode(AuthServerDTO params) throws Exception;
 }

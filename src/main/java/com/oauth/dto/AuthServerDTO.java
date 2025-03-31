@@ -209,6 +209,8 @@ public class AuthServerDTO implements Serializable {
 
     private String forcedDefrost;
 
+    private String locationRadius;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

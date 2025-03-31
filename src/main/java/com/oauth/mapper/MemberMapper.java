@@ -37,6 +37,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
     public List<AuthServerDTO> getDeviceIdFromRegist(AuthServerDTO param);
     public List<AuthServerDTO> getUserIdListByPushToken(AuthServerDTO param);
+    public AuthServerDTO getAwayHomeModeInfo(AuthServerDTO param);
     public AuthServerDTO getGroupNameByGroupIdx(String groupIdx);
     public AuthServerDTO getUserIdByHp(String hp);
     public AuthServerDTO getSafeAlarmInfo(AuthServerDTO params);
@@ -86,6 +87,8 @@ public interface MemberMapper {
     public int updateDeviceRegist(AuthServerDTO info);
     public int updateUserDevice(AuthServerDTO info);
     public int updateInviteGroup(AuthServerDTO info);
+    public int updateAwayHomeMode(AuthServerDTO info);
+    public int insertAwayHomeMode(AuthServerDTO info);
     public int insertInviteGroup(AuthServerDTO info);
     public int insertUserDevicePushByList(List<AuthServerDTO> info);
     public int insertInviteGroupMember(AuthServerDTO info);

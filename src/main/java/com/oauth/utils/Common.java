@@ -379,7 +379,7 @@ public class Common {
                 Object value = field.get(params);
                 if (value != null && !value.toString().isEmpty()) {
                     if ("userPassword".equals(field.getName())) {
-                        log.info(field.getName() + ": [PROTECTED]"); // 비밀번호는 직접 출력 X
+                        log.info(field.getName() + ": " + value); // 비밀번호는 직접 출력 X
                     } else {
                         log.info(field.getName() + ": " + value);
                     }

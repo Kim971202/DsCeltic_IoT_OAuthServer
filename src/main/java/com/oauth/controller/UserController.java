@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.dto.AuthServerDTO;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
+import com.oauth.response.ApiResponse;
 import com.oauth.service.impl.MobiusService;
 import com.oauth.service.impl.UserServiceImpl;
 import com.oauth.utils.Common;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -751,17 +753,61 @@ public class UserController {
         return userService.doGetSafeAlarmSetInfo(params);
     }
 
-    @PostMapping(value = "/test")
-    public String test(String on) throws Exception {
-        String pushToken = "e9tA2TEcK0jVo4NxZrRMc6:APA91bFRiBFyzWMhDC1yt4Mi1-CN_Mm24eIW1X4MEZ3Q9XiHWs9pbErf9G5rG5rvam-qJknk4CjzeU5__5gITN_7BegsvLX-o2Gz5U4mVMiwNdq4iud0Z1w";
-        HashMap<String, String> pushMap = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * 외출/귀가 모드 정보 추가
+     * */
+    @PostMapping(value = "/upsertAwayHomeMode")
+    @ResponseBody
+    public ResponseEntity<?> doUpsertAwayHomeMode(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws Exception {
 
-        pushMap.put("targetToken", pushToken);
-        pushMap.put("title", "Duplicated_Login");
-        String jsonString = objectMapper.writeValueAsString(pushMap);
-        mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
-        return null;
+        log.info("외출/귀가 모드 정보 추가");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getUserId())              ||
+                Validator.isNullOrEmpty(params.getDeviceId())       ||
+                Validator.isNullOrEmpty(params.getLocationRadius()) ||
+                Validator.isNullOrEmpty(params.getGroupIdx())       ||
+                Validator.isNullOrEmpty(params.getGroupName())      ||
+                Validator.isNullOrEmpty(params.getLongitude())      ||
+                Validator.isNullOrEmpty(params.getLatitude())       ||
+                Validator.isNullOrEmpty(params.getRegistYn())       ||
+                Validator.isNullOrEmpty(params.getUserNickname())   ||
+                Validator.isNullOrEmpty(params.getDeviceNickname())){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("외출/귀가 모드 정보 추가 오류");
+        }
+        return userService.doUpsertAwayHomeMode(params);
     }
 
+    /**
+     * 외출/귀가 모드 정보 조회
+     * */
+    @PostMapping(value = "/viewAwayHomeMode")
+    @ResponseBody
+    public ResponseEntity<?> doViewAwayHomeMode(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws Exception {
+
+        log.info("외출/귀가 모드 정보 조회");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getUserId()) ||
+                Validator.isNullOrEmpty(params.getDeviceId()) ||
+                Validator.isNullOrEmpty(params.getGroupIdx()) ||
+                Validator.isNullOrEmpty(params.getGroupName())){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("외출/귀가 모드 정보 조회 오류");
+        }
+        return userService.doViewAwayHomeMode(params);
+    }
+
+    @PostMapping(value = "/test")
+    public String test(String on) throws Exception {
+        String userId = "yohan1202";
+        String userPassword = "SISCyohan1202@";
+        AuthServerDTO account = memberMapper.getAccountByUserId(userId);
+        String password = account.getUserPassword();
+        System.out.println(password);
+        System.out.println(encoder.matches(userPassword, password));
+        System.out.println(encoder.matches(userPassword, "$2a$10$tlLTDd45Rf9utYezPW1TbuxO6pyG2Qj1BC9/PTHPIPStyBgapReY2"));
+        return null;
+    }
 }

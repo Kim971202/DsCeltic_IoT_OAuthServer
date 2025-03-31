@@ -14,6 +14,7 @@ import com.oauth.utils.CustomException;
 import com.oauth.utils.RedisCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -81,7 +82,10 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 registUserType = account.getRegistUserType();
+                System.out.println("userPassword: " + userPassword);
                 password = account.getUserPassword();
+                System.out.println("password: " + password);
+                System.out.println("encoder.matches(userPassword, password): " + encoder.matches(userPassword, password));
                 if (!encoder.matches(userPassword, password)) {
                     msg = "PW 에러";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
@@ -220,8 +224,9 @@ public class UserServiceImpl implements UserService {
         String userId = params.getUserId();
 
         try {
-
+            System.out.println("RAW userPassword: " + userPassword);
             userPassword = encoder.encode(userPassword);
+            System.out.println("ENCODED userPassword: " + userPassword);
             params.setUserPassword(userPassword);
 
             params.setNewHp(params.getHp());
@@ -892,6 +897,12 @@ public class UserServiceImpl implements UserService {
             // 세대주가 가지고 있는 기기 정보 List
             deviceIdList = memberMapper.getRegistDeviceIdByUserId(params);
 
+            // 사용자 초대 시 기기 없는 경우 예외 처리
+            if(deviceIdList.isEmpty()){
+                msg = "사용자 초대 - 수락 실패";
+                data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            }
             if (inviteAcceptYn.equals("Y")) {
 
                 /*
@@ -2148,7 +2159,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doGetSafeAlarmSetInfo(AuthServerDTO params) throws Exception {
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String msg = "";
+        String msg;
 
         AuthServerDTO safeAlarmCount;
         AuthServerDTO safeAlarmInfo;
@@ -2166,6 +2177,98 @@ public class UserServiceImpl implements UserService {
                 result.setSafeAlarmTime(safeAlarmInfo.getSafeAlarmTime());
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
+
+            log.info("result: " + result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * 외출/귀가 모드 정보 추가
+     * */
+    @Override
+    public ResponseEntity<?> doUpsertAwayHomeMode(AuthServerDTO params) throws Exception {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        String msg = "";
+        String registYn = params.getRegistYn();
+
+        String userNickname = params.getUserNickname();
+        String deviceNickname = params.getDeviceNickname();
+
+        List<AuthServerDTO> userIds;
+
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+
+            if(registYn.equals("Y")) {
+                if (memberMapper.insertAwayHomeMode(params) <= 0 ){
+                    msg = "외출/귀가 모드 정보 추가 실패";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+                msg = "외출/귀가 모드 정보 등록 성공";
+            } else if(registYn.equals("N")) {
+                if (memberMapper.updateAwayHomeMode(params) <= 0 ){
+                    msg = "외출/귀가 모드 정보 수정 실패";
+                    result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
+                msg = "외출/귀가 모드 정보 수정 성공";
+            }
+
+            userIds = memberMapper.getUserIdsByDeviceId(params);
+
+            // 등록 및 수정 시 요청자 별칭을 기반으로 모든 세대원에게 푸시 전송
+            for(AuthServerDTO userId : userIds) {
+                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userId.getUserId()).getPushToken());
+                conMap.put("title", "HOME_AWAY");
+                conMap.put("userNickname", userNickname);
+                conMap.put("deviceNick", deviceNickname);
+                conMap.put("pushYn", "Y");
+            }
+            String jsonString = objectMapper.writeValueAsString(conMap);
+            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            log.info("result: " + result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * 외출/귀가 모드 정보 조회
+     * */
+    @Override
+    public ResponseEntity<?> doViewAwayHomeMode(AuthServerDTO params) throws Exception {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        String msg;
+
+        AuthServerDTO modeInfo;
+
+        try {
+
+            modeInfo = memberMapper.getAwayHomeModeInfo(params);
+            if(modeInfo == null){
+                msg = "외출/귀가 모드 정보 조회 실패";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            result.setGroupIdx(modeInfo.getGroupIdx());
+            result.setLocationRadius(modeInfo.getLocationRadius());
+            result.setLongitude(modeInfo.getLongitude());
+            result.setLatitude(modeInfo.getLatitude());
+
+            msg = "외출/귀가 모드 정보 조회 성공";
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
             log.info("result: " + result);
             return new ResponseEntity<>(result, HttpStatus.OK);
