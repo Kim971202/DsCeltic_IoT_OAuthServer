@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -178,6 +179,15 @@ public class Common {
         Date today = new Date();
         Locale currentLocale = new Locale("KOREAN", "KOREA");
         String pattern = "yyyyMMddHHmmss"; // hhmmss로 시간,분,초만 뽑기도 가능
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern,
+                currentLocale);
+        return formatter.format(today);
+    }
+
+    public String getCurrentDateTimeForEachRoomMode() {
+        Date today = new Date();
+        Locale currentLocale = new Locale("KOREAN", "KOREA");
+        String pattern = "yyyy-MM-dd"; // hhmmss로 시간,분,초만 뽑기도 가능
         SimpleDateFormat formatter = new SimpleDateFormat(pattern,
                 currentLocale);
         return formatter.format(today);
@@ -448,7 +458,7 @@ public class Common {
             String commandFlow, String deviceId, String userId, String pushTitle, String pushContent,
             String deviceType) {
 
-        /**
+        /* *
          * TBR_OPR_USER_DEVICE_PUSH_INFO
          * PUSH_TITLE
          * PUSH_CONTENT
@@ -513,4 +523,21 @@ public class Common {
         }
     }
 
+    public String getColumnForCurrentHour() {
+        int hour = LocalDateTime.now().getHour();  // 0~23
+        return String.format("T_%02d", hour + 1);  // 0시 → T_01, 23시 → T_24
+    }
+
+    public List<String> tValue(String t){
+        if(t == null || t.trim().isEmpty()){
+            return List.of("0", "0", "0", "0", "0", "0");
+        }
+        String[] split = t.split(",");
+        List<String> result = new ArrayList<>(Arrays.asList(split));
+
+        while(result.size() < 6){
+            result.add("0");
+        }
+        return result;
+    }
 }

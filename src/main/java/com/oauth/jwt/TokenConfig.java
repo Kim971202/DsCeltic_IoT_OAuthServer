@@ -87,8 +87,6 @@ public class TokenConfig {
     }
 
     private void setJwsVerifierApp() {
-        log.info("setJwsVerifierApp CALLED");
-
         if (StringUtils.hasText(this.pathAppPublicKey)){
             try {
                 this.jwsVerifierApp = new RSASSAVerifier(keyStoreUtils.readPublicKey(this.pathAppPublicKey));

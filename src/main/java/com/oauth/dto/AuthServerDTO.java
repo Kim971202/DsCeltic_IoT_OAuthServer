@@ -211,6 +211,13 @@ public class AuthServerDTO implements Serializable {
 
     private String locationRadius;
 
+    private String awayStatus;
+    private String awayMode;
+    private String awayValue;
+    private String homeStatus;
+    private String homeMode;
+    private String homeValue;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -18,7 +18,6 @@ public class ApiTokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle (HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.info("ApiTokenInterceptor -> preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)");
 
         // 서버 토큰 정보 송/수신은 request header Authorization key 값을 사용
         String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION);

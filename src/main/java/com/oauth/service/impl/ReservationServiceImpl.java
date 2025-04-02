@@ -83,10 +83,6 @@ public class ReservationServiceImpl implements ReservationService {
             set24.setOnOffFlag(params.getOnOffFlag());
             set24.setFunctionId("24h");
             set24.setUuId(common.getTransactionId());
-            List<String> ls = new ArrayList<>();
-            ls.add(params.getHours());
-            System.out.println(ls.get(0).getClass());
-            System.out.println(params.getType24h());
 
             // 문자열을 리스트로 변환
             hoursString = hoursString.replace("[", "").replace("]", "").replace("\"", "");
@@ -99,15 +95,9 @@ public class ReservationServiceImpl implements ReservationService {
             map.put("md", params.getType24h());
             map.put("hs", hourArray);
 
-            // 결과 출력
-            log.info("결과 출력");
-            log.info("map: " + map);
-            log.info(JSON.toJson(map));
-
             redisValue = params.getUserId() + "," + set24.getFunctionId();
             redisCommand.setValues(set24.getUuId(), redisValue);
-            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId,
-                    JSON.toJson(set24));
+            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(set24));
 
             if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
@@ -117,8 +107,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
-                responseMessage = gwMessagingSystem.waitForResponse(set24.getFunctionId() + set24.getUuId(), TIME_OUT,
-                        TimeUnit.SECONDS);
+                responseMessage = gwMessagingSystem.waitForResponse(set24.getFunctionId() + set24.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if (responseMessage == null)
                     stringObject = "T";
                 else {
@@ -126,8 +115,6 @@ public class ReservationServiceImpl implements ReservationService {
                         stringObject = "Y";
                     else
                         stringObject = "N";
-                    // 응답 처리
-                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
             } catch (InterruptedException e) {
                 log.error("", e);
@@ -198,7 +185,7 @@ public class ReservationServiceImpl implements ReservationService {
                 }
             }
 
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -278,8 +265,6 @@ public class ReservationServiceImpl implements ReservationService {
                         stringObject = "Y";
                     else
                         stringObject = "N";
-                    // 응답 처리
-                    log.info("receiveCin에서의 응답: " + responseMessage);
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -312,7 +297,6 @@ public class ReservationServiceImpl implements ReservationService {
 
                 dbMap.put("hr", params.getWorkPeriod());
                 dbMap.put("mn", params.getWorkTime());
-                log.info(JSON.toJson(dbMap));
 
                 deviceInfo.setH12(common.convertToJsonString(JSON.toJson(dbMap)));
                 deviceInfo.setDeviceId(deviceId);
@@ -361,7 +345,7 @@ public class ReservationServiceImpl implements ReservationService {
                 }
             }
 
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -416,7 +400,6 @@ public class ReservationServiceImpl implements ReservationService {
             awakeAlarmSet.setControlAuthKey(params.getControlAuthKey());
             awakeAlarmSet.setFunctionId("fwh");
             awakeAlarmSet.setUuId(common.getTransactionId());
-            log.info("params.getAwakeList(): " + params.getAwakeList());
 
             JsonNode jsonNode = objectMapper.readTree(common.convertToJsonString(params.getAwakeList()));
             // awakeList 배열을 순회하며 처리
@@ -460,8 +443,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             redisValue = params.getUserId() + "," + awakeAlarmSet.getFunctionId();
             redisCommand.setValues(awakeAlarmSet.getUuId(), redisValue);
-            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId,
-                    JSON.toJson(awakeAlarmSet));
+            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(awakeAlarmSet));
 
             if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
@@ -471,8 +453,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
-                responseMessage = gwMessagingSystem.waitForResponse(
-                        awakeAlarmSet.getFunctionId() + awakeAlarmSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                responseMessage = gwMessagingSystem.waitForResponse(awakeAlarmSet.getFunctionId() + awakeAlarmSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if (responseMessage == null)
                     stringObject = "T";
                 else {
@@ -549,7 +530,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             }
 
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -560,8 +541,6 @@ public class ReservationServiceImpl implements ReservationService {
     /** 주간 예약 */
     @Override
     public ResponseEntity<?> doSetWeek(AuthServerDTO params) throws CustomException {
-
-        log.info("mn:" + params.getMn());
 
         ApiResponse.Data result = new ApiResponse.Data();
         String stringObject = "N";
@@ -599,7 +578,6 @@ public class ReservationServiceImpl implements ReservationService {
             setWeek.setOnOffFlag(params.getOnOffFlag());
             setWeek.setModelCode(modelCode);
 
-            log.info("params.getWeekList(): " + (common.convertToJsonString(params.getWeekList())));
             JsonNode jsonNode = objectMapper.readTree(common.convertToJsonString(params.getWeekList()));
 
             for (int i = 0; i < jsonNode.path("7wk").size(); ++i) {
@@ -625,8 +603,7 @@ public class ReservationServiceImpl implements ReservationService {
             redisValue = params.getUserId() + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
 
-            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId,
-                    JSON.toJson(setWeek));
+            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(setWeek));
 
             if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
@@ -636,8 +613,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
-                responseMessage = gwMessagingSystem.waitForResponse(setWeek.getFunctionId() + setWeek.getUuId(),
-                        TIME_OUT, TimeUnit.SECONDS);
+                responseMessage = gwMessagingSystem.waitForResponse(setWeek.getFunctionId() + setWeek.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if (responseMessage == null)
                     stringObject = "T";
                 else {
@@ -719,7 +695,7 @@ public class ReservationServiceImpl implements ReservationService {
                 redisCommand.deleteValues(setWeek.getUuId());
             }
 
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -810,8 +786,7 @@ public class ReservationServiceImpl implements ReservationService {
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 } else {
                     stringObject = "Y";
-                    response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId,
-                            JSON.toJson(setSleepMode));
+                    response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(setSleepMode));
                     if (!response.getResponseCode().equals("201")) {
                         msg = "중계서버 오류";
                         result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
@@ -820,11 +795,9 @@ public class ReservationServiceImpl implements ReservationService {
                     try {
                         // 메시징 시스템을 통해 응답 메시지 대기
                         gwMessagingSystem.printMessageQueues();
-                        responseMessage = gwMessagingSystem.waitForResponse("setSleepMode" + setSleepMode.getUuId(),
-                                TIME_OUT, TimeUnit.SECONDS);
+                        responseMessage = gwMessagingSystem.waitForResponse("setSleepMode" + setSleepMode.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                         if (responseMessage != null) {
                             // 응답 처리
-                            log.info("receiveCin에서의 응답: " + responseMessage);
                             if (responseMessage.equals("0"))
                                 stringObject = "Y";
                             else
@@ -871,15 +844,13 @@ public class ReservationServiceImpl implements ReservationService {
                 params.setCommandFlow("0");
                 params.setDeviceId(deviceId);
                 params.setUserId(userId);
-                if (memberMapper.insertCommandHistory(params) <= 0)
-                    log.info("DB_ERROR 잠시 후 다시 시도 해주십시오.");
+                memberMapper.insertCommandHistory(params);
 
                 params.setPushTitle("기기제어");
                 params.setPushContent("환기 취침 모드");
                 params.setDeviceId(deviceId);
                 params.setDeviceType("07");
-                if (memberMapper.insertPushHistory(params) <= 0)
-                    log.info("PUSH HISTORY INSERT ERROR");
+                memberMapper.insertPushHistory(params);
 
                 household = memberMapper.getHouseholdByUserId(userId);
                 params.setGroupId(household.getGroupId());
@@ -904,7 +875,7 @@ public class ReservationServiceImpl implements ReservationService {
                     }
                 }
             }
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -978,8 +949,7 @@ public class ReservationServiceImpl implements ReservationService {
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
                 gwMessagingSystem.printMessageQueues();
-                responseMessage = gwMessagingSystem.waitForResponse("rsPw" + setOnOffPower.getUuId(), TIME_OUT,
-                        TimeUnit.SECONDS);
+                responseMessage = gwMessagingSystem.waitForResponse("rsPw" + setOnOffPower.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 if (responseMessage != null) {
                     // 응답 처리
                     if (responseMessage.equals("0"))
@@ -989,7 +959,6 @@ public class ReservationServiceImpl implements ReservationService {
                 } else {
                     // 타임아웃이나 응답 없음 처리
                     stringObject = "T";
-                    log.info("응답이 없거나 시간 초과");
                 }
             } catch (InterruptedException e) {
                 // 대기 중 인터럽트 처리
@@ -1057,7 +1026,7 @@ public class ReservationServiceImpl implements ReservationService {
                         "07");
 
             }
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);

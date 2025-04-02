@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-@Slf4j
 @Component
 public class ScheduledSafeAlarm {
 
@@ -61,7 +60,6 @@ public class ScheduledSafeAlarm {
                     user.setUserNickname(userNicknameMap.get(userId));  // userNickname 설정
                 }
             }
-            log.info("userInfo: " + userInfo);
 
             // 이후 userInfo에 pushToken이 포함된 데이터를 기반으로 작업 수행
             // getTimeCheckCount 값이 1 인경우 (60분 이상) 0 인경우 (60분미만)
@@ -80,8 +78,7 @@ public class ScheduledSafeAlarm {
 
                     String jsonString = objectMapper.writeValueAsString(conMap);
 
-                    if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString).getResponseCode().equals("201"))
-                        log.info("PUSH 메세지 전송 오류");
+                    mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
 
                     // 해당 사용자에게 PUSH 전송 이후 SAFE_ALARM_REG_TIME을 이전 시간값에서 현재 일자로 수정
                     memberMapper.updateSafePushAlarmTime(user);
@@ -100,10 +97,6 @@ public class ScheduledSafeAlarm {
                     );
                 }
             }
-
-        } else {
-            log.info("userInfo is NULL");
         }
     }
-
 }

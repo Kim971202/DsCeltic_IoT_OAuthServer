@@ -19,15 +19,10 @@ public class GwMessagingSystem implements MessagingSystem {
 
     @Override
     public void sendMessage(String destination, String message) {
-
-        log.info("destination: " + destination);
-        log.info("message: " + message);
-
         // 해당 destination에 대한 큐를 가져오거나 생성
         BlockingQueue<String> messageQueue = messageQueues.computeIfAbsent(destination, k -> new LinkedBlockingQueue<>());
-        log.info("destination: " + destination);
         // 메시지 큐에 메시지 추가
-        if(!messageQueue.offer(message)) log.info("!messageQueue.offer(message) IS FALSE");
+        messageQueue.offer(message);
     }
 
     @Override
@@ -43,9 +38,8 @@ public class GwMessagingSystem implements MessagingSystem {
 
     // 현재 큐 목록을 출력하는 함수
     public void printMessageQueues() {
-        log.info("Current Message Queues:");
         for (Map.Entry<String, BlockingQueue<String>> entry : messageQueues.entrySet()) {
-            log.info("Destination: " + entry.getKey() + ", Queue Size: " + entry.getValue().size());
+            log.info("Destination: {}, Queue Size: {}", entry.getKey(), entry.getValue().size());
         }
     }
 

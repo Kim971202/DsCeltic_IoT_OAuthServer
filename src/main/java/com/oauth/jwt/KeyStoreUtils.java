@@ -25,9 +25,6 @@ import java.util.Base64;
 public class KeyStoreUtils {
 
     public String resourceFileToString(String path) throws Exception {
-
-        log.info("KeyStoreUtils -> resourceFileToString(String path)");
-        log.info("Path: " + path);
         return new String(FileCopyUtils.copyToByteArray(new ClassPathResource(path).getInputStream()), "UTF-8");
     }
 
@@ -38,12 +35,8 @@ public class KeyStoreUtils {
      * @throws Exception
      */
     public String createAesEncryptKeyBase64() throws Exception {
-
-        log.info("KeyStoreUtils -> createAesEncryptKeyBase64()");
-
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256);
-
         return Base64.getEncoder().encodeToString(keyGen.generateKey().getEncoded());
     }
 
@@ -54,12 +47,8 @@ public class KeyStoreUtils {
      * @throws Exception
      */
     public SecretKey createAesEncryptKey() throws Exception {
-
-        log.info("KeyStoreUtils -> createAesEncryptKey()");
-
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256);
-
         return keyGen.generateKey();
     }
 
@@ -71,15 +60,9 @@ public class KeyStoreUtils {
      * @throws Exception
      */
     public SecretKey getAesEncryptKey(String path) throws Exception {
-
-        log.info("KeyStoreUtils -> getAesEncryptKey(String path)");
-        log.info("path: " + path);
         String key = resourceFileToString(path);
-
         byte[] decodedKey = Base64.getDecoder().decode(key);
-        SecretKey aesKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
-
-        return aesKey;
+        return new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
     }
 
     /**
@@ -90,13 +73,9 @@ public class KeyStoreUtils {
      * @throws Exception
      */
     public KeyPair createRsaAesEncryptKey() throws Exception {
-
-        log.info("KeyStoreUtils -> createRsaAesEncryptKey()");
-
         RSAKey rsaKey = new RSAKeyGenerator(2048)
                 .keyUse(KeyUse.SIGNATURE)
                 .generate();
-
         return new KeyPair(rsaKey.toPublicKey(), rsaKey.toPrivateKey());
 
     }
@@ -109,13 +88,7 @@ public class KeyStoreUtils {
      * @throws Exception
      */
     public RSAPublicKey getPublicKey(String base64Str) throws Exception {
-
-        log.info("KeyStoreUtils -> getPublicKey(String base64Str)");
-
         byte[] decoded = Base64.getDecoder().decode(base64Str);
-
-        log.info("decoded: " + Arrays.toString(decoded));
-
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
         return (RSAPublicKey) keyFactory.generatePublic(keySpec);
@@ -129,13 +102,7 @@ public class KeyStoreUtils {
      * @throws Exception
      */
     public RSAPrivateKey getPrivateKey(String base64Str) throws Exception {
-
-        log.info("KeyStoreUtils -> getPrivateKey(String base64Str)");
-
         byte[] decoded = Base64.getDecoder().decode(base64Str);
-
-        log.info("decoded: " + Arrays.toString(decoded));
-
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
         return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
@@ -149,14 +116,8 @@ public class KeyStoreUtils {
      * @throws Exception
      */
     public RSAPublicKey readPublicKey(String path) throws Exception {
-
-        log.info("KeyStoreUtils -> readPublicKey(String path) :" + path);
-        log.info("path: " + path);
-
         String publicKeyPEM = resourceFileToString(path);
-
         byte[] encoded = Base64.getDecoder().decode(publicKeyPEM);
-
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
         return (RSAPublicKey) keyFactory.generatePublic(keySpec);
@@ -170,15 +131,8 @@ public class KeyStoreUtils {
      * @throws Exception
      */
     public RSAPrivateKey readPrivateKey(String path) throws Exception {
-
-        log.info("KeyStoreUtils -> readPrivateKey(String path)");
-        log.info("path: " + path);
-
         String privateKeyPEM = resourceFileToString(path);
-        log.info("privateKeyPEM: " + privateKeyPEM);
-
         byte[] encoded = Base64.getDecoder().decode(privateKeyPEM);
-
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
         return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);

@@ -54,7 +54,6 @@ public class MobiusService {
     private static int requestIndex = 0;
 
     public CloseableHttpClient getHttpClient() {
-        log.info("InteractionRequest -> getHttpClient CALLED");
         if(connectionManager == null) {
             connectionManager = new PoolingHttpClientConnectionManager();
             connectionManager.setMaxTotal(500);
@@ -83,9 +82,6 @@ public class MobiusService {
         HttpEntity responseEntity = response.getEntity();
         String responseString = EntityUtils.toString(responseEntity);
         mobiusResponse.setResponseContent(responseString);
-
-        // log.info("FirstHeader Content-Location: " + response.getFirstHeader("Content-Location"));
-        // log.info("LastHeader Content-Location: " + response.getLastHeader("Content-Location"));
 
         log.info("=====START==================================================================================================");
         log.info("HTTP Request URI : " + uri.toString());
@@ -198,7 +194,6 @@ public class MobiusService {
         cinObject.setDefaultValue(cin);
 
         String requestBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(cinObject);
-        // log.info("requestBody: " + requestBody);
         StringEntity entity = new StringEntity(requestBody);
 
         URI uri = new URIBuilder()
@@ -251,8 +246,6 @@ public class MobiusService {
             serverAddr = pushServerAddr;
         }
 
-        log.info("serverAddr: " + serverAddr);
-
         enc.setNet(List.of(3));
 
         sub.setEnc(enc);
@@ -298,10 +291,8 @@ public class MobiusService {
     }
 
     public void actvHandler(DeviceStatusInfo.Device dr910W){
-
         if(deviceMapper.getActiveStautsByDeviceId(dr910W.getDeviceId()) == null) deviceMapper.insertActiveStatus(dr910W);
         else deviceMapper.updateActiveStatus(dr910W);
-
     }
     
     public void rtstHandler(DeviceStatusInfo.Device dr910W){

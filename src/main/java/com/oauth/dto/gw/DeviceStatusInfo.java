@@ -129,5 +129,32 @@ public class DeviceStatusInfo {
       private String latitude;
       private String longitude;
       private String tmpRegistKey;
+      private String regDatetime;
+      private String column;
+
+      private String t01;
+      private String t02;
+      private String t03;
+      private String t04;
+      private String t05;
+      private String t06;
+      private String t07;
+      private String t08;
+      private String t09;
+      private String t10;
+      private String t11;
+      private String t12;
+      private String t13;
+      private String t14;
+      private String t15;
+      private String t16;
+      private String t17;
+      private String t18;
+      private String t19;
+      private String t20;
+      private String t21;
+      private String t22;
+      private String t23;
+      private String t24;
    }
 }

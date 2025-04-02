@@ -773,7 +773,13 @@ public class UserController {
                 Validator.isNullOrEmpty(params.getLatitude())       ||
                 Validator.isNullOrEmpty(params.getRegistYn())       ||
                 Validator.isNullOrEmpty(params.getUserNickname())   ||
-                Validator.isNullOrEmpty(params.getDeviceNickname())){
+                Validator.isNullOrEmpty(params.getDeviceNickname()) ||
+                Validator.isNullOrEmpty(params.getAwayStatus())     ||
+                Validator.isNullOrEmpty(params.getAwayMode())       ||
+                Validator.isNullOrEmpty(params.getAwayValue())      ||
+                Validator.isNullOrEmpty(params.getHomeStatus())     ||
+                Validator.isNullOrEmpty(params.getHomeMode())       ||
+                Validator.isNullOrEmpty(params.getHomeValue())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("외출/귀가 모드 정보 추가 오류");
         }
         return userService.doUpsertAwayHomeMode(params);
@@ -799,6 +805,26 @@ public class UserController {
         return userService.doViewAwayHomeMode(params);
     }
 
+    /**
+     * 외출/귀가 모드 기기 제어
+     * */
+    @PostMapping(value = "/controlAwayHomeMode")
+    @ResponseBody
+    public ResponseEntity<?> doControlAwayHomeMode(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws Exception {
+
+        log.info("외출/귀가 모드 기기 제어");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getUserId())          ||
+                Validator.isNullOrEmpty(params.getDeviceId())   ||
+                Validator.isNullOrEmpty(params.getModeCode())   ||
+                Validator.isNullOrEmpty(params.getTemperture()) ||
+                Validator.isNullOrEmpty(params.getFanSpeed())){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("외출/귀가 모드 기기 제어 오류");
+        }
+        return userService.doControlAwayHomeMode(params);
+    }
     @PostMapping(value = "/test")
     public String test(String on) throws Exception {
         String userId = "yohan1202";

@@ -1517,24 +1517,6 @@
             SERIAL_NO = #{serialNumber}
     </delete>
 
-    <insert id="insertEachRoomStatInfo" parameterType="com.oauth.dto.AuthServerDTO">
-        INSERT INTO
-            TBR_OPR_EACH_ROOM_MODE_INFO
-        (
-            REG_DATM,
-            DEVC_ID,
-            POWR,
-            OPMD
-        )
-        VALUES
-        (
-            now(),
-            #{deviceId},
-            #{powr},
-            #{opMd}
-        )
-    </insert>
-
     <select id="getSubAndParentDeviceInfo" parameterType="String" resultMap="dr910w">
         SELECT 
             a.SUB_ID AS subDevice,
@@ -1583,4 +1565,96 @@
         WHERE
             GRP_IDX = #{groupIdx}
     </select>
+
+    <insert id="insertEachRoomStatInfo" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        INSERT INTO
+            TBR_OPR_EACH_ROOM_MODE_INFO
+        (
+            OPMD,
+            CHTP,
+            REG_DATM,
+            DEVC_ID,
+            PR_ID
+        )
+        VALUES
+        (
+            #{opMd},
+            #{chTp},
+            now(),
+            #{deviceId},
+            #{prId}
+        )
+    </insert>
+
+    <update id="updateEachRoomStatInfo" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE
+            TBR_OPR_EACH_ROOM_MODE_INFO
+        SET
+            ${column} = CONCAT_WS(',', ${column}, #{opMd}),
+            OPMD = #{opMd},
+            CHTP = #{chTp}
+        WHERE
+            DEVC_ID = #{deviceId}
+        AND
+            DATE(REG_DATM) = #{regDatetime}
+    </update>
+
+    <select id="checkEachRoomModeInfo" parameterType="String" resultMap="device">
+        SELECT
+            COUNT(*) AS deviceCount
+        FROM
+            TBR_OPR_EACH_ROOM_MODE_INFO
+        WHERE
+            DEVC_ID = #{deviceId}
+        AND
+            DATE(REG_DATM) = #{regDatetime}
+    </select>
+
+    <select id="selectEachRoomModeInfo" parameterType="String" resultMap="dr910w">
+        SELECT
+            OPMD AS opMd,
+            CHTP AS chTp,
+            REG_DATM AS regDatetime,
+            DEVC_ID AS deviceId,
+            T_01 AS t01,
+            T_02 AS t02,
+            T_03 AS t03,
+            T_04 AS t04,
+            T_05 AS t05,
+            T_06 AS t06,
+            T_07 AS t07,
+            T_08 AS t08,
+            T_09 AS t09,
+            T_10 AS t10,
+            T_11 AS t11,
+            T_12 AS t12,
+            T_13 AS t13,
+            T_14 AS t14,
+            T_15 AS t15,
+            T_16 AS t16,
+            T_17 AS t17,
+            T_18 AS t18,
+            T_19 AS t19,
+            T_20 AS t20,
+            T_21 AS t21,
+            T_22 AS t22,
+            T_23 AS t23,
+            T_24 AS t24
+        FROM
+            TBR_OPR_EACH_ROOM_MODE_INFO
+        WHERE
+            PR_ID = #{deviceId}
+        AND
+            DATE(REG_DATM) = #{regDatetime}
+    </select>
+
+    <select id="getSubDeviceNickname" parameterType="String" resultMap="device">
+        SELECT
+            DV_NM AS deviceNickname
+        FROM
+            TBR_OPR_VALVE_BOX_STATUS
+        WHERE
+            SUB_ID = #{deviceId}
+    </select>
+
 </mapper>

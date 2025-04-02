@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -47,7 +48,7 @@ public class MobiusController {
     @ResponseBody
     public String receiveCin(@RequestBody String jsonBody) throws Exception {
 
-        log.info("GW Received JSON: " + jsonBody);
+        log.info("GW Received JSON: {}", jsonBody);
         ApiResponse.Data result = new ApiResponse.Data();
         deviceMapper.insertJson(jsonBody);
 
@@ -78,14 +79,11 @@ public class MobiusController {
                 deviceMapper.deleteExistPrId(common.getHexSerialNumberFromDeviceId(deviceInfo.getPrId()));
             }
 
-            switch (deviceInfo.getDvNm()) {
-                case "room0":
-                    deviceInfo.setDvNm("거실");
-                    break;
-                default:
-                    String roomId = deviceInfo.getDvNm();
-                    deviceInfo.setDvNm("방" + roomId.substring(roomId.length() - 1));
-                    break;
+            if (deviceInfo.getDvNm().equals("room0")) {
+                deviceInfo.setDvNm("거실");
+            } else {
+                String roomId = deviceInfo.getDvNm();
+                deviceInfo.setDvNm("방" + roomId.substring(roomId.length() - 1));
             }
 
             if (deviceMapper.getEachRoomStautsByDeviceId(hexSerial) == null) {
@@ -119,10 +117,9 @@ public class MobiusController {
         if (!functionId.equals("rtSt") && !functionId.equals("mfSt") && !functionId.equals("opIf") && !functionId.equals("fcNt")) {
             redisValue = redisCommand.getValues(uuId);
         }
-        log.info("uuId: " + uuId);
 
-        log.info("functionId: " + functionId);
-        log.info("redisValue: " + redisValue);
+        log.info("functionId: {}, redisValue: {} ", functionId, redisValue);
+
         if (redisValue == null) {
             log.info("NULL RECEIVED");
             return "NULL RECEIVED";
@@ -147,10 +144,7 @@ public class MobiusController {
             redisValueList = common.getUserIdAndFunctionId(redisCommand.getValues(uuId));
             userId = redisValueList.get(0);
             functionId = redisValueList.get(1);
-            log.info("userId: " + userId);
-            log.info("functionId: " + functionId);
-            log.info("errorCode: " + errorCode);
-            log.info("replyErrorCode: " + replyErrorCode);
+            log.info("userId: {}, functionId:{}, errorCode: {}, replyErrorCode: {}", userId, functionId, errorCode, replyErrorCode);
             gwMessagingSystem.sendMessage(functionId + uuId, errorCode);
 
         } else if (errorCode != null && errorDateTime != null) {
@@ -170,7 +164,6 @@ public class MobiusController {
         } else if (functionId.equals("vfLs")) {
             DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
             deviceInfo.setDeviceId(deviceId);
-
             deviceInfo.setVfLs(common.readCon(jsonBody, "vfLs"));
 
             // DeviceId로 해당 기기의 userId를 찾아서 PushMessage 전송
@@ -178,7 +171,6 @@ public class MobiusController {
 
             AuthServerDTO info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
             for (AuthServerDTO id : userIds) {
-                log.info("쿼리한 UserId: " + id.getUserId());
                 if (memberMapper.getUserLoginoutStatus(id.getUserId()).getLoginoutStatus().equals("Y")) {
                     info.setUserId(id.getUserId());
                     info.setDeviceId(deviceId);
@@ -193,14 +185,11 @@ public class MobiusController {
             AuthServerDTO params = new AuthServerDTO();
 
             Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
-            System.out.println("Non-null fields: " + nonNullFields);
 
             common.setCommandParams(nonNullFields, params);
 
             // 결과 출력
-            log.info("CommandId: " + params.getCommandId());
-            log.info("ControlCode: " + params.getControlCode());
-            log.info("ControlCodeName: " + params.getControlCodeName());
+            log.info("CommandId: {}, ControlCode: {}, ControlCodeName: {} ",params.getCommandId(), params.getControlCode(), params.getControlCodeName());
 
             params.setCommandId(params.getCommandId());
             params.setControlCode(params.getControlCode());
@@ -211,15 +200,13 @@ public class MobiusController {
             params.setDeviceId(deviceInfo.getDeviceId());
             params.setUserId("RC");
 
-            int insertCommandHistoryResult = memberMapper.insertCommandHistory(params);
-            log.info("insertCommandHistoryResult: " + insertCommandHistoryResult);
+            memberMapper.insertCommandHistory(params);
 
             params.setPushTitle("기기 제어");
             params.setPushContent(params.getControlCodeName());
             params.setDeviceId(deviceId);
             params.setDeviceType(common.getModelCode(common.getModelCodeFromDeviceId(deviceId).replace(" ", "")));
-            if (memberMapper.insertPushHistory(params) <= 0)
-                log.info("PUSH HISTORY INSERT ERROR");
+            memberMapper.insertPushHistory(params);
 
         } else if (functionId.equals("mfSt")) {
 
@@ -283,7 +270,7 @@ public class MobiusController {
 
             deviceInfo.setFwh(common.readCon(jsonBody, "fwh"));
 
-            int rcUpdateResult = 0;
+            int rcUpdateResult;
 
             // 각방의 경우 저장하는 테이블 변경
             String subDeviceNickname = "";
@@ -300,7 +287,8 @@ public class MobiusController {
             } else {
                 rcUpdateResult = deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
             }
-            log.info("rcUpdateResult: " + rcUpdateResult);
+
+            log.info("rcUpdateResult: {}", rcUpdateResult);
 
             AuthServerDTO info = deviceMapper.getDeviceNicknameByDeviceId(deviceId);
             if (!subDeviceNickname.isEmpty()) {
@@ -311,7 +299,6 @@ public class MobiusController {
             List<AuthServerDTO> userIds = memberMapper.getAllUserIdsByDeviceId(deviceId);
 
             for (AuthServerDTO id : userIds) {
-                log.info("쿼리한 UserId: " + id.getUserId());
                 if (memberMapper.getUserLoginoutStatus(id.getUserId()).getLoginoutStatus().equals("Y")) {
                     info.setUserId(id.getUserId());
                     info.setDeviceId(deviceId);
@@ -332,14 +319,12 @@ public class MobiusController {
 
             if (!common.readCon(jsonBody, "mfCd").equals("acTv")) {
                 Map<String, Object> nonNullFields = common.getNonNullFields(deviceInfo);
-                log.info("Non-null fields: " + nonNullFields);
+                log.info("Non-null fields: {}", nonNullFields);
 
                 common.setCommandParams(nonNullFields, params);
 
                 // 결과 출력
-                log.info("CommandId: " + params.getCommandId());
-                log.info("ControlCode: " + params.getControlCode());
-                log.info("ControlCodeName: " + params.getControlCodeName());
+                log.info("CommandId: {}, ControlCode: {}, ControlCodeName: {}", params.getCommandId(), params.getControlCode(), params.getControlCodeName());
 
                 params.setCommandId(params.getCommandId());
                 params.setControlCode(params.getControlCode());
@@ -350,15 +335,14 @@ public class MobiusController {
                 params.setDeviceId(deviceInfo.getDeviceId());
 
                 int insertCommandHistoryResult = memberMapper.insertCommandHistory(params);
-                log.info("insertCommandHistoryResult: " + insertCommandHistoryResult);
+                log.info("insertCommandHistoryResult: {}", insertCommandHistoryResult);
             }
 
             params.setPushTitle("기기 제어");
             params.setPushContent(params.getControlCodeName());
             params.setDeviceId(deviceId);
             params.setDeviceType(common.getModelCode(common.getModelCodeFromDeviceId(deviceId).replace(" ", "")));
-            if (memberMapper.insertPushHistory(params) <= 0)
-                log.info("PUSH HISTORY INSERT ERROR");
+            memberMapper.insertPushHistory(params);
 
         } else if (functionId.equals("rtSt")) {
 
@@ -410,9 +394,7 @@ public class MobiusController {
                 dr910WDevice.setRsPw(common.convertToJsonString(common.readCon(jsonBody, "rsPw")));
                 dr910WDevice.setVfLs(common.readCon(jsonBody, "vfLs"));
                 dr910WDevice.setVtSp(common.readCon(jsonBody, "vtSp"));
-                // dr910WDevice.setInAq(common.readCon(jsonBody, "inAq"));
                 dr910WDevice.setOdHm(common.readCon(jsonBody, "odHm"));
-                System.out.println("dr910WDevice: " + dr910WDevice.getOdHm());
                 String inAq = common.readCon(jsonBody, "inAq");
                 dr910WDevice.setInAq(inAq);
 
@@ -436,24 +418,19 @@ public class MobiusController {
                 dr910WDevice.setChTp(common.readCon(jsonBody, "chTp"));
                 dr910WDevice.setTargetDeviceId(hexSerial);
                 deviceMapper.updateEachRoomStatus(dr910WDevice);
-                /*
-                 * CREATE TABLE `tbr_opr_each_room_mode_info` (
-                 * `REG_DATM` datetime NOT NULL,
-                 * `PR_ID` varchar(200) DEFAULT NULL,
-                 * `SUB_ID` varchar(200) DEFAULT NULL,
-                 * `PR_DEVC_NICK` varchar(100) DEFAULT NULL,
-                 * `SUB_DEVC_NICK` varchar(100) DEFAULT NULL,
-                 * `OPMD` varchar(2) DEFAULT NULL,
-                 * `POWR` varchar(2) DEFAULT NULL,
-                 * `HTTP` varchar(2) DEFAULT NULL,
-                 * `HWTP` varchar(2) DEFAULT NULL,
-                 * `CHTP` varchar(2) DEFAULT NULL,
-                 * PRIMARY KEY (`REG_DATM`)
-                 * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-                 * 
-                 */
-                // deviceMapper.getSubAndParentDeviceInfo();
-                // deviceMapper.insertEachRoomStatInfo(dr910WDevice);
+
+                String prId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
+
+                dr910WDevice.setPrId(prId);
+                dr910WDevice.setRegDatetime(common.getCurrentDateTimeForEachRoomMode());
+
+                // TBR_OPR_EACH_ROOM_MODE_INFO 테이블에 해당 일에 해당 기기가 있는지 확인 (없으면 INSERT 후 로직 진행)
+                if(deviceMapper.checkEachRoomModeInfo(dr910WDevice).getDeviceCount().equals("0")){
+                    deviceMapper.insertEachRoomStatInfo(dr910WDevice);
+                }
+
+                dr910WDevice.setColumn(common.getColumnForCurrentHour());
+                deviceMapper.updateEachRoomStatInfo(dr910WDevice);
 
                 return "DONE";
             } else if(modelType.equals(modelCodeMap.get("heatpump160"))){

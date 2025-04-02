@@ -11,9 +11,9 @@ public class MemoryMonitor {
         long usedMemory = totalMemory - freeMemory;
         long maxMemory = runtime.maxMemory();
 
-        log.info("Used Memory: " + usedMemory / (1024 * 1024) + " MB");
-        log.info("Free Memory: " + freeMemory / (1024 * 1024) + " MB");
-        log.info("Total Memory: " + totalMemory / (1024 * 1024) + " MB");
-        log.info("Max Memory: " + maxMemory / (1024 * 1024) + " MB");
+        log.info("Used Memory: {} MB", usedMemory / (1024 * 1024));
+        log.info("Free Memory: {} MB", freeMemory / (1024 * 1024));
+        log.info("Total Memory: {} MB", totalMemory / (1024 * 1024));
+        log.info("Max Memory: {} MB", maxMemory / (1024 * 1024));
     }
 }

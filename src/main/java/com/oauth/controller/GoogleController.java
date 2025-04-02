@@ -61,9 +61,6 @@ public class GoogleController {
         String functionId = common.readCon(jsonBody, "functionId");
         String deviceId = common.readCon(jsonBody, "deviceId");
         String[] deviceArray = deviceId.split("\\.");
-       // [0, 2, 481, 1, 1, 2045534365636f313353, 20202020303833413844433645333841] - deviceArray
-
-        log.info("userId:{}, functionId:{}, deviceId:{}, value:{}", userId, functionId, deviceId, value);
 
         if(functionId.equals("powr")) {
             conMap.put("powerStatus", value);
@@ -108,67 +105,7 @@ public class GoogleController {
         conMap.put("functionId", functionId);
         conMap.put("uuId", common.getTransactionId());
 
-
-        System.out.println("JSON.toJson(conMap): " + JSON.toJson(conMap, true));
-
-        String redisValue = userId + "," + "functionCode";
-        // redisCommand.setValues(conMap.get("uuId"), redisValue);
         mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
-
-
-        // TODO: 예약의 경우 opMd 후 예약 SET 까지 처리 해야 RC 화면 변경 가능 (구형 기준)
-        // 10 - 24시간
-        // 11 - 반복예약
-        // 12 - 주간예약
-        DeviceStatusInfo.Device deviceInfo = deviceMapper.getSingleDeviceStauts(deviceId);
-        // ObjectMapper 인스턴스 생성
-        ObjectMapper objectMapper = new ObjectMapper();
-        ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<String, Object>();
-
-        if(value.equals("11")){
-            Set12 set12 = new Set12();
-
-            try {
-                JsonNode jsonNode = objectMapper.readTree(deviceInfo.getH12());
-                workPeriod = jsonNode.get("hr").asText();
-                workTime = jsonNode.get("mn").asText();
-            } catch (Exception e){
-                log.error("", e);
-            }
-            set12.setAccessToken(common.getTransactionId());
-            set12.setUserId(userId);
-            set12.setDeviceId(deviceId);
-            set12.setControlAuthKey("0000");
-            set12.setWorkPeriod(workPeriod);
-            set12.setWorkTime(workTime);
-            set12.setOnOffFlag("of");
-            set12.setFunctionId("12h");
-            set12.setUuId(common.getTransactionId());
-
-            mobiusService.createCin(deviceArray[6], userId, JSON.toJson(set12));
-        } else if(value.equals("10")){
-            Set24 set24 = new Set24();
-
-            try {
-                JsonNode jsonNode = objectMapper.readTree(deviceInfo.getH24());
-                md = jsonNode.get("md").asText();
-                hs = jsonNode.get("hs").asText();
-
-            } catch (Exception e){
-                log.error("", e);
-            }
-            set24.setAccessToken(common.getTransactionId());
-            set24.setUserId(userId);
-            set24.setDeviceId(deviceId);
-            set24.setControlAuthKey("0000");
-            set24.setHours(hs);
-            set24.setType24h(md);
-            set24.setOnOffFlag("on");
-            set24.setFunctionId("24h");
-            set24.setUuId(common.getTransactionId());
-
-            mobiusService.createCin(deviceArray[6], userId, JSON.toJson(set24));
-        }
 
         return "OK";
     }

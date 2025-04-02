@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class ApiResponse {
@@ -78,6 +79,7 @@ public class ApiResponse {
         private Object noticeInfo;
         private Object groupInfo;
         private Object errorInfo;
+        private Object StataInfo;
         private String mobiusResponseCode;
         private String latitude;
         private String longitude;
@@ -104,6 +106,12 @@ public class ApiResponse {
         private String deviceInfo;
         private String safeAlarmTime;
         private String isEnd;
+        private String awayStatus;
+        private String awayMode;
+        private String awayValue;
+        private String homeStatus;
+        private String homeMode;
+        private String homeValue;
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);
@@ -196,6 +204,15 @@ public class ApiResponse {
             private String errorCode;
             private String errorDateTime;
             private String serialNumber;
+        }
+
+        @Getter
+        @Setter
+        public static class StataInfo {
+            private String subDeviceNickname;
+            private String opMd;
+            private String chTp;
+            private HashMap<String, Object> timeInfo;
         }
         @Override
         public String toString() {

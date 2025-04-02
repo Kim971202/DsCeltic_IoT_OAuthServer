@@ -29,13 +29,16 @@ public interface DeviceMapper {
     public List<String> getDeviceIdByDeviceModelCode();
     public List<String> getInviteGroupIdxList();
     public List<String> getRegistGroupIdxList();
+    public List<DeviceStatusInfo.Device> selectEachRoomModeInfo(DeviceStatusInfo.Device device);
     public List<DeviceStatusInfo.Device> getDeviceStatusInfo(String groupIdx);
     public List<DeviceStatusInfo.Device> getDetailedValveStatus(String deviceId);
     public List<DeviceStatusInfo.Device> getValveStatusByParentId(String deviceId);
     public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);
     public List<DeviceStatusInfo.Device> getActiveStauts(List<String> serialNumber);
     public List<AuthServerDTO> getCheckedDeviceExist(String deviceId);
+    public AuthServerDTO getSubDeviceNickname(String groupIdx);
     public AuthServerDTO checkDeviceCount(String groupIdx);
+    public AuthServerDTO checkEachRoomModeInfo(DeviceStatusInfo.Device device);
     public AuthServerDTO getSingleSerialNumberBySubDeviceId(String deviceId);
     public AuthServerDTO getParentIdBySubId(String deviceId);
     public AuthServerDTO getDeviceIdFromVentilationAirInfo(String deviceId);
@@ -90,12 +93,13 @@ public interface DeviceMapper {
     public int updateDeviceStatusFromApplication(DeviceStatusInfo.Device device);
     public int insertJson(String jsonBody);
     public int updateSleepMode(AuthServerDTO params);
+    public int updateEachRoomStatInfo(DeviceStatusInfo.Device device);
     public AuthServerDTO checkDeviceAuthkeyExist(AuthServerDTO params);
     public int updateUserDevice(AuthServerDTO params);
     public int updateDeviceDetail(AuthServerDTO params);
     public int updateDeviceRegist(AuthServerDTO params);
     public int insertFristDeviceUser(AuthServerDTO params);
     public int insertActiveOldDevice(AuthServerDTO params);
-    public int insertEachRoomStatInfo(AuthServerDTO params);
+    public int insertEachRoomStatInfo(DeviceStatusInfo.Device device);
     // TBR_FIRST_DEVICE_USER
 }

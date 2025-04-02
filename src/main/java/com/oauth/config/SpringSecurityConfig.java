@@ -16,7 +16,6 @@ import org.springframework.security.web.firewall.HttpFirewall;
 
 import javax.servlet.http.HttpServletResponse;
 
-@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -40,7 +39,7 @@ public class SpringSecurityConfig {
                 .and()
                 .oauth2Login() // OAuth2 로그인 설정 시작점
                 .failureHandler((request, response, exception) -> {
-                    // TODO: Exception 처리 필요
+                    // Exception 처리 필요
                     if (exception instanceof Exception) {
                         response.sendRedirect("/finish");
                     } else {
@@ -66,7 +65,6 @@ public class SpringSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> {
-            log.info("WebSecurityConfig configure(WebSecurity web) CALLED");
             web.httpFirewall(allowSemicolonHttpFirewall());
             web.ignoring()
                     .antMatchers("/", "/www/**", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.gif", "/**/*.svg", "/**/*.ico", "/**/*.ttf", "/**/*.woff", "/**/*.otf"); // allow anonymous resource requests

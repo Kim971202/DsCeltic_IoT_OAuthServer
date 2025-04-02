@@ -3,7 +3,7 @@ package com.oauth.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oauth.constants.MobiusResponse;
 import com.oauth.dto.AuthServerDTO;
-import com.oauth.dto.gw.DeviceStatusInfo;
+import com.oauth.dto.gw.*;
 import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.message.GwMessagingSystem;
@@ -11,10 +11,10 @@ import com.oauth.response.ApiResponse;
 import com.oauth.service.mapper.UserService;
 import com.oauth.utils.Common;
 import com.oauth.utils.CustomException;
+import com.oauth.utils.JSON;
 import com.oauth.utils.RedisCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doLogin(String userId, String userPassword, String phoneId, String pushToken)
             throws CustomException {
 
-        log.info("phoneId: " + phoneId);
         String userNickname;
         String password;
         String registUserType;
@@ -82,10 +81,7 @@ public class UserServiceImpl implements UserService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             } else {
                 registUserType = account.getRegistUserType();
-                System.out.println("userPassword: " + userPassword);
                 password = account.getUserPassword();
-                System.out.println("password: " + password);
-                System.out.println("encoder.matches(userPassword, password): " + encoder.matches(userPassword, password));
                 if (!encoder.matches(userPassword, password)) {
                     msg = "PW 에러";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1003, msg);
@@ -108,7 +104,6 @@ public class UserServiceImpl implements UserService {
                 result.setDeviceInfo("Y");
 
             token = common.createJwtToken(userId, "NORMAL", "Login");
-            log.info("Token: " + token);
             result.setRegistUserType(registUserType);
             result.setAccessToken(token);
             result.setUserNickname(userNickname);
@@ -121,7 +116,6 @@ public class UserServiceImpl implements UserService {
              * 2. 이후 TBR_OPR_USER에 로그인 상태 값을 N으로 수정
              * */
             List<AuthServerDTO> authServerDTOList = memberMapper.getUserIdListByPushToken(params);
-            log.info(String.valueOf(authServerDTOList.size()));
             if(!authServerDTOList.isEmpty()){
                 memberMapper.updateLoginStatusByUserIdList(authServerDTOList);
             }
@@ -137,9 +131,7 @@ public class UserServiceImpl implements UserService {
                             conMap.put("targetToken", memberMapper.getPushTokenByUserId(userId).getPushToken());
                             conMap.put("title", "Duplicated_Login");
                             String jsonString = objectMapper.writeValueAsString(conMap);
-                            if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString)
-                                    .getResponseCode().equals("201"))
-                                log.info("PUSH 메세지 전송 오류");
+                            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
                     }
                 }
@@ -150,8 +142,7 @@ public class UserServiceImpl implements UserService {
             // TBR_OPR_USER 테이블의 USER_STATUS_LOG_INOUT의 값을 Y
             info.setUserId(userId);
             info.setLoginoutStatus("Y");
-            if (memberMapper.updateLoginoutStatus(info) <= 0)
-                log.info("LOGIN 상태 Y로 변경 실패 .");
+            memberMapper.updateLoginoutStatus(info);
 
             msg = "로그인 성공";
 
@@ -166,13 +157,11 @@ public class UserServiceImpl implements UserService {
             params.setAccessToken(token);
             params.setPushToken(pushToken);
 
-            if (memberMapper.updatePushToken(params) <= 0)
-                log.info("구글 FCM TOKEN 갱신 실패.");
-            if (memberMapper.updateLoginDatetime(params) <= 0)
-                log.info("LOGIN_INFO_UPDATE_ERROR");
+            memberMapper.updatePushToken(params);
+            memberMapper.updateLoginDatetime(params);
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -202,7 +191,7 @@ public class UserServiceImpl implements UserService {
             msg = "회원 로그아웃 성공";
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -216,7 +205,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> doRegist(AuthServerDTO params) throws CustomException {
 
-        ResponseEntity<?> result = null;
         ApiResponse.Data data = new ApiResponse.Data();
         String userPassword = params.getUserPassword();
         String msg;
@@ -224,9 +212,7 @@ public class UserServiceImpl implements UserService {
         String userId = params.getUserId();
 
         try {
-            System.out.println("RAW userPassword: " + userPassword);
             userPassword = encoder.encode(userPassword);
-            System.out.println("ENCODED userPassword: " + userPassword);
             params.setUserPassword(userPassword);
 
             params.setNewHp(params.getHp());
@@ -239,32 +225,31 @@ public class UserServiceImpl implements UserService {
             if (memberMapper.insertAccount(params) <= 0) {
                 msg = "회원가입 실패";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             if (memberMapper.insertMember(params) <= 0) {
                 msg = "회원가입 실패";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             if (memberMapper.insertHouseholder(params) <= 0) {
                 msg = "회원가입 실패";
                 data.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                return new ResponseEntity<>(result, HttpStatus.OK);
+                return new ResponseEntity<>(data, HttpStatus.OK);
             }
 
             msg = "회원가입 성공";
 
             token = common.createJwtToken(userId, "NORMAL", "Regist");
-            log.info("Token: " + token);
             data.setAccessToken(token);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {} ", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (CustomException e) {
             log.error("", e);
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             log.error("", e);
             throw new RuntimeException(e);
@@ -299,10 +284,9 @@ public class UserServiceImpl implements UserService {
             }
 
             data.setDuplicationYn(stringObject);
-            log.info("data: " + data);
+            log.info("data: {} ", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             log.error("", e);
             return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
         }
@@ -333,7 +317,7 @@ public class UserServiceImpl implements UserService {
 
             data.setUserIdList(userId);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {} ", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -371,7 +355,7 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_1018, msg);
 
-            log.info("data: " + data);
+            log.info("data: {}", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -407,7 +391,7 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_1018, msg);
 
-            log.info("data: " + data);
+            log.info("data: {} ", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -441,7 +425,7 @@ public class UserServiceImpl implements UserService {
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {} ",  data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -507,8 +491,7 @@ public class UserServiceImpl implements UserService {
 
             // 2
             for (AuthServerDTO authServerDTO1 : deviceIdList) {
-                List<AuthServerDTO> authServerDTOList = deviceMapper
-                        .getCheckedDeviceExist(authServerDTO1.getDeviceId());
+                List<AuthServerDTO> authServerDTOList = deviceMapper.getCheckedDeviceExist(authServerDTO1.getDeviceId());
                 // 3
                 for (AuthServerDTO authServerDTO2 : authServerDTOList) {
                     memberMapper.deleteControllerMapping(authServerDTO2);
@@ -527,7 +510,7 @@ public class UserServiceImpl implements UserService {
 
             msg = "그룹 정보 삭제 성공";
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {} ", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -567,7 +550,7 @@ public class UserServiceImpl implements UserService {
             msg = "사용자 그룹 명칭 변경 성공";
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            log.info("data: " + data);
+            log.info("data: {}", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -610,7 +593,7 @@ public class UserServiceImpl implements UserService {
             msg = "사용자 그룹 생성 성공";
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {}", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("error", e);
@@ -661,7 +644,7 @@ public class UserServiceImpl implements UserService {
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {} ", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -713,7 +696,7 @@ public class UserServiceImpl implements UserService {
                     ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_1018, msg);
 
-            log.info("data: " + data);
+            log.info("data: {}", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -743,8 +726,7 @@ public class UserServiceImpl implements UserService {
                 for (AuthServerDTO authServerDTO : userIdList) {
                     HashMap<String, String> userMap = new HashMap<>();
                     String household = "N";
-                    if (authServerDTO.getUserId().equals(authServerDTO.getGroupId()))
-                        household = "Y";
+                    if (authServerDTO.getUserId().equals(authServerDTO.getGroupId())) household = "Y";
                     userMap.put("userId", authServerDTO.getUserId());
                     userMap.put("userNickname", authServerDTO.getUserNickname());
                     userMap.put("householder", household);
@@ -763,7 +745,7 @@ public class UserServiceImpl implements UserService {
 
             data.setUser(user);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {}", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (CustomException e) {
             log.error("", e);
@@ -857,7 +839,7 @@ public class UserServiceImpl implements UserService {
                         ? ApiResponse.ResponseType.HTTP_200
                         : ApiResponse.ResponseType.CUSTOM_1018, msg);
 
-                log.info("data: " + data);
+                log.info("data: {} ", data);
                 return new ResponseEntity<>(data, HttpStatus.OK);
             } else {
                 msg = "초대 횟수 초과";
@@ -988,7 +970,7 @@ public class UserServiceImpl implements UserService {
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {}", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -1037,7 +1019,7 @@ public class UserServiceImpl implements UserService {
 
             data.setInvitation(invitationList);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {}", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (CustomException e) {
             log.error("", e);
@@ -1055,7 +1037,6 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String delUserId = params.getDelUserId();
-        String userId = params.getUserId();
         String groupIdx = params.getGroupIdx();
         List<AuthServerDTO> deviceIdList;
         List<AuthServerDTO> inputList;
@@ -1099,7 +1080,7 @@ public class UserServiceImpl implements UserService {
             }
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {}", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -1166,7 +1147,7 @@ public class UserServiceImpl implements UserService {
                 if (memberMapper.updatePushCodeStatusSingle(pushInfo) > 0) {
                     msg = "기기 알림 설정 성공";
                     data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                    log.info("data: " + data);
+                    log.info("data: {}", data);
                     return new ResponseEntity<>(data, HttpStatus.OK);
                 }
             } else {
@@ -1186,7 +1167,7 @@ public class UserServiceImpl implements UserService {
             msg = "기기 알림 설정 성공";
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {}", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (CustomException e) {
             log.error("", e);
@@ -1211,9 +1192,6 @@ public class UserServiceImpl implements UserService {
         String searchFlag = params.getSearchFlag();
 
         try {
-
-            log.info("00-단건, 01-전체");
-
             // "push" 부분을 표현하는 List 생성
             List<Map<String, String>> pushList = new ArrayList<>();
 
@@ -1321,7 +1299,7 @@ public class UserServiceImpl implements UserService {
             resultMap.put("resultCode", "200");
             resultMap.put("resultMsg", "기기 알림 정보 조회 성공");
 
-            log.info("resultMap: " + resultMap);
+            log.info("resultMap: {}", resultMap);
             return resultMap;
         } catch (CustomException e) {
             log.error("", e);
@@ -1388,12 +1366,10 @@ public class UserServiceImpl implements UserService {
             memberMapper.updateDeviceRegist(params);
 
             // 5. TBR_OPR_USER_DEVICE USER_ID 업데이트
-            if (memberMapper.updateUserDevice(params) <= 0)
-                log.info("사용자(세대주) 강제탈퇴 실패.");
+            memberMapper.updateUserDevice(params);
 
             // 7. TBR_OPR_USER_INVITE_STATUS 테이블에서 세대주 관련 초대 그록 삭제
-            if (memberMapper.deleteInviteStatusByHouseholder(params) <= 0)
-                log.info("사용자(세대주) 강제탈퇴 실패.");
+            memberMapper.deleteInviteStatusByHouseholder(params);
 
             msg = "사용자(세대주) 탈퇴 성공";
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -1455,7 +1431,7 @@ public class UserServiceImpl implements UserService {
             msg = "홈 IoT 서비스 회원 탈퇴 성공";
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {}", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (CustomException e) {
             log.error("", e);
@@ -1478,7 +1454,7 @@ public class UserServiceImpl implements UserService {
             if (!deviceMapper.checkValveStatus(params).getDeviceCount().equals("0")) {
                 msg = "홈 IoT 컨트롤러 인증 성공";
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-                log.info("result: " + result);
+                log.info("result: {}", result);
                 return new ResponseEntity<>(result, HttpStatus.OK); // 즉시 종료
             }
 
@@ -1491,7 +1467,7 @@ public class UserServiceImpl implements UserService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -1594,7 +1570,7 @@ public class UserServiceImpl implements UserService {
             result.setResult("Y".equalsIgnoreCase(stringObject) ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_1018, msg);
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -1638,7 +1614,7 @@ public class UserServiceImpl implements UserService {
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CustomException e) {
             log.error("", e);
@@ -1668,7 +1644,6 @@ public class UserServiceImpl implements UserService {
              * 프로시져
              */
             for (String deviceId : deviceIdList) {
-                System.out.println(deviceId);
                 AuthServerDTO info = new AuthServerDTO();
                 info.setUserId(userId);
                 info.setDeviceId(deviceId);
@@ -1684,7 +1659,7 @@ public class UserServiceImpl implements UserService {
             msg = "기기 삭제(회원 매핑 삭제) 성공";
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {}", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -1750,7 +1725,7 @@ public class UserServiceImpl implements UserService {
             msg = "스마트알림 - PUSH 이력 조회 성공";
             data.setPushInfo(pushInfoList);
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+//            log.info("data: " + data);  너무 길어서 주석 처리
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (CustomException e) {
             log.error("", e);
@@ -1803,7 +1778,7 @@ public class UserServiceImpl implements UserService {
             data.setResult("Y".equalsIgnoreCase(stringObject) ? ApiResponse.ResponseType.HTTP_200
                     : ApiResponse.ResponseType.CUSTOM_1018, msg);
 
-            log.info("data: " + data);
+            log.info("data: {},", data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -1845,7 +1820,6 @@ public class UserServiceImpl implements UserService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
-            System.out.println("params.getBrightnessLevel(): " + params.getBrightnessLevel());
 
             conMap.put("controlAuthKey", params.getControlAuthKey());
             conMap.put("deviceId", params.getDeviceId());
@@ -1859,8 +1833,7 @@ public class UserServiceImpl implements UserService {
             redisCommand.setValues(uuId, redisValue);
 
             String jsonString = objectMapper.writeValueAsString(conMap);
-            mobiusResponse = mobiusService.createCin(common.stringToHex("    " + serialNumber.getSerialNumber()),
-                    userId, jsonString);
+            mobiusResponse = mobiusService.createCin(common.stringToHex("    " + serialNumber.getSerialNumber()), userId, jsonString);
             if (!mobiusResponse.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
@@ -1905,11 +1878,9 @@ public class UserServiceImpl implements UserService {
 
             for (int i = 0; i < userIds.size(); ++i) {
                 if (memberMapper.getUserLoginoutStatus(userIds.get(i).getUserId()).getLoginoutStatus().equals("Y")) {
-                    log.info("쿼리한 UserId: " + userIds.get(i).getUserId());
                     conMap1.put("pushYn", pushYnList.get(i).getFPushYn());
                     conMap1.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
-                    conMap1.put("targetToken",
-                            memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
+                    conMap1.put("targetToken", memberMapper.getPushTokenByUserId(userIds.get(i).getUserId()).getPushToken());
                     conMap1.put("userNickname", userNickname.getUserNickname());
                     conMap1.put("deviceNick", common.returnDeviceNickname(deviceId));
                     conMap1.put("title", "blCf");
@@ -1917,11 +1888,8 @@ public class UserServiceImpl implements UserService {
                     conMap1.put("id", "Brightness Control ID");
 
                     String jsonString1 = objectMapper.writeValueAsString(conMap1);
-                    log.info("jsonString: " + jsonString);
 
-                    if (!mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1).getResponseCode()
-                            .equals("201"))
-                        log.info("PUSH 메세지 전송 오류");
+                    mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1);
                 }
             }
 
@@ -1937,7 +1905,7 @@ public class UserServiceImpl implements UserService {
                     params.getBrightnessLevel(),
                     "01");
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -1978,7 +1946,7 @@ public class UserServiceImpl implements UserService {
             msg = "공지사항 조회 성공";
 
             data.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("data: " + data);
+            log.info("data: {}",data);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (CustomException e) {
             log.error("", e);
@@ -2012,7 +1980,7 @@ public class UserServiceImpl implements UserService {
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2030,7 +1998,7 @@ public class UserServiceImpl implements UserService {
         String msg;
         try {
             result.setTmpRegistKey(userId + common.getCurrentDateTime());
-            log.info("result: " + result);
+            log.info("result: {}", result);
 
             msg = "임시저장키 생성 성공";
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
@@ -2048,7 +2016,6 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> doSafeAlarmSet(AuthServerDTO params) throws Exception {
 
         ApiResponse.Data result = new ApiResponse.Data();
-        String stringObject = "N";
         String msg;
         AuthServerDTO safeAlarmInfo;
 
@@ -2061,28 +2028,21 @@ public class UserServiceImpl implements UserService {
                 if (memberMapper.updateSafeAlarm(params) <= 0) {
                     msg = "안전안심 알람 설정 실패";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                    new ResponseEntity<>(result, HttpStatus.OK);
-                } else
-                    stringObject = "Y";
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
             } else {
                 if (memberMapper.InsertSafeAlarmSet(params) <= 0) {
                     msg = "안전안심 알람 설정 실패";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                    new ResponseEntity<>(result, HttpStatus.OK);
-                } else
-                    stringObject = "Y";
+                    return new ResponseEntity<>(result, HttpStatus.OK);
+                }
             }
 
-            if (stringObject.equals("Y"))
-                msg = "안전안심 알람 설정 성공";
-            else
-                msg = "안전안심 알람 설정 실패";
+            msg = "안전안심 알람 설정 성공";
 
-            result.setResult("Y".equalsIgnoreCase(stringObject)
-                    ? ApiResponse.ResponseType.HTTP_200
-                    : ApiResponse.ResponseType.CUSTOM_1018, msg);
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2113,7 +2073,7 @@ public class UserServiceImpl implements UserService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2144,7 +2104,7 @@ public class UserServiceImpl implements UserService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2178,7 +2138,7 @@ public class UserServiceImpl implements UserService {
                 result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             }
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2234,7 +2194,7 @@ public class UserServiceImpl implements UserService {
             String jsonString = objectMapper.writeValueAsString(conMap);
             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2266,15 +2226,148 @@ public class UserServiceImpl implements UserService {
             result.setLocationRadius(modeInfo.getLocationRadius());
             result.setLongitude(modeInfo.getLongitude());
             result.setLatitude(modeInfo.getLatitude());
+            result.setAwayStatus(modeInfo.getAwayStatus());
+            result.setAwayMode(modeInfo.getAwayMode());
+            result.setAwayValue(modeInfo.getAwayValue());
+            result.setHomeStatus(modeInfo.getHomeStatus());
+            result.setHomeMode(modeInfo.getHomeMode());
+            result.setHomeValue(modeInfo.getHomeValue());
 
             msg = "외출/귀가 모드 정보 조회 성공";
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    /**
+     * 외출/귀가 모드 기기 제어
+     * */
+    @Override
+    public ResponseEntity<?> doControlAwayHomeMode(AuthServerDTO params) throws Exception {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        PowerOnOff powerOnOff = new PowerOnOff();
+        ModeChange modeChange = new ModeChange();
+        TemperatureSet temperatureSet = new TemperatureSet();
+        BoiledWaterTempertureSet boiledWaterTempertureSet = new BoiledWaterTempertureSet();
+        VentilationFanSpeedSet fanSpeedSet = new VentilationFanSpeedSet();
+
+        String msg;
+        String userId = params.getUserId();
+        String deviceId = params.getDeviceId();
+        String modeCode = params.getModeCode();
+        String temperature = params.getTemperture();
+        String fanSpeed = params.getFanSpeed();
+        String modelCode = common.getModelCodeFromDeviceId(deviceId);
+        String deviceType = common.getModelCode(modelCode.trim());
+        String serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+        String redisValue;
+
+        try {
+
+            powerOnOff.setUserId(userId);
+            powerOnOff.setDeviceId(deviceId);
+            powerOnOff.setControlAuthKey("9987");
+            powerOnOff.setDeviceType(deviceType);
+            powerOnOff.setModelCode(common.stringToHex(modelCode));
+            powerOnOff.setPowerStatus("on");
+            powerOnOff.setFunctionId("powr");
+            powerOnOff.setUuId(common.getTransactionId());
+
+            redisValue = userId + "," + powerOnOff.getFunctionId();
+            redisCommand.setValues(powerOnOff.getUuId(), redisValue);
+
+            mobiusService.createCin(serialNumber, userId, JSON.toJson(powerOnOff));
+            redisCommand.deleteValues(powerOnOff.getUuId());
+
+            // 1초 지연
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // 인터럽트 상태 복구
+                log.error("", e);
+            }
+
+            modeChange.setUserId(userId);
+            modeChange.setDeviceId(deviceId);
+            modeChange.setControlAuthKey("9987");
+            modeChange.setModelCode(common.stringToHex(modelCode));
+            modeChange.setModeCode(modeCode);
+            modeChange.setFunctionId("opMd");
+            modeChange.setUuId(common.getTransactionId());
+
+            redisValue = userId + "," + modeChange.getFunctionId();
+            redisCommand.setValues(modeChange.getUuId(), redisValue);
+
+            mobiusService.createCin(serialNumber, userId, JSON.toJson(modeChange));
+            redisCommand.deleteValues(modeChange.getUuId());
+
+            // 1초 지연
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // 인터럽트 상태 복구
+                log.error("", e);
+            }
+
+            if(deviceType.equals("01")){
+
+                if(modeCode.equals("01")){ // 실내 난방 / 실내 온도 설정 htTp
+                    temperatureSet.setUserId(userId);
+                    temperatureSet.setDeviceId(deviceId);
+                    temperatureSet.setControlAuthKey("9987");
+                    temperatureSet.setTemperature(temperature);
+                    temperatureSet.setFunctionId("htTp");
+                    temperatureSet.setUuId(common.getTransactionId());
+
+                    redisValue = userId + "," + temperatureSet.getFunctionId();
+                    redisCommand.setValues(temperatureSet.getUuId(), redisValue);
+
+                    mobiusService.createCin(serialNumber, userId, JSON.toJson(temperatureSet));
+                    redisCommand.deleteValues(temperatureSet.getUuId());
+
+                } else if(modeCode.equals("02")){
+                    boiledWaterTempertureSet.setUserId(userId);
+                    boiledWaterTempertureSet.setDeviceId(deviceId);
+                    boiledWaterTempertureSet.setControlAuthKey("9987");
+                    boiledWaterTempertureSet.setTemperature(temperature);
+                    boiledWaterTempertureSet.setFunctionId("wtTp");
+                    boiledWaterTempertureSet.setUuId(common.getTransactionId());
+
+                    redisValue = userId + "," + boiledWaterTempertureSet.getFunctionId();
+                    redisCommand.setValues(boiledWaterTempertureSet.getUuId(), redisValue);
+
+                    mobiusService.createCin(serialNumber, userId, JSON.toJson(boiledWaterTempertureSet));
+                    redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
+                }
+
+            } else if(deviceType.equals("07")){
+                fanSpeedSet.setUserId(userId);
+                fanSpeedSet.setDeviceId(deviceId);
+                fanSpeedSet.setControlAuthKey("9987");
+                fanSpeedSet.setModelCode(common.stringToHex(modelCode));
+                fanSpeedSet.setFanSpeed(fanSpeed);
+                fanSpeedSet.setFunctionId("vtSp");
+                fanSpeedSet.setUuId(common.getTransactionId());
+
+                redisValue = userId + "," + fanSpeedSet.getFunctionId();
+                redisCommand.setValues(fanSpeedSet.getUuId(), redisValue);
+
+                mobiusService.createCin(serialNumber, userId, JSON.toJson(fanSpeedSet));
+                redisCommand.deleteValues(fanSpeedSet.getUuId());
+            }
+
+            msg = "외출/귀가 모드 기기 제어 성공.";
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("", e);
+        }
+        return null;
     }
 }

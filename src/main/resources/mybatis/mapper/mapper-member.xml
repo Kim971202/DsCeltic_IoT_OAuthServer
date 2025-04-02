@@ -1630,7 +1630,13 @@
             LOCATION_RADIUS,
             LAT,
             LON,
-            MODI_DATM
+            MODI_DATM,
+            AWAY_STATUS,
+            AWAY_MODE,
+            AWAY_VALUE,
+            HOME_STATUS,
+            HOME_MODE,
+            HOME_VALUE
         )
             VALUES
         (
@@ -1639,7 +1645,13 @@
             #{locationRadius},
             #{latitude},
             #{longitude},
-            now()
+            now(),
+            #{awayStatus},
+            #{awayMode},
+            #{awayValue},
+            #{homeStatus},
+            #{homeMode},
+            #{homeValue}
         )
     </insert>
 
@@ -1649,7 +1661,13 @@
         SET
             LOCATION_RADIUS = #{locationRadius},
             LAT = #{latitude},
-            LON = #{longitude}
+            LON = #{longitude},
+            AWAY_HOME = #{awayHome},
+            AWAY_MODE = #{awayMode},
+            AWAY_VALUE = #{awayValue},
+            HOME_STATUS = #{homeStatus},
+            HOME_MODE = #{homeMode},
+            HOME_VALUE = #{homeValue}
         WHERE
             DEVC_ID = #{deviceId}
         AND
@@ -1662,7 +1680,13 @@
             GRP_IDX AS groupIdx,
             LOCATION_RADIUS AS locationRadius,
             LAT AS latitude,
-            LON AS longitude
+            LON AS longitude,
+            AWAY_STATUS AS awayStatus,
+            AWAY_MODE AS awayMode,
+            AWAY_VALUE AS awayValue,
+            HOME_STATUS AS homeStatus,
+            HOME_MODE AS homeMode,
+            HOME_VALUE AS homeValue
         FROM
             TBR_OPR_AWAY_HOME_MODE
         WHERE

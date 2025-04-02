@@ -125,4 +125,7 @@ public interface UserService {
 
     /** 외출/귀가 모드 정보 조회 */
     ResponseEntity<?> doViewAwayHomeMode(AuthServerDTO params) throws Exception;
+
+    /** 외출/귀가 모드 기기 제어 */
+    ResponseEntity<?> doControlAwayHomeMode(AuthServerDTO params) throws Exception;
 }

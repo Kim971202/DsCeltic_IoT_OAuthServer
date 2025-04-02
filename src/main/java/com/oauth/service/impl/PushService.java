@@ -27,7 +27,6 @@ public class PushService {
     MemberMapper memberMapper;
 
     public void sendPushMessage(String jsonBody, String pushToken, String fPushYn, String userId, String modelCode, String title, String deviceNickname) throws Exception {
-        log.info("sendPushMessage jsonBody: " + jsonBody);
 
         HashMap<String, String> pushMap = new HashMap<>();
         if(title == null) title = "vfLs";
@@ -50,7 +49,6 @@ public class PushService {
 
     public void sendPushMessage(String jsonBody, String errroCode, String errorMesssage, String modelCode, String errorVersion) throws Exception {
 
-        System.out.println("modelCode: " + modelCode);
         String deviceId = common.readCon(jsonBody, "deviceId");
 
         AuthServerDTO info = deviceMapper.getGroupNameAndDeviceNickByDeviceId(deviceId);
@@ -76,7 +74,7 @@ public class PushService {
                 params.setGroupIdx(info.getGroupIdx());
                 params.setDeviceType(common.getModelCode(modelCode.replaceAll(" ", "")));
                 System.out.println(params);
-                if(memberMapper.insertPushHistory(params) <= 0) log.info("PUSH ERROR HISTORY INSERT ERROR");
+                memberMapper.insertPushHistory(params);
 
                 if (memberMapper.getUserLoginoutStatus(authServerDTO.getUserId()).getLoginoutStatus().equals("Y")){
                     if(memberMapper.getUserLoginoutStatus(authServerDTO.getUserId()).getLoginoutStatus().equals("Y")){

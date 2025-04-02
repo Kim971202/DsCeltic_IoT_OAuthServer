@@ -217,7 +217,7 @@ public class DeviceServiceImpl implements DeviceService {
                             deviceType);
                 }
             }
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -268,10 +268,7 @@ public class DeviceServiceImpl implements DeviceService {
             redisValue = params.getUserId() + "," + powerOnOff.getFunctionId();
             redisCommand.setValues(powerOnOff.getUuId(), redisValue);
 
-            // String parentId =
-            // deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
             firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
-            // params.setDeviceId(parentId);
             userId = firstDeviceUser.getUserId();
 
             serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
@@ -379,7 +376,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             }
 
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -402,7 +399,6 @@ public class DeviceServiceImpl implements DeviceService {
         String controlAuthKey = params.getControlAuthKey();
         String deviceType = params.getDeviceType();
         String redisValue;
-        MobiusResponse response;
 
         AuthServerDTO checkDeviceExist;
         AuthServerDTO checkDeviceUser;
@@ -500,11 +496,7 @@ public class DeviceServiceImpl implements DeviceService {
                             redisValue = params.getUserId() + "," + setWeek.getFunctionId();
                             redisCommand.setValues(setWeek.getUuId(), redisValue);
 
-                            response = mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId,
-                                    JSON.toJson(setWeek));
-
-                            if (!response.getResponseCode().equals("201"))
-                                log.info("setWeek 중계서버 오류");
+                            mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId, JSON.toJson(setWeek));
 
                             AwakeAlarmSet awakeAlarmSet = new AwakeAlarmSet();
                             awakeAlarmSet.setUserId(userId);
@@ -524,11 +516,7 @@ public class DeviceServiceImpl implements DeviceService {
                             awakeList.add(map);
                             awakeAlarmSet.setAwakeList(awakeList);
 
-                            response = mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId,
-                                    JSON.toJson(awakeAlarmSet));
-
-                            if (!response.getResponseCode().equals("201"))
-                                log.info("awakeAlarmSet 중계서버 오류");
+                            mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId, JSON.toJson(awakeAlarmSet));
 
                             DeviceStatusInfo.Device device = new DeviceStatusInfo.Device();
                             device.setDeviceId(deviceId);
@@ -641,17 +629,8 @@ public class DeviceServiceImpl implements DeviceService {
                     deviceMapper.deleteActiveOldDevice(params);
                     deviceMapper.insertActiveOldDevice(params);
                 }
-
-                // if(deviceMapper.insertDeviceGrpInfo(params) <= 0){
-                // msg = "기기 정보 등록 실패.";
-                // result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
-                // return new ResponseEntity<>(result, HttpStatus.OK);
-                // }
                 stringObject = "Y";
             }
-
-            log.info("stringObject: " + stringObject);
-            log.info("registYn: " + registYn);
 
             if (stringObject.equals("Y") && registYn.equals("Y")) {
                 msg = "기기 정보 등록 성공";
@@ -679,7 +658,7 @@ public class DeviceServiceImpl implements DeviceService {
             else if (registYn.equals("Y"))
                 params.setPushContent("신규기기 등록");
 
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CustomException e) {
             log.error("", e);
@@ -741,7 +720,6 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("fcLc", value.getFcLc());
                         resultMap.put("mn", value.getMn());
 
-                        ConcurrentHashMap<String, ConcurrentHashMap<String, String>> rscfMap = new ConcurrentHashMap<>();
                         ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
 
                         eleMap.put("24h", value.getH24());
@@ -754,7 +732,6 @@ public class DeviceServiceImpl implements DeviceService {
                             eleMap.put("fwh", value.getFwh());
                         }
 
-                        rscfMap.put("rsCf", eleMap);
                         resultMap.put("rsCf", JSON.toJson(eleMap));
                     }
                 } else if (modelCode.equals("DCR-47/WF")) {
@@ -802,11 +779,10 @@ public class DeviceServiceImpl implements DeviceService {
 
             msg = "기기 상태 정보 조회 성공";
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-
             redisCommand.deleteValues(uuId);
-
             result.setDeviceStatusInfo(resultMap);
-            log.info("result: " + result);
+
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -976,7 +952,6 @@ public class DeviceServiceImpl implements DeviceService {
                         }
                     }
 
-
                     switch (modeCode) {
                         case "01":
                             params.setControlCodeName("실내난방");
@@ -1063,7 +1038,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             }
 
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -1235,7 +1210,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
 
             }
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -1391,7 +1366,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
 
             }
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -1547,7 +1522,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
 
             }
-            log.info("result: " + result);
+            log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -1697,7 +1672,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             }
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -1862,7 +1837,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             }
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2010,7 +1985,7 @@ public class DeviceServiceImpl implements DeviceService {
                         "01");
 
             }
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2078,8 +2053,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             try {
                 // 메시징 시스템을 통해 응답 메시지 대기
-                responseMessage = gwMessagingSystem.waitForResponse("fcLc" + lockSet.getUuId(), TIME_OUT,
-                        TimeUnit.SECONDS);
+                responseMessage = gwMessagingSystem.waitForResponse("fcLc" + lockSet.getUuId(), TIME_OUT, TimeUnit.SECONDS);
                 gwMessagingSystem.removeMessageQueue("fcLc" + lockSet.getUuId());
                 if (responseMessage == null)
                     stringObject = "T";
@@ -2158,7 +2132,7 @@ public class DeviceServiceImpl implements DeviceService {
                     "잠금 " + params.getLockSet(),
                     "01");
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2261,7 +2235,8 @@ public class DeviceServiceImpl implements DeviceService {
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
             redisCommand.deleteValues(uuId);
-            log.info("result: " + result);
+
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2303,7 +2278,7 @@ public class DeviceServiceImpl implements DeviceService {
             result.put("resultCode", rtCode);
             result.put("resultMsg", msg);
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return result;
         } catch (Exception e) {
             log.error("", e);
@@ -2340,7 +2315,7 @@ public class DeviceServiceImpl implements DeviceService {
     
         result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-        log.info("result: " + result);
+        log.info("result: {}", result);
         return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
         log.error("", e);
@@ -2417,7 +2392,7 @@ public class DeviceServiceImpl implements DeviceService {
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
             }
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2509,7 +2484,6 @@ public class DeviceServiceImpl implements DeviceService {
                     } else {
                         // 타임아웃이나 응답 없음 처리
                         stringObject = "T";
-                        log.info("응답이 없거나 시간 초과");
                     }
                 } catch (InterruptedException e) {
                     // 대기 중 인터럽트 처리
@@ -2580,7 +2554,7 @@ public class DeviceServiceImpl implements DeviceService {
                         "07");
             }
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2688,7 +2662,7 @@ public class DeviceServiceImpl implements DeviceService {
                     return new ResponseEntity<>(result, HttpStatus.OK);
                 }
             }
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2818,7 +2792,8 @@ public class DeviceServiceImpl implements DeviceService {
             }
             result.setRoomList(appResponse);
             result.setResult(ApiResponse.ResponseType.HTTP_200, "홈 IoT 컨트롤러 상태 정보 조회 성공");
-            log.info("result: " + result);
+
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);
@@ -2866,12 +2841,10 @@ public class DeviceServiceImpl implements DeviceService {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
-            if (stringObject.equals("Y")) {
-                msg = "FCNT 요청 호출 성공";
-                result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
-            }
+            msg = "FCNT 요청 호출 성공";
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
-            log.info("result: " + result);
+            log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             log.error("", e);

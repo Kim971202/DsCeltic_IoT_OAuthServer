@@ -132,7 +132,6 @@ public class ApiTokenUtils {
         } catch (Exception e){
             log.error("", e);
         }
-        log.info("verifyExpiredJWT false.");
         return false;
     }
 
@@ -157,7 +156,6 @@ public class ApiTokenUtils {
             SignedJWT signedJWT = new SignedJWT(header, claimsSet);
             signedJWT.sign(tokenConfig.getRsaSigner());
 
-            log.info("signedJWT.serialize(): " + signedJWT.serialize());
             return signedJWT.serialize();
         } catch (Exception e){
             log.error("", e);
