@@ -81,7 +81,6 @@ public class NaverController {
         conMap.put("functionId", functionId);
         conMap.put("uuId", common.getTransactionId());
 
-        log.info(JSON.toJson(conMap, true));
         mobiusService.createCin(common.getHexSerialNumberFromDeviceId(deviceId), userId, JSON.toJson(conMap));
     }
 

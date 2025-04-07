@@ -1382,6 +1382,7 @@
             HWTP AS hwTp,
             CHTP AS chTp, 
             DVST AS dvSt,
+            MFDT AS mfDt,
             SUB_ID AS deviceId,
             R_KEY AS controlAuthKey,
             DV_NM AS deviceNickName

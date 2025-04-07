@@ -56,9 +56,9 @@ public class ReservationServiceImpl implements ReservationService {
         String hoursString = params.getHours();
         String onOffFlag = params.getOnOffFlag();
         String redisValue;
+        String serialNumber;
         MobiusResponse response;
         String responseMessage = null;
-        AuthServerDTO device;
         AuthServerDTO userNickname;
         AuthServerDTO household;
         AuthServerDTO firstDeviceUser;
@@ -71,8 +71,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
             userId = firstDeviceUser.getUserId();
-
-            device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
+            serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
 
             set24.setAccessToken(params.getAccessToken());
             set24.setUserId(params.getUserId());
@@ -97,7 +96,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             redisValue = params.getUserId() + "," + set24.getFunctionId();
             redisCommand.setValues(set24.getUuId(), redisValue);
-            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(set24));
+            response = mobiusService.createCin(serialNumber, userId, JSON.toJson(set24));
 
             if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
@@ -166,7 +165,6 @@ public class ReservationServiceImpl implements ReservationService {
                             conMap.put("title", "24h");
                             conMap.put("deviceId", deviceId);
                             conMap.put("id", "Set24 ID");
-
                             String jsonString = objectMapper.writeValueAsString(conMap);
                             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
@@ -207,9 +205,9 @@ public class ReservationServiceImpl implements ReservationService {
         String responseMessage = null;
         String redisValue;
         String onOffFlag = params.getOnOffFlag();
-        String deviceType = "01"; 
+        String deviceType = "01";
+        String serialNumber;
         MobiusResponse response;
-        AuthServerDTO device;
         AuthServerDTO userNickname;
         AuthServerDTO household;
         AuthServerDTO firstDeviceUser;
@@ -238,14 +236,13 @@ public class ReservationServiceImpl implements ReservationService {
                 String parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
                 firstDeviceUser = memberMapper.getFirstDeviceUser(parentId);
                 params.setDeviceId(parentId);
-                device = deviceMapper.getSingleSerialNumberBySubDeviceId(deviceId);
             } else {
                 firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
-                device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
             }
 
             userId = firstDeviceUser.getUserId();
-            response = mobiusResponse = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(set12));
+            serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+            response = mobiusResponse = mobiusService.createCin(serialNumber, userId, JSON.toJson(set12));
             redisCommand.setValues(set12.getUuId(), redisValue);
 
             if (!response.getResponseCode().equals("201")) {
@@ -325,7 +322,6 @@ public class ReservationServiceImpl implements ReservationService {
                             conMap.put("title", "12h");
                             conMap.put("deviceId", deviceId);
                             conMap.put("id", "Set12 ID");
-
                             String jsonString = objectMapper.writeValueAsString(conMap);
                             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
@@ -366,9 +362,9 @@ public class ReservationServiceImpl implements ReservationService {
         List<HashMap<String, Object>> awakeList = new ArrayList<HashMap<String, Object>>();
         Map<String, String> conMap = new HashMap<>();
         String redisValue;
+        String serialNumber;
         MobiusResponse response;
         String responseMessage = null;
-        AuthServerDTO device;
         AuthServerDTO household;
         AuthServerDTO userNickname;
         AuthServerDTO firstDeviceUser;
@@ -379,8 +375,6 @@ public class ReservationServiceImpl implements ReservationService {
 
             firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
             userId = firstDeviceUser.getUserId();
-
-            device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
 
             /*
              * *
@@ -443,7 +437,8 @@ public class ReservationServiceImpl implements ReservationService {
 
             redisValue = params.getUserId() + "," + awakeAlarmSet.getFunctionId();
             redisCommand.setValues(awakeAlarmSet.getUuId(), redisValue);
-            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(awakeAlarmSet));
+            serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+            response = mobiusService.createCin(serialNumber, userId, JSON.toJson(awakeAlarmSet));
 
             if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
@@ -549,6 +544,7 @@ public class ReservationServiceImpl implements ReservationService {
         String deviceId = params.getDeviceId();
         String onOffFlag = params.getOnOffFlag();
         String modelCode = params.getModelCode();
+        String serialNumber;
         SetWeek setWeek = new SetWeek();
         List<HashMap<String, Object>> weekList = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> map = new HashMap<>();
@@ -557,7 +553,6 @@ public class ReservationServiceImpl implements ReservationService {
         String responseMessage = null;
         String redisValue;
         MobiusResponse response;
-        AuthServerDTO device;
         AuthServerDTO userNickname;
         AuthServerDTO firstDeviceUser;
 
@@ -567,8 +562,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
             userId = firstDeviceUser.getUserId();
-
-            device = deviceMapper.getSingleSerialNumberBydeviceId(params.getDeviceId());
+            serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
 
             setWeek.setUserId(params.getUserId());
             setWeek.setDeviceId(params.getDeviceId());
@@ -603,7 +597,7 @@ public class ReservationServiceImpl implements ReservationService {
             redisValue = params.getUserId() + "," + setWeek.getFunctionId();
             redisCommand.setValues(setWeek.getUuId(), redisValue);
 
-            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId, JSON.toJson(setWeek));
+            response = mobiusService.createCin(serialNumber, userId, JSON.toJson(setWeek));
 
             if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
@@ -770,47 +764,35 @@ public class ReservationServiceImpl implements ReservationService {
 
                 redisValue = userId + "," + "setSleepMode";
                 redisCommand.setValues(setSleepMode.getUuId(), redisValue);
+                serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
 
-                AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
+                stringObject = "Y";
+                response = mobiusService.createCin(serialNumber, userId, JSON.toJson(setSleepMode));
 
-                if (device == null) {
-                    msg = "기기정보가 없습니다.";
-                    result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
+                if (!response.getResponseCode().equals("201")) {
+                    msg = "중계서버 오류";
+                    result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
-                } else
-                    serialNumber = device.getSerialNumber();
-
-                if (serialNumber == null) {
-                    msg = "기기정보가 없습니다.";
-                    result.setResult(ApiResponse.ResponseType.CUSTOM_1009, msg);
-                    return new ResponseEntity<>(result, HttpStatus.OK);
-                } else {
-                    stringObject = "Y";
-                    response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(setSleepMode));
-                    if (!response.getResponseCode().equals("201")) {
-                        msg = "중계서버 오류";
-                        result.setResult(ApiResponse.ResponseType.HTTP_404, msg);
-                        return new ResponseEntity<>(result, HttpStatus.OK);
-                    }
-                    try {
-                        // 메시징 시스템을 통해 응답 메시지 대기
-                        gwMessagingSystem.printMessageQueues();
-                        responseMessage = gwMessagingSystem.waitForResponse("setSleepMode" + setSleepMode.getUuId(), TIME_OUT, TimeUnit.SECONDS);
-                        if (responseMessage != null) {
-                            // 응답 처리
-                            if (responseMessage.equals("0"))
-                                stringObject = "Y";
-                            else
-                                stringObject = "N";
-                        } else {
-                            // 타임아웃이나 응답 없음 처리
-                            stringObject = "T";
-                        }
-                    } catch (InterruptedException e) {
-                        // 대기 중 인터럽트 처리
-                        log.error("", e);
-                    }
                 }
+                try {
+                    // 메시징 시스템을 통해 응답 메시지 대기
+                    gwMessagingSystem.printMessageQueues();
+                    responseMessage = gwMessagingSystem.waitForResponse("setSleepMode" + setSleepMode.getUuId(), TIME_OUT, TimeUnit.SECONDS);
+                    if (responseMessage != null) {
+                        // 응답 처리
+                        if (responseMessage.equals("0"))
+                            stringObject = "Y";
+                        else
+                            stringObject = "N";
+                    } else {
+                        // 타임아웃이나 응답 없음 처리
+                        stringObject = "T";
+                    }
+                } catch (InterruptedException e) {
+                    // 대기 중 인터럽트 처리
+                    log.error("", e);
+                }
+
                 gwMessagingSystem.removeMessageQueue("setSleepMode" + setSleepMode.getUuId());
 
                 if (responseMessage != null && responseMessage.equals("2")) {
@@ -897,6 +879,7 @@ public class ReservationServiceImpl implements ReservationService {
         String deviceId = params.getDeviceId();
         String controlAuthKey = params.getControlAuthKey();
         String redisValue;
+        String serialNumber;
         String responseMessage = null;
 
         String power = params.getPowerStatus();
@@ -917,6 +900,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
             userId = firstDeviceUser.getUserId();
+            serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
 
             setOnOffPower.setUserId(params.getUserId());
             setOnOffPower.setDeviceId(deviceId);
@@ -935,12 +919,9 @@ public class ReservationServiceImpl implements ReservationService {
             redisValue = params.getUserId() + "," + setOnOffPower.getFunctionId();
             redisCommand.setValues(setOnOffPower.getUuId(), redisValue);
 
-            AuthServerDTO device = deviceMapper.getSingleSerialNumberBydeviceId(deviceId);
-
             stringObject = "Y";
 
-            response = mobiusService.createCin(common.stringToHex("    " + device.getSerialNumber()), userId,
-                    JSON.toJson(setOnOffPower));
+            response = mobiusService.createCin(serialNumber, userId, JSON.toJson(setOnOffPower));
             if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
                 result.setResult(ApiResponse.ResponseType.HTTP_404, msg);

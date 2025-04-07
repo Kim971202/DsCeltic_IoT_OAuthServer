@@ -73,7 +73,7 @@ public class PushService {
                 params.setGroupName(info.getGroupName());
                 params.setGroupIdx(info.getGroupIdx());
                 params.setDeviceType(common.getModelCode(modelCode.replaceAll(" ", "")));
-                System.out.println(params);
+
                 memberMapper.insertPushHistory(params);
 
                 if (memberMapper.getUserLoginoutStatus(authServerDTO.getUserId()).getLoginoutStatus().equals("Y")){
