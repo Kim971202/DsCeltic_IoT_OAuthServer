@@ -229,11 +229,7 @@ public class Common {
     // 입력한 DeviceId가 각방일 경우 True 아닌 경우 False 리턴
     public boolean checkDeviceType(String deviceId) {
         String[] modelCode = deviceId.split("\\.");
-        if (hexToString(modelCode[5]).contains("MC2600")) {
-            return true;
-        } else {
-            return false;
-        }
+        return hexToString(modelCode[5]).contains("MC2600");
     }
 
     public String stringToHex(String input) {

@@ -24,6 +24,7 @@ public class WebConfigure implements WebMvcConfigurer {
                 .excludePathPatterns("/users/v1/accessTokenVerification")
                 .excludePathPatterns("/users/v1/login")
                 .excludePathPatterns("/users/v1/logout")
+                .excludePathPatterns("/users/v1/viewAwayHomeMode")
                 .addPathPatterns("/users/v1/**")
                 .addPathPatterns("/devices/v1/**")
                 .addPathPatterns("/reservation/v1/**");

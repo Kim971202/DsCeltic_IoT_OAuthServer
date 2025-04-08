@@ -452,6 +452,8 @@
             TBR_OPR_USER_NOTICE
         WHERE
             DATE_FORMAT(NOTI_START_DATE, '%Y%m%d') BETWEEN #{startDatetime} AND #{endDatetime}
+        AND
+            NOTI_START_DATE >= DATE_SUB(CURDATE(), INTERVAL 3 DAY)
     </select>
 
     <update id="updateDeviceLocationNicknameDeviceDetail" parameterType="com.oauth.dto.AuthServerDTO">
@@ -881,31 +883,6 @@
             #{item}
         </foreach>
     </select>
-
-<!--    <select id="getMemberByGroupIdxList" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">-->
-<!--        SELECT-->
-<!--            a.GRP_ID AS groupId,-->
-<!--            a.USER_ID AS userId,-->
-<!--            b.HP AS hp,-->
-<!--            b.USER_NICK AS userNickname,-->
-<!--            a.GRP_IDX AS groupIdx,-->
-<!--            a.GRP_NM AS groupName-->
-<!--        FROM-->
-<!--            TBD_USER_INVITE_GROUP a-->
-<!--        INNER JOIN-->
-<!--            TBR_OPR_USER b-->
-<!--        ON-->
-<!--            a.USER_ID = b.USER_ID-->
-<!--        WHERE-->
-<!--        <choose>-->
-<!--            <when test="houseLeaderFlag == 0">-->
-<!--                a.GRP_ID = #{userId}-->
-<!--            </when>-->
-<!--            <otherwise>-->
-<!--                a.USER_ID = #{userId}-->
-<!--            </otherwise>-->
-<!--        </choose>-->
-<!--    </select>-->
 
     <select id="getMemberByGroupIdxList" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT DISTINCT

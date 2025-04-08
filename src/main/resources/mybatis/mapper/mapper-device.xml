@@ -517,7 +517,7 @@
             device.DEVC_ID =  #{deviceId}
     </select>
 
-   <insert id="insertEachRoomStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+    <insert id="insertEachRoomStatus" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
         INSERT INTO TBR_OPR_VALVE_BOX_STATUS
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="deviceId != null">SUB_ID,</if>

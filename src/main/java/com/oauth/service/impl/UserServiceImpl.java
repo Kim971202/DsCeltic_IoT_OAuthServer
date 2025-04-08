@@ -2158,7 +2158,10 @@ public class UserServiceImpl implements UserService {
 
         String userNickname = params.getUserNickname();
         String deviceNickname = params.getDeviceNickname();
-
+        String groupIdx = params.getGroupIdx();
+        String groupName = params.getGroupName();
+        String deviceId = params.getDeviceId();
+        String requestUserId = params.getUserId();
         List<AuthServerDTO> userIds;
 
         Map<String, String> conMap = new HashMap<>();
@@ -2187,12 +2190,18 @@ public class UserServiceImpl implements UserService {
             for(AuthServerDTO userId : userIds) {
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(userId.getUserId()).getPushToken());
                 conMap.put("title", "HOME_AWAY");
-                conMap.put("userNickname", userNickname);
-                conMap.put("deviceNick", deviceNickname);
+                conMap.put("userId", requestUserId);
+                conMap.put("userNickname", common.stringToHex(userNickname));
+                conMap.put("deviceNick", common.stringToHex(deviceNickname));
+                conMap.put("deviceId", deviceId);
+                conMap.put("groupIdx", groupIdx);
+                conMap.put("groupName", common.stringToHex(groupName));
                 conMap.put("pushYn", "Y");
+
+                String jsonString = objectMapper.writeValueAsString(conMap);
+                mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
             }
-            String jsonString = objectMapper.writeValueAsString(conMap);
-            mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -2218,7 +2227,7 @@ public class UserServiceImpl implements UserService {
             modeInfo = memberMapper.getAwayHomeModeInfo(params);
             if(modeInfo == null){
                 msg = "외출/귀가 모드 정보 조회 실패";
-                result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
 
