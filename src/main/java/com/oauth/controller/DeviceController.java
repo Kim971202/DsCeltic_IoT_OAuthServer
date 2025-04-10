@@ -102,19 +102,19 @@ public class DeviceController {
         log.info("[홈 IoT 컨트롤러 정보 등록/수정]");
         common.logParams(params);
 
-        if (Validator.isNullOrEmpty(params.getUserId()) ||
-                Validator.isNullOrEmpty(params.getHp()) ||
+        if (Validator.isNullOrEmpty(params.getUserId())             ||
+                Validator.isNullOrEmpty(params.getHp())             ||
                 Validator.isNullOrEmpty(params.getControlAuthKey()) ||
-                Validator.isNullOrEmpty(params.getRegistYn()) ||
-                Validator.isNullOrEmpty(params.getDeviceType()) ||
-                Validator.isNullOrEmpty(params.getModelCode()) ||
-                Validator.isNullOrEmpty(params.getSerialNumber()) ||
-                Validator.isNullOrEmpty(params.getZipCode()) ||
-                Validator.isNullOrEmpty(params.getOldAddr()) ||
-                Validator.isNullOrEmpty(params.getNewAddr()) ||
-                Validator.isNullOrEmpty(params.getAddrDetail()) ||
-                Validator.isNullOrEmpty(params.getLatitude()) ||
-                Validator.isNullOrEmpty(params.getLongitude()) ||
+                Validator.isNullOrEmpty(params.getRegistYn())       ||
+                Validator.isNullOrEmpty(params.getDeviceType())     ||
+                Validator.isNullOrEmpty(params.getModelCode())      ||
+                Validator.isNullOrEmpty(params.getSerialNumber())   ||
+                Validator.isNullOrEmpty(params.getZipCode())        ||
+                Validator.isNullOrEmpty(params.getOldAddr())        ||
+                Validator.isNullOrEmpty(params.getNewAddr())        ||
+                Validator.isNullOrEmpty(params.getAddrDetail())     ||
+                Validator.isNullOrEmpty(params.getLatitude())       ||
+                Validator.isNullOrEmpty(params.getLongitude())      ||
                 Validator.isNullOrEmpty(params.getDeviceNickname())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("홈 IoT 컨트롤러 정보 등록/수정 값 오류");
         }

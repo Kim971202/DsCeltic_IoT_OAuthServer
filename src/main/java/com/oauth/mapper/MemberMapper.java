@@ -37,6 +37,7 @@ public interface MemberMapper {
     public List<AuthServerDTO> getGroupIdByUserId(String userId);
     public List<AuthServerDTO> getDeviceIdFromRegist(AuthServerDTO param);
     public List<AuthServerDTO> getUserIdListByPushToken(AuthServerDTO param);
+    public List<AuthServerDTO> getUserNicknameAndPushTokenByUserId(List<AuthServerDTO> userIds);
     public AuthServerDTO getAwayHomeModeInfo(AuthServerDTO param);
     public AuthServerDTO getGroupNameByGroupIdx(String groupIdx);
     public AuthServerDTO getUserIdByHp(String hp);

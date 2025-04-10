@@ -2162,11 +2162,42 @@ public class UserServiceImpl implements UserService {
         String groupName = params.getGroupName();
         String deviceId = params.getDeviceId();
         String requestUserId = params.getUserId();
+        String latitude = params.getLatitude();
+        String longitude = params.getLongitude();
+        String locationRadius = params.getLocationRadius();
+
+        String awayStatus = params.getAwayStatus();
+        String awayMode = params.getAwayMode();
+        String awayValue = params.getAwayValue();
+        String homeStatus = params.getHomeStatus();
+        String homeMode = params.getHomeMode();
+        String homeValue = params.getHomeValue();
+
         List<AuthServerDTO> userIds;
 
         Map<String, String> conMap = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+
+            // awayStatus, awayMode, awayValue, homeStatus, homeMode, homeValue 값이 "0" 이면 "" 로 치환
+            if ("0".equals(awayStatus)) {
+                params.setAwayStatus("");
+            }
+            if ("0".equals(awayMode)) {
+                params.setAwayMode("");
+            }
+            if ("0".equals(awayValue)) {
+                params.setAwayValue("");
+            }
+            if ("0".equals(homeStatus)) {
+                params.setHomeStatus("");
+            }
+            if ("0".equals(homeMode)) {
+                params.setHomeMode("");
+            }
+            if ("0".equals(homeValue)) {
+                params.setHomeValue("");
+            }
 
             if(registYn.equals("Y")) {
                 if (memberMapper.insertAwayHomeMode(params) <= 0 ){
@@ -2196,6 +2227,9 @@ public class UserServiceImpl implements UserService {
                 conMap.put("deviceId", deviceId);
                 conMap.put("groupIdx", groupIdx);
                 conMap.put("groupName", common.stringToHex(groupName));
+                conMap.put("longitude", longitude);
+                conMap.put("latitude", latitude);
+                conMap.put("locationRadius", locationRadius);
                 conMap.put("pushYn", "Y");
 
                 String jsonString = objectMapper.writeValueAsString(conMap);
@@ -2325,7 +2359,6 @@ public class UserServiceImpl implements UserService {
             }
 
             if(deviceType.equals("01")){
-
                 if(modeCode.equals("01")){ // 실내 난방 / 실내 온도 설정 htTp
                     temperatureSet.setUserId(userId);
                     temperatureSet.setDeviceId(deviceId);

@@ -383,6 +383,10 @@ public class DeviceServiceImpl implements DeviceService {
         String modelCode = params.getModelCode();
         String controlAuthKey = params.getControlAuthKey();
         String deviceType = params.getDeviceType();
+        String latitude = params.getLatitude();
+        String longitude = params.getLongitude();
+        String deviceNickname = params.getDeviceNickname();
+
         String redisValue;
 
         AuthServerDTO checkDeviceExist;
@@ -391,6 +395,10 @@ public class DeviceServiceImpl implements DeviceService {
         AuthServerDTO groupLeaderIdByGroupIdx;
 
         List<AuthServerDTO> familyMemberList;
+        List<AuthServerDTO> userInfoList;
+        List<AuthServerDTO> userIds;
+        Map<String, String> conMap = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
 
         try {
             // 수정
@@ -430,8 +438,27 @@ public class DeviceServiceImpl implements DeviceService {
                     msg = "기기 정보 수정 실패.";
                     result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
                     return new ResponseEntity<>(result, HttpStatus.OK);
-                } else
+                } else {
                     stringObject = "Y";
+                }
+
+                userIds = memberMapper.getUserIdsByDeviceId(params);
+                userInfoList = memberMapper.getUserNicknameAndPushTokenByUserId(userIds);
+                // 등록 및 수정 시 요청자 별칭을 기반으로 모든 세대원에게 푸시 전송
+                for(AuthServerDTO userIdInfo : userInfoList) {
+                    conMap.put("targetToken", userIdInfo.getPushToken());
+                    conMap.put("title", "LAT_LON");
+                    conMap.put("userId", userId);
+                    conMap.put("userNickname", common.stringToHex(userIdInfo.getUserNickname()));
+                    conMap.put("deviceNick", common.stringToHex(deviceNickname));
+                    conMap.put("deviceId", deviceId);
+                    conMap.put("latitude", latitude);
+                    conMap.put("longitude", longitude);
+                    conMap.put("pushYn", "Y");
+
+                    String jsonString = objectMapper.writeValueAsString(conMap);
+                    mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+                }
 
                 // 등록
             } else if (registYn.equals("Y")) {
@@ -1908,7 +1935,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             redisValue = params.getUserId() + "," + lockSet.getFunctionId();
             redisCommand.setValues(lockSet.getUuId(), redisValue);
-            response = mobiusService.createCin(common.stringToHex("    " + serialNumber), userId, JSON.toJson(lockSet));
+            response = mobiusService.createCin(serialNumber, userId, JSON.toJson(lockSet));
 
             if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";

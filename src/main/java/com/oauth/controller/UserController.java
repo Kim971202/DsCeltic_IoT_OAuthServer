@@ -825,6 +825,7 @@ public class UserController {
         }
         return userService.doControlAwayHomeMode(params);
     }
+
     @PostMapping(value = "/test")
     public String test(String on) throws Exception {
         String userId = "yohan1202";
