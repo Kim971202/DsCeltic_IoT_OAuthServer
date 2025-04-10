@@ -2284,7 +2284,6 @@ public class DeviceServiceImpl implements DeviceService {
                 msg = "기기 정보 조회 리스트 - 조회 결과 없음";
                 result.setResult(ApiResponse.ResponseType.CUSTOM_1016, msg);
             }
-            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
             log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
