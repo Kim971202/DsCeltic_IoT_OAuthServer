@@ -818,9 +818,7 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserId())          ||
                 Validator.isNullOrEmpty(params.getDeviceId())   ||
-                Validator.isNullOrEmpty(params.getModeCode())   ||
-                Validator.isNullOrEmpty(params.getTemperture()) ||
-                Validator.isNullOrEmpty(params.getFanSpeed())){
+                Validator.isNullOrEmpty(params.getModeCode())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("외출/귀가 모드 기기 제어 오류");
         }
         return userService.doControlAwayHomeMode(params);
