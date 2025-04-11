@@ -121,7 +121,8 @@ public class AuthServerDTO implements Serializable {
      * */
     private String modeCode;
     private String sleepCode;                    // 01: Comfort 02: Normal 03: Warm
-    private String temperature;                  // 온도 [10.0 ~ 40.0 (°C)], 소수점 1자리
+    private String temperture;                   // 온도 [10.0 ~ 40.0 (°C)], 소수점 1자리
+    private String temperature;                   // 온도 [10.0 ~ 40.0 (°C)], 소수점 1자리
     private String lockSet;                      // 잠금 모드: on/of
     private String hours;                        // 예약 시간 리스트 (00시~23시, 총 24건)
     private String type24h;                      // 01: 표준형 02: 맞벌이형 03: 절약형 04: 맞춤형1 05: 맞춤형2
