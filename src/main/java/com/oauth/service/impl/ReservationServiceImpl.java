@@ -206,6 +206,7 @@ public class ReservationServiceImpl implements ReservationService {
         String redisValue;
         String onOffFlag = params.getOnOffFlag();
         String deviceType = "01";
+        String parentId = "";
         String serialNumber;
         MobiusResponse response;
         AuthServerDTO userNickname;
@@ -233,15 +234,20 @@ public class ReservationServiceImpl implements ReservationService {
 
             // True면 각방 False면 타기기
             if (common.checkDeviceType(deviceId)) {
-                String parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
+                parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
                 firstDeviceUser = memberMapper.getFirstDeviceUser(parentId);
                 params.setDeviceId(parentId);
             } else {
                 firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
             }
 
+            if(common.checkDeviceType(deviceId)){
+                serialNumber = common.getHexSerialNumberFromDeviceId(parentId);
+            } else {
+                serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+            }
+
             userId = firstDeviceUser.getUserId();
-            serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
             response = mobiusResponse = mobiusService.createCin(serialNumber, userId, JSON.toJson(set12));
             redisCommand.setValues(set12.getUuId(), redisValue);
 

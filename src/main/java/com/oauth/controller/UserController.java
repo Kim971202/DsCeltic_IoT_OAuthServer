@@ -824,6 +824,27 @@ public class UserController {
         return userService.doControlAwayHomeMode(params);
     }
 
+    /**
+     * WIFI 정보 저장
+     * */
+    @PostMapping(value = "/insertWifiInfo")
+    @ResponseBody
+    public ResponseEntity<?> doInsertWifiInfo(HttpServletRequest request, @ModelAttribute AuthServerDTO params)
+            throws Exception {
+
+        log.info("WIFI 정보 저장");
+        common.logParams(params);
+
+        if(Validator.isNullOrEmpty(params.getUserId())          ||
+                Validator.isNullOrEmpty(params.getDeviceId())   ||
+                Validator.isNullOrEmpty(params.getIpAddress())   ||
+                Validator.isNullOrEmpty(params.getWifiName())   ||
+                Validator.isNullOrEmpty(params.getWifiPassword())){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("WIFI 정보 저장 오류");
+        }
+        return userService.doInsertWifiInfo(params);
+    }
+
     @PostMapping(value = "/test")
     public String test(String on) throws Exception {
         String userId = "yohan1202";

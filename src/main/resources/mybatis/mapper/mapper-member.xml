@@ -1690,4 +1690,22 @@
         </foreach>
     </select>
 
+    <insert id="insertUserWifiInfo" parameterType="com.oauth.dto.AuthServerDTO">
+        INSERT INTO
+            TBR_OPR_USER_WIFI_INFO
+        (
+            IP_ADDR,
+            DEVC_ID,
+            WIFI_NAME,
+            WIFI_PASSWORD
+        )
+        VALUES
+        (
+            #{ipAddress},
+            #{deviceId},
+            #{wifiName},
+            #{wifiPassword}
+        )
+    </insert>
+
 </mapper>

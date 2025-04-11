@@ -80,6 +80,7 @@ public interface MemberMapper {
     public String deleteMemberFromService(String userId);
     public String deleteControllerMapping(AuthServerDTO member);
     public String deleteEachRoomrMapping(AuthServerDTO member);
+    public int insertUserWifiInfo(AuthServerDTO info);
     public int updatePhoneId(AuthServerDTO info);
     public int updateSafePushAlarmTime(AuthServerDTO info);
     public int updateLoginoutStatus(AuthServerDTO info);

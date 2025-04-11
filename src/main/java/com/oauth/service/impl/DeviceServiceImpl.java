@@ -818,6 +818,7 @@ public class DeviceServiceImpl implements DeviceService {
         String modelCode = params.getModelCode();
         String sleepCode = null;
         String deviceType = "01";
+        String parentId = "";
 
         AuthServerDTO userNickname;
         AuthServerDTO household;
@@ -850,7 +851,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             // 각방의 경우 서브 ID를 받아서 메인 ID로 최초등록자 ID 검색
             if (modelCode.contains("MC2600") || modelCode.contains("DR-300W")) {
-                String parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
+                parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
                 firstDeviceUser = memberMapper.getFirstDeviceUser(parentId);
                 params.setDeviceId(parentId);
             } else {
@@ -858,7 +859,11 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
             userId = firstDeviceUser.getUserId();
-            serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+            if(modelCode.contains("MC2600")){
+                serialNumber = common.getHexSerialNumberFromDeviceId(parentId);
+            } else {
+                serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+            }
             response = mobiusService.createCin(serialNumber, userId, JSON.toJson(modeChange));
 
             if (!response.getResponseCode().equals("201")) {
@@ -1062,6 +1067,7 @@ public class DeviceServiceImpl implements DeviceService {
         String deviceId = params.getDeviceId();
         String redisValue;
         String onOffFlag = params.getOnOffFlag();
+        String parentId = "";
         MobiusResponse response;
         String serialNumber;
         AuthServerDTO userNickname;
@@ -1085,16 +1091,20 @@ public class DeviceServiceImpl implements DeviceService {
 
             // True면 각방 False면 타기기
             if (common.checkDeviceType(deviceId)) {
-                String parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
+                parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
                 firstDeviceUser = memberMapper.getFirstDeviceUser(parentId);
                 params.setDeviceId(parentId);
             } else {
                 firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
             }
 
-            userId = firstDeviceUser.getUserId();
-            serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+            if(common.checkDeviceType(deviceId)){
+                serialNumber = common.getHexSerialNumberFromDeviceId(parentId);
+            } else {
+                serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+            }
 
+            userId = firstDeviceUser.getUserId();
             response = mobiusService.createCin(serialNumber, userId, JSON.toJson(temperatureSet));
 
             if (!response.getResponseCode().equals("201")) {

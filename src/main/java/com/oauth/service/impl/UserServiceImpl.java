@@ -2412,4 +2412,27 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    /**
+     * WIFI 정보 저장
+     * */
+    @Override
+    public ResponseEntity<?> doInsertWifiInfo(AuthServerDTO params) throws Exception {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        String msg;
+
+        try {
+
+            memberMapper.insertUserWifiInfo(params);
+            msg = "WIFI 정보 저장";
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+
+            log.info("result: {}", result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

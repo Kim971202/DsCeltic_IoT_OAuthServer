@@ -128,4 +128,8 @@ public interface UserService {
 
     /** 외출/귀가 모드 기기 제어 */
     ResponseEntity<?> doControlAwayHomeMode(AuthServerDTO params) throws Exception;
+
+    /** WIFI 정보 저장 */
+    ResponseEntity<?> doInsertWifiInfo(AuthServerDTO params) throws Exception;
+
 }

@@ -218,6 +218,10 @@ public class AuthServerDTO implements Serializable {
     private String homeMode;
     private String homeValue;
 
+    private String ipAddress;
+    private String wifiName;
+    private String wifiPassword;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
