@@ -2304,7 +2304,7 @@ public class UserServiceImpl implements UserService {
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String modeCode = params.getModeCode();
-        String temperature = params.getTemperture();
+        String temperature = params.getTemperature();
         String fanSpeed = params.getFanSpeed();
         String modelCode = common.getModelCodeFromDeviceId(deviceId);
         String deviceType = common.getModelCode(modelCode.trim());
