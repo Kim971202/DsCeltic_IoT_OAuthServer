@@ -861,6 +861,7 @@ public class DeviceServiceImpl implements DeviceService {
             userId = firstDeviceUser.getUserId();
             if(modelCode.contains("MC2600")){
                 serialNumber = common.getHexSerialNumberFromDeviceId(parentId);
+                serialNumber += "31";
             } else {
                 serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
             }
@@ -1100,6 +1101,7 @@ public class DeviceServiceImpl implements DeviceService {
 
             if(common.checkDeviceType(deviceId)){
                 serialNumber = common.getHexSerialNumberFromDeviceId(parentId);
+                serialNumber += "31";
             } else {
                 serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
             }
@@ -1639,6 +1641,7 @@ public class DeviceServiceImpl implements DeviceService {
         String responseMessage = null;
         String serialNumber;
         String deviceType = "01";
+        String parentId = "";
         MobiusResponse response;
         AuthServerDTO household;
         AuthServerDTO userNickname;
@@ -1661,16 +1664,21 @@ public class DeviceServiceImpl implements DeviceService {
 
             // True면 각방 False면 타기기
             if (common.checkDeviceType(deviceId)) {
-                String parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
+                parentId = deviceMapper.getParentIdBySubId(deviceId).getParentDevice();
                 firstDeviceUser = memberMapper.getFirstDeviceUser(parentId);
                 params.setDeviceId(parentId);
             } else {
                 firstDeviceUser = memberMapper.getFirstDeviceUser(deviceId);
             }
 
-            userId = firstDeviceUser.getUserId();
-            serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+            if(common.checkDeviceType(deviceId)){
+                serialNumber = common.getHexSerialNumberFromDeviceId(parentId);
+                serialNumber += "31";
+            } else {
+                serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
+            }
 
+            userId = firstDeviceUser.getUserId();
             response = mobiusResponse = mobiusService.createCin(serialNumber, userId, JSON.toJson(waterTempertureSet));
 
             if (!response.getResponseCode().equals("201")) {

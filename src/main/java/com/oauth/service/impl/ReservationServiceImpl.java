@@ -243,6 +243,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             if(common.checkDeviceType(deviceId)){
                 serialNumber = common.getHexSerialNumberFromDeviceId(parentId);
+                serialNumber += "31";
             } else {
                 serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
             }
