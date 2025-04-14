@@ -446,18 +446,20 @@ public class DeviceServiceImpl implements DeviceService {
                 userInfoList = memberMapper.getUserNicknameAndPushTokenByUserId(userIds);
                 // 등록 및 수정 시 요청자 별칭을 기반으로 모든 세대원에게 푸시 전송
                 for(AuthServerDTO userIdInfo : userInfoList) {
-                    conMap.put("targetToken", userIdInfo.getPushToken());
-                    conMap.put("title", "LAT_LON");
-                    conMap.put("userId", userId);
-                    conMap.put("userNickname", common.stringToHex(userIdInfo.getUserNickname()));
-                    conMap.put("deviceNick", common.stringToHex(deviceNickname));
-                    conMap.put("deviceId", deviceId);
-                    conMap.put("latitude", latitude);
-                    conMap.put("longitude", longitude);
-                    conMap.put("pushYn", "Y");
+                    if(memberMapper.getUserLoginoutStatus(userIdInfo.getUserId()).getLoginoutStatus().equals("Y")){
+                        conMap.put("targetToken", userIdInfo.getPushToken());
+                        conMap.put("title", "LAT_LON");
+                        conMap.put("userId", userId);
+                        conMap.put("userNickname", common.stringToHex(userIdInfo.getUserNickname()));
+                        conMap.put("deviceNick", common.stringToHex(deviceNickname));
+                        conMap.put("deviceId", deviceId);
+                        conMap.put("latitude", latitude);
+                        conMap.put("longitude", longitude);
+                        conMap.put("pushYn", "Y");
 
-                    String jsonString = objectMapper.writeValueAsString(conMap);
-                    mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+                        String jsonString = objectMapper.writeValueAsString(conMap);
+                        mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+                    }
                 }
 
                 // 등록

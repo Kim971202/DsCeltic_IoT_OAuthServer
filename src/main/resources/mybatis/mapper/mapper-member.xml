@@ -1676,6 +1676,7 @@
     <select id="getUserNicknameAndPushTokenByUserId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
         SELECT
             a.USER_NICK AS userNickname,
+            a.USER_ID AS userId,
             b.PUSH_TOKEN AS pushToken
         FROM
             TBR_OPR_USER a

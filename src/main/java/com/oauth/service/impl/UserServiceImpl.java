@@ -2219,21 +2219,23 @@ public class UserServiceImpl implements UserService {
 
             // 등록 및 수정 시 요청자 별칭을 기반으로 모든 세대원에게 푸시 전송
             for(AuthServerDTO userId : userIds) {
-                conMap.put("targetToken", memberMapper.getPushTokenByUserId(userId.getUserId()).getPushToken());
-                conMap.put("title", "HOME_AWAY");
-                conMap.put("userId", requestUserId);
-                conMap.put("userNickname", common.stringToHex(userNickname));
-                conMap.put("deviceNick", common.stringToHex(deviceNickname));
-                conMap.put("deviceId", deviceId);
-                conMap.put("groupIdx", groupIdx);
-                conMap.put("groupName", common.stringToHex(groupName));
-                conMap.put("longitude", longitude);
-                conMap.put("latitude", latitude);
-                conMap.put("locationRadius", locationRadius);
-                conMap.put("pushYn", "Y");
+                if(memberMapper.getUserLoginoutStatus(userId.getUserId()).getLoginoutStatus().equals("Y")){
+                    conMap.put("targetToken", memberMapper.getPushTokenByUserId(userId.getUserId()).getPushToken());
+                    conMap.put("title", "HOME_AWAY");
+                    conMap.put("userId", requestUserId);
+                    conMap.put("userNickname", common.stringToHex(userNickname));
+                    conMap.put("deviceNick", common.stringToHex(deviceNickname));
+                    conMap.put("deviceId", deviceId);
+                    conMap.put("groupIdx", groupIdx);
+                    conMap.put("groupName", common.stringToHex(groupName));
+                    conMap.put("longitude", longitude);
+                    conMap.put("latitude", latitude);
+                    conMap.put("locationRadius", locationRadius);
+                    conMap.put("pushYn", "Y");
 
-                String jsonString = objectMapper.writeValueAsString(conMap);
-                mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+                    String jsonString = objectMapper.writeValueAsString(conMap);
+                    mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
+                }
             }
 
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
