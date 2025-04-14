@@ -837,9 +837,10 @@ public class UserController {
 
         if(Validator.isNullOrEmpty(params.getUserId())          ||
                 Validator.isNullOrEmpty(params.getDeviceId())   ||
-                Validator.isNullOrEmpty(params.getIpAddress())   ||
-                Validator.isNullOrEmpty(params.getWifiName())   ||
-                Validator.isNullOrEmpty(params.getWifiPassword())){
+                Validator.isNullOrEmpty(params.getIpAddress())  ||
+                Validator.isNullOrEmpty(params.getWifiSsid())   ||
+                Validator.isNullOrEmpty(params.getWifiBssid())  ||
+                Validator.isNullOrEmpty(params.getWifiSecurity())){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("WIFI 정보 저장 오류");
         }
         return userService.doInsertWifiInfo(params);

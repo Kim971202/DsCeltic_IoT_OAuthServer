@@ -1690,22 +1690,38 @@
         </foreach>
     </select>
 
-    <insert id="insertUserWifiInfo" parameterType="com.oauth.dto.AuthServerDTO">
+    <insert id="upsertUserWifiInfo" parameterType="com.oauth.dto.AuthServerDTO">
         INSERT INTO
-            TBR_OPR_USER_WIFI_INFO
+        TBR_OPR_USER_WIFI_INFO
         (
             IP_ADDR,
             DEVC_ID,
-            WIFI_NAME,
-            WIFI_PASSWORD
+            USER_ID,
+            WIFI_SSID,
+            WIFI_BSSID,
+            WIFI_SECURITY,
+            REG_TIME
+
         )
         VALUES
         (
             #{ipAddress},
             #{deviceId},
-            #{wifiName},
-            #{wifiPassword}
+            #{userId},
+            #{wifiSsid},
+            #{wifiBssid},
+            #{wifiSecurity},
+            now()
         )
+        ON DUPLICATE KEY
+        UPDATE
+            IP_ADDR = #{ipAddress},
+            DEVC_ID = #{deviceId},
+            USER_ID = #{userId},
+            WIFI_SSID = #{wifiSsid},
+            WIFI_BSSID = #{wifiBssid},
+            WIFI_SECURITY = #{wifiSecurity},
+            REG_TIME = now()
     </insert>
 
 </mapper>

@@ -2424,7 +2424,7 @@ public class UserServiceImpl implements UserService {
 
         try {
 
-            memberMapper.insertUserWifiInfo(params);
+            memberMapper.upsertUserWifiInfo(params);
             msg = "WIFI 정보 저장";
             result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
 
