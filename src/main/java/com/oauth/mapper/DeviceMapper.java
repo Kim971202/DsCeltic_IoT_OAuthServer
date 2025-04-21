@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface DeviceMapper {
 
-    public List<AuthServerDTO> getDeviceInfoSearchList (List<AuthServerDTO> param);
+    public List<AuthServerDTO> getMemberListByGroupId (String groupIdx);
     public List<AuthServerDTO> getDeviceInfoSearchIdx (List<String> param);
     public List<AuthServerDTO> getDeviceInfoSearchIdxTemp (List<String> param);
     public List<AuthServerDTO> getDeviceIdByGroupIdx (String groupIdx);
@@ -36,6 +36,8 @@ public interface DeviceMapper {
     public List<DeviceStatusInfo.Device> getDeviceStauts(List<String> serialNumber);
     public List<DeviceStatusInfo.Device> getActiveStauts(List<String> serialNumber);
     public List<AuthServerDTO> getCheckedDeviceExist(String deviceId);
+    public AuthServerDTO getRegistrationtimeByDeviceId(String deviceId);
+    public AuthServerDTO getGroupIdxByDeviceId(String groupIdx);
     public AuthServerDTO getSubDeviceNickname(String groupIdx);
     public AuthServerDTO checkDeviceCount(String groupIdx);
     public AuthServerDTO checkEachRoomModeInfo(DeviceStatusInfo.Device device);
@@ -60,8 +62,9 @@ public interface DeviceMapper {
     public DeviceStatusInfo.Device getEachRoomStautsByDeviceId(String deviceId);
     public DeviceStatusInfo.Device getDeviceStautsByDeviceId(String deviceId);
     public DeviceStatusInfo.Device getActiveStautsByDeviceId(String deviceId);
-    public int deleteExistPrId(String deviceId);
+    public int updateDeviceGroupInfo(AuthServerDTO params);
     public int insertDeviceGrpInfoByList(List<AuthServerDTO> info);
+    public int deleteExistPrId(String deviceId);
     public int insertVentAirInfo(AuthServerDTO params);
     public int updateGroupName(AuthServerDTO params);
     public int deleteNoDeviceGroupByList(List<String> groupIdxList);
@@ -101,5 +104,5 @@ public interface DeviceMapper {
     public int insertFristDeviceUser(AuthServerDTO params);
     public int insertActiveOldDevice(AuthServerDTO params);
     public int insertEachRoomStatInfo(DeviceStatusInfo.Device device);
-    // TBR_FIRST_DEVICE_USER
+    public int updateUserIdEachRoomStatInfo(AuthServerDTO params);
 }

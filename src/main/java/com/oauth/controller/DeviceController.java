@@ -462,4 +462,23 @@ public class DeviceController {
         return deviceService.doCallFcNt(params);
     }
 
+    /** 기기 그룹 변경 */
+    @PostMapping(value = "/changeDeviceGroupInfo")
+    @ResponseBody
+    public ResponseEntity<?> doChangeDeviceGroupInfo(HttpSession session, HttpServletRequest request,
+                                        @ModelAttribute AuthServerDTO params, HttpServletResponse response)
+            throws Exception {
+
+        log.info("[기기 그룹 변경");
+        common.logParams(params);
+
+        if (Validator.isNullOrEmpty(params.getUserId())            ||
+                Validator.isNullOrEmpty(params.getDeviceId())      ||
+                Validator.isNullOrEmpty(params.getGroupIdx())      ||
+                Validator.isNullOrEmpty(params.getGroupName())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("기기 그룹 변경 오류");
+        }
+        return deviceService.doChangeDeviceGroupInfo(params);
+    }
+
 }

@@ -131,5 +131,4 @@ public interface UserService {
 
     /** WIFI 정보 저장 */
     ResponseEntity<?> doInsertWifiInfo(AuthServerDTO params) throws Exception;
-
 }

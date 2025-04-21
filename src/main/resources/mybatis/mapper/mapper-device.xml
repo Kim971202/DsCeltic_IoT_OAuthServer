@@ -1658,4 +1658,56 @@
             SUB_ID = #{deviceId}
     </select>
 
+    <update id="updateDeviceGroupInfo" parameterType="com.oauth.dto.gw.DeviceStatusInfo">
+        UPDATE
+            TBT_OPR_DEVICE_REGIST t1, TBR_OPR_USER_DEVICE t2, TBR_OPR_USER_DEVICE_PUSH_INFO t3
+        SET
+            t1.GRP_IDX = #{groupIdx},
+            t1.GRP_NM = #{groupName},
+            t2.GRP_IDX = #{groupIdx},
+            t3.GRP_IDX = #{groupIdx},
+            t3.GRP_NM = #{groupName}
+        WHERE
+            t1.DEVC_ID = t2.DEVC_ID
+        AND
+            t2.DEVC_ID = t3.DEVC_ID
+        AND
+            t1.DEVC_ID = #{deviceId}
+    </update>
+
+    <select id="getGroupIdxByDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        SELECT
+            GRP_IDX AS groupIdx
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
+
+    <select id="getMemberListByGroupId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        SELECT
+            USER_ID AS userId
+        FROM
+            TBD_USER_INVITE_GROUP
+        WHERE
+            GRP_IDX = #{groupIdx}
+    </select>
+
+    <update id="updateUserIdEachRoomStatInfo" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBR_OPR_EACH_ROOM_MODE_INFO
+        SET
+            GRP_IDX = #{groupIdx}
+        WHERE
+            PR_ID = #{deviceId}
+    </update>
+
+    <select id="getRegistrationtimeByDeviceId" parameterType="com.oauth.dto.AuthServerDTO" resultMap="device">
+        SELECT
+            REG_DATM AS registrationDatetime
+        FROM
+            TBT_OPR_DEVICE_REGIST
+        WHERE
+            DEVC_ID = #{deviceId}
+    </select>
 </mapper>

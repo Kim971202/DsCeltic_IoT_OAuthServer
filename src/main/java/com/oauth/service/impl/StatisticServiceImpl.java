@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.lang.reflect.Method;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
@@ -129,48 +132,66 @@ public class StatisticServiceImpl implements StatisticService {
     @Override
     public HashMap<String, Object> doEachRoomStatInfo(AuthServerDTO params) throws CustomException {
         HashMap<String, Object> resultMap = new LinkedHashMap<String, Object>();
-        String msg;
 
         String deviceId = params.getDeviceId();
         String regDatetime = params.getStartDate();
+        String registrationDatetime;
         DeviceStatusInfo.Device device = new DeviceStatusInfo.Device();
         List<Map<String, Object>> statsList = new ArrayList<>();
         List<DeviceStatusInfo.Device> deviceList;
+
         try {
 
-        device.setDeviceId(deviceId);
-        device.setRegDatetime(regDatetime);
+            /*
+            * 1. 받은 DeviceId로 기기 등록 시간 쿼리
+            * 2. 등록일 +1일 이후 부터 조회 가능
+            * */
 
-        deviceList = deviceMapper.selectEachRoomModeInfo(device);
+            registrationDatetime = deviceMapper.getRegistrationtimeByDeviceId(deviceId).getRegistrationDatetime();
 
-        for(DeviceStatusInfo.Device singleDevice : deviceList){
-            HashMap<String, Object> dataMap = new LinkedHashMap<>();
-            HashMap<String, Object> timeInfoMap = new LinkedHashMap<>();
-            dataMap.put("subDevice", singleDevice.getDeviceId());
-            dataMap.put("subDeviceNickname", deviceMapper.getSubDeviceNickname(singleDevice.getDeviceId()).getDeviceNickname());
-            dataMap.put("opMd", singleDevice.getOpMd());
-            dataMap.put("chTp", singleDevice.getChTp());
+            DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy.M.d");
 
-            for (int i = 1; i <= 24; i++) {
-                String key = String.format("%02d", i); // "01" ~ "24"
-                String methodName = "getT" + key;
-                try {
-                    Method method = singleDevice.getClass().getMethod(methodName);
-                    String value = (String) method.invoke(singleDevice);
-                    Object output = common.tValue(value); // 하나의 tValue 메서드만 사용
-                    timeInfoMap.put(key, output);
-                } catch (Exception e) {
-                    log.error("", e);
-                    timeInfoMap.put(key, "0");
+            LocalDate baseDate  = LocalDateTime.parse(registrationDatetime, datetimeFormatter).toLocalDate();
+            LocalDate compareDate  = LocalDate.parse(regDatetime, dateFormatter);
+
+            if (compareDate.isAfter(baseDate)) {
+                // 조건 통과: 더 이후 날짜
+                device.setDeviceId(deviceId);
+                device.setRegDatetime(regDatetime);
+
+                deviceList = deviceMapper.selectEachRoomModeInfo(device);
+
+                for (DeviceStatusInfo.Device singleDevice : deviceList) {
+                    HashMap<String, Object> dataMap = new LinkedHashMap<>();
+                    HashMap<String, Object> timeInfoMap = new LinkedHashMap<>();
+                    dataMap.put("subDevice", singleDevice.getDeviceId());
+                    dataMap.put("subDeviceNickname", deviceMapper.getSubDeviceNickname(singleDevice.getDeviceId()).getDeviceNickname());
+                    dataMap.put("opMd", singleDevice.getOpMd());
+                    dataMap.put("chTp", singleDevice.getChTp());
+
+                    for (int i = 1; i <= 24; i++) {
+                        String key = String.format("%02d", i); // "01" ~ "24"
+                        String methodName = "getT" + key;
+                        try {
+                            Method method = singleDevice.getClass().getMethod(methodName);
+                            String value = (String) method.invoke(singleDevice);
+                            Object output = common.tValue(value); // 하나의 tValue 메서드만 사용
+                            timeInfoMap.put(key, output);
+                        } catch (Exception e) {
+                            log.error("", e);
+                            timeInfoMap.put(key, "0");
+                        }
+                        dataMap.put("timeInfo", timeInfoMap);
+                    }
+                    statsList.add(dataMap);
                 }
-                dataMap.put("timeInfo", timeInfoMap);
             }
-            statsList.add(dataMap);
-        }
 
             resultMap.put("stats", statsList);
             resultMap.put("resultCode", "200");
             resultMap.put("resultMsg", "일별 가동시간 통계조회 조회 성공");
+
             log.info("resultMap: {} ", resultMap);
             return resultMap;
         } catch (Exception e) {

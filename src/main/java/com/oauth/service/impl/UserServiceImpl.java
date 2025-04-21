@@ -2301,6 +2301,7 @@ public class UserServiceImpl implements UserService {
         TemperatureSet temperatureSet = new TemperatureSet();
         BoiledWaterTempertureSet boiledWaterTempertureSet = new BoiledWaterTempertureSet();
         VentilationFanSpeedSet fanSpeedSet = new VentilationFanSpeedSet();
+        DeviceStatusInfo.Device deviceInfo = new DeviceStatusInfo.Device();
 
         String msg;
         String userId = params.getUserId();
@@ -2330,6 +2331,11 @@ public class UserServiceImpl implements UserService {
             mobiusService.createCin(serialNumber, userId, JSON.toJson(powerOnOff));
             redisCommand.deleteValues(powerOnOff.getUuId());
 
+            deviceInfo.setPowr("on");
+            deviceInfo.setDeviceId(deviceId);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+            deviceInfo.setPowr(null);
+
             // 1초 지연
             try {
                 Thread.sleep(3000);
@@ -2351,6 +2357,10 @@ public class UserServiceImpl implements UserService {
 
             mobiusService.createCin(serialNumber, userId, JSON.toJson(modeChange));
             redisCommand.deleteValues(modeChange.getUuId());
+
+            deviceInfo.setOpMd(modeCode);
+            deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+            deviceInfo.setOpMd(null);
 
             // 1초 지연
             try {
@@ -2375,6 +2385,10 @@ public class UserServiceImpl implements UserService {
                     mobiusService.createCin(serialNumber, userId, JSON.toJson(temperatureSet));
                     redisCommand.deleteValues(temperatureSet.getUuId());
 
+                    deviceInfo.setHtTp(temperature);
+                    deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                    deviceInfo.setHtTp(null);
+
                 } else if(modeCode.equals("02")){
                     boiledWaterTempertureSet.setUserId(userId);
                     boiledWaterTempertureSet.setDeviceId(deviceId);
@@ -2388,6 +2402,10 @@ public class UserServiceImpl implements UserService {
 
                     mobiusService.createCin(serialNumber, userId, JSON.toJson(boiledWaterTempertureSet));
                     redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
+
+                    deviceInfo.setWtTp(temperature);
+                    deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                    deviceInfo.setWtTp(null);
                 }
 
             } else if(deviceType.equals("07")){
@@ -2404,6 +2422,10 @@ public class UserServiceImpl implements UserService {
 
                 mobiusService.createCin(serialNumber, userId, JSON.toJson(fanSpeedSet));
                 redisCommand.deleteValues(fanSpeedSet.getUuId());
+
+                deviceInfo.setVtSp(fanSpeed);
+                deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
+                deviceInfo.setVtSp(null);
             }
 
             msg = "외출/귀가 모드 기기 제어 성공.";

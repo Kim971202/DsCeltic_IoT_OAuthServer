@@ -442,6 +442,10 @@ public class DeviceServiceImpl implements DeviceService {
                     stringObject = "Y";
                 }
 
+                if(params.getGroupName() == null && params.getGroupIdx() == null){
+                    deviceMapper.updateDeviceGroupInfo(params);
+                }
+
                 userIds = memberMapper.getUserIdsByDeviceId(params);
                 userInfoList = memberMapper.getUserNicknameAndPushTokenByUserId(userIds);
                 // 등록 및 수정 시 요청자 별칭을 기반으로 모든 세대원에게 푸시 전송
@@ -2702,7 +2706,6 @@ public class DeviceServiceImpl implements DeviceService {
 
         ApiResponse.Data result = new ApiResponse.Data();
         FcNtCall fcNtCall = new FcNtCall();
-        String stringObject;
         String msg;
         String userId;
         String deviceId = params.getDeviceId();
@@ -2727,7 +2730,6 @@ public class DeviceServiceImpl implements DeviceService {
 
             serialNumber = common.getHexSerialNumberFromDeviceId(deviceId);
 
-            stringObject = "Y";
             response = mobiusService.createCin("20" + serialNumber, userId, JSON.toJson(fcNtCall));
             if (!response.getResponseCode().equals("201")) {
                 msg = "중계서버 오류";
@@ -2745,4 +2747,30 @@ public class DeviceServiceImpl implements DeviceService {
         }
         return null;
     }
+
+    /** 기기 그룹 변경 */
+    @Override
+    public ResponseEntity<?> doChangeDeviceGroupInfo(AuthServerDTO params) throws CustomException {
+        ApiResponse.Data result = new ApiResponse.Data();
+        String msg;
+
+        try {
+
+            if (deviceMapper.updateDeviceGroupInfo(params) <= 0) {
+                msg = "기기 그룹 변경 실패.";
+                result.setResult(ApiResponse.ResponseType.CUSTOM_1018, msg);
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            }
+
+            msg = "기기 그룹 변경 성공";
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+
+            log.info("result: {}", result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("", e);
+        }
+        return null;
+    }
+
 }

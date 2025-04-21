@@ -123,6 +123,7 @@ public class DeviceStatusInfo {
       private String prId;
       private String psYn;
       private String dvNm;
+      private String userId;
 
       private String groupIdx;
       private String groupName;

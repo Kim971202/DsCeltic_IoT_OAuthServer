@@ -73,4 +73,8 @@ public interface DeviceService {
 
     /** FCNT 요청 호출 */
     ResponseEntity<?> doCallFcNt(AuthServerDTO params) throws CustomException;
+
+    /** 기기 그룹 변경 */
+    ResponseEntity<?> doChangeDeviceGroupInfo(AuthServerDTO params) throws CustomException;
+
 }
