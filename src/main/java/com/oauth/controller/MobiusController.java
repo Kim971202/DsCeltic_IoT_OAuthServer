@@ -50,7 +50,7 @@ public class MobiusController {
 
         log.info("GW Received JSON: {}", jsonBody);
         ApiResponse.Data result = new ApiResponse.Data();
-        deviceMapper.insertJson(jsonBody);
+//        deviceMapper.insertJson(jsonBody);
 
         /*
          * *
