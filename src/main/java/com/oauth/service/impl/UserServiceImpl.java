@@ -2307,7 +2307,7 @@ public class UserServiceImpl implements UserService {
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String modeCode = params.getModeCode();
-        String temperature = params.getTemperature();
+        float temperature = Float.parseFloat(params.getTemperature());
         String fanSpeed = params.getFanSpeed();
         String modelCode = common.getModelCodeFromDeviceId(deviceId);
         String deviceType = common.getModelCode(modelCode.trim());
@@ -2375,7 +2375,7 @@ public class UserServiceImpl implements UserService {
                     temperatureSet.setUserId(userId);
                     temperatureSet.setDeviceId(deviceId);
                     temperatureSet.setControlAuthKey("9987");
-                    temperatureSet.setTemperature(temperature);
+                    temperatureSet.setTemperature(String.valueOf(temperature));
                     temperatureSet.setFunctionId("htTp");
                     temperatureSet.setUuId(common.getTransactionId());
 
@@ -2385,7 +2385,7 @@ public class UserServiceImpl implements UserService {
                     mobiusService.createCin(serialNumber, userId, JSON.toJson(temperatureSet));
                     redisCommand.deleteValues(temperatureSet.getUuId());
 
-                    deviceInfo.setHtTp(temperature);
+                    deviceInfo.setHtTp(String.valueOf(temperature));
                     deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
                     deviceInfo.setHtTp(null);
 
@@ -2393,7 +2393,7 @@ public class UserServiceImpl implements UserService {
                     boiledWaterTempertureSet.setUserId(userId);
                     boiledWaterTempertureSet.setDeviceId(deviceId);
                     boiledWaterTempertureSet.setControlAuthKey("9987");
-                    boiledWaterTempertureSet.setTemperature(temperature);
+                    boiledWaterTempertureSet.setTemperature(String.valueOf(temperature));
                     boiledWaterTempertureSet.setFunctionId("wtTp");
                     boiledWaterTempertureSet.setUuId(common.getTransactionId());
 
@@ -2403,7 +2403,7 @@ public class UserServiceImpl implements UserService {
                     mobiusService.createCin(serialNumber, userId, JSON.toJson(boiledWaterTempertureSet));
                     redisCommand.deleteValues(boiledWaterTempertureSet.getUuId());
 
-                    deviceInfo.setWtTp(temperature);
+                    deviceInfo.setWtTp(String.valueOf(temperature));
                     deviceMapper.updateDeviceStatusFromApplication(deviceInfo);
                     deviceInfo.setWtTp(null);
                 }

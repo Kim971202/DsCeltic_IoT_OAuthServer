@@ -434,7 +434,7 @@
         SET
             GRP_NM = #{groupName}
         WHERE
-            GRP_IDX = #{groupIdx}
+            DEVC_ID = #{deviceId}
     </update>
 
     <update id="updateDeviceDetailLocation" parameterType="com.oauth.dto.AuthServerDTO">

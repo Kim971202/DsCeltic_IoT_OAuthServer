@@ -442,9 +442,7 @@ public class DeviceServiceImpl implements DeviceService {
                     stringObject = "Y";
                 }
 
-                if(params.getGroupName() == null && params.getGroupIdx() == null){
-                    deviceMapper.updateDeviceGroupInfo(params);
-                }
+                deviceMapper.updateDeviceGroupInfo(params);
 
                 userIds = memberMapper.getUserIdsByDeviceId(params);
                 userInfoList = memberMapper.getUserNicknameAndPushTokenByUserId(userIds);
