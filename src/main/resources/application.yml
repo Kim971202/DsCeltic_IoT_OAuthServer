@@ -91,8 +91,8 @@ logging:
      path: /home/ubuntu/DsCeltic_IoT_OAuthServer/logs
      name: oauthserver.log
 
-#influx:
-#  url: http://10.22.8.15:8086
-#  token: En-HW-D3UlMsETCwfh6E7kXGLCgA4v1lYfUkaso1sAOgMLuwD5NdO5qG5jcu3mvmHzUjGe7LY2ECLLxTBfEdoQ==
-#  org:  DaesungCelticEnersys
-#  bucket: ds_iot_command_temp
+influx:
+  url: http://localhost:8086
+  token: pf1eN1OCHUJus9hXazSJ2v3vEnWaJzetQHgNQKytotijqitNmWlHkRlklRoeZjlMjptKS2BJIanu065-tCtxiA==
+  org:  DaesungCelticEnersys
+  bucket: ds_iot_command_temp

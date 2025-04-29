@@ -17,16 +17,14 @@ import java.util.List;
 @Service
 public class InfluxService {
 
-//    private final WriteApi writeApi;
-//    private final QueryApi queryApi;
-//
-//    @Value("${influx.bucket}")
-//    private String bucket;
-//
-//    public InfluxService(WriteApi writeApi, QueryApi queryApi) {
-//        this.writeApi = writeApi;
-//        this.queryApi = queryApi;
-//    }
+    private final WriteApi writeApi;
+
+    @Value("${influx.bucket}")
+    private String bucket;
+
+    public InfluxService(WriteApi writeApi, QueryApi queryApi) {
+        this.writeApi = writeApi;
+    }
 
     /** 단일 포인트 쓰기 */
     public void writeMeasurement(String commandId,
@@ -37,17 +35,17 @@ public class InfluxService {
                                  String deviceId,
                                  String codeType,
                                  String commandFlow) {
-//        Point point = Point
-//                .measurement("command_log")
-//                .addTag("COMD_ID", commandId)
-//                .addTag("CTRL_CD", controlCode)
-//                .addTag("CD_VALUE", codeValue)
-//                .addTag("CTRL_CD_NM", controlCodeName)
-//                .addTag("USER_ID", userId)
-//                .addTag("DEVC_ID", deviceId)
-//                .addField("CD_TYPE", Integer.parseInt(codeType))
-//                .addField("COMD_FLOW", Integer.parseInt(commandFlow))
-//                .time(Instant.now(), WritePrecision.NS);
-//        writeApi.writePoint(point);
+        Point point = Point
+                .measurement("command_log")
+                .addTag("COMD_ID", commandId)
+                .addTag("CTRL_CD", controlCode)
+                .addTag("CD_VALUE", codeValue)
+                .addTag("CTRL_CD_NM", controlCodeName)
+                .addTag("USER_ID", userId)
+                .addTag("DEVC_ID", deviceId)
+                .addField("CD_TYPE", Integer.parseInt(codeType))
+                .addField("COMD_FLOW", Integer.parseInt(commandFlow))
+                .time(Instant.now(), WritePrecision.NS);
+        writeApi.writePoint(point);
     }
 }
