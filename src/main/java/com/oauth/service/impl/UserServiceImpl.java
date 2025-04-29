@@ -546,7 +546,7 @@ public class UserServiceImpl implements UserService {
             }
 
             if(!deviceMapper.checkDeviceCount(groupIdx).getDeviceCount().equals("0")){
-                deviceMapper.updateDeviceRegistGroupName2(params);
+                deviceMapper.updateDeviceRegistGroupName2(params); // commit sample
             }
 
             msg = "사용자 그룹 명칭 변경 성공";
