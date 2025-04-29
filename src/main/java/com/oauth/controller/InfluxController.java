@@ -15,7 +15,15 @@ public class InfluxController {
 
     @GetMapping("/influx/write")
     public String write() {
-//        svc.writeMeasurement();
+        svc.writeMeasurement(
+                "commandId",
+                "controlCode",
+                "codeValue",
+                "controlCodeName",
+                "userId",
+                "devoiceId",
+                "codeType",
+                "commandFlow");
         return "written";
     }
 }
