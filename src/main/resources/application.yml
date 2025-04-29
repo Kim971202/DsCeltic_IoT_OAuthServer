@@ -92,7 +92,7 @@ logging:
      name: oauthserver.log
 
 influx:
-  url: http://127.0.0.1:8086
+  url: http://[::1]:8086
   token: pf1eN1OCHUJus9hXazSJ2v3vEnWaJzetQHgNQKytotijqitNmWlHkRlklRoeZjlMjptKS2BJIanu065-tCtxiA==
   org:  DaesungCelticEnersys
   bucket: ds_iot_command_temp
