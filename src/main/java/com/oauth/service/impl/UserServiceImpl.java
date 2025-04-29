@@ -44,6 +44,8 @@ public class UserServiceImpl implements UserService {
     private RedisCommand redisCommand;
     @Autowired
     GwMessagingSystem gwMessagingSystem;
+    @Autowired
+    InfluxService influxService;
     @Value("${server.timeout}")
     private long TIME_OUT;
     @Value("#{${device.model.code}}")
@@ -544,7 +546,7 @@ public class UserServiceImpl implements UserService {
             }
 
             if(!deviceMapper.checkDeviceCount(groupIdx).getDeviceCount().equals("0")){
-                deviceMapper.updateDeviceRegistGroupName(params);
+                deviceMapper.updateDeviceRegistGroupName2(params);
             }
 
             msg = "사용자 그룹 명칭 변경 성공";
@@ -1903,7 +1905,19 @@ public class UserServiceImpl implements UserService {
                     params.getUserId(),
                     "밝기 조절",
                     params.getBrightnessLevel(),
-                    "01");
+                    "01"
+            );
+
+            influxService.writeMeasurement(
+                    "BrightnessControl",
+                    "blCf",
+                    params.getBrightnessLevel(),
+                    "밝기 조절",
+                    userId,
+                    deviceId,
+                    "1",
+                    "0"
+            );
 
             log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -2307,7 +2321,11 @@ public class UserServiceImpl implements UserService {
         String userId = params.getUserId();
         String deviceId = params.getDeviceId();
         String modeCode = params.getModeCode();
-        float temperature = Float.parseFloat(params.getTemperature());
+        String temp = params.getTemperature();
+        float temperature = 0.0f;
+        if(temp != null){
+            temperature = Float.parseFloat(params.getTemperature());
+        }
         String fanSpeed = params.getFanSpeed();
         String modelCode = common.getModelCodeFromDeviceId(deviceId);
         String deviceType = common.getModelCode(modelCode.trim());

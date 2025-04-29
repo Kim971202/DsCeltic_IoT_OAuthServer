@@ -48,6 +48,8 @@ public class DeviceServiceImpl implements DeviceService {
     MobiusResponse mobiusResponse;
     @Autowired
     GwMessagingSystem gwMessagingSystem;
+    @Autowired
+    InfluxService influxService;
     @Value("${server.timeout}")
     private long TIME_OUT;
     @Value("#{${device.model.code}}")
@@ -201,6 +203,17 @@ public class DeviceServiceImpl implements DeviceService {
                             "전원 " + params.getPowerStatus(),
                             deviceType);
                 }
+
+                influxService.writeMeasurement(
+                        "PowerOnOff",
+                        "powr",
+                        params.getPowerStatus(),
+                        "전원 ON/OFF",
+                        userId,
+                        deviceId,
+                        "1",
+                        "0"
+                );
             }
             log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1044,6 +1057,17 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             }
 
+            influxService.writeMeasurement(
+                    "ModeChange",
+                    "opMd",
+                    modeCode,
+                    "모드 변경",
+                    userId,
+                    deviceId,
+                    "0",
+                    "0"
+            );
+
             log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
@@ -1196,7 +1220,7 @@ public class DeviceServiceImpl implements DeviceService {
                     common.insertHistory(
                             "1",
                             "TemperatureSet",
-                            "modeCode",
+                            "htTp",
                             "실내 온도 설정",
                             "0",
                             params.getDeviceId(),
@@ -1205,8 +1229,19 @@ public class DeviceServiceImpl implements DeviceService {
                             params.getTemperture(),
                             "01");
                 }
-
             }
+
+            influxService.writeMeasurement(
+                    "TemperatureSet",
+                    "htTp",
+                    params.getTemperture(),
+                    "실내 온도 설정",
+                    userId,
+                    deviceId,
+                    "1",
+                    "0"
+            );
+
             log.info("result: {} ", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
@@ -1336,7 +1371,7 @@ public class DeviceServiceImpl implements DeviceService {
                     common.insertHistory(
                             "1",
                             "TemperatureSet",
-                            "modeCode",
+                            "clTp",
                             "냉방-실내 온도 설정",
                             "0",
                             params.getDeviceId(),
@@ -1345,6 +1380,17 @@ public class DeviceServiceImpl implements DeviceService {
                             params.getTemperture(),
                             "01");
                 }
+
+                influxService.writeMeasurement(
+                        "TemperatureSet",
+                        "clTp",
+                        params.getTemperture(),
+                        "냉방-실내 온도 설정",
+                        userId,
+                        deviceId,
+                        "1",
+                        "0"
+                );
 
             }
             log.info("result: {} ", result);
@@ -1476,7 +1522,7 @@ public class DeviceServiceImpl implements DeviceService {
                     common.insertHistory(
                             "1",
                             "ForcedDeFrost",
-                            "modeCode",
+                            "fcDf",
                             "강제 제상 모드 설정",
                             "0",
                             params.getDeviceId(),
@@ -1485,6 +1531,17 @@ public class DeviceServiceImpl implements DeviceService {
                             params.getTemperture(),
                             "01");
                 }
+
+                influxService.writeMeasurement(
+                        "ForcedDeFrost",
+                        "fcDf",
+                        params.getForcedDefrost(),
+                        "강제 제상 모드 설정",
+                        userId,
+                        deviceId,
+                        "1",
+                        "0"
+                );
 
             }
             log.info("result: {} ", result);
@@ -1622,6 +1679,17 @@ public class DeviceServiceImpl implements DeviceService {
                             "01");
                 }
             }
+
+            influxService.writeMeasurement(
+                    "BoiledWaterTempertureSet",
+                    "wtTp",
+                    params.getTemperture(),
+                    "난방수 온도 설정",
+                    userId,
+                    deviceId,
+                    "1",
+                    "0"
+            );
 
             log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1775,8 +1843,18 @@ public class DeviceServiceImpl implements DeviceService {
                         "hwTp",
                         params.getTemperture(),
                         deviceType);
-
             }
+
+            influxService.writeMeasurement(
+                    "WaterTempertureSet",
+                    "hwTp",
+                    params.getTemperture(),
+                    "온수 온도 설정",
+                    userId,
+                    deviceId,
+                    "1",
+                    "0"
+            );
 
             log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -1910,8 +1988,19 @@ public class DeviceServiceImpl implements DeviceService {
                         "빠른온수 설정",
                         "빠른온수 " + params.getModeCode(),
                         "01");
-
             }
+
+            influxService.writeMeasurement(
+                    "FastHotWaterSet",
+                    "ftMd",
+                    params.getModeCode(),
+                    "빠른 온수 설정",
+                    userId,
+                    deviceId,
+                    "1",
+                    "0"
+            );
+
             log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
@@ -2044,7 +2133,19 @@ public class DeviceServiceImpl implements DeviceService {
                     params.getUserId(),
                     "잠금 변경",
                     "잠금 " + params.getLockSet(),
-                    "01");
+                    "01"
+            );
+
+            influxService.writeMeasurement(
+                    "LockSet",
+                    "fcLc",
+                    params.getLockSet(),
+                    "잠금 모드 설정",
+                    userId,
+                    deviceId,
+                    "1",
+                    "0"
+            );
 
             log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -2449,6 +2550,17 @@ public class DeviceServiceImpl implements DeviceService {
                         params.getFanSpeed(),
                         "07");
             }
+
+            influxService.writeMeasurement(
+                    "VentilationFanSpeedSet",
+                    "vtSp",
+                    fanSpeed,
+                    "풍량 단수 설정",
+                    userId,
+                    deviceId,
+                    "1",
+                    "0"
+            );
 
             log.info("result: {}", result);
             return new ResponseEntity<>(result, HttpStatus.OK);

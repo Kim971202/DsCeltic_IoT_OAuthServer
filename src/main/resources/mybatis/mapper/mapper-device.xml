@@ -437,6 +437,15 @@
             DEVC_ID = #{deviceId}
     </update>
 
+    <update id="updateDeviceRegistGroupName2" parameterType="com.oauth.dto.AuthServerDTO">
+        UPDATE
+            TBT_OPR_DEVICE_REGIST
+        SET
+            GRP_NM = #{groupName}
+        WHERE
+            GRP_IDX = #{groupIdx}
+    </update>
+
     <update id="updateDeviceDetailLocation" parameterType="com.oauth.dto.AuthServerDTO">
         UPDATE
             TBR_OPR_DEVICE_DETAIL

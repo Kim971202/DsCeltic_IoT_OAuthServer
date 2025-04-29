@@ -82,6 +82,7 @@ public interface DeviceMapper {
     public int insertDeviceDetail(AuthServerDTO device);
     public int updateDeviceRegistLocation(AuthServerDTO device);
     public int updateDeviceRegistGroupName(AuthServerDTO device);
+    public int updateDeviceRegistGroupName2(AuthServerDTO device);
     public int updateDeviceDetailLocation(AuthServerDTO device);
     public int insertEachRoomStatus(DeviceStatusInfo.Device device);
     public int insertDeviceStatus(DeviceStatusInfo.Device device);

@@ -6,6 +6,7 @@ import com.oauth.mapper.DeviceMapper;
 import com.oauth.mapper.MemberMapper;
 import com.oauth.message.GwMessagingSystem;
 import com.oauth.response.ApiResponse;
+import com.oauth.service.impl.InfluxService;
 import com.oauth.service.impl.MobiusService;
 import com.oauth.service.impl.PushService;
 import com.oauth.utils.Common;
@@ -41,6 +42,8 @@ public class MobiusController {
     GwMessagingSystem gwMessagingSystem;
     @Autowired
     PushService pushService;
+    @Autowired
+    InfluxService influxService;
     @Value("#{${device.model.code}}")
     Map<String, String> modelCodeMap;
 
@@ -202,6 +205,17 @@ public class MobiusController {
 
             memberMapper.insertCommandHistory(params);
 
+            influxService.writeMeasurement(
+                    "VentilationFanLifeStatus",
+                    "RC",
+                    deviceInfo.getVfLs(),
+                    "환기 팬 잔여 수명",
+                    "USER_ID",
+                    deviceInfo.getDeviceId(),
+                    "1",
+                    "1"
+            );
+
             params.setPushTitle("기기 제어");
             params.setPushContent(params.getControlCodeName());
             params.setDeviceId(deviceId);
@@ -343,6 +357,16 @@ public class MobiusController {
             params.setDeviceId(deviceId);
             params.setDeviceType(common.getModelCode(common.getModelCodeFromDeviceId(deviceId).replace(" ", "")));
             memberMapper.insertPushHistory(params);
+            influxService.writeMeasurement(
+                    params.getCommandId(),
+                    params.getControlCode(),
+                    common.readCon(jsonBody, "con"),
+                    params.getControlCodeName(),
+                    "RC",
+                    deviceId,
+                    "1",
+                    "1"
+            );
 
         } else if (functionId.equals("rtSt")) {
 
