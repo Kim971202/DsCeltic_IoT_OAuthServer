@@ -22,8 +22,8 @@ public class InfluxController {
                 "controlCodeName",
                 "userId",
                 "devoiceId",
-                "codeType",
-                "commandFlow");
+                "2",
+                "2");
         return "written";
     }
 }

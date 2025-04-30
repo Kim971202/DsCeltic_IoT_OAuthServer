@@ -93,6 +93,6 @@ logging:
 
 influx:
   url: http://127.0.0.1:8086
-  token: pf1eN1OCHUJus9hXazSJ2v3vEnWaJzetQHgNQKytotijqitNmWlHkRlklRoeZjlMjptKS2BJIanu065-tCtxiA==
+  token: K9sA9ByCrOwD4kmawbaCtYsfa-OSExboS3ptTTFaMWCXVGpsENn7AumLinC8lEUaazd8rNs-nj-X909Rawa_NQ==
   org:  DaesungCelticEnersys
   bucket: ds_iot_command_temp
