@@ -1039,6 +1039,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse.Data data = new ApiResponse.Data();
         String msg;
         String delUserId = params.getDelUserId();
+        String userId = params.getUserId();
         String groupIdx = params.getGroupIdx();
         List<AuthServerDTO> deviceIdList;
         List<AuthServerDTO> inputList;
@@ -1073,7 +1074,7 @@ public class UserServiceImpl implements UserService {
             memberMapper.deleteInviteStatusByHouseholdMembers(params);
             msg = "사용자(세대원) - 강제탈퇴 성공";
 
-            if (memberMapper.getUserLoginoutStatus(delUserId).getLoginoutStatus().equals("Y")){
+            if (memberMapper.getUserLoginoutStatus(delUserId).getLoginoutStatus().equals("Y") && !delUserId.equals(userId)){
                 conMap.put("targetToken", memberMapper.getPushTokenByUserId(delUserId).getPushToken());
                 conMap.put("title", "Delete_Member");
                 conMap.put("groupName", common.stringToHex(memberMapper.getGroupNameByGroupIdx(groupIdx).getGroupName()));
