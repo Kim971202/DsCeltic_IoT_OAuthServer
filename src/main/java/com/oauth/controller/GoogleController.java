@@ -71,8 +71,13 @@ public class GoogleController {
         }
         
 	if(functionId.equals("wtTp")){
-            conMap.put("temperature", value);
+
+        if(deviceId.contains("204443522d39312f5746")){
+            value = String.valueOf(Integer.parseInt(value));
         }
+        conMap.put("temperature", value);
+
+    }
 
         /*
         * Sleep 코드 정의
@@ -81,8 +86,8 @@ public class GoogleController {
         * 063 : 취침3 - 03 = Warm
         * */
         if(functionId.equals("opMd")) {
-            conMap.put("modeCode", value);
 
+            conMap.put("modeCode", value);
             // Sleep Code 지정 변수
             String slCd = "";
             if(value.equals("061")) slCd = "01";

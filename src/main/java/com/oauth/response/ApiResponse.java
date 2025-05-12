@@ -112,6 +112,7 @@ public class ApiResponse {
         private String homeStatus;
         private String homeMode;
         private String homeValue;
+
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);

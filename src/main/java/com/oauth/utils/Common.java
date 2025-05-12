@@ -292,7 +292,7 @@ public class Common {
 
         // 필드 이름을 키로, 그에 따른 Command 설정을 값으로 갖는 Map 생성
         Map<String, String[]> commandMap = new HashMap<>();
-        commandMap.put("powr", new String[] { "powerOnOff", "powr", "전원 ON/OFF" });
+        commandMap.put("powr", new String[] { "PowerOnOff", "powr", "전원 ON/OFF" });
         commandMap.put("opMd", new String[] { "ModeChange", "opMd", "모드 변경" });
         commandMap.put("htTp", new String[] { "TemperatureSet", "htTp", "실내온도설정" });
         commandMap.put("wtTp", new String[] { "BoiledWaterTempertureSet", "wtTp", "난방수 온도 설정" });
