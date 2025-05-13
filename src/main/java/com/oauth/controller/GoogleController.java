@@ -73,7 +73,7 @@ public class GoogleController {
 	if(functionId.equals("wtTp")){
 
         if(deviceId.contains("204443522d39312f5746")){
-            value = String.valueOf(Integer.parseInt(value));
+            value = String.valueOf((int) Double.parseDouble(value));
         }
         conMap.put("temperature", value);
 
