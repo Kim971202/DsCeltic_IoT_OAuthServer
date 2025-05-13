@@ -1889,7 +1889,7 @@ public class UserServiceImpl implements UserService {
                     conMap1.put("title", "blCf");
                     conMap1.put("deviceId", deviceId);
                     conMap1.put("id", "Brightness Control ID");
-
+                    conMap1.put("userId", params.getUserId());
                     String jsonString1 = objectMapper.writeValueAsString(conMap1);
 
                     mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString1);

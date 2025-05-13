@@ -165,6 +165,7 @@ public class ReservationServiceImpl implements ReservationService {
                             conMap.put("title", "24h");
                             conMap.put("deviceId", deviceId);
                             conMap.put("id", "Set24 ID");
+                            conMap.put("userId", params.getUserId());
                             String jsonString = objectMapper.writeValueAsString(conMap);
                             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
@@ -329,6 +330,7 @@ public class ReservationServiceImpl implements ReservationService {
                             conMap.put("title", "12h");
                             conMap.put("deviceId", deviceId);
                             conMap.put("id", "Set12 ID");
+                            conMap.put("userId", params.getUserId());
                             String jsonString = objectMapper.writeValueAsString(conMap);
                             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
@@ -513,6 +515,7 @@ public class ReservationServiceImpl implements ReservationService {
                         conMap.put("title", "fwh");
                         conMap.put("deviceId", deviceId);
                         conMap.put("id", "AwakeAlarmSet ID");
+                        conMap.put("userId", params.getUserId());
                         String jsonString = objectMapper.writeValueAsString(conMap);
                         mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                     }
@@ -674,6 +677,7 @@ public class ReservationServiceImpl implements ReservationService {
                             conMap.put("title", "7wk");
                             conMap.put("deviceId", deviceId);
                             conMap.put("id", "Mode Change ID");
+                            conMap.put("userId", params.getUserId());
                             String jsonString = objectMapper.writeValueAsString(conMap);
                             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
@@ -858,8 +862,8 @@ public class ReservationServiceImpl implements ReservationService {
                         conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                         conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
                         conMap.put("deviceId", deviceId);
+                        conMap.put("userId", params.getUserId());
                         String jsonString = objectMapper.writeValueAsString(conMap);
-
                         mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                     }
                 }
@@ -996,6 +1000,7 @@ public class ReservationServiceImpl implements ReservationService {
                         conMap.put("deviceNick", common.returnDeviceNickname(deviceId));
                         conMap.put("modelCode", common.getModelCodeFromDeviceId(deviceId).replaceAll(" ", ""));
                         conMap.put("deviceId", deviceId);
+                        conMap.put("userId", params.getUserId());
                         String jsonString = objectMapper.writeValueAsString(conMap);
                         mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                     }

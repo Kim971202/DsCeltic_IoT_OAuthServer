@@ -185,6 +185,7 @@ public class DeviceServiceImpl implements DeviceService {
                                 conMap.put("modelCode", modelCode);
                                 conMap.put("deviceNick", common.returnDeviceNickname(deviceId, deviceType));
                                 conMap.put("deviceId", deviceId);
+                                conMap.put("userId", params.getUserId());
                                 String jsonString = objectMapper.writeValueAsString(conMap);
                                 mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                             }
@@ -354,6 +355,7 @@ public class DeviceServiceImpl implements DeviceService {
                                 conMap.put("modelCode", modelCode);
                                 conMap.put("deviceNick", common.returnDeviceNickname(deviceId, deviceType));
                                 conMap.put("deviceId", deviceId);
+                                conMap.put("userId", params.getUserId());
                                 String jsonString = objectMapper.writeValueAsString(conMap);
                                 mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                             }
@@ -471,7 +473,6 @@ public class DeviceServiceImpl implements DeviceService {
                         conMap.put("latitude", latitude);
                         conMap.put("longitude", longitude);
                         conMap.put("pushYn", "Y");
-
                         String jsonString = objectMapper.writeValueAsString(conMap);
                         mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                     }
@@ -964,7 +965,7 @@ public class DeviceServiceImpl implements DeviceService {
                                 conMap.put("title", "opMd");
                                 conMap.put("deviceId", deviceId);
                                 conMap.put("id", "Mode Change ID");
-
+                                conMap.put("userId", params.getUserId());
                                 String jsonString = objectMapper.writeValueAsString(conMap);
                                 mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                             }
@@ -1212,6 +1213,7 @@ public class DeviceServiceImpl implements DeviceService {
                             conMap.put("title", "htTp");
                             conMap.put("deviceId", deviceId);
                             conMap.put("id", "TemperatureSet ID");
+                            conMap.put("userId", params.getUserId());
                             String jsonString = objectMapper.writeValueAsString(conMap);
                             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
@@ -1363,6 +1365,7 @@ public class DeviceServiceImpl implements DeviceService {
                             conMap.put("title", "clTp");
                             conMap.put("deviceId", deviceId);
                             conMap.put("id", "TemperatureSet ID");
+                            conMap.put("userId", params.getUserId());
                             String jsonString = objectMapper.writeValueAsString(conMap);
                             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
@@ -1514,6 +1517,7 @@ public class DeviceServiceImpl implements DeviceService {
                             conMap.put("title", "fcDf");
                             conMap.put("deviceId", deviceId);
                             conMap.put("id", "ForcedDefrost ID");
+                            conMap.put("userId", params.getUserId());
                             String jsonString = objectMapper.writeValueAsString(conMap);
                             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
@@ -1661,6 +1665,7 @@ public class DeviceServiceImpl implements DeviceService {
                             conMap.put("title", "wtTp");
                             conMap.put("deviceId", deviceId);
                             conMap.put("id", "BoiledWaterTempertureSet ID");
+                            conMap.put("userId", params.getUserId());
                             String jsonString = objectMapper.writeValueAsString(conMap);
                             mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                         }
@@ -1827,6 +1832,7 @@ public class DeviceServiceImpl implements DeviceService {
                         conMap.put("title", "hwTp");
                         conMap.put("deviceId", deviceId);
                         conMap.put("id", "WaterTempertureSet ID");
+                        conMap.put("userId", params.getUserId());
                         String jsonString = objectMapper.writeValueAsString(conMap);
                         mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                     }
@@ -1968,6 +1974,7 @@ public class DeviceServiceImpl implements DeviceService {
                         conMap.put("title", "ftMd");
                         conMap.put("deviceId", deviceId);
                         conMap.put("id", "FastHotWaterSet ID");
+                        conMap.put("userId", params.getUserId());
                         String jsonString = objectMapper.writeValueAsString(conMap);
                         mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                     }
@@ -2117,6 +2124,7 @@ public class DeviceServiceImpl implements DeviceService {
                         conMap.put("title", "fcLc");
                         conMap.put("deviceId", deviceId);
                         conMap.put("id", "LockSet ID");
+                        conMap.put("userId", params.getUserId());
                         String jsonString = objectMapper.writeValueAsString(conMap);
                         mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                     }
@@ -2533,6 +2541,7 @@ public class DeviceServiceImpl implements DeviceService {
                         conMap.put("pushYn", pushYnList.get(i).getFPushYn());
                         conMap.put("modelCode", modelCode);
                         conMap.put("deviceId", deviceId);
+                        conMap.put("userId", params.getUserId());
                         String jsonString = objectMapper.writeValueAsString(conMap);
                         mobiusService.createCin("ToPushServer", "ToPushServerCnt", jsonString);
                     }
