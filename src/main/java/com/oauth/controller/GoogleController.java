@@ -110,7 +110,11 @@ public class GoogleController {
         conMap.put("functionId", functionId);
         conMap.put("uuId", common.getTransactionId());
 
-        mobiusService.createCin(deviceArray[6], userId, JSON.toJson(conMap));
+        String serialNumber = deviceArray[6];
+        if(deviceId.contains("4d4332363030")){
+            serialNumber = deviceArray[6] + "31";
+        }
+        mobiusService.createCin(serialNumber, userId, JSON.toJson(conMap));
 
         return "OK";
     }

@@ -298,10 +298,10 @@ public class Common {
         commandMap.put("wtTp", new String[] { "BoiledWaterTempertureSet", "wtTp", "난방수 온도 설정" });
         commandMap.put("hwTp", new String[] { "WaterTempertureSet", "hwTp", "온수 온도 설정" });
         commandMap.put("ftMd", new String[] { "FastHotWaterSet", "ftMd", "빠른 온수 설정" });
-        commandMap.put("h24", new String[] { "Set24", "24h", "24시간 예약" });
-        commandMap.put("h12", new String[] { "Set12", "12h", "12시간 예약" });
-        commandMap.put("wk7", new String[] { "SetWeek", "7wk", "주간 예약" });
-        commandMap.put("fwh", new String[] { "AwakeAlarmSet", "fwh", "빠른온수 예약" });
+        commandMap.put("h24",  new String[] { "Set24", "24h", "24시간 예약" });
+        commandMap.put("h12",  new String[] { "Set12", "12h", "12시간 예약" });
+        commandMap.put("wk7",  new String[] { "SetWeek", "7wk", "주간 예약" });
+        commandMap.put("fwh",  new String[] { "AwakeAlarmSet", "fwh", "빠른온수 예약" });
         commandMap.put("bCdt", new String[] { "BCDT", "bCdt", "보일러 연소 상태" });
         commandMap.put("chTp", new String[] { "CHTP", "chTp", "현재 실내 온도" });
         commandMap.put("cwTp", new String[] { "CWTP", "cwTp", "현재 난방수 온도" });
@@ -309,13 +309,13 @@ public class Common {
         commandMap.put("ecOp", new String[] { "EcoOperation", "ecOp", "절약난방 상태정보 알림" });
         commandMap.put("hwSt", new String[] { "HotWaterStatus", "hwSt", "온수 사용 상태" });
         commandMap.put("fcLc", new String[] { "DeviceLock", "fcLc", "화면 잠금 설정" });
-        commandMap.put("mwk", new String[] { "waterTemp", "wtTp", "난방수 온도 설정" });
+        commandMap.put("mwk",  new String[] { "waterTemp", "wtTp", "난방수 온도 설정" });
         commandMap.put("reSt", new String[] { "waterTemp", "wtTp", "난방수 온도 설정" });
         commandMap.put("mfAr", new String[] { "waterTemp", "wtTp", "난방수 온도 설정" });
         commandMap.put("vtSp", new String[] { "VentilationSpeed", "vtSp", "환기 풍량 설정" });
         commandMap.put("rsPw", new String[] { "VentilationOnOffSet", "rsPw", "환기 켜짐 꺼짐 예약" });
         commandMap.put("vfLs", new String[] { "VentilationFanLifeStatus", "vfLs", "환기 필터 잔여 수명" });
-
+        commandMap.put("blCf", new String[] { "BrightnessControl", "blCf", "기기 밝기 수정" });
         log.info("commandMap: " + commandMap);
 
         // nonNullField에서 해당 필드가 존재하는지 확인하고, 해당 Command 설정 적용
