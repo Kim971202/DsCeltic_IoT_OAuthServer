@@ -398,6 +398,15 @@ public class MobiusController {
                 dr910WDevice.setFcLc(common.readCon(jsonBody, "fcLc"));
                 dr910WDevice.setBlCf(common.readCon(jsonBody, "blCf"));
 
+                // TBR_OPR_EACH_ROOM_MODE_INFO 테이블에 해당 일에 해당 기기가 있는지 확인 (없으면 INSERT 후 로직 진행)
+                dr910WDevice.setPrId(deviceId);
+                if(deviceMapper.checkEachRoomModeInfo(dr910WDevice).getDeviceCount().equals("0")){
+                    deviceMapper.insertEachRoomStatInfo(dr910WDevice);
+                }
+
+                dr910WDevice.setColumn(common.getColumnForCurrentHour());
+                deviceMapper.updateEachRoomStatInfo(dr910WDevice);
+
             } else if (modelType.equals(modelCodeMap.get("oldModel"))) {
                 dr910WDevice.setH24(common.convertToJsonString(common.readCon(jsonBody, "24h")));
                 dr910WDevice.setH12(common.convertToJsonString(common.readCon(jsonBody, "12h")));
@@ -412,6 +421,14 @@ public class MobiusController {
                 dr910WDevice.setHwSt(common.readCon(jsonBody, "hwSt"));
                 dr910WDevice.setSlCd(common.readCon(jsonBody, "slCd"));
                 dr910WDevice.setBlCf(common.readCon(jsonBody, "blCf"));
+
+                dr910WDevice.setPrId(deviceId);
+                if(deviceMapper.checkEachRoomModeInfo(dr910WDevice).getDeviceCount().equals("0")){
+                    deviceMapper.insertEachRoomStatInfo(dr910WDevice);
+                }
+
+                dr910WDevice.setColumn(common.getColumnForCurrentHour());
+                deviceMapper.updateEachRoomStatInfo(dr910WDevice);
 
             } else if (modelType.equals(modelCodeMap.get("ventilation"))) {
                 dr910WDevice.setRsSl(common.convertToJsonString(common.readCon(jsonBody, "rsSl")));
