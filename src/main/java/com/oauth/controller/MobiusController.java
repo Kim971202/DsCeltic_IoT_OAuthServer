@@ -400,6 +400,7 @@ public class MobiusController {
 
                 // TBR_OPR_EACH_ROOM_MODE_INFO 테이블에 해당 일에 해당 기기가 있는지 확인 (없으면 INSERT 후 로직 진행)
                 dr910WDevice.setPrId(deviceId);
+                dr910WDevice.setRegDatetime(common.getCurrentDateTimeForEachRoomMode());
                 if(deviceMapper.checkEachRoomModeInfo(dr910WDevice).getDeviceCount().equals("0")){
                     deviceMapper.insertEachRoomStatInfo(dr910WDevice);
                 }
@@ -423,6 +424,7 @@ public class MobiusController {
                 dr910WDevice.setBlCf(common.readCon(jsonBody, "blCf"));
 
                 dr910WDevice.setPrId(deviceId);
+                dr910WDevice.setRegDatetime(common.getCurrentDateTimeForEachRoomMode());
                 if(deviceMapper.checkEachRoomModeInfo(dr910WDevice).getDeviceCount().equals("0")){
                     deviceMapper.insertEachRoomStatInfo(dr910WDevice);
                 }
