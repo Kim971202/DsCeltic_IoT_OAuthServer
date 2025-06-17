@@ -112,7 +112,7 @@ public class GoogleController {
 
         String serialNumber = deviceArray[6];
         if(deviceId.contains("4d4332363030")){
-            serialNumber = deviceArray[6] + "31";
+            serialNumber = "20" + deviceArray[6];
         }
         mobiusService.createCin(serialNumber, userId, JSON.toJson(conMap));
 
