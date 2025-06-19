@@ -2183,6 +2183,7 @@ public class DeviceServiceImpl implements DeviceService {
         List<Map<String, String>> appResponse = new ArrayList<>();
         List<AuthServerDTO> groupIdList;
         List<DeviceStatusInfo.Device> devicesStatusInfo;
+        List<DeviceStatusInfo.Device> devicesActiveStatusInfo;
         try {
 
             // 1. 사용자 그룹 정보 가져오기
@@ -2196,10 +2197,9 @@ public class DeviceServiceImpl implements DeviceService {
             // 1. UserId로 그룹 정보 쿼리
             // 2. groupId로 Regist 테이블과 기기 테이블에서 필요한 정보 모두 쿼리
             groupIdList = deviceMapper.getGroupIdByUserId(userId);
-            // devicesStatusInfo = deviceMapper.getDeviceStatusInfo(groupIdList);
             // 5. 데이터 매핑
             for (AuthServerDTO authServerDTO : groupIdList) {
-                devicesStatusInfo = deviceMapper.getDeviceStatusInfo(authServerDTO.getGroupIdx()); // Return List
+                devicesStatusInfo = deviceMapper.getDeviceStatusInfo(authServerDTO.getGroupIdx()); // 기기 상태
                 for (int i = 0; i < devicesStatusInfo.size(); i++) {
                     Map<String, String> data = new HashMap<>();
                     data.put("rKey", devicesStatusInfo.get(i).getRKey());
@@ -2236,6 +2236,7 @@ public class DeviceServiceImpl implements DeviceService {
                     data.put("vtSp", devicesStatusInfo.get(i).getVtSp());
                     data.put("inAq", devicesStatusInfo.get(i).getInAq());
                     data.put("odHm", devicesStatusInfo.get(i).getOdHm());
+
                     data.put("ftMdAcTv", devicesStatusInfo.get(i).getFtMdActv());
                     data.put("fcLcAcTv", devicesStatusInfo.get(i).getFcLcActv());
                     data.put("ecOpAcTv", devicesStatusInfo.get(i).getEcOp());

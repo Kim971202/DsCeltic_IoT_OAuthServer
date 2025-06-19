@@ -1443,7 +1443,7 @@
     </select>
 
     <select id="getDeviceStatusInfo" parameterType="String" resultMap="dr910w">
-        SELECT 
+        SELECT
             a.DEVC_NICK AS deviceNickName,
             a.GRP_IDX AS groupIdx,
             a.GRP_NM AS groupName,
@@ -1490,17 +1490,17 @@
             IFNULL(c.MFDT, '') AS mfDt
         FROM
             TBT_OPR_DEVICE_REGIST a
-        INNER JOIN 
+        INNER JOIN
             TBR_OPR_DEVICE_STATUS b
-        ON 
+        ON
             a.DEVC_ID = b.DEVC_ID
-        INNER JOIN 
+        LEFT JOIN
             TBR_OPR_ACTIVE_DEVICE_STATUS c
-        ON 
+        ON
             a.DEVC_ID = c.DEVC_ID
-        WHERE 
+        WHERE
             a.GRP_IDX = #{groupIdx}
-        AND 
+        AND
             a.VALVE_STATUS = 'N'
     </select>
 
