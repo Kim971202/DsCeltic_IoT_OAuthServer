@@ -2478,4 +2478,42 @@ public class UserServiceImpl implements UserService {
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }
+
+    /**
+     * 광고 정보 조회
+     * */
+    @Override
+    public ResponseEntity<?> doViewDaesungAdInfo() throws Exception {
+
+        ApiResponse.Data result = new ApiResponse.Data();
+        List<ApiResponse.Data.AdvertiseInfo> advertiseInfoList = new ArrayList<>(List.of());
+
+        String msg;
+        List<AuthServerDTO> infoList;
+
+        try {
+
+            infoList = memberMapper.getAdvertisementInfo();
+            msg = "광고 정보 조회 성공";
+            result.setResult(ApiResponse.ResponseType.HTTP_200, msg);
+
+            for(AuthServerDTO info : infoList){
+                ApiResponse.Data.AdvertiseInfo advertiseInfo = new ApiResponse.Data.AdvertiseInfo(); // ★ 새로 생성
+                advertiseInfo.setRegSort(info.getRegSort());
+                advertiseInfo.setClickUrl(info.getClickUrl());
+                advertiseInfo.setImageUrl(info.getImageUrl());
+                advertiseInfo.setStartDate(info.getStartDate());
+                advertiseInfo.setEndDate(info.getEndDate());
+                advertiseInfoList.add(advertiseInfo);
+            }
+
+            result.setAdvertiseInfo(advertiseInfoList);
+            log.info("result: {}", result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("", e);
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+
+    }
 }

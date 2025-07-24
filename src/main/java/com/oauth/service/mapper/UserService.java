@@ -131,4 +131,7 @@ public interface UserService {
 
     /** WIFI 정보 저장 */
     ResponseEntity<?> doInsertWifiInfo(AuthServerDTO params) throws Exception;
+
+    /** 광고 정보 조회 */
+    ResponseEntity<?> doViewDaesungAdInfo() throws Exception;
 }

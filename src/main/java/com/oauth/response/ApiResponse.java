@@ -1,8 +1,8 @@
 package com.oauth.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -113,10 +113,22 @@ public class ApiResponse {
         private String homeMode;
         private String homeValue;
 
+        private Object advertiseInfo;
+
         public void setResult(ResponseType responseType, String msg) {
             String code = responseType.getCode();
             setResultCode(code);
             setResultMsg(msg);
+        }
+
+        @Getter
+        @Setter
+        public static class AdvertiseInfo {
+            private String regSort;
+            private String clickUrl;
+            private String imageUrl;
+            private String startDate;
+            private String endDate;
         }
 
         @Getter

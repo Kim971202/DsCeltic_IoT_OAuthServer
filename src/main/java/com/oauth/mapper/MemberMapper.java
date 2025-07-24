@@ -128,4 +128,5 @@ public interface MemberMapper {
     public int updateDeviceLocationNicknameDeviceRegist(AuthServerDTO member);
     public int insertCommandHistory(AuthServerDTO member);
     public int updateLoginDatetime(AuthServerDTO member);
+    public List<AuthServerDTO> getAdvertisementInfo();
 }

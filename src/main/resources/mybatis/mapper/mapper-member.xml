@@ -1725,4 +1725,15 @@
             REG_TIME = now()
     </insert>
 
+    <select id="getAdvertisementInfo" parameterType="com.oauth.dto.AuthServerDTO" resultMap="member">
+        SELECT
+            REG_SORT AS regSort,
+            CLICK_URL AS clickUrl,
+            IMAGE_URL AS imageUrl,
+            START_DATE AS startDate,
+            END_DATE AS endDate
+        FROM
+            TBR_OPR_ADVERTISE_INFO
+    </select>
+
 </mapper>

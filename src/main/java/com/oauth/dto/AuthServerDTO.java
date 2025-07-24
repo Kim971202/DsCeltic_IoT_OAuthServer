@@ -224,6 +224,9 @@ public class AuthServerDTO implements Serializable {
     private String wifiBssid;
     private String wifiSecurity;
 
+    private String clickUrl; // 외부 접속 URL
+    private String imageUrl; // 이미지 경로 URL
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
