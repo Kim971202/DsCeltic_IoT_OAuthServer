@@ -127,8 +127,8 @@ public class ApiResponse {
             private String regSort;
             private String clickUrl;
             private String imageUrl;
-            private String startDate;
-            private String endDate;
+            private String startDatetime;
+            private String endDatetime;
         }
 
         @Getter

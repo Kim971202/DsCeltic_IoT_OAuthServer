@@ -2502,8 +2502,8 @@ public class UserServiceImpl implements UserService {
                 advertiseInfo.setRegSort(info.getRegSort());
                 advertiseInfo.setClickUrl(info.getClickUrl());
                 advertiseInfo.setImageUrl(info.getImageUrl());
-                advertiseInfo.setStartDate(info.getStartDate());
-                advertiseInfo.setEndDate(info.getEndDate());
+                advertiseInfo.setStartDatetime(info.getStartDate());
+                advertiseInfo.setEndDatetime(info.getEndDate());
                 advertiseInfoList.add(advertiseInfo);
             }
 

@@ -53,7 +53,6 @@ public class MobiusController {
 
         log.info("GW Received JSON: {}", jsonBody);
         ApiResponse.Data result = new ApiResponse.Data();
-//        deviceMapper.insertJson(jsonBody);
 
         /*
          * *
@@ -491,6 +490,9 @@ public class MobiusController {
                 dr910WDevice.setBlCf(common.readCon(jsonBody, "blCf"));
             }
 
+            System.out.println(modelType);
+            System.out.println(modelCodeMap.get("heatpump160"));
+            System.out.println(modelType.equals(modelCodeMap.get("heatpump160")));
             mobiusService.rtstHandler(dr910WDevice);
         } else if (functionId.equals("opIf")) {
             List<AuthServerDTO> opTmInfo;

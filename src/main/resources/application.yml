@@ -51,9 +51,9 @@ device:
     code: "{oldModel: ' ESCeco13S', 
     newModel: ' DCR-91/WF', 
     ventilation: ' DCR-47/WF', 
-    heatpump160: ' DHR-160',
-    heatpump166: ' DHR-166',
-    heatpump260: ' DHR-260',
+    heatpump160: '   DHR-160',
+    heatpump166: '   DHR-166',
+    heatpump260: '   DHR-260',
     heatpump260A: ' DHR-260A'
     }"
 
@@ -65,15 +65,15 @@ app:
   server: # Server Address
     address:
       short:
-#        gw: 127.0.0.1:7579
-          gw: 172.31.50.223:7579
+        gw: 127.0.0.1:7579
+#          gw: 172.31.50.223:7579
         #  gw: 172.31.57.74:7579
       long:
-#        gw: http://127.0.0.1:10010/AppToGwServer
-         gw: http://172.31.50.223:10010/AppToGwServer
+        gw: http://127.0.0.1:10010/AppToGwServer
+#         gw: http://172.31.50.223:10010/AppToGwServer
 #         gw: http://172.31.57.74:10010/AppToGwServer
-#      push: http://127.0.0.1:8082/AppServerToPushServer
-      push: http://172.31.50.223:8082/AppServerToPushServer
+      push: http://127.0.0.1:8082/AppServerToPushServer
+#      push: http://172.31.50.223:8082/AppServerToPushServer
 #      push: http://172.31.57.74:8082/AppServerToPushServer
 #
 # Logging
@@ -93,6 +93,7 @@ logging:
 
 influx:
   url: http://172.31.50.223:8086
+#  url: http://3.37.23.88:8086
   token: K9sA9ByCrOwD4kmawbaCtYsfa-OSExboS3ptTTFaMWCXVGpsENn7AumLinC8lEUaazd8rNs-nj-X909Rawa_NQ==
   org:  DaesungCelticEnersys
   bucket: ds_iot_command_temp

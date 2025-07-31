@@ -855,8 +855,7 @@ public class UserController {
         log.info("광고 정보 조회 - 파라미터 없음");
         return userService.doViewDaesungAdInfo();
     }
-
-
+    
     @PostMapping(value = "/test")
     public String test(String on) throws Exception {
         String userId = "yohan1202";

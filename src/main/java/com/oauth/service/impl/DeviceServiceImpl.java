@@ -798,6 +798,8 @@ public class DeviceServiceImpl implements DeviceService {
                         resultMap.put("fcDf", "on");
                         resultMap.put("mfDt", value.getMfDt());
 
+//                        resultMap.put("clTp", value.ge);
+
                         ConcurrentHashMap<String, String> eleMap = new ConcurrentHashMap<>();
                         eleMap.put("12h", "{ “om\" : \"03\", “sm\" : \"30\"}");
                         eleMap.put("7wk", "[" + "{ \"wk\":\"0\", \"hs\" : [\"01\", \"18\"] }" + "]");
