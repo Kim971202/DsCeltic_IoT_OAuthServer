@@ -65,15 +65,15 @@ app:
   server: # Server Address
     address:
       short:
-        gw: 127.0.0.1:7579
-#          gw: 172.31.50.223:7579
+#        gw: 127.0.0.1:7579
+          gw: 172.31.50.223:7579
         #  gw: 172.31.57.74:7579
       long:
-        gw: http://127.0.0.1:10010/AppToGwServer
-#         gw: http://172.31.50.223:10010/AppToGwServer
+#        gw: http://127.0.0.1:10010/AppToGwServer
+         gw: http://172.31.50.223:10010/AppToGwServer
 #         gw: http://172.31.57.74:10010/AppToGwServer
-      push: http://127.0.0.1:8082/AppServerToPushServer
-#      push: http://172.31.50.223:8082/AppServerToPushServer
+#      push: http://127.0.0.1:8082/AppServerToPushServer
+      push: http://172.31.50.223:8082/AppServerToPushServer
 #      push: http://172.31.57.74:8082/AppServerToPushServer
 #
 # Logging
